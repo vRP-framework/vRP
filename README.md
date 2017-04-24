@@ -2,7 +2,8 @@
 FiveM RP addon/framework
 
 The project aim to create a generic and simple RP framework to prevent everyone from reinventing the wheel.
-Any contribution is encouraged.
+
+Contributions are welcomed.
 
 
 ## TODO LIST
