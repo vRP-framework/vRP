@@ -56,12 +56,22 @@ function Result:getRow()
   return row
 end
 
+function Result:toTable()
+  local r = {}
+
+  while self:fetch() do
+    table.insert(r,self:getRow())
+  end
+
+  return r
+end
+
 -- Command
 
 local Command = {}
 
 function Command:bind(param,value)
-  param = string.gsub(param,"@","?") -- compatibility with @ notation
+--  param = string.gsub(param,"@","?") -- compatibility with @ notation
 
   local _param = self.params[param]
   if not _param then
@@ -93,7 +103,17 @@ function Command:query()
   return r
 end
 
+function Command:last_insert_id()
+  return self.command.LastInsertedId
+end
+
 function Command:execute()
+  -- force close previous result
+  if self.connection.active_result ~= nil then
+    self.connection.active_result:close()
+    self.connection.active_result = nil
+  end
+
   return self.command.ExecuteNonQuery()
 end
 
@@ -106,7 +126,7 @@ function Connection:close()
 end
 
 function Connection:prepare(sql)
-  sql = string.gsub(sql,"@","?") -- compatibility with @ notation
+--  sql = string.gsub(sql,"@","?") -- compatibility with @ notation
 
   local r = setmetatable({},{ __index = Command })
   r.command = self.connection.CreateCommand()
