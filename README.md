@@ -7,7 +7,7 @@ Contributions are welcomed.
 
 
 ## TODO LIST
-* add/centralize basic libraries (ex: MySQL, SQLite)
+* add/centralize basic libraries (ex: MySQL)
 * basic survival characteristics (hunger/thirst)
 * citizen informations (identity, home)
 * money/inventory
