@@ -34,7 +34,15 @@ CREATE TABLE IF NOT EXISTS vrp_user_ids(
   identifier VARCHAR(255),
   user_id INTEGER,
   CONSTRAINT pk_user_ids PRIMARY KEY(identifier),
-  CONSTRAINT fk_user_ids_user FOREIGN KEY(user_id) REFERENCES vrp_users(id) ON DELETE CASCADE
+  CONSTRAINT fk_user_ids_users FOREIGN KEY(user_id) REFERENCES vrp_users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS vrp_user_data(
+  user_id INTEGER,
+  dkey VARCHAR(255),
+  dvalue TEXT,
+  CONSTRAINT pk_user_data PRIMARY KEY(user_id,dkey),
+  CONSTRAINT fk_user_data_users FOREIGN KEY(user_id) REFERENCES vrp_users(id) ON DELETE CASCADE
 );
 ]])
 
@@ -42,13 +50,12 @@ local q_create_user = vRP.sql:prepare("INSERT INTO vrp_users VALUES();")
 local q_add_identifier = vRP.sql:prepare("INSERT INTO vrp_user_ids(identifier,user_id) VALUES(@identifier,@user_id);")
 local q_userid_byidentifier = vRP.sql:prepare("SELECT user_id FROM vrp_user_ids WHERE identifier = @identifier;")
 
+local q_set_userdata = vRP.sql:prepare("REPLACE INTO vrp_user_data(user_id,dkey,dvalue) VALUES(@user_id,@key,@value)")
+local q_get_userdata = vRP.sql:prepare("SELECT value FROM vrp_user_data WHERE user_id = @user_id AND dkey = @key")
+
 -- init tables
 print("[vRP] init base tables")
 q_init:execute()
-
--- base events
-RegisterServerEvent("vRP:playerJoin")
-RegisterServerEvent("vRP:playerLeave")
 
 -- identification system
 
@@ -95,6 +102,25 @@ function vRP.getUserId(source)
   local ids = GetPlayerIdentifiers(source)
   if ids ~= nil and #ids > 0 then
     return vRP.users[ids[1]]
+  end
+
+  return nil
+end
+
+function vRP.setUData(user_id,key,value)
+  q_set_userdata:bind("@user_id",user_id)
+  q_set_userdata:bind("@key",key)
+  q_set_userdata:bind("@value",value)
+  q_set_userdata:execute()
+end
+
+function vRP.getUData(user_id,key)
+  q_get_userdata:bind("@user_id",user_id)
+  q_get_userdata:bind("@key",key)
+
+  local r = q_get_userdata:query()
+  if r:fetch() then
+    return r:getValue(0)
   end
 
   return nil
