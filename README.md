@@ -1,3 +1,5 @@
+**(this project is paused until FiveM offers a way to export server resources functions to other resources)**
+
 # vRP
 FiveM RP addon/framework
 
