@@ -1,6 +1,20 @@
 
 local MySQL = require("resources/vRP/lib/MySQL/MySQL")
 local config = require("resources/vRP/cfg/main")
+local version = require("resources/vRP/version")
+
+print("[vRP] launch version "..version)
+PerformHttpRequest("https://raw.githubusercontent.com/ImagicTheCat/vRP/master/vRP/version.lua",function(err,text,headers)
+  if err == 0 then
+    text = string.gsub(text,"return ","")
+    local r_version = tonumber(text)
+    if version ~= r_version then
+      print("[vRP] WARNING: A new version of vRP is available here https://github.com/ImagicTheCat/vRP, update to benefit from the last features and to fix exploits/bugs.")
+    end
+  else
+    print("[vRP] unable to check the remote version")
+  end
+end, "GET", "")
 
 vRP = {}
 vRP.users = {} -- will store logged users (id) by first identifier
