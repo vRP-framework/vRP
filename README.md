@@ -19,6 +19,26 @@ Contributions are welcomed.
 
 ## Tutorials
 
+### Events
+#### Base
+
+```lua
+
+-- (server) called after identification 
+AddEventHandler("vRP:playerJoin",function(user_id,source,name) end)
+
+-- (server) 
+AddEventHandler("vRP:playerLeave",function(user_id,source) end)
+```
+
+### API
+#### Base
+
+```lua
+-- return user id or nil if the source is invalid
+vRP.getUserId(source)
+```
+
 ### Libs
 #### MySQL
 
