@@ -14,6 +14,10 @@ function Result:init()
   end
 end
 
+function Result:close()
+  self.reader.Close()
+end
+
 function Result:fetch()
   return self.reader.Read()
 end
@@ -75,13 +79,22 @@ end
 
 function Command:query()
   local r = setmetatable({},{ __index = Result })
+
+  -- force close previous result
+  if self.connection.active_result ~= nil then
+    self.connection.active_result:close()
+  end
+
   r.reader = self.command.ExecuteReader()
+  self.connection.active_result = r -- set active connection result
+
+  r.command = self
   r:init()
   return r
 end
 
 function Command:execute()
-  self.command.ExecuteNonQuery()
+  return self.command.ExecuteNonQuery()
 end
 
 -- Connection
@@ -100,6 +113,7 @@ function Connection:prepare(sql)
   r.params = {}
   r.command.CommandText = sql
   r.command.Prepare()
+  r.connection = self
   return r
 end
 
