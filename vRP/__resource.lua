@@ -2,7 +2,10 @@
 description "RP module/framework"
 
 -- server scripts
-server_script "base.lua"
+server_scripts{ 
+  "base.lua",
+  "modules/survival.lua"
+}
 
 -- client scripts
 

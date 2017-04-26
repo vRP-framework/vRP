@@ -1,7 +1,7 @@
 
 local MySQL = require("resources/vRP/lib/MySQL/MySQL")
 local Proxy = require("resources/vRP/lib/Proxy")
-local config = require("resources/vRP/cfg/main")
+local config = require("resources/vRP/cfg/base")
 local version = require("resources/vRP/version")
 
 print("[vRP] launch version "..version)
@@ -22,6 +22,7 @@ Proxy.addInterface("vRP",vRP)
 
 vRP.users = {} -- will store logged users (id) by first identifier
 vRP.rusers = {} -- store the opposite of users
+vRP.user_tables = {} -- user data tables (logger storage, saved to database)
 
 -- open MySQL connection
 vRP.sql = MySQL.open(config.db.host,config.db.user,config.db.password,config.db.database)
@@ -129,7 +130,24 @@ function vRP.getUData(user_id,key)
   return nil
 end
 
+-- return user data table for vRP internal persistant logged user storage
+function vRP.getUserDataTable(user_id)
+  return vRP.user_tables[user_id]
+end
+
+-- tasks
+
+function task_save_datatables()
+  for k,v in pairs(vRP.user_tables) do
+    vRP.setUData(k,"vRP:datatable",json.encode(v))
+  end
+
+  SetTimeout(60000, task_save_datatables)
+end
+task_save_datatables()
+
 -- handlers
+
 AddEventHandler("playerConnecting",function(name,setMessage)
   local ids = GetPlayerIdentifiers(source)
   
@@ -142,8 +160,14 @@ AddEventHandler("playerConnecting",function(name,setMessage)
     end
 
     if user_id ~= nil and vRP.rusers[user_id] == nil then -- check user validity and if not already connected
+      -- init entries
       vRP.users[ids[1]] = user_id
       vRP.rusers[user_id] = ids[1]
+      vRP.user_tables[user_id] = {}
+
+      -- load user data table
+      local data = json.decode(vRP.getUData(user_id,"vRP:datatable"))
+      if data then vRP.user_tables[user_id] = data end
 
       print("[vRP] "..name.." ("..GetPlayerEP(source)..") joined (user_id = "..user_id..")")
       TriggerEvent("vRP:playerJoin", user_id, source, name)
@@ -164,8 +188,13 @@ AddEventHandler("playerDropped",function(reason)
 
   if user_id ~= nil then
     TriggerEvent("vRP:playerLeave", user_id, source)
+
+    -- save user data table
+    vRP.setUData(user_id,"vRP:datatable",json.encode(vRP.getUserDataTable(user_id)))
+
     print("[vRP] "..GetPlayerEP(source).." disconnected (user_id = "..user_id..")")
     vRP.users[vRP.rusers[user_id]] = nil
     vRP.rusers[user_id] = nil
+    vRP.user_tables[user_id] = nil
   end
 end)
