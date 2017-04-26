@@ -9,7 +9,9 @@ Contributions are welcomed.
 
 ## Features
 * MySQL lua bindings (prepared statements)
+* proxy for easy server-side inter-resource developement
 * identification system (persistant user id for database storage)
+* user custom data key/value
 
 ## TODO LIST
 * add/centralize basic libraries (ex: MySQL)
@@ -34,14 +36,67 @@ AddEventHandler("vRP:playerLeave",function(user_id,source) end)
 ```
 
 ### API
+
+To call the API functions, get the vRP interface.
+
+```lua
+local Proxy = require("resources/vRP/lib/Proxy")
+
+vRP = Proxy.getInterface("vRP")
+
+-- ex:
+vRP.getUserId({source},function(user_id)
+  print("user_id = "..user_id)
+end)
+```
+
 #### Base
 
 ```lua
 -- return user id or nil if the source is invalid
 vRP.getUserId(source)
+
+-- set user data (textual data)
+vRP.setUData(user_id,key,value)
+
+-- get user data (textual data)
+-- return nil if data not found
+vRP.getUData(user_id,key)
 ```
 
 ### Libs
+
+#### Proxy
+
+The proxy lib is used to call other resources functions through a proxy event.
+
+Ex:
+
+resource1.lua
+```lua
+local Proxy = require("resources/vRP/lib/Proxy")
+
+Resource1 = {}
+Proxy.addInterface("resource1",Resource1) -- add functions to resource1 interface (can be called multiple times if multiple files declare different functions for the same interface)
+
+function Resource1.test(a,b)
+  print("resource1 TEST "..a..","..b)
+  return a+b,a*b -- return two values
+end
+```
+resource2.lua
+```lua
+local Proxy = require("resources/vRP/lib/Proxy")
+
+Resource1 = Proxy.getInterface("resource1")
+
+Resource1.test({13,42},function(rvalue1,rvalue2)
+  print("resource2 TEST rvalues = "..rvalue1..","..rvalue2)
+end)
+```
+
+The notation is **Interface.function({arguments},callback_with_return_values_as_parameters)** (the callback is optional).
+
 #### MySQL
 
 ```lua
