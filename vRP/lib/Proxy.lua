@@ -18,7 +18,6 @@ local function proxy_resolve(itable,key)
       callback = proxy_null_callback
     end
     
-    print(iname..":"..key)
     TriggerEvent(iname..":proxy",key,args,callback)
   end
 
