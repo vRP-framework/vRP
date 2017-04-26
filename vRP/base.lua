@@ -1,5 +1,6 @@
 
 local MySQL = require("resources/vRP/lib/MySQL/MySQL")
+local Proxy = require("resources/vRP/lib/Proxy")
 local config = require("resources/vRP/cfg/main")
 local version = require("resources/vRP/version")
 
@@ -17,6 +18,8 @@ PerformHttpRequest("https://raw.githubusercontent.com/ImagicTheCat/vRP/master/vR
 end, "GET", "")
 
 vRP = {}
+Proxy.addInterface("vRP",vRP)
+
 vRP.users = {} -- will store logged users (id) by first identifier
 vRP.rusers = {} -- store the opposite of users
 
@@ -51,7 +54,7 @@ local q_add_identifier = vRP.sql:prepare("INSERT INTO vrp_user_ids(identifier,us
 local q_userid_byidentifier = vRP.sql:prepare("SELECT user_id FROM vrp_user_ids WHERE identifier = @identifier;")
 
 local q_set_userdata = vRP.sql:prepare("REPLACE INTO vrp_user_data(user_id,dkey,dvalue) VALUES(@user_id,@key,@value)")
-local q_get_userdata = vRP.sql:prepare("SELECT value FROM vrp_user_data WHERE user_id = @user_id AND dkey = @key")
+local q_get_userdata = vRP.sql:prepare("SELECT dvalue FROM vrp_user_data WHERE user_id = @user_id AND dkey = @key")
 
 -- init tables
 print("[vRP] init base tables")
