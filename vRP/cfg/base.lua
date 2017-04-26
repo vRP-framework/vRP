@@ -8,4 +8,7 @@ cfg.db = {
   password = "password"
 }
 
+cfg.save_interval = 120 -- seconds
+cfg.whitelist = false
+
 return cfg

@@ -14,29 +14,48 @@ function Result:init()
   end
 end
 
-function Result:close()
-  self.reader.Close()
+function Result:close() -- always close the result when unused
+  if self.reader ~= nil then
+    self.reader.Close()
+    self.reader = nil
+  end
 end
 
 function Result:fetch()
-  return self.reader.Read()
+  if self.reader ~= nil then
+    return not not self.reader.Read()
+  else
+    return false
+  end
 end
 
 function Result:affected()
-  return self.reader.RecordsAffected
+  if self.reader ~= nil then
+    return self.reader.RecordsAffected
+  else
+    return 0
+  end
 end
 
 function Result:getValue(col)
-  -- convert from name to index
-  if type(col) == "string" then
-    col = self:getIndex(col)
-  end
+  if self.reader ~= nil then
+    -- convert from name to index
+    if type(col) == "string" then
+      col = self:getIndex(col)
+    end
 
-  return self.reader.GetValue(col)
+    return self.reader.GetValue(col)
+  else
+    return nil
+  end
 end
 
 function Result:getName(col)
-  return self.reader.GetName(col)
+  if self.reader ~= nil then
+    return tostring(self.reader.GetName(col))
+  else
+    return ""
+  end
 end
 
 function Result:getIndex(colname)
@@ -56,12 +75,14 @@ function Result:getRow()
   return row
 end
 
-function Result:toTable()
+function Result:toTable() -- auto close the result
   local r = {}
 
   while self:fetch() do
     table.insert(r,self:getRow())
   end
+
+  self:close()
 
   return r
 end
@@ -91,15 +112,14 @@ function Command:query()
   local r = setmetatable({},{ __index = Result })
 
   -- force close previous result
-  if self.connection.active_result ~= nil then
-    self.connection.active_result:close()
-  end
+  self.connection:closeActiveResult()
 
   r.reader = self.command.ExecuteReader()
   self.connection.active_result = r -- set active connection result
 
   r.command = self
   r:init()
+  print("query "..self.command.CommandText)
   return r
 end
 
@@ -109,12 +129,11 @@ end
 
 function Command:execute()
   -- force close previous result
-  if self.connection.active_result ~= nil then
-    self.connection.active_result:close()
-    self.connection.active_result = nil
-  end
+  self.connection:closeActiveResult()
 
-  return self.command.ExecuteNonQuery()
+  local r = self.command.ExecuteNonQuery()
+  print("execute "..self.command.CommandText.." => "..r)
+  return r
 end
 
 -- Connection
@@ -125,13 +144,19 @@ function Connection:close()
   self.connection.Close()
 end
 
+function Connection:closeActiveResult()
+  if self.active_result ~= nil then
+    self.active_result:close()
+    self.active_result = nil
+  end
+end
+
 function Connection:prepare(sql)
 --  sql = string.gsub(sql,"@","?") -- compatibility with @ notation
 
   local r = setmetatable({},{ __index = Command })
-  r.command = self.connection.CreateCommand()
+  r.command = lib.MySqlClient.MySqlCommand(sql,self.connection)
   r.params = {}
-  r.command.CommandText = sql
   r.command.Prepare()
   r.connection = self
   return r

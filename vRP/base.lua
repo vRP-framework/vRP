@@ -31,6 +31,9 @@ vRP.sql = MySQL.open(config.db.host,config.db.user,config.db.password,config.db.
 local q_init = vRP.sql:prepare([[
 CREATE TABLE IF NOT EXISTS vrp_users(
   id INTEGER AUTO_INCREMENT,
+  last_login VARCHAR(255),
+  whitelisted BOOLEAN,
+  banned BOOLEAN,
   CONSTRAINT pk_user PRIMARY KEY(id)
 );
 
@@ -50,12 +53,19 @@ CREATE TABLE IF NOT EXISTS vrp_user_data(
 );
 ]])
 
-local q_create_user = vRP.sql:prepare("INSERT INTO vrp_users VALUES();")
+local q_create_user = vRP.sql:prepare("INSERT INTO vrp_users(whitelisted,banned) VALUES(false,false);")
 local q_add_identifier = vRP.sql:prepare("INSERT INTO vrp_user_ids(identifier,user_id) VALUES(@identifier,@user_id);")
 local q_userid_byidentifier = vRP.sql:prepare("SELECT user_id FROM vrp_user_ids WHERE identifier = @identifier;")
 
-local q_set_userdata = vRP.sql:prepare("REPLACE INTO vrp_user_data(user_id,dkey,dvalue) VALUES(@user_id,@key,@value)")
-local q_get_userdata = vRP.sql:prepare("SELECT dvalue FROM vrp_user_data WHERE user_id = @user_id AND dkey = @key")
+local q_set_userdata = vRP.sql:prepare("REPLACE INTO vrp_user_data(user_id,dkey,dvalue) VALUES(@user_id,@key,@value);")
+local q_get_userdata = vRP.sql:prepare("SELECT dvalue FROM vrp_user_data WHERE user_id = @user_id AND dkey = @key;")
+
+local q_get_banned = vRP.sql:prepare("SELECT banned FROM vrp_users WHERE id = @user_id;")
+local q_set_banned = vRP.sql:prepare("UPDATE vrp_users SET banned = @banned WHERE id = @user_id;")
+local q_get_whitelisted = vRP.sql:prepare("SELECT banned FROM vrp_users WHERE id = @user_id;")
+local q_set_whitelisted = vRP.sql:prepare("UPDATE vrp_users SET whitelisted = @whitelisted WHERE id = @user_id;")
+local q_set_last_login = vRP.sql:prepare("UPDATE vrp_users SET last_login = @last_login WHERE id = @user_id;")
+local q_get_last_login = vRP.sql:prepare("SELECT last_login FROM vrp_users WHERE id = @user_id;")
 
 -- init tables
 print("[vRP] init base tables")
@@ -72,7 +82,9 @@ function vRP.getUserIdByIdentifiers(ids)
 
       local r = q_userid_byidentifier:query()
       if r:fetch() then
-        return r:getValue("user_id")
+        local v = r:getValue(0)
+        r:close()
+        return v
       end
     end
   end
@@ -102,13 +114,53 @@ function vRP.registerUser(ids)
   return nil
 end
 
-function vRP.getUserId(source)
-  local ids = GetPlayerIdentifiers(source)
-  if ids ~= nil and #ids > 0 then
-    return vRP.users[ids[1]]
-  end
+--- sql
+function vRP.isBanned(user_id)
+  q_get_banned:bind("@user_id",user_id)
+  local r = q_get_banned:query()
+  if r:fetch() then 
+    local v = r:getValue(0)
+    r:close()
+    return v
+  else return false end
+end
 
-  return nil
+--- sql
+function vRP.setBanned(user_id,banned)
+  q_set_banned:bind("@user_id",user_id)
+  q_set_banned:bind("@banned",banned)
+
+  q_set_banned:execute()
+end
+
+--- sql
+function vRP.isWhitelisted(user_id)
+  q_get_whitelisted:bind("@user_id",user_id)
+  local r = q_get_whitelisted:query()
+  if r:fetch() then 
+    local v = r:getValue(0)
+    r:close()
+    return v
+  else return false end
+end
+
+--- sql
+function vRP.setWhitelisted(user_id,whitelisted)
+  q_set_whitelisted:bind("@user_id",user_id)
+  q_set_whitelisted:bind("@whitelisted",whitelisted)
+
+  q_set_whitelisted:execute()
+end
+
+--- sql
+function vRP.getLastLogin(user_id)
+  q_get_last_login:bind("@user_id",user_id)
+  local r = q_get_last_login:query()
+  if r:fetch() then 
+    local v = r:getValue(0) 
+    r:close()
+    return v
+  else return "" end
 end
 
 function vRP.setUData(user_id,key,value)
@@ -124,15 +176,43 @@ function vRP.getUData(user_id,key)
 
   local r = q_get_userdata:query()
   if r:fetch() then
-    return r:getValue(0)
+    local v = r:getValue(0)
+    r:close()
+    return v
   end
 
   return nil
 end
 
--- return user data table for vRP internal persistant logged user storage
+-- return user data table for vRP internal persistant connected user storage
 function vRP.getUserDataTable(user_id)
   return vRP.user_tables[user_id]
+end
+
+function vRP.isConnected(user_id)
+  return vRP.rusers[user_id] ~= nil
+end
+
+function vRP.getUserId(source)
+  local ids = GetPlayerIdentifiers(source)
+  if ids ~= nil and #ids > 0 then
+    return vRP.users[ids[1]]
+  end
+
+  return nil
+end
+
+function vRP.ban(source,reason)
+  local user_id = vRP.getUserId(source)
+
+  if user_id ~= nil then
+    vRP.setBanned(user_id,true)
+    vRP.kick(source,"[Banned] "..reason)
+  end
+end
+
+function vRP.kick(source,reason)
+  DropPlayer(source,reason)
 end
 
 -- tasks
@@ -142,7 +222,7 @@ function task_save_datatables()
     vRP.setUData(k,"vRP:datatable",json.encode(v))
   end
 
-  SetTimeout(60000, task_save_datatables)
+  SetTimeout(config.save_interval*1000, task_save_datatables)
 end
 task_save_datatables()
 
@@ -154,23 +234,54 @@ AddEventHandler("playerConnecting",function(name,setMessage)
   if ids ~= nil and #ids > 0 then
     local user_id = vRP.getUserIdByIdentifiers(ids)
     if user_id == nil then
-      vRP.registerUser(ids)
+      user_id = vRP.registerUser(ids)
       -- redo getUserIdByIdentifiers, there is a strange TriggerEvent issue with the id returned by registerUser
-      user_id = vRP.getUserIdByIdentifiers(ids)
+--      user_id = vRP.getUserIdByIdentifiers(ids)
     end
 
     if user_id ~= nil and vRP.rusers[user_id] == nil then -- check user validity and if not already connected
-      -- init entries
-      vRP.users[ids[1]] = user_id
-      vRP.rusers[user_id] = ids[1]
-      vRP.user_tables[user_id] = {}
+      print("user_id = "..user_id)
+      if not vRP.isBanned(user_id) then
+        print("not banned")
+        if not config.whitelist or vRP.isWhitelisted(user_id) then
+          print("whitelisted")
+          -- init entries
+          vRP.users[ids[1]] = user_id
+          vRP.rusers[user_id] = ids[1]
+          vRP.user_tables[user_id] = {}
 
-      -- load user data table
-      local data = json.decode(vRP.getUData(user_id,"vRP:datatable"))
-      if data then vRP.user_tables[user_id] = data end
+          -- load user data table
+          local data = vRP.getUData(user_id,"vRP:datatable")
+          print("ok")
+          local d = json.decode("{}") -- without this line... deadlock at json.decode(data) ... ???
+          print("ok2")
+          data = json.decode(data)
+          if data then vRP.user_tables[user_id] = data end
 
-      print("[vRP] "..name.." ("..GetPlayerEP(source)..") joined (user_id = "..user_id..")")
-      TriggerEvent("vRP:playerJoin", user_id, source, name)
+          print("get login")
+          local last_login = vRP.getLastLogin(user_id)
+          print("ok")
+
+          -- set last login
+          local ep = GetPlayerEP(source)
+          local last_login_stamp = string.sub(ep,1,string.find(ep,":")-1).." "..os.date("%H:%M:%S %d/%m/%Y")
+          q_set_last_login:bind("@user_id",user_id)
+          q_set_last_login:bind("@last_login",last_login_stamp)
+          q_set_last_login:execute()
+
+          -- trigger join
+          print("[vRP] "..name.." ("..GetPlayerEP(source)..") joined (user_id = "..user_id..")")
+          TriggerEvent("vRP:playerJoin", user_id, source, name, last_login)
+        else
+          print("[vRP] "..name.." ("..GetPlayerEP(source)..") rejected: not whitelisted (user_id = "..user_id..")")
+          setMessage("[vRP] Not whitelisted.")
+          CancelEvent()
+        end
+      else
+        print("[vRP] "..name.." ("..GetPlayerEP(source)..") rejected: banned")
+        setMessage("[vRP] Banned.")
+        CancelEvent()
+      end
     else
       print("[vRP] "..name.." ("..GetPlayerEP(source)..") rejected: identification error (already connected ?)")
       setMessage("[vRP] Identification error (already connected ?).")
