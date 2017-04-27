@@ -130,7 +130,9 @@ while r:fetch() do
   -- or local row = r:getRow()
 end
 
+r:close() -- don't forget to close the result
+
 -- or
 local r = q_select:query() 
-local list = r:toTable()
+local list = r:toTable() -- result is autoclosed
 ```
