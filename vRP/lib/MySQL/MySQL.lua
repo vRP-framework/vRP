@@ -1,5 +1,12 @@
+-- new way, experimental, doesn't work yet
+--local Mono = require("resources/vRP/lib/Mono")
+--local lib = Mono.loadAssembly("resources/vRP/lib/MySQL/MySql.Data.dll").MySql.Data
+
+-- global assembly loading, can create conflict with different mysql versions loaded
 clr.System.Reflection.Assembly.LoadFrom("resources/vRP/lib/MySQL/MySql.Data.dll")
 local lib = clr.MySql.Data
+
+-- local lib = clr.MySql.Data
 local lib_type = lib.MySqlClient.MySqlDbType
 
 -- Result
@@ -129,7 +136,7 @@ function Command:query()
   self.connection.active_result = r -- set active connection result
 
   if self.connection.debug then
-    print("[MySQL_query] "..self.command.CommandText)
+    print("[vRP MySQL_query] "..self.command.CommandText)
   end
 
   r.command = self
@@ -148,7 +155,7 @@ function Command:execute()
   local r = cast(int,self.command.ExecuteNonQuery())
 
   if self.connection.debug then
-    print("[MySQL_execute] "..self.command.CommandText.." => "..r)
+    print("[vRP MySQL_execute] "..self.command.CommandText.." => "..r)
   end
 
   return r

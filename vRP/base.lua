@@ -4,6 +4,7 @@ local Proxy = require("resources/vRP/lib/Proxy")
 local config = require("resources/vRP/cfg/base")
 local version = require("resources/vRP/version")
 
+-- versioning
 print("[vRP] launch version "..version)
 PerformHttpRequest("https://raw.githubusercontent.com/ImagicTheCat/vRP/master/vRP/version.lua",function(err,text,headers)
   if err == 0 then
