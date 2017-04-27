@@ -23,7 +23,7 @@ end
 
 function Result:fetch()
   if self.reader ~= nil then
-    return not not self.reader.Read()
+    return self.reader.Read()
   else
     return false
   end
@@ -31,7 +31,7 @@ end
 
 function Result:affected()
   if self.reader ~= nil then
-    return self.reader.RecordsAffected
+    return cast(int,self.reader.RecordsAffected)
   else
     return 0
   end
@@ -43,8 +43,22 @@ function Result:getValue(col)
     if type(col) == "string" then
       col = self:getIndex(col)
     end
+    
+    local vtype = tostring(self.reader.GetFieldType(col))
+    local v = nil
+    if vtype == "System.Int64" then
+      v = cast(int,self.reader.GetInt64(col))
+    elseif vtype == "System.Int32" then
+      v = cast(int,self.reader.GetInt32(col))
+    elseif vtype == "System.Float" or vtype == "System.Double" then
+      v = cast(double,self.reader.GetDouble(col))
+    elseif vtype == "System.Boolean" then
+      v = not (cast(int,self.reader.GetBoolean(col)) == 0)
+    else
+      v = self.reader.GetString(col)
+    end
 
-    return self.reader.GetValue(col)
+    return v
   else
     return nil
   end
@@ -52,7 +66,7 @@ end
 
 function Result:getName(col)
   if self.reader ~= nil then
-    return tostring(self.reader.GetName(col))
+    return self.reader.GetName(col)
   else
     return ""
   end
@@ -96,16 +110,13 @@ function Command:bind(param,value)
 
   local _param = self.params[param]
   if not _param then
-    -- can do: optimize with better type selection
-    local vtype = lib_type.VarString -- use string type by default
-
-    -- create parameter
-    _param = self.command.Parameters.Add(param,vtype)
+    _param = self.command.Parameters.AddWithValue(param,value)
     self.params[param] = _param
+  else
+    -- set parameter value
+    _param.Value = value
   end
 
-  -- set parameter value
-  _param.Value = value
 end
 
 function Command:query()
@@ -117,22 +128,29 @@ function Command:query()
   r.reader = self.command.ExecuteReader()
   self.connection.active_result = r -- set active connection result
 
+  if self.connection.debug then
+    print("[MySQL_query] "..self.command.CommandText)
+  end
+
   r.command = self
   r:init()
-  print("query "..self.command.CommandText)
   return r
 end
 
 function Command:last_insert_id()
-  return self.command.LastInsertedId
+  return cast(int,self.command.LastInsertedId)
 end
 
 function Command:execute()
   -- force close previous result
   self.connection:closeActiveResult()
 
-  local r = self.command.ExecuteNonQuery()
-  print("execute "..self.command.CommandText.." => "..r)
+  local r = cast(int,self.command.ExecuteNonQuery())
+
+  if self.connection.debug then
+    print("[MySQL_execute] "..self.command.CommandText.." => "..r)
+  end
+
   return r
 end
 
@@ -165,10 +183,11 @@ end
 -- begin MySQL module
 local MySQL = {}
 
-function MySQL.open(host,user,password,db)
+function MySQL.open(host,user,password,db,debug)
   local r = setmetatable({},{ __index = Connection })
   r.connection = lib.MySqlClient.MySqlConnection("server="..host..";uid="..user..";pwd="..password..";database="..db..";")
   r.connection.Open()
+  r.debug = debug
   return r
 end
 

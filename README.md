@@ -101,7 +101,7 @@ The notation is **Interface.function({arguments},callback_with_return_values_as_
 ```lua
 local MySQL = require("resources/vRP/lib/MySQL/MySQL")
 
-local sql = MySQL.open("127.0.0.1","user","password","database")
+local sql = MySQL.open("127.0.0.1","user","password","database") -- add ,true) to enable debug for the connection
 local q_init = sql:prepare([[
 CREATE IF NOT EXISTS list(
   name VARCHAR(255),
