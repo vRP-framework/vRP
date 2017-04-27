@@ -1,4 +1,3 @@
-
 local MySQL = require("resources/vRP/lib/MySQL/MySQL")
 local Proxy = require("resources/vRP/lib/Proxy")
 local config = require("resources/vRP/cfg/base")
@@ -178,6 +177,7 @@ function vRP.getUData(user_id,key)
   local r = q_get_userdata:query()
   if r:fetch() then
     local v = r:getValue(0)
+    if v == nil then v = "" end
     r:close()
     return v
   end
@@ -216,6 +216,14 @@ function vRP.kick(source,reason)
   DropPlayer(source,reason)
 end
 
+function vRP.teleport(source,x,y,z)
+  TriggerClientEvent("vRP:teleport",source,x,y,z)
+end
+
+function vRP.notify(source,msg)
+  TriggerClientEvent("vRP:notify",source,msg)
+end
+
 -- tasks
 
 function task_save_datatables()
@@ -250,8 +258,16 @@ AddEventHandler("playerConnecting",function(name,setMessage)
 
           -- load user data table
           -- gsub fix a strange deadlock issue with " in json data
-          local data = json.decode(string.gsub(vRP.getUData(user_id,"vRP:datatable"),"\"","'"))
-          if data then vRP.user_tables[user_id] = data end
+          print("ok")
+          local sdata = vRP.getUData(user_id,"vRP:datatable")
+
+          print("ok")
+--          local s = json.decode([[{"hunger":0,"thirst":0}"]]) -- prevent strange json deadlock at next decode
+
+          print("ok")
+--          local data = json.decode(sdata,1,nil,nil)
+          print("ok")
+          if type(data) == "table" then vRP.user_tables[user_id] = data end
 
           local last_login = vRP.getLastLogin(user_id)
 
@@ -302,3 +318,5 @@ AddEventHandler("playerDropped",function(reason)
     vRP.user_tables[user_id] = nil
   end
 end)
+
+

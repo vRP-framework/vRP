@@ -51,20 +51,27 @@ function Result:getValue(col)
       col = self:getIndex(col)
     end
     
-    local vtype = tostring(self.reader.GetFieldType(col))
+
     local v = nil
-    if vtype == "System.Int64" then
-      v = cast(int,self.reader.GetInt64(col))
-    elseif vtype == "System.Int32" then
-      v = cast(int,self.reader.GetInt32(col))
-    elseif vtype == "System.Float" or vtype == "System.Double" then
-      v = cast(double,self.reader.GetDouble(col))
-    elseif vtype == "System.Boolean" then
-      v = not (cast(int,self.reader.GetBoolean(col)) == 0)
-    else
-      v = self.reader.GetString(col)
+
+    if not self.reader.IsDBNull(col) then
+      local vtype = tostring(self.reader.GetFieldType(col))
+      print("get value "..vtype)
+
+      if vtype == "System.Int64" then
+        v = cast(int,self.reader.GetInt64(col))
+      elseif vtype == "System.Int32" then
+        v = cast(int,self.reader.GetInt32(col))
+      elseif vtype == "System.Float" or vtype == "System.Double" then
+        v = cast(double,self.reader.GetDouble(col))
+      elseif vtype == "System.Boolean" then
+        v = not (cast(int,self.reader.GetBoolean(col)) == 0)
+      else
+        v = self.reader.GetString(col).ToString()
+      end
     end
 
+    print("get value = "..v) -- lock before that
     return v
   else
     return nil
