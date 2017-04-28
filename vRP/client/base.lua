@@ -18,7 +18,7 @@ end)
 
 Citizen.CreateThread(function()
   while true do
-    Citizen.Wait(60000)
+    Citizen.Wait(30000)
     local x,y,z = table.unpack(GetEntityCoords(GetPlayerPed(-1),true))
     TriggerServerEvent("vRP:updatePos",x,y,z)
   end

@@ -252,6 +252,8 @@ AddEventHandler("playerConnecting",function(name,setMessage)
     if user_id ~= nil and vRP.rusers[user_id] == nil then -- check user validity and if not already connected
       if not vRP.isBanned(user_id) then
         if not config.whitelist or vRP.isWhitelisted(user_id) then
+          SetTimeout(1,function() -- create a delayed function to prevent the nil <-> string deadlock issue
+
           -- init entries
           vRP.users[ids[1]] = user_id
           vRP.rusers[user_id] = ids[1]
@@ -263,7 +265,7 @@ AddEventHandler("playerConnecting",function(name,setMessage)
 
 --          local s = json.decode([[{"hunger":0,"thirst":0}"]]) -- prevent strange json deadlock at next decode
 
---          local data = json.decode(sdata,1,nil)
+          local data = json.decode(sdata,1,nil)
           if type(data) == "table" then vRP.user_tables[user_id] = data end
 
           local last_login = vRP.getLastLogin(user_id)
@@ -278,6 +280,8 @@ AddEventHandler("playerConnecting",function(name,setMessage)
           -- trigger join
           print("[vRP] "..name.." ("..GetPlayerEP(source)..") joined (user_id = "..user_id..")")
           TriggerEvent("vRP:playerJoin", user_id, source, name, last_login)
+
+          end)
         else
           print("[vRP] "..name.." ("..GetPlayerEP(source)..") rejected: not whitelisted (user_id = "..user_id..")")
           setMessage("[vRP] Not whitelisted.")
