@@ -1,0 +1,86 @@
+
+local Tools = require("resources/vRP/lib/Tools")
+
+-- this file describe a two way proxy between the server and the clients (request system)
+
+local Tunnel = {}
+
+local function tunnel_resolve(itable,key)
+  local mtable = getmetatable(itable)
+  local iname = mtable.name
+  local ids = mtable.tunnel_ids
+  local callbacks = mtable.tunnel_callbacks
+  local identifier = mtable.identifier
+
+  -- generate access function
+  local fcall = function(dest,args,callback)
+    if args == nil then
+      args = {}
+    end
+    
+    -- send request
+    if type(callback) == "function" then -- ref callback if exists (become a request)
+      local rid = ids:gen()
+      callbacks[rid] = callback
+      print("callback is generated "..identifier..","..rid)
+      TriggerClientEvent(iname..":tunnel_req",dest,key,args,identifier,rid)
+    else -- regular trigger
+      TriggerClientEvent(iname..":tunnel_req",dest,key,args,"",-1)
+    end
+
+  end
+
+  itable[key] = fcall -- add generated call to table (optimization)
+  return fcall
+end
+
+-- bind an interface (listen to net requests)
+-- name: interface name
+-- interface: table containing functions
+function Tunnel.bindInterface(name,interface)
+  -- receive request
+  RegisterServerEvent(name..":tunnel_req")
+  AddEventHandler(name..":tunnel_req",function(member,args,identifier,rid)
+    local f = interface[member]
+
+    local rets = {}
+    if type(f) == "function" then
+      rets = {f(table.unpack(args))} -- call function 
+      -- CancelEvent() -- cancel event doesn't seem to cancel the event for the other handlers, but if it does, uncomment this
+    end
+
+    -- send response (even if the function doesn't exist)
+    if rid >= 0 then
+      TriggerClientEvent(name..":"..identifier..":tunnel_res",source,rid,rets)
+    end
+  end)
+end
+
+-- get a tunnel interface to send requests 
+-- name: interface name
+-- identifier: unique string to identify this tunnel interface access (the name of the current resource should be fine)
+function Tunnel.getInterface(name,identifier)
+  local ids = Tools.newIDGenerator()
+  local callbacks = {}
+
+  -- build interface
+  local r = setmetatable({},{ __index = tunnel_resolve, name = name, tunnel_ids = ids, tunnel_callbacks = callbacks, identifier = identifier })
+
+  -- receive response
+  RegisterServerEvent(name..":"..identifier..":tunnel_res")
+  AddEventHandler(name..":"..identifier..":tunnel_res",function(rid,args)
+    local callback = callbacks[rid]
+    if callback ~= nil then
+      -- free request id
+      ids:free(rid)
+      callbacks[rid] = nil
+
+      -- call
+      callback(table.unpack(args))
+    end
+  end)
+
+  return r
+end
+
+return Tunnel

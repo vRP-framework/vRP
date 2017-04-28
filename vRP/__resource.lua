@@ -10,6 +10,7 @@ server_scripts{
 
 -- client scripts
 client_scripts{
+  "client/Tunnel.lua",
   "client/base.lua"
 }
 

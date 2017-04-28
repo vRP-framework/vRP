@@ -1,5 +1,7 @@
+
 local MySQL = require("resources/vRP/lib/MySQL/MySQL")
 local Proxy = require("resources/vRP/lib/Proxy")
+local Tunnel = require("resources/vRP/lib/Tunnel")
 local config = require("resources/vRP/cfg/base")
 local version = require("resources/vRP/version")
 
@@ -20,6 +22,11 @@ end, "GET", "")
 
 vRP = {}
 Proxy.addInterface("vRP",vRP)
+
+tvRP = {}
+Tunnel.bindInterface("vRP",tvRP) -- listening for client tunnel
+
+vRPtun = Tunnel.getInterface("vRP","vRP") -- server -> client tunnel
 
 vRP.users = {} -- will store logged users (id) by first identifier
 vRP.rusers = {} -- store the opposite of users
@@ -215,14 +222,6 @@ end
 
 function vRP.kick(source,reason)
   DropPlayer(source,reason)
-end
-
-function vRP.teleport(source,x,y,z)
-  TriggerClientEvent("vRP:teleport",source,x,y,z)
-end
-
-function vRP.notify(source,msg)
-  TriggerClientEvent("vRP:notify",source,msg)
 end
 
 -- tasks
