@@ -102,6 +102,7 @@ The notation is **Interface.function({arguments},callback_with_return_values_as_
 The idea behind tunnels is to easily access any declared server function from any client resource, and to access any declared client function from any server resource.
 
 Example of two-way resource communication:
+
 Server-side myrsc
 ```lua
 local Tunnel = require("resources/vRP/lib/Tunnel")
@@ -141,6 +142,20 @@ serveraccess.test({"my client message"},function(r)
   print(r)
 end)
 ```
+
+Now if we want to use the same teleport function in another resource:
+
+```lua
+local Tunnel = require("resources/vRP/lib/Tunnel")
+
+-- get the client-side access of myrsc
+myrsc_access = Tunnel.getInterface("myrsc","myotherrsc")
+
+-- (later, in a player spawn event) teleport the player to 0,0,0
+myrsc_access.teleport(source,{0,0,0})
+```
+
+This way resources can easily use other resources client/server API.
 
 #### MySQL
 
