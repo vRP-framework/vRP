@@ -248,7 +248,8 @@ AddEventHandler("playerConnecting",function(name,setMessage)
 --      user_id = vRP.getUserIdByIdentifiers(ids)
     end
 
-    if user_id ~= nil and vRP.rusers[user_id] == nil then -- check user validity and if not already connected
+    -- if user_id ~= nil and vRP.rusers[user_id] == nil then -- check user validity and if not already connected (old way, disabled until playerDropped is sure to be called)
+    if user_id ~= nil then -- check user validity 
       if not vRP.isBanned(user_id) then
         if not config.whitelist or vRP.isWhitelisted(user_id) then
           SetTimeout(1,function() -- create a delayed function to prevent the nil <-> string deadlock issue
@@ -292,8 +293,8 @@ AddEventHandler("playerConnecting",function(name,setMessage)
         CancelEvent()
       end
     else
-      print("[vRP] "..name.." ("..GetPlayerEP(source)..") rejected: identification error (already connected ?)")
-      setMessage("[vRP] Identification error (already connected ?).")
+      print("[vRP] "..name.." ("..GetPlayerEP(source)..") rejected: identification error")
+      setMessage("[vRP] Identification error.")
       CancelEvent()
     end
   else

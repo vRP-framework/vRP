@@ -32,7 +32,7 @@ Contributions are welcomed.
 AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login) end)
 
 -- (server) 
-AddEventHandler("vRP:playerLeave",function(user_id,source) end)
+AddEventHandler("vRP:playerLeave",function(user_id) end)
 ```
 
 ### API
