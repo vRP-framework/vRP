@@ -14,7 +14,12 @@ local lib_type = lib.MySqlClient.MySqlDbType
 local Result = {}
 
 function Result:init()
-  self._fields = self.reader.FieldCount
+  self._fields = 0
+
+  if self.reader ~= nil then
+    self._fields = cast(int,self.reader.FieldCount)
+  end
+
   self.columns = {}
   for i=0,self:fields()-1 do
     self.columns[self:getName(i)] = i
@@ -29,8 +34,8 @@ function Result:close() -- always close the result when unused
 end
 
 function Result:fetch()
-  if self.reader ~= nil then
-    return self.reader.Read()
+  if self.reader ~= nil and self.reader.HasRows then
+    return not (cast(int,self.reader.Read()) == 0)
   else
     return false
   end
@@ -54,9 +59,8 @@ function Result:getValue(col)
 
     local v = nil
 
-    if not self.reader.IsDBNull(col) then
+    if cast(int,self.reader.IsDBNull(col)) == 0 then
       local vtype = tostring(self.reader.GetFieldType(col))
-      print("get value "..vtype)
 
       if vtype == "System.Int64" then
         v = cast(int,self.reader.GetInt64(col))
@@ -67,11 +71,10 @@ function Result:getValue(col)
       elseif vtype == "System.Boolean" then
         v = not (cast(int,self.reader.GetBoolean(col)) == 0)
       else
-        v = self.reader.GetString(col).ToString()
+        v = self.reader.GetString(col)
       end
     end
 
-    print("get value = "..v) -- lock before that
     return v
   else
     return nil
@@ -123,7 +126,7 @@ function Command:bind(param,value)
 --  param = string.gsub(param,"@","?") -- compatibility with @ notation
 
   local _param = self.params[param]
-  if not _param then
+  if _param == nil then
     _param = self.command.Parameters.AddWithValue(param,value)
     self.params[param] = _param
   else
@@ -188,8 +191,8 @@ function Connection:prepare(sql)
 
   local r = setmetatable({},{ __index = Command })
   r.command = lib.MySqlClient.MySqlCommand(sql,self.connection)
-  r.params = {}
   r.command.Prepare()
+  r.params = {}
   r.connection = self
   return r
 end

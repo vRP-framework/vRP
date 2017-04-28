@@ -3,6 +3,7 @@ local Proxy = require("resources/vRP/lib/Proxy")
 local config = require("resources/vRP/cfg/base")
 local version = require("resources/vRP/version")
 
+
 -- versioning
 print("[vRP] launch version "..version)
 PerformHttpRequest("https://raw.githubusercontent.com/ImagicTheCat/vRP/master/vRP/version.lua",function(err,text,headers)
@@ -177,7 +178,7 @@ function vRP.getUData(user_id,key)
   local r = q_get_userdata:query()
   if r:fetch() then
     local v = r:getValue(0)
-    if v == nil then v = "" end
+    if type(v) ~= "string" then v = "" end
     r:close()
     return v
   end
@@ -258,15 +259,11 @@ AddEventHandler("playerConnecting",function(name,setMessage)
 
           -- load user data table
           -- gsub fix a strange deadlock issue with " in json data
-          print("ok")
           local sdata = vRP.getUData(user_id,"vRP:datatable")
 
-          print("ok")
 --          local s = json.decode([[{"hunger":0,"thirst":0}"]]) -- prevent strange json deadlock at next decode
 
-          print("ok")
---          local data = json.decode(sdata,1,nil,nil)
-          print("ok")
+--          local data = json.decode(sdata,1,nil)
           if type(data) == "table" then vRP.user_tables[user_id] = data end
 
           local last_login = vRP.getLastLogin(user_id)
