@@ -22,7 +22,6 @@ local function tunnel_resolve(itable,key)
     if type(callback) == "function" then -- ref callback if exists (become a request)
       local rid = ids:gen()
       callbacks[rid] = callback
-      print("callback is generated "..identifier..","..rid)
       TriggerClientEvent(iname..":tunnel_req",dest,key,args,identifier,rid)
     else -- regular trigger
       TriggerClientEvent(iname..":tunnel_req",dest,key,args,"",-1)

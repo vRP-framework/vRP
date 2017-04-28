@@ -26,11 +26,12 @@ Proxy.addInterface("vRP",vRP)
 tvRP = {}
 Tunnel.bindInterface("vRP",tvRP) -- listening for client tunnel
 
-vRPtun = Tunnel.getInterface("vRP","vRP") -- server -> client tunnel
+vRPclient = Tunnel.getInterface("vRP","vRP") -- server -> client tunnel
 
 vRP.users = {} -- will store logged users (id) by first identifier
 vRP.rusers = {} -- store the opposite of users
 vRP.user_tables = {} -- user data tables (logger storage, saved to database)
+vRP.user_tmp_tables = {} -- user tmp data tables (logger storage, not saved)
 
 -- open MySQL connection
 vRP.sql = MySQL.open(config.db.host,config.db.user,config.db.password,config.db.database)
@@ -198,6 +199,10 @@ function vRP.getUserDataTable(user_id)
   return vRP.user_tables[user_id]
 end
 
+function vRP.getUserTmpTable(user_id)
+  return vRP.user_tmp_tables[user_id]
+end
+
 function vRP.isConnected(user_id)
   return vRP.rusers[user_id] ~= nil
 end
@@ -254,32 +259,45 @@ AddEventHandler("playerConnecting",function(name,setMessage)
         if not config.whitelist or vRP.isWhitelisted(user_id) then
           SetTimeout(1,function() -- create a delayed function to prevent the nil <-> string deadlock issue
 
-          -- init entries
-          vRP.users[ids[1]] = user_id
-          vRP.rusers[user_id] = ids[1]
-          vRP.user_tables[user_id] = {}
+          if vRP.rusers[user_id] == nil then -- not present on the server, init
+            -- init entries
+            vRP.users[ids[1]] = user_id
+            vRP.rusers[user_id] = ids[1]
+            vRP.user_tables[user_id] = {}
+            vRP.user_tmp_tables[user_id] = {}
 
-          -- load user data table
-          -- gsub fix a strange deadlock issue with " in json data
-          local sdata = vRP.getUData(user_id,"vRP:datatable")
+            -- load user data table
+            -- gsub fix a strange deadlock issue with " in json data
+            local sdata = vRP.getUData(user_id,"vRP:datatable")
 
---          local s = json.decode([[{"hunger":0,"thirst":0}"]]) -- prevent strange json deadlock at next decode
+  --          local s = json.decode([[{"hunger":0,"thirst":0}"]]) -- prevent strange json deadlock at next decode
 
-          local data = json.decode(sdata,1,nil)
-          if type(data) == "table" then vRP.user_tables[user_id] = data end
+            local data = json.decode(sdata)
+            if type(data) == "table" then vRP.user_tables[user_id] = data end
 
-          local last_login = vRP.getLastLogin(user_id)
+            -- init user tmp table
+            local tmpdata = vRP.getUserTmpTable(user_id)
+            tmpdata.last_login = vRP.getLastLogin(user_id)
+            tmpdata.first_spawn = true
 
-          -- set last login
-          local ep = GetPlayerEP(source)
-          local last_login_stamp = string.sub(ep,1,string.find(ep,":")-1).." "..os.date("%H:%M:%S %d/%m/%Y")
-          q_set_last_login:bind("@user_id",user_id)
-          q_set_last_login:bind("@last_login",last_login_stamp)
-          q_set_last_login:execute()
+            -- set last login
+            local ep = GetPlayerEP(source)
+            local last_login_stamp = string.sub(ep,1,string.find(ep,":")-1).." "..os.date("%H:%M:%S %d/%m/%Y")
+            q_set_last_login:bind("@user_id",user_id)
+            q_set_last_login:bind("@last_login",last_login_stamp)
+            q_set_last_login:execute()
 
-          -- trigger join
-          print("[vRP] "..name.." ("..GetPlayerEP(source)..") joined (user_id = "..user_id..")")
-          TriggerEvent("vRP:playerJoin", user_id, source, name, last_login)
+            -- trigger join
+            print("[vRP] "..name.." ("..GetPlayerEP(source)..") joined (user_id = "..user_id..")")
+            TriggerEvent("vRP:playerJoin", user_id, source, name)
+
+          else -- already connected
+            print("[vRP] "..name.." ("..GetPlayerEP(source)..") re-joined (user_id = "..user_id..")")
+
+            -- reset first spawn
+            local tmpdata = vRP.getUserTmpTable(user_id)
+            tmpdata.first_spawn = true
+          end
 
           end)
         else
@@ -317,6 +335,7 @@ AddEventHandler("playerDropped",function(reason)
     vRP.users[vRP.rusers[user_id]] = nil
     vRP.rusers[user_id] = nil
     vRP.user_tables[user_id] = nil
+    vRP.user_tmp_tables[user_id] = nil
   end
 end)
 
