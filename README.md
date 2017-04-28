@@ -9,6 +9,7 @@ Contributions are welcomed.
 ## Features
 * MySQL lua bindings (prepared statements)
 * proxy for easy server-side inter-resource developement
+* tunnel for easy server/clients communication
 * identification system (persistant user id for database storage)
 * user custom data key/value
 
@@ -95,6 +96,51 @@ end)
 ```
 
 The notation is **Interface.function({arguments},callback_with_return_values_as_parameters)** (the callback is optional).
+
+#### Tunnel
+
+The idea behind tunnels is to easily access any declared server function from any client resource, and to access any declared client function from any server resource.
+
+Example of two-way resource communication:
+Server-side myrsc
+```lua
+local Tunnel = require("resources/vRP/lib/Tunnel")
+
+-- build the server-side interface
+serverdef = {} -- you can add function to serverdef later in other server scripts
+Tunnel.bindInterface("myrsc",serverdef)
+
+function serverdef.test(msg)
+  print("msg "..msg.." received from "..source)
+  return 42
+end
+
+-- get the client-side access
+clientaccess = Tunnel.getInterface("myrsc","myrsc") -- the second argument is a unique id for this tunnel access, the current resource name is a good choice
+
+-- (later, in a player spawn event) teleport the player to 0,0,0
+clientaccess.teleport(source,{0,0,0})
+```
+
+Client-side myrsc (copy the resources/vRP/client/Tunnel.lua and add it first to the client scripts of your resource)
+```lua
+
+-- build the client-side interface
+clientdef = {} -- you can add function to clientdef later in other client scripts
+Tunnel.bindInterface("myrsc",clientdef)
+
+function clientdef.teleport(x,y,z)
+  SetEntityCoords(GetPlayerPed(-1), x, y, z, 1,0,0,0) 
+end
+
+-- get the server-side access
+serveraccess = Tunnel.getInterface("myrsc","myrsc") -- the second argument is a unique id for this tunnel access, the current resource name is a good choice
+
+-- call test on server and print the returned value
+serveraccess.test({"my client message"},function(r)
+  print(r)
+end)
+```
 
 #### MySQL
 
