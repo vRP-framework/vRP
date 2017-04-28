@@ -157,6 +157,14 @@ myrsc_access.teleport(source,{0,0,0})
 
 This way resources can easily use other resources client/server API.
 
+A magic trick with the tunnel system (which is based on the TriggerEvent), imagine we want to teleport all players to the same position:
+
+```lua
+clientaccess.teleport(-1,{0,0,0},function()
+  print("player "..source.." teleported") -- will be displayed for each teleported player
+end)
+```
+
 #### MySQL
 
 ```lua
