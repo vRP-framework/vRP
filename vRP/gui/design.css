@@ -18,6 +18,15 @@
   font-weight: bold;
 }
 
+.menu_description{
+  background-color: rgba(0,0,0,0.75);
+  color: white;
+  position: absolute;
+  font-weight: bold;
+  padding: 9px;
+  font-size: 1.2em;
+}
+
 .menu h1{
   background-color: rgba(255,0,0,0.75);
   color: white;

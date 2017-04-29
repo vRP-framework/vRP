@@ -4,7 +4,7 @@ local ids = Tools.newIDGenerator()
 local client_menus = {}
 
 -- open dynamic menu to client
--- menudef: .name and choices as key/callback
+-- menudef: .name and choices as key/{callback,description} (optional element html description) 
 -- menudef optional: .css{ .top, .header_color }
 function vRP.openMenu(source,menudef)
   local menudata = {}
@@ -14,7 +14,7 @@ function vRP.openMenu(source,menudef)
   -- choices
   for k,v in pairs(menudef) do
     if k ~= "name" and k ~= "onclose" and k ~= "css" then
-      table.insert(menudata.choices,k)
+      table.insert(menudata.choices,{k,v[2]})
     end
   end
   
@@ -57,7 +57,7 @@ function tvRP.validMenuChoice(id,choice)
   local menu = client_menus[id]
   if menu and menu.source == source then
     -- call choice callback
-    local cb = menu.def[choice]
+    local cb = menu.def[choice][1]
     if cb then
       cb(choice)
     end

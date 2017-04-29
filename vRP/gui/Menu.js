@@ -11,6 +11,9 @@ function Menu()
   this.selected = -1;
   this.el_choices = [];
 
+  this.div_desc = document.createElement("div");
+  this.div_desc.classList.add("menu_description");
+
   this.div = document.createElement("div");
   this.div.classList.add("menu");
 
@@ -22,10 +25,12 @@ function Menu()
   this.div.appendChild(this.div_choices);
 
   document.body.appendChild(this.div);
+  document.body.appendChild(this.div_desc);
   this.div.style.display = "none";
+  this.div_desc.style.display = "none";
 }
 
-Menu.prototype.open = function(name,choices) //menu name and choices as string array
+Menu.prototype.open = function(name,choices) //menu name and choices as [name,desc] array
 {
   this.close();
   this.opened = true;
@@ -42,7 +47,7 @@ Menu.prototype.open = function(name,choices) //menu name and choices as string a
   this.el_choices = [];
   for(var i = 0; i < this.choices.length; i++){
     var el = document.createElement("div");
-    el.innerHTML = this.choices[i];
+    el.innerHTML = this.choices[i][0];
 
     this.el_choices.push(el);
     this.div_choices.appendChild(el);
@@ -54,10 +59,13 @@ Menu.prototype.open = function(name,choices) //menu name and choices as string a
 
 Menu.prototype.setSelected = function(i)
 {
-  //remove previous selected class
-  if(this.selected >= 0 && this.selected < this.el_choices.length)
+  //check validity
+  if(this.selected >= 0 && this.selected < this.el_choices.length){
+    //remove previous selected class
     this.el_choices[this.selected].classList.remove("selected");
-
+    //hide desc
+    this.div_desc.style.display = "none";
+  }
 
   this.selected = i;
   if(this.selected < 0)
@@ -65,9 +73,21 @@ Menu.prototype.setSelected = function(i)
   else if(this.selected >= this.choices.length)
     this.selected = 0;
 
-  //add selected class
-  if(this.selected >= 0 && this.selected < this.el_choices.length)
+  //check validity
+  if(this.selected >= 0 && this.selected < this.el_choices.length){
+    //add selected class
     this.el_choices[this.selected].classList.add("selected");
+
+    //show desc if exists
+    var choice = this.choices[this.selected];
+    if(choice.length > 1){
+      this.div_desc.innerHTML = choice[1];
+      this.div_desc.style.display = "block";
+
+      this.div_desc.style.left = (this.div.offsetLeft+this.div.offsetWidth)+"px";
+      this.div_desc.style.top = (this.div.offsetTop+this.div_header.offsetHeight)+"px";
+    }
+  }
 }
 
 Menu.prototype.close = function()
@@ -78,6 +98,7 @@ Menu.prototype.close = function()
     this.name = "Menu";
 
     this.div.style.display = "none";
+    this.div_desc.style.display = "none";
 
     if(this.onClose) this.onClose();
   }
@@ -99,6 +120,6 @@ Menu.prototype.valid = function()
 {
   if(this.selected >= 0 && this.selected < this.choices.length){
     if(this.onValid && this.opened)
-      this.onValid(this.choices[this.selected])
+      this.onValid(this.choices[this.selected][0])
   }
 }
