@@ -7,6 +7,7 @@ The project aim to create a generic and simple RP framework to prevent everyone 
 Contributions are welcomed.
 
 ## Features
+* player state auto saved to database (hunger,thirst,weapons,player apparence)
 * MySQL lua bindings (prepared statements)
 * proxy for easy server-side inter-resource developement
 * tunnel for easy server/clients communication
@@ -53,6 +54,8 @@ end)
 #### Base
 
 ```lua
+-- PROXY API
+
 -- return user id or nil if the source is invalid
 vRP.getUserId(source)
 
@@ -62,6 +65,47 @@ vRP.setUData(user_id,key,value)
 -- get user data (textual data)
 -- return nil if data not found
 vRP.getUData(user_id,key)
+
+-- TUNNEL SERVER API
+
+-- TUNNEL CLIENT API
+
+-- teleport the player to the specified coordinates
+vRP.teleport(x,y,z)
+
+-- get the player position
+-- return x,y,z
+vRP.getPosition()
+
+-- notify the player
+vRP.notify(message)
+```
+
+#### Player state
+```lua
+-- PROXY API
+
+-- TUNNEL SERVER API
+
+-- TUNNEL CLIENT API
+
+-- get player weapons data
+-- return table with weapons data, use print(json.encode(result)) to understand the structure
+vRP.getWeapons()
+
+-- give weapons
+-- weapons: same structure as returned by getWeapons()
+-- (optional) clear_before: if true, will remove all the weapons before adding the new ones
+vRP.giveWeapons(weapons,clear_before)
+
+-- get player apparence customization data
+-- return table with customization data, use print(json.encode(result)) to understand the structure
+-- .model or .modelhash define the player model, the indexes define each component as [drawable_id,texture_id,palette_id] array
+vRP.getCustomization()
+
+-- set player apparence
+-- customization_data: same structure as returned by getCustomization()
+vRP.setCustomization(customization_data)
 ```
 
 ### Libs
