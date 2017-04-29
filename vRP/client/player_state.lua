@@ -19,8 +19,11 @@ Citizen.CreateThread(function()
     local x,y,z = table.unpack(GetEntityCoords(GetPlayerPed(-1),true))
     vRPserver.updatePos({x,y,z})
     vRPserver.updateWeapons({tvRP.getWeapons()})
+    vRPserver.updateCustomization({tvRP.getCustomization()})
   end
 end)
+
+-- WEAPONS
 
 -- def
 local weapon_types = {
@@ -110,4 +113,54 @@ function tvRP.giveWeapons(weapons,clear_before)
   
   -- send weapons update
   vRPserver.updateWeapons({tvRP.getWeapons()})
+end
+
+-- PLAYER CUSTOMIZATION
+
+function tvRP.getCustomization()
+  local ped = GetPlayerPed(-1)
+
+  local custom = {}
+
+  custom.modelhash = GetEntityModel(ped)
+
+  for i=0,20 do -- index limit to 20
+    custom[i] = {GetPedDrawableVariation(ped,i), GetPedTextureVariation(ped,i), GetPedPaletteVariation(ped,i)}
+  end
+
+  return custom
+end
+
+function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] components plus .modelhash or .model
+  if custom then
+    local ped = GetPlayerPed(-1)
+    local mhash = nil
+
+    if custom.modelhash ~= nil then
+      mhash = custom.modelhash
+    elseif custom.model ~= nil then
+      mhash = GetHashKey(custom.model)
+    end
+
+    if mhash ~= nil then
+      local i = 0
+      while not HasModelLoaded(mhash) and i < 1000 do
+        RequestModel(mhash)
+        Citizen.Wait(10)
+      end
+
+      if HasModelLoaded(mhash) then
+        SetPlayerModel(PlayerId(), mhash)
+        SetModelAsNoLongerNeeded(mhash)
+      end
+    end
+
+    ped = GetPlayerPed(-1)
+
+    for k,v in pairs(custom) do
+      if k ~= "model" and k ~= "modelhash" then
+        SetPedComponentVariation(ped,tonumber(k),v[1],v[2],v[3])
+      end
+    end
+  end
 end

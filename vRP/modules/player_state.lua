@@ -12,14 +12,29 @@ AddEventHandler("vRP:playerSpawned", function()
         vRPclient.teleport(source,{data.position.x,data.position.y,data.position.z})
       end
 
-      if data.weapons ~= nil then -- load saved weapons
-        vRPclient.giveWeapons(source,{data.weapons,true})
+      -- cascade load customization then weapons
+      if data.customization ~= nil then
+        vRPclient.setCustomization(source,{data.customization},function()
+          if data.weapons ~= nil then -- load saved weapons
+            vRPclient.giveWeapons(source,{data.weapons,true})
+          end
+        end)
+      else
+        if data.weapons ~= nil then -- load saved weapons
+          vRPclient.giveWeapons(source,{data.weapons,true})
+        end
       end
-
+ 
       -- notify last login
       SetTimeout(15000,function()vRPclient.notify(source,{"last login "..tmpdata.last_login})end)
       tmpdata.first_spawn = false
+    else    
+      -- load character customization
+      if data.customization ~= nil then
+        vRPclient.setCustomization(source,{data.customization})
+      end
     end
+
   end
 end)
 
@@ -37,6 +52,8 @@ AddEventHandler("vRP:playerDied",function()
   end
 end)
 
+-- updates
+
 function tvRP.updatePos(x,y,z)
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
@@ -53,6 +70,16 @@ function tvRP.updateWeapons(weapons)
     local data = vRP.getUserDataTable(user_id)
     if data ~= nil then
       data.weapons = weapons
+    end
+  end
+end
+
+function tvRP.updateCustomization(customization)
+  local user_id = vRP.getUserId(source)
+  if user_id ~= nil then
+    local data = vRP.getUserDataTable(user_id)
+    if data ~= nil then
+      data.customization = customization
     end
   end
 end
