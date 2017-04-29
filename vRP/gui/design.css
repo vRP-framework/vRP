@@ -1,0 +1,22 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+
+.console{
+  background-color: white;
+  color: red;
+  font-weight: bold;
+}
+
+.menu{
+  background-color: black;
+  color: white;
+  width: 250px;
+  height: 50%;
+  position: absolute;
+}
+
+.choices .selected{
+  background-color: green;
+}
