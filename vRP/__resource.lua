@@ -16,7 +16,8 @@ client_scripts{
   "client/Tunnel.lua",
   "client/base.lua",
   "client/gui.lua",
-  "client/player_state.lua"
+  "client/player_state.lua",
+  "client/map.lua"
 }
 
 -- client files
