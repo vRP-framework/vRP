@@ -1,9 +1,9 @@
 
-local MySQL = require("resources/vRP/lib/MySQL/MySQL")
-local Proxy = require("resources/vRP/lib/Proxy")
-local Tunnel = require("resources/vRP/lib/Tunnel")
-local config = require("resources/vRP/cfg/base")
-local version = require("resources/vRP/version")
+local MySQL = require("resources/vrp/lib/MySQL/MySQL")
+local Proxy = require("resources/vrp/lib/Proxy")
+local Tunnel = require("resources/vrp/lib/Tunnel")
+local config = require("resources/vrp/cfg/base")
+local version = require("resources/vrp/version")
 
 
 -- versioning

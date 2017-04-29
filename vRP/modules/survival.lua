@@ -1,4 +1,4 @@
-local cfg = require("resources/vRP/cfg/survival")
+local cfg = require("resources/vrp/cfg/survival")
 
 -- api
 

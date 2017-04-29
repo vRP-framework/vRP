@@ -49,7 +49,7 @@ local function add_assembly_type(namespace,atype)
 end
 
 function Mono.loadAssembly(path)
-  local bytes = clr.System.IO.File.ReadAllBytes("resources/vRP/lib/MySQL/MySql.Data.dll")
+  local bytes = clr.System.IO.File.ReadAllBytes(path)
   local assembly = clr.System.Reflection.Assembly.Load(bytes)
   local r = {}
   if assembly ~= nil then

@@ -60,9 +60,9 @@ Menu.prototype.setSelected = function(i)
 
 
   this.selected = i;
-  if(this.selected <= 0 && this.choices.length > 0)
+  if(this.selected < 0)
     this.selected = this.choices.length-1;
-  else if(this.selected >= this.choices.length-1)
+  else if(this.selected >= this.choices.length)
     this.selected = 0;
 
   //add selected class

@@ -3,10 +3,12 @@ function tvRP.openMenuData(menudata)
   SendNUIMessage({act="open_menu", menudata = menudata})
 end
 
+function tvRP.closeMenu()
+  SendNUIMessage({act="close_menu"})
+end
+
 -- gui menu events
-RegisterNUICallback("test",function(data,cb)
-  SendNUIMessage({act="test"})
-  tvRP.notify("menuevent")
+RegisterNUICallback("menu",function(data,cb)
   if data.act == "close" then
     vRPserver.closeMenu({data.id})
   elseif data.act == "valid" then

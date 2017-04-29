@@ -10,13 +10,28 @@
 }
 
 .menu{
-  background-color: black;
+  background-color: rgba(0,0,0,0.75);
   color: white;
   width: 250px;
   height: 50%;
   position: absolute;
+  font-weight: bold;
+}
+
+.menu h1{
+  background-color: rgba(255,0,0,0.75);
+  color: white;
+  text-align: center;
+  font-size: 1.6em;
+  padding: 6px;
+}
+
+.choices div{
+  padding: 6px;
+  font-size: 1.3em;
 }
 
 .choices .selected{
-  background-color: green;
+  background-color: rgba(255,255,255,0.90);
+  color: black;
 }

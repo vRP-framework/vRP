@@ -12,8 +12,8 @@ window.addEventListener("load",function(){
 
   //init dynamic menu
   var dynamic_menu = new Menu();
-  dynamic_menu.onClose = function(){ $.post("http://vRP/menu",JSON.stringify({act: "close", id: dynamic_menu.id})); }
-  dynamic_menu.onValid = function(choice){ $.post("http://vRP/menu",JSON.stringify({act: "valid", id: dynamic_menu.id, choice: choice})); }
+  dynamic_menu.onClose = function(){ $.post("http://vrp/menu",JSON.stringify({act: "close", id: dynamic_menu.id})); }
+  dynamic_menu.onValid = function(choice){ $.post("http://vrp/menu",JSON.stringify({act: "valid", id: dynamic_menu.id, choice: choice})); }
 
   var current_menu = dynamic_menu;
 
@@ -24,7 +24,18 @@ window.addEventListener("load",function(){
       current_menu.close();
       dynamic_menu.open(data.menudata.name,data.menudata.choices);
       dynamic_menu.id = data.menudata.id;
+
+      //customize menu
+      var css = data.menudata.css
+      if(css.top)
+        dynamic_menu.div.style.top = css.top;
+      if(css.header_color)
+        dynamic_menu.div_header.style.backgroundColor = css.header_color;
+
       current_menu = dynamic_menu;
+    }
+    else if(data.act == "close_menu"){ //CLOSE MENU
+      current_menu.close();
     }
     else if(data.act == "event"){ //EVENTS
       if(data.event == "UP"){

@@ -1,5 +1,5 @@
 
-local Tools = require("resources/vRP/lib/Tools")
+local Tools = require("resources/vrp/lib/Tools")
 
 -- this file describe a two way proxy between the server and the clients (request system)
 
