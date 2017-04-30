@@ -40,7 +40,7 @@ AddEventHandler("vRP:playerLeave",function(user_id) end)
 
 ### API
 
-To call the API functions, get the vRP interface.
+To call the server-side API functions, get the vRP interface.
 
 ```lua
 local Proxy = require("resources/vRP/lib/Proxy")
@@ -52,6 +52,17 @@ vRP.getUserId({source},function(user_id)
   print("user_id = "..user_id)
 end)
 ```
+
+You can also do it client-side, the API is the same as the TUNNEL CLIENT APIs (copy and add the vrp/client/Proxy.lua to your resource, first).
+
+```lua
+vRP = Proxy.getInterface("vRP")
+
+-- ex:
+vRP.notify({"A notification."}) -- notify the player
+```
+
+For the client/server tunnel API, the interface is also "vRP", see the Tunnel library below.
 
 #### Base
 
