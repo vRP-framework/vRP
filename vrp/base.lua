@@ -3,6 +3,7 @@ local MySQL = require("resources/vrp/lib/MySQL/MySQL")
 local Proxy = require("resources/vrp/lib/Proxy")
 local Tunnel = require("resources/vrp/lib/Tunnel")
 local config = require("resources/vrp/cfg/base")
+local client_config = require("resources/vrp/cfg/client")
 local version = require("resources/vrp/version")
 
 
@@ -25,6 +26,10 @@ Proxy.addInterface("vRP",vRP)
 
 tvRP = {}
 Tunnel.bindInterface("vRP",tvRP) -- listening for client tunnel
+
+function tvRP.getClientConfig()
+  return client_config
+end
 
 vRPclient = Tunnel.getInterface("vRP","vRP") -- server -> client tunnel
 
@@ -289,7 +294,7 @@ AddEventHandler("playerConnecting",function(name,setMessage)
 
             -- trigger join
             print("[vRP] "..name.." ("..GetPlayerEP(source)..") joined (user_id = "..user_id..")")
-            TriggerEvent("vRP:playerJoin", user_id, source, name)
+            TriggerEvent("vRP:playerJoin", user_id, source, name, tmpdata.last_login)
 
           else -- already connected
             print("[vRP] "..name.." ("..GetPlayerEP(source)..") re-joined (user_id = "..user_id..")")
