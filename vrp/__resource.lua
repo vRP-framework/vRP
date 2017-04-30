@@ -9,7 +9,8 @@ server_scripts{
   "modules/gui.lua",
   "modules/survival.lua",
   "modules/player_state.lua",
-  "modules/map.lua"
+  "modules/map.lua",
+  "modules/money.lua"
 }
 
 -- client scripts

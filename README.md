@@ -163,6 +163,46 @@ vRP.getCustomization()
 vRP.setCustomization(customization_data)
 ```
 
+#### Money
+
+The money is managed with direct SQL requests to prevent most potential value corruptions.
+The wallet empty itself when respawning (after death).
+
+```lua
+-- PROXY API
+
+-- get money in wallet
+vRP.getMoney(user_id)
+
+-- set money in wallet
+vRP.setMoney(user_id,value)
+
+-- try a payment (wallet only)
+-- return true or false (debited if true)
+vRP.tryPayment(user_id,amount)
+
+-- give money to wallet
+vRP.giveMoney(user_id,amount)
+
+-- get bank money
+vRP.getBankMoney(user_id)
+
+-- set bank money
+vRP.setBankMoney(user_id,value)
+
+-- try a withdraw
+-- return true or false (withdrawn if true)
+vRP.tryWithdraw(user_id,amount)
+
+-- try a deposit
+-- return true or false (deposited if true)
+vRP.tryDeposit(user_id,amount)
+
+-- TUNNEL SERVER API
+
+-- TUNNEL CLIENT API
+```
+
 #### GUI
 ```lua
 -- PROXY API
