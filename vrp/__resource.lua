@@ -15,6 +15,7 @@ server_scripts{
 -- client scripts
 client_scripts{
   "client/Tunnel.lua",
+  "client/Proxy.lua",
   "client/base.lua",
   "client/gui.lua",
   "client/player_state.lua",

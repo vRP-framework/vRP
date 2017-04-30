@@ -8,7 +8,7 @@ local version = require("resources/vrp/version")
 
 -- versioning
 print("[vRP] launch version "..version)
-PerformHttpRequest("https://raw.githubusercontent.com/ImagicTheCat/vRP/master/vRP/version.lua",function(err,text,headers)
+PerformHttpRequest("https://raw.githubusercontent.com/ImagicTheCat/vRP/master/vrp/version.lua",function(err,text,headers)
   if err == 0 then
     text = string.gsub(text,"return ","")
     local r_version = tonumber(text)

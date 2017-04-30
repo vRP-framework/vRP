@@ -1,6 +1,15 @@
 tvRP = {}
+
+-- bind client tunnel interface
 Tunnel.bindInterface("vRP",tvRP)
+
+-- get server interface
 vRPserver = Tunnel.getInterface("vRP","vRP")
+
+-- add client proxy interface (same as tunnel interface)
+Proxy.addInterface("vRP",tvRP)
+
+-- functions
 
 function tvRP.teleport(x,y,z)
   SetEntityCoords(GetPlayerPed(-1), x, y, z, 1,0,0,1)
