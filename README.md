@@ -7,12 +7,13 @@ The project aim to create a generic and simple RP framework to prevent everyone 
 Contributions are welcomed.
 
 ## Features
-* player state auto saved to database (hunger,thirst,weapons,player apparence)
+* player state auto saved to database (hunger,thirst,weapons,player apparence,position)
+* identification system (persistant user id for database storage)
+* user custom data key/value
+* dynamic menu API
 * MySQL lua bindings (prepared statements)
 * proxy for easy server-side inter-resource developement
 * tunnel for easy server/clients communication
-* identification system (persistant user id for database storage)
-* user custom data key/value
 
 ## TODO LIST
 * add/centralize basic libraries (ex: MySQL)
@@ -106,6 +107,43 @@ vRP.getCustomization()
 -- set player apparence
 -- customization_data: same structure as returned by getCustomization()
 vRP.setCustomization(customization_data)
+```
+
+#### GUI
+```lua
+-- PROXY API
+
+-- HOW TO: building a dynamic menu
+local menudata = {}
+menudata.name = "My Menu"
+
+-- shift menu from the top by 75px and set the menu header to green
+menudata.css = {top = "75px", header_color = "rgba(0,255,0,0.75)"} -- exhaustive list
+
+menudata.onclose = function()
+  print("menu closed")
+end
+
+local onchoose = function(choice)
+  print("player choose "..choice)
+  vRP.closeMenu({source}) -- ({} because proxy call) close the menu after the first choice (an action menu for example)
+end
+
+-- add options and callbacks
+menudata["Option1"] = {onchoose, "this <b>option</b> is amazing"} -- callaback and description
+menudata["Option two"] = {onchoose} -- no description
+menudata["Another option"] = {function(choice) print("another option choice") end,"this<br />one<br />is<br />better"}
+-- END HOW TO
+
+-- open a dynamic menu to the client (will close previously opened menus)
+vRP.openMenu(source, menudata)
+
+-- close client active menu
+vRP.closeMenu(source)
+
+-- TUNNEL SERVER API
+
+-- TUNNEL CLIENT API
 ```
 
 ### Libs
