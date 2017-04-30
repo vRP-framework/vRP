@@ -11,15 +11,17 @@ Citizen.CreateThread(function()
   while true do
     Citizen.Wait(30000)
 
-    if update_wait then
-      update_wait = false
-      Citizen.Wait(10000)
-    end
+    if IsPlayerPlaying(PlayerId()) then
+      if update_wait then
+        update_wait = false
+        Citizen.Wait(10000)
+      end
 
-    local x,y,z = table.unpack(GetEntityCoords(GetPlayerPed(-1),true))
-    vRPserver.updatePos({x,y,z})
-    vRPserver.updateWeapons({tvRP.getWeapons()})
-    vRPserver.updateCustomization({tvRP.getCustomization()})
+      local x,y,z = table.unpack(GetEntityCoords(GetPlayerPed(-1),true))
+      vRPserver.updatePos({x,y,z})
+      vRPserver.updateWeapons({tvRP.getWeapons()})
+      vRPserver.updateCustomization({tvRP.getCustomization()})
+    end
   end
 end)
 
@@ -144,7 +146,7 @@ function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] com
 
     if mhash ~= nil then
       local i = 0
-      while not HasModelLoaded(mhash) and i < 1000 do
+      while not HasModelLoaded(mhash) and i < 10000 do
         RequestModel(mhash)
         Citizen.Wait(10)
       end

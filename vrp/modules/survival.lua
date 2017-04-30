@@ -47,7 +47,9 @@ end
 function vRP.varyHunger(user_id, variation)
   local data = vRP.getUserDataTable(user_id)
   if data then
+    local was_starving = data.hunger >= 100
     data.hunger = data.hunger + variation
+    local is_starving = data.hunger >= 100
 
     -- apply overflow as damage
     local overflow = data.hunger-100
@@ -59,14 +61,23 @@ function vRP.varyHunger(user_id, variation)
     elseif data.hunger > 100 then data.hunger = 100 
     end
 
-    vRPclient.setProgressBarValue(vRP.getUserSource(user_id),{"vRP:hunger",data.hunger})
+    -- set progress bar data
+    local source = vRP.getUserSource(user_id)
+    vRPclient.setProgressBarValue(source,{"vRP:hunger",data.hunger})
+    if was_starving and not is_starving then
+      vRPclient.setProgressBarText(source,{"vRP:hunger",""})
+    elseif not was_starving and is_starving then
+      vRPclient.setProgressBarText(source,{"vRP:hunger","starving"})
+    end
   end
 end
 
 function vRP.varyThirst(user_id, variation)
   local data = vRP.getUserDataTable(user_id)
   if data then
+    local was_thirsty = data.thirst >= 100
     data.thirst = data.thirst + variation
+    local is_thirsty = data.thirst >= 100
 
     -- apply overflow as damage
     local overflow = data.thirst-100
@@ -78,7 +89,14 @@ function vRP.varyThirst(user_id, variation)
     elseif data.thirst > 100 then data.thirst = 100 
     end
 
-    vRPclient.setProgressBarValue(vRP.getUserSource(user_id),{"vRP:thirst",data.thirst})
+    -- set progress bar data
+    local source = vRP.getUserSource(user_id)
+    vRPclient.setProgressBarValue(source,{"vRP:thirst",data.thirst})
+    if was_thirsty and not is_thirsty then
+      vRPclient.setProgressBarText(source,{"vRP:thirst",""})
+    elseif not was_thirsty and is_thirsty then
+      vRPclient.setProgressBarText(source,{"vRP:thirst","thirsty"})
+    end
   end
 end
 

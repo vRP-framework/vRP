@@ -97,8 +97,43 @@ vRP.teleport(x,y,z)
 -- return x,y,z
 vRP.getPosition()
 
+-- get the player speed
+-- return speed 
+vRP.getSpeed()
+
 -- notify the player
 vRP.notify(message)
+```
+
+#### Survival
+
+Running, walking, being hurt/injured, and just living add hunger and thirst. When the hunger and the thirst are at their maximum level (100%), next hunger/thirst overflow will damage the character by the same amout (ex: when thirsty, don't run, take a car).
+
+```lua
+-- PROXY API
+
+-- return hunger (0-100)
+vRP.getHunger(user_id)
+
+-- return thirst (0-100)
+vRP.getThirst(user_id)
+
+vRP.setHunger(user_id,value)
+
+vRP.setThirst(user_id,value)
+
+-- vary hunger value by variation amount (+ to add hunger, - to remove hunger)
+vRP.varyHunger(user_id,variation)
+
+-- same as vary hunger
+vRP.varyThirst(user_id,variation)
+
+-- TUNNEL SERVER API
+
+-- TUNNEL CLIENT API
+
+-- player health variation (+ to heal, - to deal damage)
+vRP.varyHealth(variation)
 ```
 
 #### Player state

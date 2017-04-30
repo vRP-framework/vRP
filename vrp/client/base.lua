@@ -28,6 +28,11 @@ function tvRP.getPosition()
   return x,y,z
 end
 
+function tvRP.getSpeed()
+  local vx,vy,vz = table.unpack(GetEntityVelocity(GetPlayerPed(-1)))
+  return math.sqrt(vx*vx+vy*vy+vz*vz)
+end
+
 function tvRP.notify(msg)
   SetNotificationTextEntry("STRING")
   AddTextComponentString(msg)
