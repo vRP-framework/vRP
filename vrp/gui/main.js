@@ -1,6 +1,6 @@
 
 window.addEventListener("load",function(){
-  var errdiv = document.createElement("div");
+  errdiv = document.createElement("div");
   if(true){ //debug
     errdiv.classList.add("console");
     document.body.appendChild(errdiv);
@@ -16,7 +16,17 @@ window.addEventListener("load",function(){
   dynamic_menu.onValid = function(choice){ $.post("http://vrp/menu",JSON.stringify({act: "valid", id: dynamic_menu.id, choice: choice})); }
 
   var current_menu = dynamic_menu;
+  var pbars = {}
 
+  //progress bar ticks (25fps)
+  setInterval(function(){
+    for(var k in pbars){
+      pbars[k].frame(1/25.0*1000);
+    }
+
+  }, 1/25.0*1000);
+
+  //MESSAGES
   window.addEventListener("message",function(evt){ //lua actions
     var data = evt.data;
 
@@ -36,6 +46,31 @@ window.addEventListener("load",function(){
     }
     else if(data.act == "close_menu"){ //CLOSE MENU
       current_menu.close();
+    }
+    else if(data.act == "set_pbar"){
+      var pbar = pbars[data.pbar.name];
+      if(pbar)
+        pbar.removeDom();
+
+      pbars[data.pbar.name] = new ProgressBar(data.pbar);
+      pbars[data.pbar.name].addDom();
+    }
+    else if(data.act == "set_pbar_val"){
+      var pbar = pbars[data.name];
+      if(pbar)
+        pbar.setValue(data.value);
+    }
+    else if(data.act == "set_pbar_text"){
+      var pbar = pbars[data.name];
+      if(pbar)
+        pbar.setText(data.text);
+    }
+    else if(data.act == "remove_pbar"){
+      var pbar = pbars[data.name]
+      if(pbar){
+        pbar.removeDom();
+        delete pbars[data.name];
+      }
     }
     else if(data.act == "event"){ //EVENTS
       if(data.event == "UP"){

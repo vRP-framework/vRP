@@ -34,6 +34,10 @@ Contributions are welcomed.
 -- (server) called after identification 
 AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login) end)
 
+-- (server) called when the player join again without triggering the vRP:playerLeave event before
+-- (used after a client crash for example)
+AddEventHandler("vRP:playerRejoin",function(user_id,source,name) end)
+
 -- (server) 
 AddEventHandler("vRP:playerLeave",function(user_id) end)
 ```
@@ -155,6 +159,23 @@ vRP.openMenu(source, menudata)
 
 -- close client active menu
 vRP.closeMenu(source)
+
+-- create/update a progress bar 
+-- anchor: the anchor string type (multiple progress bars can be set for the same anchor)
+---- "minimap" => above minimap (will divide that horizontal space)
+---- "center" => center of the screen, at the bottom
+---- "botright" => bottom right of the screen
+vRP.setProgressBar(name,anchor,text,r,g,b,value)
+
+-- set progress bar value in percent
+vRP.setProgressBarValue(name,value)
+
+-- set progress bar text
+vRP.setProgressBarText(name,text)
+
+-- remove progress bar
+vRP.removeProgressBar(name)
+
 
 -- TUNNEL SERVER API
 

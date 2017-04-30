@@ -306,6 +306,7 @@ AddEventHandler("playerConnecting",function(name,setMessage)
 
           else -- already connected
             print("[vRP] "..name.." ("..GetPlayerEP(source)..") re-joined (user_id = "..user_id..")")
+            TriggerEvent("vRP:playerRejoin", user_id, source, name)
 
             -- reset first spawn
             local tmpdata = vRP.getUserTmpTable(user_id)

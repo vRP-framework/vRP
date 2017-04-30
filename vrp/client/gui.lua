@@ -1,3 +1,4 @@
+-- MENU
 
 function tvRP.openMenuData(menudata)
   SendNUIMessage({act="open_menu", menudata = menudata})
@@ -7,6 +8,7 @@ function tvRP.closeMenu()
   SendNUIMessage({act="close_menu"})
 end
 
+
 -- gui menu events
 RegisterNUICallback("menu",function(data,cb)
   if data.act == "close" then
@@ -15,6 +17,33 @@ RegisterNUICallback("menu",function(data,cb)
     vRPserver.validMenuChoice({data.id,data.choice})
   end
 end)
+
+-- PROGRESS BAR
+
+-- create/update a progress bar
+function tvRP.setProgressBar(name,anchor,text,r,g,b,value)
+  local pbar = {name=name,anchor=anchor,text=text,r=r,g=g,b=b,value=value}
+
+  -- default values
+  if pbar.value == nil then pbar.value = 0 end
+
+  SendNUIMessage({act="set_pbar",pbar = pbar})
+end
+
+-- set progress bar value in percent
+function tvRP.setProgressBarValue(name,value)
+  SendNUIMessage({act="set_pbar_val", name = name, value = value})
+end
+
+-- set progress bar text
+function tvRP.setProgressBarText(name,text)
+  SendNUIMessage({act="set_pbar_text", name = name, text = text})
+end
+
+-- remove a progress bar
+function tvRP.removeProgressBar(name)
+  SendNUIMessage({act="remove_pbar", name = name})
+end
 
 -- gui controls (from cellphone)
 Citizen.CreateThread(function()
@@ -28,3 +57,4 @@ Citizen.CreateThread(function()
     if IsControlJustPressed(3,177) then SendNUIMessage({act="event",event="CANCEL"}) end
   end
 end)
+

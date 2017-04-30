@@ -27,5 +27,6 @@ files{
   "gui/index.html",
   "gui/design.css",
   "gui/main.js",
-  "gui/Menu.js"
+  "gui/Menu.js",
+  "gui/ProgressBar.js"
 }

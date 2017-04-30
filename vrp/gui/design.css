@@ -3,11 +3,19 @@
   padding: 0;
 }
 
+/* make body full page */
+html, body {
+  margin: 0;
+  height: 100%;
+}
+
 .console{
   background-color: white;
   color: red;
   font-weight: bold;
 }
+
+/* menu */
 
 .menu{
   background-color: rgba(0,0,0,0.75);
@@ -43,4 +51,20 @@
 .choices .selected{
   background-color: rgba(255,255,255,0.90);
   color: black;
+}
+
+/* progress bar */
+.progressbar{
+  position: absolute;
+}
+
+.progressbar .inner{
+}
+
+.progressbar .label{
+  position: absolute;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 2px 2px black;
 }
