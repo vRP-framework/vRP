@@ -38,6 +38,7 @@ vRP.users = {} -- will store logged users (id) by first identifier
 vRP.rusers = {} -- store the opposite of users
 vRP.user_tables = {} -- user data tables (logger storage, saved to database)
 vRP.user_tmp_tables = {} -- user tmp data tables (logger storage, not saved)
+vRP.user_sources = {} -- user sources 
 
 -- open MySQL connection
 vRP.sql = MySQL.open(config.db.host,config.db.user,config.db.password,config.db.database)
@@ -222,6 +223,11 @@ function vRP.getUserId(source)
   return nil
 end
 
+-- return source or nil
+function vRP.getUserSource(user_id)
+  return vRP.user_sources[user_id]
+end
+
 function vRP.ban(source,reason)
   local user_id = vRP.getUserId(source)
 
@@ -271,6 +277,7 @@ AddEventHandler("playerConnecting",function(name,setMessage)
             vRP.rusers[user_id] = ids[1]
             vRP.user_tables[user_id] = {}
             vRP.user_tmp_tables[user_id] = {}
+            vRP.user_sources[user_id] = source
 
             -- load user data table
             -- gsub fix a strange deadlock issue with " in json data
@@ -342,7 +349,17 @@ AddEventHandler("playerDropped",function(reason)
     vRP.rusers[user_id] = nil
     vRP.user_tables[user_id] = nil
     vRP.user_tmp_tables[user_id] = nil
+    vRP.user_sources[user_id] = nil
   end
 end)
 
+RegisterServerEvent("vRP:playerSpawned")
+AddEventHandler("vRP:playerSpawned", function()
+  -- register user sources
+  local user_id = vRP.getUserId(source)
+  if user_id ~= nil then
+    vRP.user_sources[user_id] = source
+  end
+end)
 
+RegisterServerEvent("vRP:playerDied")

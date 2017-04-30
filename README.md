@@ -72,6 +72,9 @@ For the client/server tunnel API, the interface is also "vRP", see the Tunnel li
 -- return user id or nil if the source is invalid
 vRP.getUserId(source)
 
+-- return source of the user or nil if not connected
+vRP.getUserSource(user_id)
+
 -- set user data (textual data)
 vRP.setUData(user_id,key,value)
 

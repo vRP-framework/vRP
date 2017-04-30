@@ -1,6 +1,5 @@
 
 -- client -> server events
-RegisterServerEvent("vRP:playerSpawned")
 AddEventHandler("vRP:playerSpawned", function()
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
@@ -39,7 +38,6 @@ AddEventHandler("vRP:playerSpawned", function()
 end)
 
 -- death, clear position and weapons
-RegisterServerEvent("vRP:playerDied")
 AddEventHandler("vRP:playerDied",function()
   print("player die")
   local user_id = vRP.getUserId(source)
