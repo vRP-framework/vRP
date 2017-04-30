@@ -10,7 +10,7 @@ Contributions are welcomed.
 * player state auto saved to database (hunger,thirst,weapons,player apparence,position)
 * identification system (persistant user id for database storage)
 * user custom data key/value
-* dynamic menu API
+* gui (dynamic menu, progress bars) API
 * blip, markers (colored circles), areas (enter/leave callbacks) API
 * MySQL lua bindings (prepared statements)
 * proxy for easy server-side inter-resource developement
@@ -160,6 +160,11 @@ vRP.openMenu(source, menudata)
 -- close client active menu
 vRP.closeMenu(source)
 
+
+-- TUNNEL SERVER API
+
+-- TUNNEL CLIENT API
+
 -- create/update a progress bar 
 -- anchor: the anchor string type (multiple progress bars can be set for the same anchor)
 ---- "minimap" => above minimap (will divide that horizontal space)
@@ -175,11 +180,6 @@ vRP.setProgressBarText(name,text)
 
 -- remove progress bar
 vRP.removeProgressBar(name)
-
-
--- TUNNEL SERVER API
-
--- TUNNEL CLIENT API
 
 ```
 
