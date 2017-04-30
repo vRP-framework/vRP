@@ -8,7 +8,8 @@ server_scripts{
   "base.lua",
   "modules/gui.lua",
   "modules/survival.lua",
-  "modules/player_state.lua"
+  "modules/player_state.lua",
+  "modules/map.lua"
 }
 
 -- client scripts

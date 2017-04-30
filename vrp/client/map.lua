@@ -29,10 +29,12 @@ end
 local named_blips = {}
 
 -- set a named blip (same as addBlip but for a unique name, add or update)
+-- return native id
 function tvRP.setNamedBlip(name,x,y,z,idtype,idcolor,text)
   tvRP.removeNamedBlip(name) -- remove old one
 
   named_blips[name] = tvRP.addBlip(x,y,z,idtype,idcolor,text)
+  return named_blips[name]
 end
 
 -- remove a named blip
@@ -87,10 +89,12 @@ function tvRP.removeMarker(id)
 end
 
 -- set a named marker (same as addMarker but for a unique name, add or update)
+-- return id
 function tvRP.setNamedMarker(name,x,y,z,sx,sy,sz,r,g,b,a,visible_distance)
   tvRP.removeNamedMarker(name) -- remove old marker
 
   named_markers[name] = tvRP.addMarker(x,y,z,sx,sy,sz,r,g,b,a,visible_distance)
+  return named_markers[name]
 end
 
 function tvRP.removeNamedMarker(name)
@@ -115,3 +119,49 @@ Citizen.CreateThread(function()
     end
   end
 end)
+
+-- AREA
+
+local areas = {}
+
+-- create/update a cylinder area
+function tvRP.setArea(name,x,y,z,radius,height)
+  local area = {x=x,y=y,z=z,radius=radius,height=height}
+
+  -- default values
+  if area.height == nil then area.height = 6 end
+
+  areas[name] = area
+end
+
+-- remove area
+function tvRP.removeArea(name)
+  if areas[name] ~= nil then
+    areas[name] = nil
+  end
+end
+
+-- areas triggers detections
+Citizen.CreateThread(function()
+  while true do
+    Citizen.Wait(250)
+
+    local px,py,pz = tvRP.getPosition()
+
+    for k,v in pairs(areas) do
+      -- detect enter/leave
+
+      local player_in = (GetDistanceBetweenCoords(v.x,v.y,v.z,px,py,pz,true) <= v.radius and math.abs(pz-v.z) <= v.height)
+
+      if v.player_in and not player_in then -- was in: leave
+        vRPserver.leaveArea({k})
+      elseif not v.player_in and player_in then -- wasn't in: enter
+        vRPserver.enterArea({k})
+      end
+
+      v.player_in = player_in -- update area player_in
+    end
+  end
+end)
+
+
