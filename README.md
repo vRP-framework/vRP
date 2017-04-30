@@ -11,6 +11,7 @@ Contributions are welcomed.
 * identification system (persistant user id for database storage)
 * user custom data key/value
 * dynamic menu API
+* blip, markers (colored circles), areas (enter/leave callbacks) API
 * MySQL lua bindings (prepared statements)
 * proxy for easy server-side inter-resource developement
 * tunnel for easy server/clients communication
@@ -144,6 +145,51 @@ vRP.closeMenu(source)
 -- TUNNEL SERVER API
 
 -- TUNNEL CLIENT API
+
+```
+
+#### Map
+
+```lua
+-- PROXY API
+
+-- create/update a player area (will trigger enter and leave callbacks)
+vRP.setArea(source,name,x,y,z,radius,height,cb_enter,cb_leave)
+
+-- remove a player area 
+vRP.removeArea(source,name)
+
+-- TUNNEL SERVER API
+
+-- TUNNEL CLIENT API
+
+-- create new blip, return native id
+vRP.addBlip(x,y,z,idtype,idcolor,text)
+
+-- remove blip by native id
+vRP.removeBlip(id)
+
+-- set a named blip (same as addBlip but for a unique name, add or update)
+-- return native id
+vRP.setNamedBlip(name,x,y,z,idtype,idcolor,text)
+
+-- remove a named blip
+vRP.removeNamedBlip(name)
+
+-- add a circular marker to the game map
+-- return marker id
+vRP.addMarker(x,y,z,sx,sy,sz,r,g,b,a,visible_distance)
+
+-- remove marker
+vRP.removeMarker(id)
+
+-- set a named marker (same as addMarker but for a unique name, add or update)
+-- return id
+vRP.setNamedMarker(name,x,y,z,sx,sy,sz,r,g,b,a,visible_distance)
+
+-- remove a named marker
+vRP.removeNamedMarker(name)
+
 ```
 
 ### Libs
