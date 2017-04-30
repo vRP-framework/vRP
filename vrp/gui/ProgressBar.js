@@ -61,7 +61,7 @@ ProgressBar.prototype.frame = function(time)
 
         //set position
         this.div.style.left = (60+anchor_index*width)+"px";
-        this.div.style.top = (document.body.offsetHeight-215)+"px";
+        this.div.style.top = (document.body.offsetHeight-213)+"px";
       }
       else if(anchor_name == "botright"){ //BOTRIGHT
         //set size

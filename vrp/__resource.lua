@@ -19,6 +19,7 @@ client_scripts{
   "client/base.lua",
   "client/gui.lua",
   "client/player_state.lua",
+  "client/survival.lua",
   "client/map.lua"
 }
 
