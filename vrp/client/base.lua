@@ -9,6 +9,13 @@ vRPserver = Tunnel.getInterface("vRP","vRP")
 -- add client proxy interface (same as tunnel interface)
 Proxy.addInterface("vRP",tvRP)
 
+-- get client configuration
+config = {}
+
+vRPserver.getClientConfig({},function(_config)
+  config = _config
+end)
+
 -- functions
 
 function tvRP.teleport(x,y,z)

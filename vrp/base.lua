@@ -27,6 +27,7 @@ Proxy.addInterface("vRP",vRP)
 tvRP = {}
 Tunnel.bindInterface("vRP",tvRP) -- listening for client tunnel
 
+-- return client config to client
 function tvRP.getClientConfig()
   return client_config
 end
