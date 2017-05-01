@@ -58,7 +58,7 @@ function tvRP.closeMenu(id)
 
     -- call callback
     if menu.def.onclose then
-      menu.def.onclose()
+      menu.def.onclose(source)
     end
 
     ids:free(id)
@@ -72,7 +72,7 @@ function tvRP.validMenuChoice(id,choice)
     -- call choice callback
     local cb = menu.def[choice][1]
     if cb then
-      cb(choice)
+      cb(source,choice)
     end
   end
 end
@@ -81,7 +81,7 @@ end
 function tvRP.promptResult(text)
   local prompt = prompts[source]
   if prompt ~= nil then
-    prompt(text)
+    prompt(source,text)
     prompts[source] = nil
   end
 end

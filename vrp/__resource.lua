@@ -11,6 +11,7 @@ server_scripts{
   "modules/player_state.lua",
   "modules/map.lua",
   "modules/money.lua",
+  "modules/inventory.lua",
 
   -- basic implementations
   "modules/basic_atm.lua"

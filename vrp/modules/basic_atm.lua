@@ -5,7 +5,7 @@ local cfg = require("resources/vRP/cfg/atms")
 local atms = cfg.atms
 
 local function atm_choice_deposit()
-  vRP.prompt(source,"Enter amount of money for deposit:","",function(v)
+  vRP.prompt(source,"Enter amount of money for deposit:","",function(player,v)
     v = tonumber(v)
 
     if v > 0 then
@@ -24,8 +24,7 @@ local function atm_choice_deposit()
 end
 
 local function atm_choice_withdraw()
-  print("choose withdraw")
-  vRP.prompt(source,"Enter amount of money to withdraw:","",function(v)
+  vRP.prompt(source,"Enter amount of money to withdraw:","",function(player,v)
     v = tonumber(v)
 
     if v > 0 then

@@ -8,6 +8,8 @@ Contributions are welcomed.
 
 ## Features
 * player state auto saved to database (hunger,thirst,weapons,player apparence,position)
+* money (wallet/bank)
+* inventory (with custom item definition)
 * identification system (persistant user id for database storage)
 * user custom data key/value
 * gui (dynamic menu, progress bars, prompt) API
@@ -203,6 +205,71 @@ vRP.tryDeposit(user_id,amount)
 -- TUNNEL CLIENT API
 ```
 
+#### Inventory
+
+The inventory is autosaved and, as the wallet, empty upon death.
+
+```lua
+-- PROXY API
+
+-- define an inventory item (call this once at server start)
+-- idname: unique item name
+-- name: display name
+-- description: item description (html)
+-- choices: menudata choices (see gui api)
+vRP.defInventoryItem(idname,name,description,choices)
+
+-- add item to a connected user inventory
+vRP.giveInventoryItem(user_id,idname,amount)
+
+-- try to get item from a connected user inventory
+-- return true if the item has been found and the quantity removed
+vRP.tryGetInventoryItem(user_id,idname,amount)
+
+-- clear connected user inventory
+vRP.clearInventory(user_id)
+
+
+-- TUNNEL SERVER API
+
+-- TUNNEL CLIENT API
+```
+
+Full example of a resource defining a water bottle item.
+Once defined, items can be used by any resources (ex: they can be added to shops).
+
+```lua
+local Proxy = require("resources/vRP/lib/Proxy")
+local Tunnel = require("resources/vRP/lib/Tunnel")
+
+vRP = Proxy.getInterface("vRP")
+vRPclient = Tunnel.getInterface("vRP","vrp_waterbottle")
+
+-- create Water bottle item (the callback hell begins) 
+local wb_choices = {}  -- (see gui API for menudata choices structure)
+
+wb_choices["Drink"] = {function(player,choice) -- add drink action
+  vRP.getUserId({player},function(user_id) -- get user_id
+    if user_id ~= nil then
+      vRP.tryGetInventoryItem({user_id,"water_bottle",1},function(ok) -- try to remove one bottle
+        if ok then
+          vRP.varyThirst({user_id,-35}) -- decrease thirst
+          vRPclient.notify(player,{"~b~ Drinking."}) -- notify
+          vRP.closeMenu({player}) -- the water bottle is consumed by the action, close the menu
+        end
+      end)
+    end
+  end)
+end,"Do it."}
+
+-- add item definition
+vRP.defInventoryItem({"water_bottle","Water bottle","Drink this my friend.",wb_choices})
+
+-- (at any time later) give 2 water bottles to a connected user
+vRP.giveInventoryItem({user_id,"water_bottle",2})
+
+```
+
 #### GUI
 ```lua
 -- PROXY API
@@ -218,7 +285,7 @@ menudata.onclose = function()
   print("menu closed")
 end
 
-local onchoose = function(choice)
+local onchoose = function(player,choice)
   print("player choose "..choice)
   vRP.closeMenu({source}) -- ({} because proxy call) close the menu after the first choice (an action menu for example)
 end
@@ -236,6 +303,7 @@ vRP.openMenu(source, menudata)
 vRP.closeMenu(source)
 
 -- prompt textual (and multiline) information from player
+-- cb_result: function(player,result)
 vRP.prompt(source,title,default_text,cb_result)
 
 -- TUNNEL SERVER API
@@ -266,6 +334,7 @@ vRP.removeProgressBar(name)
 -- PROXY API
 
 -- create/update a player area (will trigger enter and leave callbacks)
+-- cb_enter, cb_leave: function(player,area_name)
 vRP.setArea(source,name,x,y,z,radius,height,cb_enter,cb_leave)
 
 -- remove a player area 

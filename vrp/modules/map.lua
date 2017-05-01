@@ -34,7 +34,7 @@ function tvRP.enterArea(name)
   if areas then
     local area = areas[name] 
     if area.enter then -- trigger enter callback
-      area.enter(name)
+      area.enter(source,name)
     end
   end
 end
@@ -45,7 +45,7 @@ function tvRP.leaveArea(name)
   if areas then
     local area = areas[name] 
     if area.leave then -- trigger leave callback
-      area.leave(name)
+      area.leave(source,name)
     end
   end
 end
