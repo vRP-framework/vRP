@@ -115,3 +115,10 @@ AddEventHandler("vRP:playerJoin", function(user_id,source,name,last_login)
     data.inventory = {}
   end
 end)
+
+
+-- add open inventory to main menu
+local choices = {}
+choices["Inventory"] = {function(player, choice) vRP.openInventory(player) end, "Open the inventory."}
+
+AddEventHandler("vRP:buildMainMenu", function(player) vRP.buildMainMenu(player,choices) end)

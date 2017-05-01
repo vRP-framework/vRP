@@ -50,6 +50,30 @@ function vRP.prompt(source,title,default_text,cb_result)
   vRPclient.prompt(source,{title,default_text})
 end
 
+-- MAIN MENU
+
+local main_menu_builds = {}
+
+-- open the player main menu
+function vRP.openMainMenu(source)
+  local menudata = {name="Main menu",css={top="75px",header_color="rgba(0,125,255,0.75)"}}
+  main_menu_builds[source] = menudata
+
+  TriggerEvent("vRP:buildMainMenu",source) -- all resources can add choices to the menu using vRP.buildMainMenu(player,choices)
+
+  vRP.openMenu(source,menudata) -- open the generated menu
+end
+
+-- called inside a vRP:buildMainMenu event to build the player main menu (to add choices)
+function vRP.buildMainMenu(source,choices)
+  local menudata = main_menu_builds[source]
+  if menudata ~= nil then
+    for k,v in pairs(choices) do
+      menudata[k] = v
+    end
+  end
+end
+
 -- SERVER TUNNEL API
 
 function tvRP.closeMenu(id)
@@ -84,4 +108,9 @@ function tvRP.promptResult(text)
     prompt(source,text)
     prompts[source] = nil
   end
+end
+
+-- open the general player menu
+function tvRP.openMainMenu()
+  vRP.openMainMenu(source)
 end
