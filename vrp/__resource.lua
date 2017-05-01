@@ -10,7 +10,10 @@ server_scripts{
   "modules/survival.lua",
   "modules/player_state.lua",
   "modules/map.lua",
-  "modules/money.lua"
+  "modules/money.lua",
+
+  -- basic implementations
+  "modules/basic_atm.lua"
 }
 
 -- client scripts
@@ -30,5 +33,6 @@ files{
   "gui/design.css",
   "gui/main.js",
   "gui/Menu.js",
-  "gui/ProgressBar.js"
+  "gui/ProgressBar.js",
+  "gui/WPrompt.js"
 }

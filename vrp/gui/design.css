@@ -68,3 +68,41 @@ html, body {
   text-align: center;
   text-shadow: 2px 2px black;
 }
+
+/* wprompt */
+.wprompt{
+  position: absolute;
+  background-color: rgba(0,0,0,0.75);
+  color: white;
+  width: 500px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+}
+
+.wprompt h1{
+  font-size: 1.1em;
+}
+
+.wprompt textarea{
+  outline: none !important;
+  background-color: rgba(0,0,0,0.75);
+  border: 1px solid rgba(255,255,255,0.30);
+  flex: 1;
+  color: white;
+  width: 100%;
+  padding: 4px;
+  resize: none;
+  box-sizing: border-box;
+}
+
+.wprompt textarea:focus{
+  outline: none !important;
+}
+
+.wprompt .help{
+  font-size: 0.9em;
+  font-style: italic;
+  padding: 3px;
+}

@@ -10,7 +10,7 @@ Contributions are welcomed.
 * player state auto saved to database (hunger,thirst,weapons,player apparence,position)
 * identification system (persistant user id for database storage)
 * user custom data key/value
-* gui (dynamic menu, progress bars) API
+* gui (dynamic menu, progress bars, prompt) API
 * blip, markers (colored circles), areas (enter/leave callbacks) API
 * MySQL lua bindings (prepared statements)
 * proxy for easy server-side inter-resource developement
@@ -235,6 +235,8 @@ vRP.openMenu(source, menudata)
 -- close client active menu
 vRP.closeMenu(source)
 
+-- prompt textual (and multiline) information from player
+vRP.prompt(source,title,default_text,cb_result)
 
 -- TUNNEL SERVER API
 

@@ -8,6 +8,12 @@ function tvRP.closeMenu()
   SendNUIMessage({act="close_menu"})
 end
 
+-- PROMPT
+
+function tvRP.prompt(title,default_text)
+  SendNUIMessage({act="prompt",title=title,text=tostring(default_text)})
+  SetNuiFocus(true)
+end
 
 -- gui menu events
 RegisterNUICallback("menu",function(data,cb)
@@ -15,6 +21,15 @@ RegisterNUICallback("menu",function(data,cb)
     vRPserver.closeMenu({data.id})
   elseif data.act == "valid" then
     vRPserver.validMenuChoice({data.id,data.choice})
+  end
+end)
+
+-- gui prompt event
+RegisterNUICallback("prompt",function(data,cb)
+  if data.act == "close" then
+    SetNuiFocus(false)
+    SetNuiFocus(false)
+    vRPserver.promptResult({data.result})
   end
 end)
 

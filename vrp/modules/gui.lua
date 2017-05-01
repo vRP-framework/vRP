@@ -1,6 +1,8 @@
 local Tools = require("resources/vrp/lib/Tools")
 local ids = Tools.newIDGenerator()
 
+-- MENU
+
 local client_menus = {}
 
 -- open dynamic menu to client
@@ -37,6 +39,17 @@ function vRP.closeMenu(source)
   vRPclient.closeMenu(source,{})
 end
 
+-- PROMPT
+
+local prompts = {}
+
+-- prompt textual (and multiline) information from player
+function vRP.prompt(source,title,default_text,cb_result)
+  prompts[source] = cb_result
+
+  vRPclient.prompt(source,{title,default_text})
+end
+
 -- SERVER TUNNEL API
 
 function tvRP.closeMenu(id)
@@ -61,5 +74,14 @@ function tvRP.validMenuChoice(id,choice)
     if cb then
       cb(choice)
     end
+  end
+end
+
+-- receive prompt result
+function tvRP.promptResult(text)
+  local prompt = prompts[source]
+  if prompt ~= nil then
+    prompt(text)
+    prompts[source] = nil
   end
 end

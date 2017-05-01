@@ -214,6 +214,11 @@ function vRP.isConnected(user_id)
   return vRP.rusers[user_id] ~= nil
 end
 
+function vRP.isFirstSpawn(user_id)
+  local tmp = vRP.getUserTmpTable(user_id)
+  return tmp and tmp.first_spawn
+end
+
 function vRP.getUserId(source)
   local ids = GetPlayerIdentifiers(source)
   if ids ~= nil and #ids > 0 then
@@ -316,12 +321,12 @@ AddEventHandler("playerConnecting",function(name,setMessage)
           end)
         else
           print("[vRP] "..name.." ("..GetPlayerEP(source)..") rejected: not whitelisted (user_id = "..user_id..")")
-          setMessage("[vRP] Not whitelisted.")
+          setMessage("[vRP] Not whitelisted (user_id = "..user_id..").")
           CancelEvent()
         end
       else
-        print("[vRP] "..name.." ("..GetPlayerEP(source)..") rejected: banned")
-        setMessage("[vRP] Banned.")
+        print("[vRP] "..name.." ("..GetPlayerEP(source)..") rejected: banned (user_id = "..user_id..")")
+        setMessage("[vRP] Banned (user_id = "..user_id..").")
         CancelEvent()
       end
     else
@@ -356,10 +361,15 @@ end)
 
 RegisterServerEvent("vRP:playerSpawned")
 AddEventHandler("vRP:playerSpawned", function()
-  -- register user sources
+  -- register user sources and then set first spawn to false
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
     vRP.user_sources[user_id] = source
+    local tmp = vRP.getUserTmpTable(user_id)
+    if tmp.first_spawn then
+      TriggerEvent("vRP:playerFirstSpawn",source)
+      SetTimeout(1000,function() tmp.first_spawn = false end)
+    end
   end
 end)
 

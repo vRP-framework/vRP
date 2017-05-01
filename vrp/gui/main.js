@@ -12,6 +12,9 @@ window.addEventListener("load",function(){
 
   //init dynamic menu
   var dynamic_menu = new Menu();
+  var wprompt = new WPrompt();
+
+  wprompt.onClose = function(){ $.post("http://vrp/prompt",JSON.stringify({act: "close", result: wprompt.result})); }
   dynamic_menu.onClose = function(){ $.post("http://vrp/menu",JSON.stringify({act: "close", id: dynamic_menu.id})); }
   dynamic_menu.onValid = function(choice){ $.post("http://vrp/menu",JSON.stringify({act: "valid", id: dynamic_menu.id, choice: choice})); }
 
@@ -72,22 +75,31 @@ window.addEventListener("load",function(){
         delete pbars[data.name];
       }
     }
+    else if(data.act == "prompt"){
+      wprompt.open(data.title,data.text);
+    }
     else if(data.act == "event"){ //EVENTS
       if(data.event == "UP"){
-        current_menu.moveUp();
+        if(!wprompt.opened)
+          current_menu.moveUp();
       }
       else if(data.event == "DOWN"){
-        current_menu.moveDown();
+        if(!wprompt.opened)
+          current_menu.moveDown();
       }
       else if(data.event == "LEFT"){
       }
       else if(data.event == "RIGHT"){
       }
       else if(data.event == "SELECT"){
-        current_menu.valid();
+        if(!wprompt.opened)
+          current_menu.valid();
       }
       else if(data.event == "CANCEL"){
-        current_menu.close();
+        if(wprompt.opened)
+          wprompt.close();
+        else
+          current_menu.close();
       }
     }
   });
