@@ -14,7 +14,9 @@ server_scripts{
   "modules/inventory.lua",
 
   -- basic implementations
-  "modules/basic_atm.lua"
+  "modules/basic_atm.lua",
+  "modules/basic_market.lua",
+  "modules/basic_items.lua"
 }
 
 -- client scripts

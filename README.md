@@ -281,7 +281,7 @@ menudata.name = "My Menu"
 -- shift menu from the top by 75px and set the menu header to green
 menudata.css = {top = "75px", header_color = "rgba(0,255,0,0.75)"} -- exhaustive list
 
-menudata.onclose = function()
+menudata.onclose = function(player)
   print("menu closed")
 end
 
