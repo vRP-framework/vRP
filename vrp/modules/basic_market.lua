@@ -76,7 +76,7 @@ local function build_client_markets(source)
       vRPclient.addBlip(source,{x,y,z,52,2,"Market"})
       vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,255,125,125,150})
 
-      vRP.setArea(source,"vRP:market"..k,x,y,z,0.7,1.5,market_enter,market_leave)
+      vRP.setArea(source,"vRP:market"..k,x,y,z,1,1.5,market_enter,market_leave)
     end
   end
 end

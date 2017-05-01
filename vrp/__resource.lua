@@ -16,6 +16,7 @@ server_scripts{
   -- basic implementations
   "modules/basic_atm.lua",
   "modules/basic_market.lua",
+  "modules/basic_gunshop.lua",
   "modules/basic_items.lua"
 }
 
