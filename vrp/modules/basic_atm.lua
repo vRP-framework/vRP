@@ -1,7 +1,7 @@
 
 -- a basic ATM implementation
 
-local cfg = require("resources/vRP/cfg/atms")
+local cfg = require("resources/vrp/cfg/atms")
 local atms = cfg.atms
 
 local function atm_choice_deposit()

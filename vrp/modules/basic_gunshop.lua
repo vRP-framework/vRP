@@ -1,6 +1,6 @@
 -- a basic gunshop implementation
 
-local cfg = require("resources/vRP/cfg/gunshops")
+local cfg = require("resources/vrp/cfg/gunshops")
 local weapons = cfg.weapons
 local gunshops = cfg.gunshops
 

@@ -1,6 +1,6 @@
 -- a basic market implementation
 
-local cfg = require("resources/vRP/cfg/markets")
+local cfg = require("resources/vrp/cfg/markets")
 local mitems = cfg.items
 local markets = cfg.markets
 
