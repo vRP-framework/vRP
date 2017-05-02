@@ -7,6 +7,17 @@ function tvRP.varyHealth(variation)
   SetEntityHealth(ped,n)
 end
 
+function tvRP.setFriendlyFire(flag)
+  NetworkSetFriendlyFireOption(flag)
+  SetCanAttackFriendly(GetPlayerPed(-1), flag, flag)
+end
+
+function tvRP.setPolice(flag)
+  local player = PlayerId()
+  SetPoliceIgnorePlayer(player, not flag)
+  SetDispatchCopsForPlayer(player, flag)
+end
+
 -- impact thirst and hunger when the player is running (every 5 seconds)
 Citizen.CreateThread(function()
   while true do

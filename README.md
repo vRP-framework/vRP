@@ -136,6 +136,14 @@ vRP.varyThirst(user_id,variation)
 
 -- player health variation (+ to heal, - to deal damage)
 vRP.varyHealth(variation)
+
+-- enable/disable spawned player ability to hurt friendly
+-- flag: boolean
+vRP.setFriendlyFire(flag)
+
+-- enable/disable spawned player ability to be chased/arrested by cops
+-- flag: boolean
+vRP.setPolice(flag)
 ```
 
 #### Player state
