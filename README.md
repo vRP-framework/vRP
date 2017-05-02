@@ -10,6 +10,7 @@ Contributions are welcomed.
 * player state auto saved to database (hunger,thirst,weapons,player apparence,position)
 * money (wallet/bank)
 * inventory (with custom item definition)
+* basic implementations: ATM, market, market, skinshop, garage
 * identification system (persistant user id for database storage)
 * user custom data key/value
 * gui (dynamic menu, progress bars, prompt) API
@@ -19,11 +20,9 @@ Contributions are welcomed.
 * tunnel for easy server/clients communication
 
 ## TODO LIST
-* add/centralize basic libraries (ex: MySQL)
-* basic survival characteristics (hunger/thirst)
 * citizen informations (identity, home)
-* money/inventory
 * job/services
+* business system
 * extensible menu (ex: global menu, interaction menu)
 
 ## Tutorials
