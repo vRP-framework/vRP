@@ -8,93 +8,107 @@ local skinshops = cfg.skinshops
 function vRP.openSkinshop(source,parts)
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
-    local menudata = {
-      name="Skinshop",
-      css={top = "75px", header_color="rgba(0,255,125,0.75)"}
-    }
-
-    local drawables = {}
-    local textures = {}
-
     -- get old customization to compute the price
-    local old_custom = {}
-    vRPclient.getCustomization(source,{},function(custom)
-      old_custom = custom
-      custom.modelhash = nil
-    end)
+    vRPclient.getCustomization(source,{},function(old_custom)
+      old_custom.modelhash = nil
 
-    local ondrawable = function(player, choice)
-      -- change drawable
-      local drawable = drawables[choice]
-      drawable[1] = drawable[1]+1
-      if drawable[1] >= drawable[2] then drawable[1] = 0 end -- circular selection
+      -- start building menu
+      local menudata = {
+        name="Skinshop",
+        css={top = "75px", header_color="rgba(0,255,125,0.75)"}
+      }
 
-      -- apply change
-      local custom = {}
-      custom[parts[choice]] = {drawable[1],textures[choice][1]}
-      vRPclient.setCustomization(source,{custom})
+      local drawables = {}
+      local textures = {}
 
-      -- update max textures number
-      vRPclient.getDrawableTextures(source,{parts[choice],drawable[1]},function(n)
-        textures[choice][2] = n
+      local ondrawable = function(player, choice)
+        -- change drawable
+        local drawable = drawables[choice]
+        drawable[1] = drawable[1]+1
+        if drawable[1] >= drawable[2] then drawable[1] = 0 end -- circular selection
 
-        if textures[choice][1] >= n then
-          textures[choice][1] = 0 -- reset texture number
-        end
-      end)
-    end
+        -- apply change
+        local custom = {}
+        custom[parts[choice]] = {drawable[1],textures[choice][1]}
+        vRPclient.setCustomization(source,{custom})
 
-    local ontexture = function(player, choice)
-      choice = string.sub(choice,2) -- remove star
+        -- update max textures number
+        vRPclient.getDrawableTextures(source,{parts[choice],drawable[1]},function(n)
+          textures[choice][2] = n
 
-      -- change texture
-      local texture = textures[choice]
-      texture[1] = texture[1]+1
-      if texture[1] >= texture[2] then texture[1] = 0 end -- circular selection
-
-      -- apply change
-      local custom = {}
-      custom[parts[choice]] = {drawables[choice][1],texture[1]}
-      vRPclient.setCustomization(source,{custom})
-    end
-
-    for k,v in pairs(parts) do -- for each part, get number of drawables and build menu
-      drawables[k] = {0,0} -- {current,max}
-      textures[k] = {0,0}  -- {current,max}
-
-      vRPclient.getDrawables(source,{v},function(n)
-        drawables[k][2] = n  -- set max
-      end)
-
-      menudata[k] = {ondrawable}
-      menudata["*"..k] = {ontexture}
-    end
-
-    menudata.onclose = function(player)
-      -- compute price
-      vRPclient.getCustomization(source,{},function(custom)
-        local price = 0
-        custom.modelhash = nil
-        for k,v in pairs(custom) do
-          local old = old_custom[k]
-          if v[1] ~= old[1] then price = price + cfg.drawable_change_price end -- change of drawable
-          if v[2] ~= old[2] then price = price + cfg.texture_change_price end -- change of texture
-        end
-
-        if vRP.tryPayment(user_id,price) then
-          if price > 0 then
-            vRPclient.notify(source,{"Paid "..price.." $"})
+          if textures[choice][1] >= n then
+            textures[choice][1] = 0 -- reset texture number
           end
-        else
-          vRPclient.notify(source,{"Not enough money, total price is "..price.." $"})
-          -- revert changes
-          vRPclient.setCustomization(source,{old_custom})
-        end
-      end)
-    end
+        end)
+      end
 
-    -- open menu
-    vRP.openMenu(source,menudata)
+      local ontexture = function(player, choice)
+        choice = string.sub(choice,2) -- remove star
+
+        -- change texture
+        local texture = textures[choice]
+        texture[1] = texture[1]+1
+        if texture[1] >= texture[2] then texture[1] = 0 end -- circular selection
+
+        -- apply change
+        local custom = {}
+        custom[parts[choice]] = {drawables[choice][1],texture[1]}
+        vRPclient.setCustomization(source,{custom})
+      end
+
+      for k,v in pairs(parts) do -- for each part, get number of drawables and build menu
+
+        drawables[k] = {0,0} -- {current,max}
+        textures[k] = {0,0}  -- {current,max}
+
+        -- init using old customization
+        local old_part = old_custom[v]
+        if old_part then
+          drawables[k][1] = old_part[1]
+          textures[k][1] = old_part[2]
+        end
+
+        -- get max drawables
+        vRPclient.getDrawables(source,{v},function(n)
+          drawables[k][2] = n  -- set max
+        end)
+
+        -- get max textures for this drawable
+        vRPclient.getDrawableTextures(source,{v,drawables[k][1]},function(n)
+          textures[k][2] = n  -- set max
+        end)
+
+        -- add menu choices
+        menudata[k] = {ondrawable}
+        menudata["*"..k] = {ontexture}
+      end
+
+      menudata.onclose = function(player)
+        -- compute price
+        vRPclient.getCustomization(source,{},function(custom)
+          local price = 0
+          custom.modelhash = nil
+          for k,v in pairs(custom) do
+            local old = old_custom[k]
+            if v[1] ~= old[1] then price = price + cfg.drawable_change_price end -- change of drawable
+            if v[2] ~= old[2] then price = price + cfg.texture_change_price end -- change of texture
+          end
+
+          if vRP.tryPayment(user_id,price) then
+            if price > 0 then
+              vRPclient.notify(source,{"Paid "..price.." $"})
+            end
+          else
+            vRPclient.notify(source,{"Not enough money, total price is "..price.." $"})
+            -- revert changes
+            vRPclient.setCustomization(source,{old_custom})
+          end
+        end)
+      end
+
+      -- open menu
+      vRP.openMenu(source,menudata)
+    end)
   end
 end
 
