@@ -2,7 +2,16 @@
 local vehicles = {}
 
 function tvRP.spawnGarageVehicle(vtype,name) -- vtype is the vehicle type (one vehicle per type allowed at the same time)
-  if vehicles[vtype] == nil then
+
+  local vehicle = vehicles[vtype]
+  if vehicle and not IsVehicleDriveable(vehicle[3]) then -- precheck if vehicle is undriveable
+    -- despawn vehicle
+    Citizen.InvokeNative(0xEA386986E786A54F, Citizen.PointerValueIntInitialized(vehicle[3]))
+    vehicles[vtype] = nil
+  end
+
+  vehicle = vehicles[vtype]
+  if vehicle == nil then
     -- load vehicle model
     local mhash = GetHashKey(name)
 
@@ -30,15 +39,16 @@ function tvRP.spawnGarageVehicle(vtype,name) -- vtype is the vehicle type (one v
 end
 
 function tvRP.despawnGarageVehicle(vtype,max_range)
-  local vehicule = vehicles[vtype]
-  if vehicule then
-    local x,y,z = table.unpack(GetEntityCoords(vehicule[3],true))
+  local vehicle = vehicles[vtype]
+  if vehicle then
+    local x,y,z = table.unpack(GetEntityCoords(vehicle[3],true))
     local px,py,pz = tvRP.getPosition()
 
     if GetDistanceBetweenCoords(x,y,z,px,py,pz,true) < max_range then -- check distance with the vehicule
       -- remove vehicle
-      Citizen.InvokeNative(0xEA386986E786A54F, Citizen.PointerValueIntInitialized(vehicule[3]))
+      Citizen.InvokeNative(0xEA386986E786A54F, Citizen.PointerValueIntInitialized(vehicle[3]))
       vehicles[vtype] = nil
+      tvRP.notify("Vehicle stored.")
     else
       tvRP.notify("Too far away from the vehicle.")
     end
