@@ -10,7 +10,7 @@ Contributions are welcomed.
 * player state auto saved to database (hunger,thirst,weapons,player apparence,position)
 * money (wallet/bank)
 * inventory (with custom item definition)
-* basic implementations: ATM, market, market, skinshop, garage
+* basic implementations: ATM, market, gunshop, skinshop, garage
 * identification system (persistant user id for database storage)
 * user custom data key/value
 * gui (dynamic menu, progress bars, prompt) API
