@@ -18,7 +18,8 @@ server_scripts{
   "modules/basic_market.lua",
   "modules/basic_gunshop.lua",
   "modules/basic_garage.lua",
-  "modules/basic_items.lua"
+  "modules/basic_items.lua",
+  "modules/basic_skinshop.lua"
 }
 
 -- client scripts

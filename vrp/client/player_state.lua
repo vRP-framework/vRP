@@ -119,6 +119,14 @@ end
 
 -- PLAYER CUSTOMIZATION
 
+function tvRP.getDrawables(part)
+  return GetNumberOfPedDrawableVariations(GetPlayerPed(-1),part)
+end
+
+function tvRP.getDrawableTextures(part,drawable)
+  return GetNumberOfPedTextureVariations(GetPlayerPed(-1),part,drawable)
+end
+
 function tvRP.getCustomization()
   local ped = GetPlayerPed(-1)
 
@@ -133,6 +141,7 @@ function tvRP.getCustomization()
   return custom
 end
 
+-- partial customization (only what is set is changed)
 function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] components plus .modelhash or .model
   if custom then
     local ped = GetPlayerPed(-1)
@@ -161,7 +170,7 @@ function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] com
 
     for k,v in pairs(custom) do
       if k ~= "model" and k ~= "modelhash" then
-        SetPedComponentVariation(ped,tonumber(k),v[1],v[2],v[3])
+        SetPedComponentVariation(ped,tonumber(k),v[1],v[2],v[3] or 2)
       end
     end
   end
