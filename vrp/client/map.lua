@@ -6,7 +6,7 @@
 
 -- create new blip, return native id
 function tvRP.addBlip(x,y,z,idtype,idcolor,text)
-  local blip = AddBlipForCoord(x,y,z)
+  local blip = AddBlipForCoord(x+0.001,y+0.001,z+0.001) -- solve strange gta5 madness with integer -> double
   SetBlipSprite(blip, idtype)
   SetBlipAsShortRange(blip, true)
   SetBlipColour(blip,idcolor)
@@ -67,7 +67,10 @@ function tvRP.addMarker(x,y,z,sx,sy,sz,r,g,b,a,visible_distance)
   if marker.b == nil then marker.b = 255 end
   if marker.a == nil then marker.a = 200 end
 
-  -- fix scale issue
+  -- fix gta5 integer -> double issue
+  marker.x = marker.x+0.001
+  marker.y = marker.y+0.001
+  marker.z = marker.z+0.001
   marker.sx = marker.sx+0.001
   marker.sy = marker.sy+0.001
   marker.sz = marker.sz+0.001
@@ -126,7 +129,7 @@ local areas = {}
 
 -- create/update a cylinder area
 function tvRP.setArea(name,x,y,z,radius,height)
-  local area = {x=x,y=y,z=z,radius=radius,height=height}
+  local area = {x=x+0.001,y=y+0.001,z=z+0.001,radius=radius,height=height}
 
   -- default values
   if area.height == nil then area.height = 6 end

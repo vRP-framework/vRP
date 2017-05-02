@@ -17,6 +17,7 @@ server_scripts{
   "modules/basic_atm.lua",
   "modules/basic_market.lua",
   "modules/basic_gunshop.lua",
+  "modules/basic_garage.lua",
   "modules/basic_items.lua"
 }
 
@@ -28,7 +29,8 @@ client_scripts{
   "client/gui.lua",
   "client/player_state.lua",
   "client/survival.lua",
-  "client/map.lua"
+  "client/map.lua",
+  "client/basic_garage.lua"
 }
 
 -- client files
