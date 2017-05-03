@@ -13,7 +13,9 @@ window.addEventListener("load",function(){
   //init dynamic menu
   var dynamic_menu = new Menu();
   var wprompt = new WPrompt();
+  var requestmgr = new RequestManager();
 
+  requestmgr.onResponse = function(id,ok){ $.post("http://vrp/request",JSON.stringify({act: "response", id: id, ok: ok})); }
   wprompt.onClose = function(){ $.post("http://vrp/prompt",JSON.stringify({act: "close", result: wprompt.result})); }
   dynamic_menu.onClose = function(){ $.post("http://vrp/menu",JSON.stringify({act: "close", id: dynamic_menu.id})); }
   dynamic_menu.onValid = function(choice){ $.post("http://vrp/menu",JSON.stringify({act: "valid", id: dynamic_menu.id, choice: choice})); }
@@ -81,6 +83,10 @@ window.addEventListener("load",function(){
     else if(data.act == "prompt"){
       wprompt.open(data.title,data.text);
     }
+    // REQUEST
+    else if(data.act == "request"){
+      requestmgr.addRequest(data.id,data.text,data.time);
+    }
     // DIV
     else if(data.act == "set_div"){
       var div = divs[data.name];
@@ -135,6 +141,13 @@ window.addEventListener("load",function(){
           wprompt.close();
         else
           current_menu.close();
+
+      }
+      else if(data.event == "F5"){
+        requestmgr.respond(true);
+      }
+      else if(data.event == "F6"){
+        requestmgr.respond(false);
       }
     }
   });

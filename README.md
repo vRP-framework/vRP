@@ -331,6 +331,11 @@ vRP.closeMenu(source)
 -- cb_result: function(player,result)
 vRP.prompt(source,title,default_text,cb_result)
 
+-- ask something to a player with a limited amount of time to answer (yes|no request)
+-- time: request duration in seconds
+-- cb_ok: function(player,ok)
+vRP.request(source,text,time,cb_ok)
+
 -- TUNNEL SERVER API
 
 -- TUNNEL CLIENT API

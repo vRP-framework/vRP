@@ -106,3 +106,35 @@ html, body {
   font-style: italic;
   padding: 3px;
 }
+
+/* request manager */
+.request_manager{
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  text-align: right;
+}
+
+.request_manager div{
+  margin-top: 10px;
+}
+
+.request_manager div > span{
+  font-size: 1.2em;
+  color: white;
+  font-weight: bold;
+  background-color: rgba(0,0,0,0.50);
+  padding: 4px;
+}
+
+.request_manager .yes{
+  padding-left: 15px;
+  color: rgb(0,255,0);
+  font-size: 1em;
+}
+
+.request_manager .no{
+  color: rgb(255,0,0);
+  font-size: 1em;
+}
+

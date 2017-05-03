@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS vrp_user_identities(
   name VARCHAR(50),
   age INTEGER,
   CONSTRAINT pk_user_identities PRIMARY KEY(user_id),
-  CONSTRAINT fk_user_identities_users FOREIGN KEY(user_id) REFERENCES vrp_users(id)
+  CONSTRAINT fk_user_identities_users FOREIGN KEY(user_id) REFERENCES vrp_users(id) ON DELETE CASCADE,
+  INDEX(registration)
 );
 ]])
 

@@ -1,8 +1,8 @@
 local Tools = require("resources/vrp/lib/Tools")
-local ids = Tools.newIDGenerator()
 
 -- MENU
 
+local menu_ids = Tools.newIDGenerator()
 local client_menus = {}
 
 -- open dynamic menu to client
@@ -25,7 +25,7 @@ function vRP.openMenu(source,menudef)
   menudata.css = menudef.css or {}
 
   -- set new id
-  menudata.id = ids:gen() 
+  menudata.id = menu_ids:gen() 
 
   -- add client menu
   client_menus[menudata.id] = {def = menudef, source = source}
@@ -48,6 +48,31 @@ function vRP.prompt(source,title,default_text,cb_result)
   prompts[source] = cb_result
 
   vRPclient.prompt(source,{title,default_text})
+end
+
+-- REQUEST
+
+local request_ids = Tools.newIDGenerator()
+local requests = {}
+
+-- ask something to a player with a limited amount of time to answer (yes|no request)
+-- time: request duration in seconds
+-- cb_ok: function(player,ok)
+function vRP.request(source,text,time,cb_ok)
+  local id = request_ids:gen()
+  local request = {source = source, cb_ok = cb_ok, done = false}
+  requests[id] = request
+
+  vRPclient.request(source,{id,text,time}) -- send request to client
+
+  -- end request with a timeout if not already ended
+  SetTimeout(time*1000,function()
+    if not request.done then
+      request.cb_ok(source,false) -- negative response
+      request_ids:free(id)
+      requests[id] = nil
+    end
+  end)
 end
 
 -- MAIN MENU
@@ -85,7 +110,7 @@ function tvRP.closeMenu(id)
       menu.def.onclose(source)
     end
 
-    ids:free(id)
+    menu_ids:free(id)
     client_menus[id] = nil
   end
 end
@@ -107,6 +132,17 @@ function tvRP.promptResult(text)
   if prompt ~= nil then
     prompts[source] = nil
     prompt(source,text)
+  end
+end
+
+-- receive request result
+function tvRP.requestResult(id,ok)
+  local request = requests[id]
+  if request and request.source == source then -- end request
+    request.done = true -- set done, the timeout will not call the callback a second time
+    request.cb_ok(source,not not ok) -- callback
+    request_ids:free(id)
+    requests[id] = nil
   end
 end
 

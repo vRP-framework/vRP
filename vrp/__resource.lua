@@ -44,5 +44,6 @@ files{
   "gui/Menu.js",
   "gui/ProgressBar.js",
   "gui/WPrompt.js",
+  "gui/RequestManager.js",
   "gui/Div.js"
 }

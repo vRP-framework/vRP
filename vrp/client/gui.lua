@@ -15,6 +15,12 @@ function tvRP.prompt(title,default_text)
   SetNuiFocus(true)
 end
 
+-- REQUEST
+
+function tvRP.request(id,text,time)
+  SendNUIMessage({act="request",id=id,text=tostring(text),time = time})
+end
+
 -- gui menu events
 RegisterNUICallback("menu",function(data,cb)
   if data.act == "close" then
@@ -30,6 +36,13 @@ RegisterNUICallback("prompt",function(data,cb)
     SetNuiFocus(false)
     SetNuiFocus(false)
     vRPserver.promptResult({data.result})
+  end
+end)
+
+-- gui request event
+RegisterNUICallback("request",function(data,cb)
+  if data.act == "response" then
+    vRPserver.requestResult({data.id,data.ok})
   end
 end)
 
@@ -97,6 +110,7 @@ end
 Citizen.CreateThread(function()
   while true do
     Citizen.Wait(0)
+    -- PHONE CONTROLS
     if IsControlJustPressed(3,172) then SendNUIMessage({act="event",event="UP"}) end
     if IsControlJustPressed(3,173) then SendNUIMessage({act="event",event="DOWN"}) end
     if IsControlJustPressed(3,174) then SendNUIMessage({act="event",event="LEFT"}) end
@@ -106,6 +120,11 @@ Citizen.CreateThread(function()
 
     -- INPUT_PHONE, open general menu
     if IsControlJustPressed(3,27) then vRPserver.openMainMenu({}) end
+
+    -- F5,F6 (control michael, control franklin)
+    if IsControlJustPressed(1,166) then SendNUIMessage({act="event",event="F5"}) end
+    if IsControlJustPressed(1,167) then SendNUIMessage({act="event",event="F6"}) end
+
   end
 end)
 
