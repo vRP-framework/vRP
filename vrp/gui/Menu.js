@@ -39,9 +39,6 @@ Menu.prototype.open = function(name,choices) //menu name and choices as [name,de
 
   this.name = name;
   this.choices = choices;
-  this.selected = -1;
-  if(this.choices.length > 0)
-    this.selected = 0;
 
   this.div_choices.innerHTML = "";
   this.el_choices = [];
@@ -55,6 +52,8 @@ Menu.prototype.open = function(name,choices) //menu name and choices as [name,de
 
   //build dom
   this.div_header.innerHTML = name;
+
+  this.setSelected(0);
 }
 
 Menu.prototype.setSelected = function(i)
