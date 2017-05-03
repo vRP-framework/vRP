@@ -33,6 +33,43 @@ function tvRP.getSpeed()
   return math.sqrt(vx*vx+vy*vy+vz*vz)
 end
 
+function tvRP.getNearestPlayers(radius)
+  local r = {}
+
+  local ped = GetPlayerPed(i)
+  local pid = PlayerId()
+  local px,py,pz = tvRP.getPosition()
+
+  for i=0,GetNumberOfPlayers()-1 do
+    if i ~= pid then
+      local oped = GetPlayerPed(i)
+
+      local x,y,z = table.unpack(GetEntityCoords(oped,true))
+      local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
+      if distance <= radius then
+        r[GetPlayerServerId(i)] = distance
+      end
+    end
+  end
+
+  return r
+end
+
+function tvRP.getNearestPlayer(radius)
+  local p = nil
+
+  local players = tvRP.getNearestPlayers(radius)
+  local min = radius+10.0
+  for k,v in pairs(players) do
+    if v < min then
+      min = v
+      p = k
+    end
+  end
+
+  return p
+end
+
 function tvRP.notify(msg)
   SetNotificationTextEntry("STRING")
   AddTextComponentString(msg)

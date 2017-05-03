@@ -15,9 +15,40 @@ function vRP.defInventoryItem(idname,name,description,choices)
   -- build item menu
   item.menudata = {name=name,css={top="75px",header_color="rgba(0,125,255,0.75)"}}
 
+  -- add defined choices
   for k,v in pairs(choices) do
     item.menudata[k] = v
   end
+
+  -- add give action
+  item.menudata["Give"] = {function(player,choice)
+    local user_id = vRP.getUserId(player)
+    if user_id ~= nil then
+      -- get nearest player
+      vRPclient.getNearestPlayer(player,{10},function(nplayer)
+        if nplayer ~= nil then
+          local nuser_id = vRP.getUserId(nplayer)
+          if nuser_id ~= nil then
+            -- prompt number
+            vRP.prompt(player,"Amount to give: ","",function(player,amount)
+              local amount = tonumber(amount)
+              if vRP.tryGetInventoryItem(user_id,idname,amount) then
+                vRP.giveInventoryItem(nuser_id,idname,amount)
+                vRPclient.notify(player,{"Given "..amount.." "..name.."."})
+                vRPclient.notify(nplayer,{"Received "..amount.." "..name.."."})
+              else
+                vRPclient.notify(player,{"Invalid number of items."})
+              end
+            end)
+          else
+            vRPclient.notify(player,{"No player near you."})
+          end
+        else
+          vRPclient.notify(player,{"No player near you."})
+        end
+      end)
+    end
+  end,"Give to the nearest player."}
 end
 
 -- add item to a connected user inventory
@@ -77,7 +108,7 @@ function vRP.openInventory(source)
       local choose = function(player,choice)
         local item = vRP.items[kitems[choice]]
         if item then
-          -- copy menu
+          -- copy item menu
           local submenudata = {}
           for k,v in pairs(item.menudata) do
             submenudata[k] = v
