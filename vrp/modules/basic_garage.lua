@@ -125,8 +125,6 @@ for group,vehicles in pairs(vehicle_groups) do
   end, "Put your current vehicle in the garage."}
 end
 
-local first_build = true
-
 local function build_client_garages(source)
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
