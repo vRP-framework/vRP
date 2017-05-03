@@ -20,6 +20,7 @@ window.addEventListener("load",function(){
 
   var current_menu = dynamic_menu;
   var pbars = {}
+  var divs = {}
 
   //progress bar ticks (25fps)
   setInterval(function(){
@@ -50,6 +51,7 @@ window.addEventListener("load",function(){
     else if(data.act == "close_menu"){ //CLOSE MENU
       current_menu.close();
     }
+    // PROGRESS BAR
     else if(data.act == "set_pbar"){
       var pbar = pbars[data.pbar.name];
       if(pbar)
@@ -75,9 +77,42 @@ window.addEventListener("load",function(){
         delete pbars[data.name];
       }
     }
+    // PROMPT 
     else if(data.act == "prompt"){
       wprompt.open(data.title,data.text);
     }
+    // DIV
+    else if(data.act == "set_div"){
+      var div = divs[data.name];
+      if(div)
+        div.removeDom();
+
+      divs[data.name] = new Div(data)
+      divs[data.name].addDom();
+    }
+    else if(data.act == "set_div_css"){
+      var div = divs[data.name];
+      if(div)
+        div.setCss(data.css);
+    }
+    else if(data.act == "set_div_content"){
+      var div = divs[data.name];
+      if(div)
+        div.setContent(data.content);
+    }
+    else if(data.act == "div_execjs"){
+      var div = divs[data.name];
+      if(div)
+        div.executeJS(data.js);
+    }
+    else if(data.act == "remove_div"){
+      var div = divs[data.name];
+      if(div)
+        div.removeDom();
+
+      delete divs[data.name];
+    }
+    // CONTROLS
     else if(data.act == "event"){ //EVENTS
       if(data.event == "UP"){
         if(!wprompt.opened)

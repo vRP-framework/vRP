@@ -60,6 +60,39 @@ function tvRP.removeProgressBar(name)
   SendNUIMessage({act="remove_pbar", name = name})
 end
 
+-- DIV
+
+-- set a div
+-- css: plain global css, the div class is "div_name"
+-- content: html content of the div
+function tvRP.setDiv(name,css,content)
+  SendNUIMessage({act="set_div", name = name, css = css, content = content})
+end
+
+-- set the div css
+function tvRP.setDivCss(name,css)
+  SendNUIMessage({act="set_div_css", name = name, css = css})
+end
+
+-- set the div content
+function tvRP.setDivContent(name,content)
+  SendNUIMessage({act="set_div_content", name = name, content = content})
+end
+
+-- execute js for the div in a simple sandbox (useful to optimize data change using functions)
+-- you can attach objects or functions to the div element for later calls
+-- js variables: div (the div element), document (the document)
+function tvRP.divExecuteJS(name,js)
+  SendNUIMessage({act="div_execjs", name = name, js = js})
+end
+
+-- remove the div
+function tvRP.removeDiv(name)
+  SendNUIMessage({act="remove_div", name = name})
+end
+
+-- CONTROLS
+
 -- gui controls (from cellphone)
 Citizen.CreateThread(function()
   while true do

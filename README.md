@@ -335,6 +335,10 @@ vRP.prompt(source,title,default_text,cb_result)
 
 -- TUNNEL CLIENT API
 
+
+-- progress bar
+
+
 -- create/update a progress bar 
 -- anchor: the anchor string type (multiple progress bars can be set for the same anchor)
 ---- "minimap" => above minimap (will divide that horizontal space)
@@ -350,6 +354,32 @@ vRP.setProgressBarText(name,text)
 
 -- remove progress bar
 vRP.removeProgressBar(name)
+
+
+-- div
+
+-- dynamic div are used to display formatted data
+-- if only some part of the div changes, use JS pre-defined functions to hide/show the div and change the data
+
+-- set a div
+-- css: plain global css, the div class is ".div_nameofthediv"
+-- content: html content of the div
+vRP.setDiv(name,css,content)
+
+-- set the div css
+vRP.setDivCss(name,css)
+
+-- set the div content
+vRP.setDivContent(name,content)
+
+-- execute js for the div in a simple sandbox 
+-- you can attach objects or functions to the div element for later calls
+-- use div.querySelector to find the div children elements
+-- js context: div (the div element)
+vRP.divExecuteJS(name,js)
+
+-- remove the div
+vRP.removeDiv(name)
 
 ```
 

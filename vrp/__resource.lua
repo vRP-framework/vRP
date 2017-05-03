@@ -43,5 +43,6 @@ files{
   "gui/main.js",
   "gui/Menu.js",
   "gui/ProgressBar.js",
-  "gui/WPrompt.js"
+  "gui/WPrompt.js",
+  "gui/Div.js"
 }
