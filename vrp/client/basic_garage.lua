@@ -28,6 +28,7 @@ function tvRP.spawnGarageVehicle(vtype,name) -- vtype is the vehicle type (one v
       SetVehicleOnGroundProperly(nveh)
       SetEntityInvincible(nveh,false)
       SetPedIntoVehicle(GetPlayerPed(-1),nveh,-1) -- put player inside
+      SetVehicleNumberPlateText(nveh, "P "..tvRP.getRegistrationNumber())
 
       vehicles[vtype] = {group,name,nveh} -- set current vehicule
 

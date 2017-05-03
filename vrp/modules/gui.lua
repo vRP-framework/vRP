@@ -105,8 +105,8 @@ end
 function tvRP.promptResult(text)
   local prompt = prompts[source]
   if prompt ~= nil then
-    prompt(source,text)
     prompts[source] = nil
+    prompt(source,text)
   end
 end
 

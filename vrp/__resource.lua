@@ -12,6 +12,7 @@ server_scripts{
   "modules/map.lua",
   "modules/money.lua",
   "modules/inventory.lua",
+  "modules/identity.lua",
 
   -- basic implementations
   "modules/basic_atm.lua",
@@ -31,6 +32,7 @@ client_scripts{
   "client/player_state.lua",
   "client/survival.lua",
   "client/map.lua",
+  "client/identity.lua",
   "client/basic_garage.lua"
 }
 
