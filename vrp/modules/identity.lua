@@ -100,10 +100,8 @@ local function ch_identity(player,choice)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
     vRP.prompt(player,"Enter your first name: ","",function(player,firstname)
-      print(player..","..firstname)
       if string.len(firstname) >= 2 and string.len(firstname) < 50 then
         vRP.prompt(player,"Enter your name: ","",function(player,name)
-          print(player..","..name)
           if string.len(name) >= 2 and string.len(name) < 50 then
             vRP.prompt(player,"Enter your age: ","",function(player,age)
               age = tonumber(age)
