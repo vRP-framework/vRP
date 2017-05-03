@@ -295,7 +295,7 @@ AddEventHandler("playerConnecting",function(name,setMessage)
 
             -- init user tmp table
             local tmpdata = vRP.getUserTmpTable(user_id)
-            tmpdata.last_login = vRP.getLastLogin(user_id)
+            tmpdata.last_login = vRP.getLastLogin(user_id) or ""
             tmpdata.first_spawn = true
 
             -- set last login

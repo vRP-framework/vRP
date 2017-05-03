@@ -141,28 +141,31 @@ end)
 
 local function ch_give(player,choice)
   -- get nearest player
-  vRPclient.getNearestPlayer(player,{10},function(nplayer)
-    if nplayer ~= nil then
-      local nuser_id = vRP.getUserId(nplayer)
-      if nuser_id ~= nil then
-        -- prompt number
-        vRP.prompt(player,"Amount to give: ","",function(player,amount)
-          local amount = tonumber(amount)
-          if amount > 0 and vRP.tryPayment(user_id,amount) then
-            vRP.giveMoney(nuser_id,amount)
-            vRPclient.notify(player,{"Given "..amount.." $."})
-            vRPclient.notify(nplayer,{"Received "..amount.." $."})
-          else
-            vRPclient.notify(player,{"Not enough money or invalid amount."})
-          end
-        end)
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil then
+    vRPclient.getNearestPlayer(player,{10},function(nplayer)
+      if nplayer ~= nil then
+        local nuser_id = vRP.getUserId(nplayer)
+        if nuser_id ~= nil then
+          -- prompt number
+          vRP.prompt(player,"Amount to give: ","",function(player,amount)
+            local amount = tonumber(amount)
+            if amount > 0 and vRP.tryPayment(user_id,amount) then
+              vRP.giveMoney(nuser_id,amount)
+              vRPclient.notify(player,{"Given "..amount.." $."})
+              vRPclient.notify(nplayer,{"Received "..amount.." $."})
+            else
+              vRPclient.notify(player,{"Not enough money or invalid amount."})
+            end
+          end)
+        else
+          vRPclient.notify(player,{"No player near you."})
+        end
       else
         vRPclient.notify(player,{"No player near you."})
       end
-    else
-      vRPclient.notify(player,{"No player near you."})
-    end
-  end)
+    end)
+  end
 end
 
 -- add player give money to main menu
