@@ -172,6 +172,19 @@ vRP.getCustomization()
 vRP.setCustomization(customization_data)
 ```
 
+#### Identity 
+
+The identity module add identity cards with a car registration number (one per identity, all vehicles will have the same registration number).
+
+```lua
+-- PROXY API
+
+-- get user identity
+-- return nil if not found
+-- identity keys are the database fields: user_id, name, firstname, age, registration
+vRP.getUserIdentity(user_id)
+```
+
 #### Money
 
 The money is managed with direct SQL requests to prevent most potential value corruptions.
