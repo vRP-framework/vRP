@@ -83,6 +83,19 @@ function vRP.tryGetInventoryItem(user_id,idname,amount)
   return false
 end
 
+-- get user inventory amount of item
+function vRP.getInventoryItemAmount(user_id,idname)
+  local data = vRP.getUserDataTable(user_id)
+  if data and data.inventory then
+    local entry = data.inventory[idname]
+    if entry then
+      return entry.amount
+    end
+  end
+
+  return 0
+end
+
 -- clear connected user inventory
 function vRP.clearInventory(user_id)
   local data = vRP.getUserDataTable(user_id)

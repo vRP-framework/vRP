@@ -33,6 +33,7 @@ html, body {
   font-weight: bold;
   padding: 9px;
   font-size: 1.2em;
+  max-width: 500px;
 }
 
 .menu h1{

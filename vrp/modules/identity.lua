@@ -149,8 +149,6 @@ local function cityhall_leave()
   vRP.closeMenu(source)
 end
 
-local first_build = true
-
 local function build_client_cityhall(source) -- build the city hall area/marker/blip
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then

@@ -13,6 +13,7 @@ server_scripts{
   "modules/money.lua",
   "modules/inventory.lua",
   "modules/identity.lua",
+  "modules/business.lua",
 
   -- basic implementations
   "modules/basic_atm.lua",
