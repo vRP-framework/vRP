@@ -78,7 +78,7 @@ local q_get_userdata = vRP.sql:prepare("SELECT dvalue FROM vrp_user_data WHERE u
 
 local q_get_banned = vRP.sql:prepare("SELECT banned FROM vrp_users WHERE id = @user_id")
 local q_set_banned = vRP.sql:prepare("UPDATE vrp_users SET banned = @banned WHERE id = @user_id")
-local q_get_whitelisted = vRP.sql:prepare("SELECT banned FROM vrp_users WHERE id = @user_id")
+local q_get_whitelisted = vRP.sql:prepare("SELECT whitelisted FROM vrp_users WHERE id = @user_id")
 local q_set_whitelisted = vRP.sql:prepare("UPDATE vrp_users SET whitelisted = @whitelisted WHERE id = @user_id")
 local q_set_last_login = vRP.sql:prepare("UPDATE vrp_users SET last_login = @last_login WHERE id = @user_id")
 local q_get_last_login = vRP.sql:prepare("SELECT last_login FROM vrp_users WHERE id = @user_id")
