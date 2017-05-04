@@ -1,3 +1,4 @@
+local cfg = require("resources/vrp/cfg/player_state")
 
 -- client -> server events
 AddEventHandler("vRP:playerSpawned", function()
@@ -7,11 +8,15 @@ AddEventHandler("vRP:playerSpawned", function()
     local tmpdata = vRP.getUserTmpTable(user_id)
 
     if tmpdata.first_spawn then -- first spawn
+      -- cascade load customization then weapons
+      if data.customization == nil then
+        data.customization = cfg.default_customization
+      end
+
       if data.position ~= nil then -- teleport to saved pos
         vRPclient.teleport(source,{data.position.x,data.position.y,data.position.z})
       end
 
-      -- cascade load customization then weapons
       if data.customization ~= nil then
         vRPclient.setCustomization(source,{data.customization},function()
           if data.weapons ~= nil then -- load saved weapons
