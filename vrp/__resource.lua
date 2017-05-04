@@ -14,6 +14,7 @@ server_scripts{
   "modules/inventory.lua",
   "modules/identity.lua",
   "modules/business.lua",
+  "modules/item_transformer.lua",
 
   -- basic implementations
   "modules/basic_atm.lua",

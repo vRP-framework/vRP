@@ -13,6 +13,7 @@ Contributions are welcomed.
 * money (wallet/bank)
 * inventory (with custom item definition)
 * basic implementations: ATM, market, gunshop, skinshop, garage
+* item transformer (harvest, process, produce)
 * identification system (persistant user id for database storage)
 * user custom data key/value
 * gui (dynamic menu, progress bars, prompt) API
@@ -290,6 +291,59 @@ vRP.defInventoryItem({"water_bottle","Water bottle","Drink this my friend.",wb_c
 vRP.giveInventoryItem({user_id,"water_bottle",2})
 
 ```
+
+#### Item transformer
+
+The item transformer is a very generic way to create harvest and processing areas.
+The concept is simple: 
+* you can use the action of the item transformer when entering the area
+* the item transformer has a number of work units, regenerated at a specific rate
+* the item transformer take reagents (money, items or none) to produce products (money or items) and consume a work unit
+
+This way, processing and harvesting are limited by the work units.
+Item transformers can be dynamically set and removed, if you want to build random harvest points.
+
+```lua
+-- add an item transformer
+-- name: transformer id name
+-- itemtr: item transformer definition table
+--- name
+--- max_units
+--- units_per_minute
+--- x,y,z,radius,height (area properties)
+--- r,g,b (color)
+--- action
+--- description
+--- in_money
+--- out_money
+--- reagents: items as idname => amount
+--- products: items as idname => amount
+vRP.setItemTransformer(name,itemtr)
+
+
+-- Example from another resource using proxy
+
+local itemtr = {
+  name="Water bottles tree", -- menu name
+  r=0,g=125,b=255, -- color
+  max_units=10,
+  units_per_minute=5,
+  x=1858,y=3687.5,z=34.26, -- pos
+  radius=5, height=1.5, -- area
+  action="Harvest", -- action name
+  description="Harvest some water bottles.", -- action description
+  in_money=0, -- money taken per unit
+  out_money=0, -- money earned per unit
+  reagents={}, -- items taken per unit
+  products={ -- items given per unit
+    ["water_bottle"] = 1
+  }
+}
+
+vRP.setItemTransformer({"my_unique_transformer",itemtr})
+```
+
+For static areas, configure the file **cfg/item_transformers.lua**, the transformers will be automatically added.
 
 #### GUI
 
