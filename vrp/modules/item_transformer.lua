@@ -13,6 +13,7 @@ local transformers = {}
 local function tr_remove_player(tr,player) -- remove player from transforming
   tr.players[player] = nil -- dereference player
   vRPclient.removeProgressBar(player,{"vRP:tr:"..tr.name})
+  vRP.closeMenu(player)
 end
 
 local function tr_add_player(tr,player) -- add player to transforming
