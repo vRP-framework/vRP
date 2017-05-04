@@ -8,6 +8,8 @@ Contributions are welcomed.
 
 ## Features
 * player state auto saved to database (hunger,thirst,weapons,player apparence,position)
+* player identity
+* business system
 * money (wallet/bank)
 * inventory (with custom item definition)
 * basic implementations: ATM, market, gunshop, skinshop, garage
@@ -20,10 +22,9 @@ Contributions are welcomed.
 * tunnel for easy server/clients communication
 
 ## TODO LIST
-* citizen informations (identity, home)
+* home
 * job/services
-* business system
-* extensible menu (ex: global menu, interaction menu)
+* groups/permissions
 
 ## Tutorials
 
