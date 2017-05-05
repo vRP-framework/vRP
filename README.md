@@ -7,6 +7,8 @@ The project aim to create a generic and simple RP framework to prevent everyone 
 Contributions are welcomed.
 
 ## Features
+* basic admin tools (kick,ban,whitelist)
+* groups/permissions
 * player state auto saved to database (hunger,thirst,weapons,player apparence,position)
 * player identity
 * business system
@@ -25,7 +27,6 @@ Contributions are welcomed.
 ## TODO LIST
 * home
 * job/services
-* groups/permissions
 
 ## Tutorials
 
@@ -71,6 +72,8 @@ vRP.notify({"A notification."}) -- notify the player
 
 For the client/server tunnel API, the interface is also "vRP", see the Tunnel library below.
 
+In the config files callbacks, you can use directly vRP and vRPclient (the tunnel to the clients).
+
 #### Base
 
 ```lua
@@ -106,6 +109,24 @@ vRP.getSpeed()
 
 -- notify the player
 vRP.notify(message)
+```
+
+#### Group/permission
+
+```lua
+-- PROXY API
+
+-- add a group to a connected user
+vRP.addUserGroup(user_id,group)
+
+-- remove a group from a connected user
+vRP.removeUserGroup(user_id,group)
+
+-- check if the user has a specific group
+vRP.hasGroup(user_id,group)
+
+-- check if the user has a specific permission
+vRP.hasPermission(user_id, perm)
 ```
 
 #### Survival

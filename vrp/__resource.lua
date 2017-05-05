@@ -6,6 +6,8 @@ ui_page "gui/index.html"
 -- server scripts
 server_scripts{ 
   "base.lua",
+  "modules/group.lua",
+  "modules/admin.lua",
   "modules/gui.lua",
   "modules/survival.lua",
   "modules/player_state.lua",
