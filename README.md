@@ -109,6 +109,29 @@ vRP.getSpeed()
 
 -- notify the player
 vRP.notify(message)
+
+
+-- FUNCTIONS BELOW ARE EXPERIMENTALS
+
+-- get nearest players (inside the radius)
+-- return map of player => distance in meters
+vRP.getNearestPlayers(radius)
+
+-- get nearest player (inside the radius)
+-- return player or nil
+vRP.getNearestPlayer(radius)
+
+-- play upper anim (player can move, only the upper part is animated)
+-- dict,name: see http://docs.ragepluginhook.net/html/62951c37-a440-478c-b389-c471230ddfc5.htm
+-- looping: if true, will play the anim forever until stopUpperAnim is called or another upper anim is played
+vRP.playUpperAnim(dict,name,looping)
+
+-- stop the upper animation
+vRP.stopUpperAnim()
+
+-- play full anim (player can't move until the animation finish)
+-- dict,name: see http://docs.ragepluginhook.net/html/62951c37-a440-478c-b389-c471230ddfc5.htm
+vRP.playFullAnim(dict,name)
 ```
 
 #### Group/permission

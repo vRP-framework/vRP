@@ -11,6 +11,7 @@ wb_choices["Drink"] = {function(player,choice)
     if vRP.tryGetInventoryItem(user_id,"water_bottle",1) then
       vRP.varyThirst(user_id,-35)
       vRPclient.notify(player,{"~b~ Drinking water."})
+      vRPclient.playUpperAnim(player,{"mp_player_intdrink","loop_bottle",false})
       vRP.closeMenu(player)
     end
   end

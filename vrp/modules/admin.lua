@@ -120,6 +120,17 @@ local function ch_unban(player,choice)
   end
 end
 
+local function ch_emote(player,choice)
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil and vRP.hasPermission(user_id,"player.custom_emote") then
+    vRP.prompt(player,"Animation dict: ","",function(player,dict)
+      vRP.prompt(player,"Animation name: ","",function(player,name)
+        vRPclient.playUpperAnim(player,{dict,name,false})
+      end)
+    end)
+  end
+end
+
 AddEventHandler("vRP:buildMainMenu",function(player)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
@@ -148,6 +159,9 @@ AddEventHandler("vRP:buildMainMenu",function(player)
     end
     if vRP.hasPermission(user_id,"player.unban") then
       choices["@Unban"] = {ch_unban}
+    end
+    if vRP.hasPermission(user_id,"player.custom_emote") then
+      choices["@Custom emote"] = {ch_emote}
     end
 
     vRP.buildMainMenu(player,choices)

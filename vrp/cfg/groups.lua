@@ -20,7 +20,8 @@ cfg.groups = {
     "player.unwhitelist",
     "player.kick",
     "player.ban",
-    "player.unban"
+    "player.unban",
+    "player.custom_emote"
   }
 }
 
