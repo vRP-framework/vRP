@@ -24,7 +24,7 @@ local function ch_list(player,choice)
       end
 
       player_lists[player] = true
-      vRPclient.setDiv(player,{"user_list",".div_user_list{ margin: auto; padding: 8px; width: 500px; margin-top: 200px; background: black; color: white; font-weight: bold; ", content})
+      vRPclient.setDiv(player,{"user_list",".div_user_list{ margin: auto; padding: 8px; width: 500px; margin-top: 80px; background: black; color: white; font-weight: bold; ", content})
     end
   end
 end
