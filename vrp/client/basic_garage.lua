@@ -19,6 +19,7 @@ function tvRP.spawnGarageVehicle(vtype,name) -- vtype is the vehicle type (one v
     while not HasModelLoaded(mhash) and i < 10000 do
       RequestModel(mhash)
       Citizen.Wait(10)
+      i = i+1
     end
 
     -- spawn car
