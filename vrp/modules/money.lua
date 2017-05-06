@@ -1,3 +1,4 @@
+local lang = vRP.lang
 
 -- Money module, wallet/bank API
 -- The money is managed with direct SQL requests to prevent most potential value corruptions
@@ -148,21 +149,21 @@ local function ch_give(player,choice)
         local nuser_id = vRP.getUserId(nplayer)
         if nuser_id ~= nil then
           -- prompt number
-          vRP.prompt(player,"Amount to give: ","",function(player,amount)
+          vRP.prompt(player,lang.money.give.amount()..": ","",function(player,amount)
             local amount = tonumber(amount)
             if amount > 0 and vRP.tryPayment(user_id,amount) then
               vRP.giveMoney(nuser_id,amount)
-              vRPclient.notify(player,{"Given "..amount.." $."})
-              vRPclient.notify(nplayer,{"Received "..amount.." $."})
+              vRPclient.notify(player,{lang.money.given({amount})})
+              vRPclient.notify(nplayer,{lang.money.received({amount})})
             else
-              vRPclient.notify(player,{"Not enough money or invalid amount."})
+              vRPclient.notify(player,{lang.money.not_enough()})
             end
           end)
         else
-          vRPclient.notify(player,{"No player near you."})
+          vRPclient.notify(player,{lang.common.no_player_near()})
         end
       else
-        vRPclient.notify(player,{"No player near you."})
+        vRPclient.notify(player,{lang.common.no_player_near()})
       end
     end)
   end
@@ -173,7 +174,7 @@ AddEventHandler("vRP:buildMainMenu",function(player)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
     local choices = {}
-    choices["Give money"] = {ch_give, "Give money to the nearest player."}
+    choices[lang.money.give.title()] = {ch_give, lang.money.give.description()}
 
     vRP.buildMainMenu(player,choices)
   end

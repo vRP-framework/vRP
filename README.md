@@ -29,6 +29,7 @@ Contributions are welcomed.
 * police stuff
 * emotes
 * job/services
+* phone
 
 ## Tutorials
 

@@ -1,59 +1,60 @@
 
 -- a basic ATM implementation
 
+local lang = vRP.lang
 local cfg = require("resources/vrp/cfg/atms")
 local atms = cfg.atms
 
 local function atm_choice_deposit()
-  vRP.prompt(source,"Enter amount of money for deposit:","",function(player,v)
+  vRP.prompt(source,lang.atm.deposit.prompt(),"",function(player,v)
     v = tonumber(v)
 
     if v > 0 then
       local user_id = vRP.getUserId(source)
       if user_id ~= nil then
         if vRP.tryDeposit(user_id,v) then
-          vRPclient.notify(source,{v.." $ deposited."})
+          vRPclient.notify(source,{lang.atm.deposit.deposited({v})})
         else
-          vRPclient.notify(source,{"You don't have enough money."})
+          vRPclient.notify(source,{lang.money.not_enough()})
         end
       end
     else
-      vRPclient.notify(source,{"Invalid value."})
+      vRPclient.notify(source,{lang.common.invalid_value()})
     end
   end)
 end
 
 local function atm_choice_withdraw()
-  vRP.prompt(source,"Enter amount of money to withdraw:","",function(player,v)
+  vRP.prompt(source,lang.atm.withdraw.prompt(),"",function(player,v)
     v = tonumber(v)
 
     if v > 0 then
       local user_id = vRP.getUserId(source)
       if user_id ~= nil then
         if vRP.tryWithdraw(user_id,v) then
-          vRPclient.notify(source,{v.." $ withdrawn."})
+          vRPclient.notify(source,{lang.atm.withdraw.withdrawn({v})})
         else
-          vRPclient.notify(source,{"You don't have enough money in bank."})
+          vRPclient.notify(source,{lang.atm.withdraw.not_enough()})
         end
       end
     else
-      vRPclient.notify(source,{"Invalid value."})
+      vRPclient.notify(source,{lang.common.invalid_value()})
     end
   end)
 end
 
 local atm_menu = {
-  name="ATM",
+  name=lang.atm.title(),
   css={top = "75px", header_color="rgba(0,255,125,0.75)"}
 }
 
-atm_menu["Deposit"] = {atm_choice_deposit,"wallet to bank"}
-atm_menu["Withdraw"] = {atm_choice_withdraw,"bank to wallet"}
+atm_menu[lang.atm.deposit.title()] = {atm_choice_deposit,lang.atm.deposit.description()}
+atm_menu[lang.atm.withdraw.title()] = {atm_choice_withdraw,lang.atm.withdraw.description()}
 
 local function atm_enter()
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
-    atm_menu["Info"] = {function()end,"bank: "..vRP.getBankMoney(user_id).." $"}
+    atm_menu[lang.atm.info.title()] = {function()end,lang.atm.info.bank({vRP.getBankMoney(user_id)})}
     vRP.openMenu(source,atm_menu) 
   end
 end
@@ -68,7 +69,7 @@ local function build_client_atms(source)
     for k,v in pairs(atms) do
       local x,y,z = table.unpack(v)
 
-      vRPclient.addBlip(source,{x,y,z,108,4,"ATM"})
+      vRPclient.addBlip(source,{x,y,z,108,4,lang.atm.title()})
       vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,255,125,125,150})
 
       vRP.setArea(source,"vRP:atm"..k,x,y,z,1,1.5,atm_enter,atm_leave)

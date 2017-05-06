@@ -11,4 +11,6 @@ cfg.db = {
 cfg.save_interval = 60 -- seconds
 cfg.whitelist = false
 
+cfg.lang = "en"
+
 return cfg
