@@ -5,7 +5,6 @@ local Tunnel = require("resources/vrp/lib/Tunnel")
 local Lang = require("resources/vrp/lib/Lang")
 
 local config = require("resources/vrp/cfg/base")
-local client_config = require("resources/vrp/cfg/client")
 local version = require("resources/vrp/version")
 
 -- versioning
@@ -32,10 +31,6 @@ Tunnel.bindInterface("vRP",tvRP) -- listening for client tunnel
 local dict = require("resources/vrp/cfg/lang/"..config.lang) or {}
 vRP.lang = Lang.new(dict)
 
--- return client config to client
-function tvRP.getClientConfig()
-  return client_config
-end
 
 vRPclient = Tunnel.getInterface("vRP","vRP") -- server -> client tunnel
 

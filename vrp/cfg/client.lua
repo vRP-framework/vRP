@@ -1,7 +1,6 @@
 -- client-side vRP configuration
 
-local cfg = {}
+cfg = {}
 
+cfg.iplload = true
 
-
-return cfg

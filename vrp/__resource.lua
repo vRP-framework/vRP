@@ -31,6 +31,8 @@ server_scripts{
 client_scripts{
   "client/Tunnel.lua",
   "client/Proxy.lua",
+  "cfg/client.lua",
+  "client/iplloader.lua",
   "client/base.lua",
   "client/gui.lua",
   "client/player_state.lua",
