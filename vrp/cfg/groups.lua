@@ -3,9 +3,9 @@ local cfg = {}
 
 -- define each group with a set of permissions
 -- _config property:
---- gtype: used to have only one group with the same gtype per player (example: a job gtype to only have one job)
---- onspawn: function(player) (called when the player spawn with the group)
---- onleave: function(player) (called when the player leave the group)
+--- gtype (optional): used to have only one group with the same gtype per player (example: a job gtype to only have one job)
+--- onspawn (optional): function(player) (called when the player spawn with the group)
+--- onleave (optional): function(player) (called when the player leave the group)
 --- (you have direct access to vRP and vRPclient, the tunnel to client, in the config callbacks)
 
 cfg.groups = {

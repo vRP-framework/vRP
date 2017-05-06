@@ -6,6 +6,8 @@ local cfg = {}
 -- [native_weapon_name] = {display_name,body_price,ammo_price,description}
 -- ammo_price can be < 1, total price will be rounded
 
+-- _config: blipid, blipcolor, permission (optional, only users with the permission will have acces to the shop)
+
 cfg.gunshop_types = {
   ["sandyshores1"] = {
     _config = {blipid=154,blipcolor=1},

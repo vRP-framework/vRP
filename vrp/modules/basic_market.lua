@@ -1,82 +1,96 @@
 -- a basic market implementation
 
 local cfg = require("resources/vrp/cfg/markets")
-local mitems = cfg.items
+local market_types = cfg.market_types
 local markets = cfg.markets
 
-local market_menu = {
-  name="Market",
-  css={top = "75px", header_color="rgba(0,255,125,0.75)"}
-}
+local market_menus = {}
 
--- build market items
-local function build_market_menu()
-  local kitems = {}
 
-  -- item choice
-  local market_choice = function(player,choice)
-    local idname = kitems[choice][1]
-    local item = vRP.items[idname]
-    local price = kitems[choice][2]
+-- build market menus
+local function build_market_menus()
+  for gtype,mitems in pairs(market_types) do
+    local market_menu = {
+      name="Market ("..gtype..")",
+      css={top = "75px", header_color="rgba(0,255,125,0.75)"}
+    }
 
-    if item then
-      -- prompt amount
-      vRP.prompt(player,"Amount of "..item.name.." to buy:","",function(player,amount)
-        local amount = tonumber(amount)
-        if amount > 0 then
-          local user_id = vRP.getUserId(player)
-          if user_id ~= nil and vRP.tryPayment(user_id,amount*price) then
-            vRP.giveInventoryItem(user_id,idname,amount)
-            vRPclient.notify(player,{"Paid "..(amount*price).." $ for "..amount.." "..item.name.."."})
+    -- build market items
+    local kitems = {}
+
+    -- item choice
+    local market_choice = function(player,choice)
+      local idname = kitems[choice][1]
+      local item = vRP.items[idname]
+      local price = kitems[choice][2]
+
+      if item then
+        -- prompt amount
+        vRP.prompt(player,"Amount of "..item.name.." to buy:","",function(player,amount)
+          local amount = tonumber(amount)
+          if amount > 0 then
+            local user_id = vRP.getUserId(player)
+            if user_id ~= nil and vRP.tryPayment(user_id,amount*price) then
+              vRP.giveInventoryItem(user_id,idname,amount)
+              vRPclient.notify(player,{"Paid "..(amount*price).." $ for "..amount.." "..item.name.."."})
+            else
+              vRPclient.notify(player,{"Not enough money."})
+            end
           else
-            vRPclient.notify(player,{"Not enough money."})
+            vRPclient.notify(player,{"Invalid amount."})
           end
-        else
-          vRPclient.notify(player,{"Invalid amount."})
-        end
-      end)
+        end)
+      end
     end
-  end
 
-  -- add item options
-  for k,v in pairs(mitems) do
-    local item = vRP.items[k]
-    if item then
-      kitems[item.name] = {k,math.max(v,0)} -- idname/price
-      market_menu[item.name] = {market_choice,v.." $<br /><br />"..item.description}
+    -- add item options
+    for k,v in pairs(mitems) do
+      local item = vRP.items[k]
+      if item then
+        kitems[item.name] = {k,math.max(v,0)} -- idname/price
+        market_menu[item.name] = {market_choice,v.." $<br /><br />"..item.description}
+      end
     end
-  end
-end
 
-local function market_enter()
-  local user_id = vRP.getUserId(source)
-  if user_id ~= nil then
-    vRP.openMenu(source,market_menu) 
+    market_menus[gtype] = market_menu
   end
-end
-
-local function market_leave()
-  vRP.closeMenu(source)
 end
 
 local first_build = true
 
 local function build_client_markets(source)
-  -- prebuild the market menu once
+  -- prebuild the market menu once (all items should be defined now)
   if first_build then
-    build_market_menu()
+    build_market_menus()
     first_build = false
   end
 
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
     for k,v in pairs(markets) do
-      local x,y,z = table.unpack(v)
+      local gtype,x,y,z = table.unpack(v)
+      local group = market_types[gtype]
+      local menu = market_menus[gtype]
 
-      vRPclient.addBlip(source,{x,y,z,52,2,"Market"})
-      vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,255,125,125,150})
+      if group and menu then -- check market type
+        local gcfg = group._config
 
-      vRP.setArea(source,"vRP:market"..k,x,y,z,1,1.5,market_enter,market_leave)
+        local function market_enter()
+          local user_id = vRP.getUserId(source)
+          if user_id ~= nil and (gcfg.permission == nil or vRP.hasPermission(user_id,gcfg.permission)) then
+            vRP.openMenu(source,menu) 
+          end
+        end
+
+        local function market_leave()
+          vRP.closeMenu(source)
+        end
+
+        vRPclient.addBlip(source,{x,y,z,gcfg.blipid,gcfg.blipcolor,"Market ("..gtype..")"})
+        vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,255,125,125,150})
+
+        vRP.setArea(source,"vRP:market"..k,x,y,z,1,1.5,market_enter,market_leave)
+      end
     end
   end
 end
