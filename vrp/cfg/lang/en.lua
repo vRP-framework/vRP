@@ -3,19 +3,19 @@
 
 local lang = {
   common = {
-    no_player_near = "No player near you.",
-    invalid_value = "Invalid value.",
-    invalid_name = "Invalid name."
+    no_player_near = "~r~No player near you.",
+    invalid_value = "~r~Invalid value.",
+    invalid_name = "~r~Invalid name."
   },
   survival = {
     starving = "starving",
     thirsty = "thirsty"
   },
   money = {
-    given = "Given {1} $.",
-    received = "Received {1} $.",
-    not_enough = "Not enough money.",
-    paid = "Paid {1} $.",
+    given = "Given ~r~{1}$.",
+    received = "Received ~g~{1}$.",
+    not_enough = "~r~Not enough money.",
+    paid = "Paid ~r~{1}$.",
     give = {
       title = "Give money",
       description = "Give money to the nearest player.",
@@ -30,8 +30,8 @@ local lang = {
       title = "Give",
       description = "Give items to the nearest player.",
       prompt = "Amount to give (max {1}):",
-      given = "Given {1} {2}.",
-      received = "Received {1} {2}.",
+      given = "Given ~r~{1} ~s~{2}.",
+      received = "Received ~g~{1} ~s~{2}.",
     }
   },
   atm = {
@@ -44,14 +44,14 @@ local lang = {
       title = "Deposit",
       description = "wallet to bank",
       prompt = "Enter amount of money for deposit:",
-      deposited = "{1} $ deposited."
+      deposited = "~r~{1}$~s~ deposited."
     },
     withdraw = {
       title = "Withdraw",
       description = "bank to wallet",
       prompt = "Enter amount of money to withdraw:",
-      withdrawn = "{1} $ withdrawn.",
-      not_enough = "You don't have enough money in bank."
+      withdrawn = "~g~{1}$ ~s~withdrawn.",
+      not_enough = "~r~You don't have enough money in bank."
     }
   },
   business = {
@@ -71,21 +71,21 @@ local lang = {
       title = "Add capital",
       description = "Add capital to your business.",
       prompt = "Amount to add to the business capital:",
-      added = "{1} $ added to the business capital."
+      added = "~r~{1}$ ~s~added to the business capital."
     },
     launder = {
       title = "Money laundering",
       description = "Use your business to launder dirty money.",
       prompt = "Amount of dirty money to launder (max {1} $): ",
-      laundered = "{1} $ laundered.",
-      not_enough = "Not enough dirty money."
+      laundered = "~g~{1}$ ~s~laundered.",
+      not_enough = "~r~Not enough dirty money."
     },
     open = {
       title = "Open business",
       description = "Open your business, minimum capital is {1} $.",
       prompt_name = "Business name (can't change after, max {1} chars):",
       prompt_capital = "Initial capital (min {1})",
-      created = "Business created."
+      created = "~g~Business created."
       
     }
   },
