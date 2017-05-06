@@ -1,5 +1,6 @@
 -- a basic market implementation
 
+local lang = vRP.lang
 local cfg = require("resources/vrp/cfg/markets")
 local market_types = cfg.market_types
 local markets = cfg.markets
@@ -11,7 +12,7 @@ local market_menus = {}
 local function build_market_menus()
   for gtype,mitems in pairs(market_types) do
     local market_menu = {
-      name="Market ("..gtype..")",
+      name=lang.market.title({gtype}),
       css={top = "75px", header_color="rgba(0,255,125,0.75)"}
     }
 
@@ -26,18 +27,18 @@ local function build_market_menus()
 
       if item then
         -- prompt amount
-        vRP.prompt(player,"Amount of "..item.name.." to buy:","",function(player,amount)
+        vRP.prompt(player,lang.market.prompt({item.name}),"",function(player,amount)
           local amount = tonumber(amount)
           if amount > 0 then
             local user_id = vRP.getUserId(player)
             if user_id ~= nil and vRP.tryPayment(user_id,amount*price) then
               vRP.giveInventoryItem(user_id,idname,amount)
-              vRPclient.notify(player,{"Paid "..(amount*price).." $ for "..amount.." "..item.name.."."})
+              vRPclient.notify(player,{lang.money.paid({amount*price})})
             else
-              vRPclient.notify(player,{"Not enough money."})
+              vRPclient.notify(player,{lang.money.not_enough()})
             end
           else
-            vRPclient.notify(player,{"Invalid amount."})
+            vRPclient.notify(player,{lang.common.invalid_value()})
           end
         end)
       end
@@ -48,7 +49,7 @@ local function build_market_menus()
       local item = vRP.items[k]
       if item then
         kitems[item.name] = {k,math.max(v,0)} -- idname/price
-        market_menu[item.name] = {market_choice,v.." $<br /><br />"..item.description}
+        market_menu[item.name] = {market_choice,lang.market.info({v,item.description})}
       end
     end
 
@@ -86,7 +87,7 @@ local function build_client_markets(source)
           vRP.closeMenu(source)
         end
 
-        vRPclient.addBlip(source,{x,y,z,gcfg.blipid,gcfg.blipcolor,"Market ("..gtype..")"})
+        vRPclient.addBlip(source,{x,y,z,gcfg.blipid,gcfg.blipcolor,lang.market.title({gtype})})
         vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,255,125,125,150})
 
         vRP.setArea(source,"vRP:market"..k,x,y,z,1,1.5,market_enter,market_leave)

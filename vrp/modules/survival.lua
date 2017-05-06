@@ -68,7 +68,7 @@ function vRP.varyHunger(user_id, variation)
     if was_starving and not is_starving then
       vRPclient.setProgressBarText(source,{"vRP:hunger",""})
     elseif not was_starving and is_starving then
-      vRPclient.setProgressBarText(source,{"vRP:hunger",lang.survival.starving})
+      vRPclient.setProgressBarText(source,{"vRP:hunger",lang.survival.starving()})
     end
   end
 end
@@ -96,7 +96,7 @@ function vRP.varyThirst(user_id, variation)
     if was_thirsty and not is_thirsty then
       vRPclient.setProgressBarText(source,{"vRP:thirst",""})
     elseif not was_thirsty and is_thirsty then
-      vRPclient.setProgressBarText(source,{"vRP:thirst",lang.survival.thirsty})
+      vRPclient.setProgressBarText(source,{"vRP:thirst",lang.survival.thirsty()})
     end
   end
 end

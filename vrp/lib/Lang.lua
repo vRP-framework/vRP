@@ -22,12 +22,12 @@ local function resolve_path(dict,path,t,k)
 
   if el ~= nil then
     if type(el) == "table" then -- table, continue 
-      return setmetatable({}, { __index = function(t,k) return resolve_path(el,path,t,k) end, __tostring = function(t) return path end, __call = function(t,args) return path end })
+      return setmetatable({}, { __index = function(t,k) return resolve_path(el,path,t,k) end, __tostring = function(t) return path end, __call = function(t,args,default) return default or path end })
     else -- value
-      return setmetatable({}, { __index = function(t,k) return resolve_path(el,path,t,k) end, __tostring = function(t) return el end, __call = function(t,args) return replace_args(el,args or {}) end })
+      return setmetatable({}, { __index = function(t,k) return resolve_path(el,path,t,k) end, __tostring = function(t) return el end, __call = function(t,args,default) return replace_args(el,args or {}) end })
     end
   else -- nil, return path
-    return setmetatable({}, { __index = function(t,k) return resolve_path(el,path,t,k) end, __tostring = function(t) return path end, __call = function(t,args) return path end })
+    return setmetatable({}, { __index = function(t,k) return resolve_path(el,path,t,k) end, __tostring = function(t) return path end, __call = function(t,args,default) return default or path end })
   end
 end
 

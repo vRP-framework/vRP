@@ -3,6 +3,7 @@
 
 local cfg = require("resources/vrp/cfg/business")
 local htmlEntities = require("resources/vrp/lib/htmlEntities")
+local lang = vRP.lang
 
 -- sql
 local q_init = vRP.sql:prepare([[
@@ -65,7 +66,7 @@ vRP.defInventoryItem("dirty_money","Dirty money","Illegally earned money.",dm_ch
 local function open_business_directory(player,page) -- open business directory with pagination system
   if page < 0 then page = 0 end
 
-  local menu = {name="Business directory ("..page..")",css={top="75px",header_color="rgba(240,203,88,0.75)"}}
+  local menu = {name=lang.business.directory.title().." ("..page..")",css={top="75px",header_color="rgba(240,203,88,0.75)"}}
 
   q_get_page:bind("@b",page*10)
   q_get_page:bind("@n",10)
@@ -78,15 +79,15 @@ local function open_business_directory(player,page) -- open business directory w
       local identity = vRP.getUserIdentity(row.user_id)
 
       if identity then
-        menu[htmlEntities.encode(row.name)] = {function()end,"<em>capital: </em>"..row.capital.." $<br /><em>owner: </em>"..htmlEntities.encode(identity.name).." "..htmlEntities.encode(identity.firstname).."<br /><em>registration n°: </em>"..identity.registration}
+        menu[htmlEntities.encode(row.name)] = {function()end, lang.business.directory.info({row.capital,htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.registration})}
       end
     end
   end
 
   r:close()
 
-  menu["> Next"] = {function() open_business_directory(player,page+1) end}
-  menu["> Prev"] = {function() open_business_directory(player,page-1) end}
+  menu[lang.business.directory.dnext()] = {function() open_business_directory(player,page+1) end}
+  menu[lang.business.directory.dprev()] = {function() open_business_directory(player,page-1) end}
 
   vRP.openMenu(player,menu)
 end
@@ -95,17 +96,17 @@ local function business_enter()
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
     -- build business menu
-    local menu = {name="Chamber of Commerce",css={top="75px",header_color="rgba(240,203,88,0.75)"}}
+    local menu = {name=lang.business.title(),css={top="75px",header_color="rgba(240,203,88,0.75)"}}
 
     local business = vRP.getUserBusiness(user_id)
     if business then -- have a business
       -- business info
-      menu["Business info"] = {function(player,choice)
-      end,"<em>name: </em>"..htmlEntities.encode(business.name).."<br /><em>capital: </em>"..business.capital.." $<br /><em>capital transfer: </em>"..business.laundered.." $<br /><br/>Capital transfer is the amount of money transfered for a business economic period, the maximum is the business capital."}
+      menu[lang.business.info.title()] = {function(player,choice)
+      end, lang.business.info.info({htmlEntities.encode(business.name), business.capital, business.laundered})}
 
       -- add capital
-      menu["Add capital"] = {function(player,choice)
-        vRP.prompt(player,"Amount to add to the business capital: ","",function(player,amount)
+      menu[lang.business.addcapital.title()] = {function(player,choice)
+        vRP.prompt(player,lang.business.addcapital.prompt(),"",function(player,amount)
           amount = tonumber(amount)
           if amount > 0 then
             if vRP.tryPayment(user_id,amount) then
@@ -113,21 +114,21 @@ local function business_enter()
               q_add_capital:bind("@capital",amount)
               q_add_capital:execute()
 
-              vRPclient.notify(player,{amount.." $ added to the business capital."})
+              vRPclient.notify(player,{lang.business.addcapital.added({amount})})
             else
-              vRPclient.notify(player,{"Not enough money."})
+              vRPclient.notify(player,{lang.money.not_enough()})
             end
           else
-            vRPclient.notify(player,{"Invalid amount."})
+            vRPclient.notify(player,{lang.common.invalid_value()})
           end
         end)
-      end,"Add capital to your business."}
+      end,lang.business.addcapital.description()}
 
       -- money laundered
-      menu["Money laundering"] = {function(player,choice)
+      menu[lang.business.launder.title()] = {function(player,choice)
         business = vRP.getUserBusiness(user_id) -- update business data
         local launder_left = math.min(business.capital-business.laundered,vRP.getInventoryItemAmount(user_id,"dirty_money")) -- compute launder capacity
-        vRP.prompt(player,"Amount of dirty money to launder (max "..launder_left.." $): ",""..launder_left,function(player,amount)
+        vRP.prompt(player,lang.business.launder.prompt({launder_left}),""..launder_left,function(player,amount)
           amount = tonumber(amount)
           if amount > 0 and amount <= launder_left then
             if vRP.tryGetInventoryItem(user_id,"dirty_money",amount) then
@@ -138,21 +139,21 @@ local function business_enter()
 
               -- give laundered money
               vRP.giveMoney(user_id,amount)
-              vRPclient.notify(player,{amount.." $ laundered."})
+              vRPclient.notify(player,{lang.business.launder.laundered({amount})})
             else
-              vRPclient.notify(player,{"Not enough dirty money."})
+              vRPclient.notify(player,{lang.business.launder.not_enough()})
             end
           else
-            vRPclient.notify(player,{"Invalid amount."})
+            vRPclient.notify(player,{lang.common.invalid_value()})
           end
         end)
-      end,"Use your business to launder dirty money."}
+      end,lang.business.launder.description()}
 
     else -- doesn't have a business
-      menu["Open business"] = {function(player,choice)
-        vRP.prompt(player,"Business name (can't change after, max 30 chars): ","",function(player,name)
+      menu[lang.business.open.title()] = {function(player,choice)
+        vRP.prompt(player,lang.business.open.prompt_name({30}),"",function(player,name)
           if string.len(name) >= 2 and string.len(name) <= 30 then
-            vRP.prompt(player,"Initial capital (min "..cfg.minimum_capital..")",""..cfg.minimum_capital,function(player,capital)
+            vRP.prompt(player,lang.business.open.prompt_capital({cfg.minimum_capital}),""..cfg.minimum_capital,function(player,capital)
               capital = tonumber(capital)
               if capital >= cfg.minimum_capital then
                 if vRP.tryPayment(user_id,capital) then
@@ -161,26 +162,26 @@ local function business_enter()
                   q_create_business:bind("@capital",capital)
                   q_create_business:bind("@time",os.time())
                   q_create_business:execute()
-                  vRPclient.notify(player,{"Business created."})
+                  vRPclient.notify(player,{lang.business.open.created()})
                   vRP.closeMenu(player) -- close the menu to force update business info
                 else
-                  vRPclient.notify(player,{"Not enough money."})
+                  vRPclient.notify(player,{lang.money.not_enough()})
                 end
               else
-                vRPclient.notify(player,{"Invalid capital."})
+                vRPclient.notify(player,{lang.common.invalid_value()})
               end
             end)
           else
-            vRPclient.notify(player,{"Invalid name."})
+            vRPclient.notify(player,{lang.common.invalid_name()})
           end
         end)
-      end,"Open your business, minimum capital is "..cfg.minimum_capital.." $."}
+      end,lang.business.open.description()}
     end
 
     -- business list
-    menu["Directory"] = {function(player,choice)
+    menu[lang.business.directory.title()] = {function(player,choice)
       open_business_directory(player,0)
-    end,"Business directory."}
+    end,lang.business.directory.description()}
 
     -- open menu
     vRP.openMenu(source,menu) 
@@ -197,7 +198,7 @@ local function build_client_business(source) -- build the city hall area/marker/
     for k,v in pairs(cfg.commerce_chambers) do
       local x,y,z = table.unpack(v)
 
-      vRPclient.addBlip(source,{x,y,z,431,70,"Chamber of Commerce"})
+      vRPclient.addBlip(source,{x,y,z,431,70,lang.business.title()})
       vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,255,125,125,150})
 
       vRP.setArea(source,"vRP:business",x,y,z,1,1.5,business_enter,business_leave)

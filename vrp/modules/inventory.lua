@@ -1,3 +1,4 @@
+local lang = vRP.lang
 
 -- this module define the player inventory (lost after respawn, as wallet)
 
@@ -21,7 +22,7 @@ function vRP.defInventoryItem(idname,name,description,choices)
   end
 
   -- add give action
-  item.menudata["Give"] = {function(player,choice)
+  item.menudata[lang.inventory.give.title()] = {function(player,choice)
     local user_id = vRP.getUserId(player)
     if user_id ~= nil then
       -- get nearest player
@@ -30,25 +31,25 @@ function vRP.defInventoryItem(idname,name,description,choices)
           local nuser_id = vRP.getUserId(nplayer)
           if nuser_id ~= nil then
             -- prompt number
-            vRP.prompt(player,"Amount to give: ","",function(player,amount)
+            vRP.prompt(player,lang.inventory.give.prompt({vRP.getInventoryItemAmount(user_id,idname)}),"",function(player,amount)
               local amount = tonumber(amount)
               if vRP.tryGetInventoryItem(user_id,idname,amount) then
                 vRP.giveInventoryItem(nuser_id,idname,amount)
-                vRPclient.notify(player,{"Given "..amount.." "..name.."."})
-                vRPclient.notify(nplayer,{"Received "..amount.." "..name.."."})
+                vRPclient.notify(player,{lang.inventory.give.given({name,amount})})
+                vRPclient.notify(nplayer,{lang.inventory.give.received({name,amount})})
               else
-                vRPclient.notify(player,{"Invalid number of items."})
+                vRPclient.notify(player,{lang.common.invalid_value()})
               end
             end)
           else
-            vRPclient.notify(player,{"No player near you."})
+            vRPclient.notify(player,{lang.common.no_player_near()})
           end
         else
-          vRPclient.notify(player,{"No player near you."})
+          vRPclient.notify(player,{lang.common.no_player_near()})
         end
       end)
     end
-  end,"Give to the nearest player."}
+  end,lang.inventory.give.description()}
 end
 
 -- add item to a connected user inventory
@@ -114,7 +115,7 @@ function vRP.openInventory(source)
     local data = vRP.getUserDataTable(user_id)
     if data then
       -- build inventory menu
-      local menudata = {name="Inventory",css={top="75px",header_color="rgba(0,125,255,0.75)"}}
+      local menudata = {name=lang.inventory.title(),css={top="75px",header_color="rgba(0,125,255,0.75)"}}
       local kitems = {}
 
       -- choose callback, nested menu, create the item menu
@@ -142,7 +143,7 @@ function vRP.openInventory(source)
         local item = vRP.items[k]
         if item then
           kitems[item.name] = k -- reference item by display name
-          menudata[item.name] = {choose,"("..v.amount..")<br /><br />"..item.description}
+          menudata[item.name] = {choose,lang.inventory.iteminfo({v.amount,item.description})}
         end
       end
 
@@ -163,6 +164,6 @@ end)
 
 -- add open inventory to main menu
 local choices = {}
-choices["Inventory"] = {function(player, choice) vRP.openInventory(player) end, "Open the inventory."}
+choices[lang.inventory.title()] = {function(player, choice) vRP.openInventory(player) end, lang.inventory.description()}
 
 AddEventHandler("vRP:buildMainMenu", function(player) vRP.buildMainMenu(player,choices) end)

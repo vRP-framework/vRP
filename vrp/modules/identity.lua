@@ -1,6 +1,7 @@
 local htmlEntities = require("resources/vrp/lib/htmlEntities")
 
 local cfg = require("resources/vrp/cfg/identity")
+local lang = vRP.lang
 
 -- this module describe the identity system
 
@@ -95,16 +96,16 @@ end)
 
 -- city hall menu
 
-local cityhall_menu = {name="City Hall",css={top="75px", header_color="rgba(0,125,255,0.75)"}}
+local cityhall_menu = {name=lang.cityhall.title(),css={top="75px", header_color="rgba(0,125,255,0.75)"}}
 
 local function ch_identity(player,choice)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
-    vRP.prompt(player,"Enter your first name: ","",function(player,firstname)
+    vRP.prompt(player,lang.cityhall.identity.prompt_firstname(),"",function(player,firstname)
       if string.len(firstname) >= 2 and string.len(firstname) < 50 then
-        vRP.prompt(player,"Enter your name: ","",function(player,name)
+        vRP.prompt(player,lang.cityhall.identity.prompt_name(),"",function(player,name)
           if string.len(name) >= 2 and string.len(name) < 50 then
-            vRP.prompt(player,"Enter your age: ","",function(player,age)
+            vRP.prompt(player,lang.cityhall.identity.prompt_age(),"",function(player,age)
               age = tonumber(age)
               if age >= 16 and age <= 150 then
                 if vRP.tryPayment(user_id,cfg.new_identity_cost) then
@@ -117,26 +118,26 @@ local function ch_identity(player,choice)
                   q_update_user:bind("@registration",registration)
                   q_update_user:execute()
 
-                  vRPclient.notify(player,{"Paid "..cfg.new_identity_cost.." $"})
+                  vRPclient.notify(player,{lang.money.paid({cfg.new_identity_cost})})
                 else
-                  vRPclient.notify(player,{"Not enough money."})
+                  vRPclient.notify(player,{lang.money.not_enough()})
                 end
               else
-                vRPclient.notify(player,{"Bad age."})
+                vRPclient.notify(player,{lang.common.invalid_value()})
               end
             end)
           else
-            vRPclient.notify(player,{"Bad name."})
+            vRPclient.notify(player,{lang.common.invalid_value()})
           end
         end)
       else
-        vRPclient.notify(player,{"Bad first name."})
+        vRPclient.notify(player,{lang.common.invalid_value()})
       end
     end)
   end
 end
 
-cityhall_menu["New identity"] = {ch_identity,"Create a new identity, cost "..cfg.new_identity_cost.." $."}
+cityhall_menu[lang.cityhall.identity.title()] = {ch_identity,lang.cityhall.identity.description({cfg.new_identity_cost})}
 
 local function cityhall_enter()
   local user_id = vRP.getUserId(source)
@@ -154,7 +155,7 @@ local function build_client_cityhall(source) -- build the city hall area/marker/
   if user_id ~= nil then
     local x,y,z = table.unpack(cfg.city_hall)
 
-    vRPclient.addBlip(source,{x,y,z,181,4,"City Hall"})
+    vRPclient.addBlip(source,{x,y,z,181,4,lang.cityhall.title()})
     vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,255,125,125,150})
 
     vRP.setArea(source,"vRP:cityhall",x,y,z,1,1.5,cityhall_enter,cityhall_leave)
@@ -187,9 +188,9 @@ AddEventHandler("vRP:buildMainMenu",function(player)
 
     if identity then
       -- generate identity content
-      local content = "<em>Name: </em>"..htmlEntities.encode(identity.name).."<br /><em>First name: </em>"..htmlEntities.encode(identity.firstname).."<br /><em>Age: </em>"..identity.age.."<br /><em>Registration n°: </em>"..identity.registration
+      local content = lang.cityhall.menu.info({htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.age,identity.registration})
       local choices = {}
-      choices["Identity"] = {function()end, content}
+      choices[lang.cityhall.menu.title()] = {function()end, content}
 
       vRP.buildMainMenu(player,choices)
     end

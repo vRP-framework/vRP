@@ -1,6 +1,7 @@
 -- a basic gunshop implementation
 
 local cfg = require("resources/vrp/cfg/gunshops")
+local lang = vRP.lang
 
 local gunshops = cfg.gunshops
 local gunshop_types = cfg.gunshop_types
@@ -10,7 +11,7 @@ local gunshop_menus = {}
 -- build gunshop menus
 for gtype,weapons in pairs(gunshop_types) do
   local gunshop_menu = {
-    name="Gunshop ("..gtype..")",
+    name=lang.gunshop.title({gtype}),
     css={top = "75px", header_color="rgba(255,0,0,0.75)"}
   }
 
@@ -27,7 +28,7 @@ for gtype,weapons in pairs(gunshop_types) do
       -- get player weapons to not rebuy the body
       vRPclient.getWeapons(player,{},function(weapons)
         -- prompt amount
-        vRP.prompt(player,"Amount of ammo to buy for the "..choice.." :","",function(player,amount)
+        vRP.prompt(player,lang.gunshop.prompt_ammo({choice}),"",function(player,amount)
           local amount = tonumber(amount)
           if amount >= 0 then
             local user_id = vRP.getUserId(player)
@@ -43,12 +44,12 @@ for gtype,weapons in pairs(gunshop_types) do
                 [weapon] = {ammo=amount}
               }})
 
-              vRPclient.notify(player,{"Paid total of "..total.." $."})
+              vRPclient.notify(player,{lang.money.paid({total})})
             else
-              vRPclient.notify(player,{"Not enough money."})
+              vRPclient.notify(player,{lang.money.not_enough()})
             end
           else
-            vRPclient.notify(player,{"Invalid amount."})
+            vRPclient.notify(player,{lang.common.invalid_value()})
           end
         end)
       end)
@@ -59,7 +60,7 @@ for gtype,weapons in pairs(gunshop_types) do
   for k,v in pairs(weapons) do
     if k ~= "_config" then -- ignore config property
       kitems[v[1]] = {k,math.max(v[2],0),math.max(v[3],0)} -- idname/price/price_ammo
-      gunshop_menu[v[1]] = {gunshop_choice,"body &nbsp;"..v[2].." $<br />ammo &nbsp;"..v[3].." $/u<br /><br />"..v[4]} -- add description
+      gunshop_menu[v[1]] = {gunshop_choice,lang.gunshop.info({v[2],v[3],v[4]})} -- add description
     end
   end
 
@@ -88,7 +89,7 @@ local function build_client_gunshops(source)
           vRP.closeMenu(source)
         end
 
-        vRPclient.addBlip(source,{x,y,z,gcfg.blipid,gcfg.blipcolor,"Gunshop ("..gtype..")"})
+        vRPclient.addBlip(source,{x,y,z,gcfg.blipid,gcfg.blipcolor,lang.gunshop.title({gtype})})
         vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,255,125,125,150})
 
         vRP.setArea(source,"vRP:gunshop"..k,x,y,z,1,1.5,gunshop_enter,gunshop_leave)

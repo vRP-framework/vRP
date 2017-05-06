@@ -1,6 +1,7 @@
 -- a basic skinshop implementation
 
 local cfg = require("resources/vrp/cfg/skinshops")
+local lang = vRP.lang
 local skinshops = cfg.skinshops
 
 -- open the skin shop for the specified ped parts
@@ -14,7 +15,7 @@ function vRP.openSkinshop(source,parts)
 
       -- start building menu
       local menudata = {
-        name="Skinshop",
+        name=lang.skinshop.title(),
         css={top = "75px", header_color="rgba(0,255,125,0.75)"}
       }
 
@@ -96,10 +97,10 @@ function vRP.openSkinshop(source,parts)
 
           if vRP.tryPayment(user_id,price) then
             if price > 0 then
-              vRPclient.notify(source,{"Paid "..price.." $"})
+              vRPclient.notify(source,{lang.money.paid({price})})
             end
           else
-            vRPclient.notify(source,{"Not enough money, total price is "..price.." $"})
+            vRPclient.notify(source,{lang.money.not_enough()})
             -- revert changes
             vRPclient.setCustomization(source,{old_custom})
           end
@@ -130,7 +131,7 @@ local function build_client_skinshops(source)
         vRP.closeMenu(source)
       end
 
-      vRPclient.addBlip(source,{x,y,z,73,3,"Skinshop"})
+      vRPclient.addBlip(source,{x,y,z,73,3,lang.skinshop.title()})
       vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,255,125,125,150})
 
       vRP.setArea(source,"vRP:skinshop"..k,x,y,z,1,1.5,skinshop_enter,skinshop_leave)

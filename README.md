@@ -9,6 +9,7 @@ Contributions are welcomed.
 ## Features
 * basic admin tools (kick,ban,whitelist)
 * groups/permissions
+* language config file
 * player state auto saved to database (hunger,thirst,weapons,player apparence,position)
 * player identity
 * business system

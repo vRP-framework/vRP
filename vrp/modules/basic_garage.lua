@@ -18,6 +18,7 @@ local q_get_vehicles = vRP.sql:prepare("SELECT vehicle FROM vrp_user_vehicles WH
 
 local cfg = require("resources/vrp/cfg/garages")
 local vehicle_groups = cfg.garage_types
+local lang = vRP.lang
 
 local garages = cfg.garages
 
@@ -29,17 +30,17 @@ for group,vehicles in pairs(vehicle_groups) do
   local veh_type = vehicles._config.vtype or "default"
 
   local menu = {
-    name="Garage ("..group..")",
+    name=lang.garage.title({group}),
     css={top = "75px", header_color="rgba(255,125,0,0.75)"}
   }
   garage_menus[group] = menu
 
-  menu["Owned"] = {function(player,choice)
+  menu[lang.garage.owned.title()] = {function(player,choice)
     local user_id = vRP.getUserId(player)
     if user_id ~= nil then
       -- build nested menu
       local kitems = {}
-      local submenu = {name="Garage (owned)", css={top="75px",header_color="rgba(255,125,0,0.75)"}}
+      local submenu = {name=lang.garage.title({lang.garage.owned.title()}), css={top="75px",header_color="rgba(255,125,0,0.75)"}}
       submenu.onclose = function()
         vRP.openMenu(player,menu)
       end
@@ -70,14 +71,14 @@ for group,vehicles in pairs(vehicle_groups) do
 
       vRP.openMenu(player,submenu)
     end
-  end,"Owned vehicles."}
+  end,lang.garage.owned.description()}
 
-  menu["Buy"] = {function(player,choice)
+  menu[lang.garage.buy.title()] = {function(player,choice)
     local user_id = vRP.getUserId(player)
     if user_id ~= nil then
       -- build nested menu
       local kitems = {}
-      local submenu = {name="Garage (buy)", css={top="75px",header_color="rgba(255,125,0,0.75)"}}
+      local submenu = {name=lang.garage.title({lang.garage.buy.title()}), css={top="75px",header_color="rgba(255,125,0,0.75)"}}
       submenu.onclose = function()
         vRP.openMenu(player,menu)
       end
@@ -92,10 +93,10 @@ for group,vehicles in pairs(vehicle_groups) do
             q_add_vehicle:bind("@vehicle",vname)
             q_add_vehicle:execute()
 
-            vRPclient.notify(player,{"Paid "..vehicle[2].." $"})
+            vRPclient.notify(player,{lang.money.paid({vehicle[2]})})
             vRP.closeMenu(player)
           else
-            vRPclient.notify(player,{"You don't have enough money."})
+            vRPclient.notify(player,{lang.money.not_enough()})
           end
         end
       end
@@ -111,18 +112,18 @@ for group,vehicles in pairs(vehicle_groups) do
       -- for each existing vehicle in the garage group
       for k,v in pairs(vehicles) do
         if k ~= "_config" and pvehicles[string.lower(k)] == nil then -- not already owned
-          submenu[v[1]] = {choose,v[2].." $<br /><br />"..v[3]}
+          submenu[v[1]] = {choose,lang.garage.buy.info({v[2],v[3]})}
           kitems[v[1]] = k
         end
       end
 
       vRP.openMenu(player,submenu)
     end
-  end,"Buy vehicles."}
+  end,lang.garage.buy.description()}
 
-  menu["Store vehicle"] = {function(player,choice)
+  menu[lang.garage.store.title()] = {function(player,choice)
     vRPclient.despawnGarageVehicle(player,{veh_type,75})
-  end, "Put your current vehicle in the garage."}
+  end, lang.garage.store.description()}
 end
 
 local function build_client_garages(source)
@@ -151,7 +152,7 @@ local function build_client_garages(source)
           vRP.closeMenu(player)
         end
 
-        vRPclient.addBlip(source,{x,y,z,gcfg.blipid,gcfg.blipcolor,"Garage "..gtype})
+        vRPclient.addBlip(source,{x,y,z,gcfg.blipid,gcfg.blipcolor,lang.garage.title({gtype})})
         vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,255,125,125,150})
 
         vRP.setArea(source,"vRP:garage"..k,x,y,z,1,1.5,garage_enter,garage_leave)
