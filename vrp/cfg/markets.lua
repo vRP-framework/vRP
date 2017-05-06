@@ -3,9 +3,26 @@ local cfg = {}
 
 -- itemid/price
 cfg.items = {
-  -- Drinkfood
-  ["water_bottle"] = 5,
-  ["sandwich"] = 10
+  -- Drinks
+  ["milk"] = 2,
+  ["water"] = 2,
+  ["coffee"] = 4,
+  ["tea"] = 4,
+  ["icetea"] = 8,
+  ["orangejuice"] = 8,
+  ["gocagola"] = 12,
+  ["redgull"] = 12,
+  ["lemonlimonad"] = 14,
+  ["vodka"] = 30,
+
+  --Food
+  ["breed"] = 2,
+  ["donut"] = 2,
+  ["tacos"] = 8,
+  ["sandwich"] = 20,
+  ["kebab"] = 20,
+  ["pdonut"] = 65,
+
 }
 
 -- list of markets positions
