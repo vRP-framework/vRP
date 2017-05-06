@@ -26,6 +26,8 @@ Contributions are welcomed.
 
 ## TODO LIST
 * home
+* police stuff
+* emotes
 * job/services
 
 ## Tutorials
