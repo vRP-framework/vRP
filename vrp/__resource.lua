@@ -17,6 +17,7 @@ server_scripts{
   "modules/identity.lua",
   "modules/business.lua",
   "modules/item_transformer.lua",
+  "modules/speedminimap.lua",
 
   -- basic implementations
   "modules/basic_atm.lua",
