@@ -5,8 +5,8 @@ local lang = {
     invalid_name = "~r~Nom incorrect."
   },
   survival = {
-    starving = "Faim",
-    thirsty = "Soif"
+    starving = "Affamé",
+    thirsty = "Assoiffé"
   },
   money = {
     given = "Vous avez donné ~r~{1}$.",
@@ -58,7 +58,7 @@ local lang = {
       description = "Annuaire des entreprises",
       dprev = "> Précédent",
       dnext = "> Suivant",
-      info = "<em>capital: </em>{1} $<br /><em>propriétaire: </em>{2} {3}<br /><em>n° de registre: </em>{4}"
+      info = "<em>capital: </em>{1} $<br /><em>propriétaire: </em>{2} {3}<br /><em>Immatriculation: </em>{4}"
     },
     info = {
       title = "Information sur l'entreprise",
