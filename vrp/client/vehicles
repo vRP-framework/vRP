@@ -4,7 +4,8 @@ function tvRP.lockVehicle()
     local key = 303 -- Change this value to change the key (by default is "U")
     local nveh, posnveh = 0, 0
     local player = GetPlayerPed(-1)
-    local nveh = SetPlayersLastVehicle(GetVehiclePedIsIn(player, true)) 
+    local pos = GetEntityCoords(player)
+    local nveh = GetClosestVehicle(pos['x'], pos['y'], pos['z'], 5.001, 0, 70) 
     local pReg = "P "..tvRP.getRegistrationNumber(player)
     local pLock = GetVehicleNumberPlateText(nveh) -- need to substring
     if nveh ~= 0 then 
