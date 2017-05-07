@@ -5,8 +5,20 @@ local lang = vRP.lang
 local cfg = require("resources/vrp/cfg/atms")
 local atms = cfg.atms
 
-local function atm_choice_deposit()
+local function play_atm_enter(player)
+  vRPclient.playAnim(player,{false,{{"amb@prop_human_atm@male@enter","enter"},{"amb@prop_human_atm@male@idle_a","idle_a"}},false})
+end
+
+local function play_atm_exit(player)
+  vRPclient.playAnim(player,{false,{{"amb@prop_human_atm@male@exit","exit"}},false})
+end
+
+local function atm_choice_deposit(player,choice)
+  play_atm_enter(player) --anim
+
   vRP.prompt(source,lang.atm.deposit.prompt(),"",function(player,v)
+    play_atm_exit(player)
+
     v = tonumber(v)
 
     if v > 0 then
@@ -24,8 +36,12 @@ local function atm_choice_deposit()
   end)
 end
 
-local function atm_choice_withdraw()
+local function atm_choice_withdraw(player,choice)
+  play_atm_enter(player)
+
   vRP.prompt(source,lang.atm.withdraw.prompt(),"",function(player,v)
+    play_atm_exit(player) --anim
+
     v = tonumber(v)
 
     if v > 0 then

@@ -1,4 +1,5 @@
 local htmlEntities = require("resources/vrp/lib/htmlEntities")
+local Tools = require("resources/vrp/lib/Tools")
 
 -- this module define some admin menu functions
 
@@ -123,10 +124,18 @@ end
 local function ch_emote(player,choice)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil and vRP.hasPermission(user_id,"player.custom_emote") then
-    vRP.prompt(player,"Animation dict: ","",function(player,dict)
-      vRP.prompt(player,"Animation name: ","",function(player,name)
-        vRPclient.playUpperAnim(player,{dict,name,false})
-      end)
+    vRP.prompt(player,"Animation sequence ('dict anim optional_loops' per line): ","",function(player,content)
+      local seq = {}
+      for line in string.gmatch(content,"[^\n]+") do
+        local args = {}
+        for arg in string.gmatch(line,"[^%s]+") do
+          table.insert(args,arg)
+        end
+
+        table.insert(seq,{args[1] or "", args[2] or "", args[3] or 1})
+      end
+
+      vRPclient.playAnim(player,{true,seq,false})
     end)
   end
 end

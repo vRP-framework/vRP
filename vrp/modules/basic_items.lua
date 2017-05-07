@@ -1,5 +1,26 @@
 -- define some basic inventory items
 
+local function play_eat(player)
+  local seq = {
+    {"mp_player_inteat@burger", "mp_player_int_eat_burger_enter",1},
+    {"mp_player_inteat@burger", "mp_player_int_eat_burger",1},
+    {"mp_player_inteat@burger", "mp_player_int_eat_burger_fp",1},
+    {"mp_player_inteat@burger", "mp_player_int_eat_exit_burger",1}
+  }
+
+  vRPclient.playAnim(player,{true,seq,false})
+end
+
+local function play_drink(player)
+  local seq = {
+    {"mp_player_intdrink","intro_bottle",1},
+    {"mp_player_intdrink","loop_bottle",1},
+    {"mp_player_intdrink","outro_bottle",1}
+  }
+
+  vRPclient.playAnim(player,{true,seq,false})
+end
+
 -- DRINKS --
 -- create Water item
 local water_choices = {}
@@ -9,7 +30,7 @@ water_choices["Drink"] = {function(player,choice)
     if vRP.tryGetInventoryItem(user_id,"water",1) then
       vRP.varyThirst(user_id,-25)
       vRPclient.notify(player,{"~b~ Drinking water."})
-      vRPclient.playUpperAnim(player,{"mp_player_intdrink","loop_bottle",false})
+      play_drink(player)
       vRP.closeMenu(player)
     end
   end
@@ -24,7 +45,7 @@ milk_choices["Drink"] = {function(player,choice)
     if vRP.tryGetInventoryItem(user_id,"milk",1) then
       vRP.varyThirst(user_id,-5)
       vRPclient.notify(player,{"~b~ Drinking Milk."})
-      vRPclient.playUpperAnim(player,{"mp_player_intdrink","loop_bottle",false})
+      play_drink(player)
       vRP.closeMenu(player)
     end
   end
@@ -38,7 +59,7 @@ coffee_choices["Drink"] = {function(player,choice)
     if vRP.tryGetInventoryItem(user_id,"coffee",1) then
       vRP.varyThirst(user_id,-10)
       vRPclient.notify(player,{"~b~ Drinking Coffee."})
-      vRPclient.playUpperAnim(player,{"mp_player_intdrink","loop_bottle",false})
+      play_drink(player)
       vRP.closeMenu(player)
     end
   end
@@ -53,7 +74,7 @@ tea_choices["Drink"] = {function(player,choice)
     if vRP.tryGetInventoryItem(user_id,"tea",1) then
       vRP.varyThirst(user_id,-15)
       vRPclient.notify(player,{"~b~ Drinking Tea."})
-      vRPclient.playUpperAnim(player,{"mp_player_intdrink","loop_bottle",false})
+      play_drink(player)
       vRP.closeMenu(player)
     end
   end
@@ -68,7 +89,7 @@ icetea_choices["Drink"] = {function(player,choice)
     if vRP.tryGetInventoryItem(user_id,"icetea",1) then
       vRP.varyThirst(user_id,-20)
       vRPclient.notify(player,{"~b~ Drinking ice-Tea."})
-      vRPclient.playUpperAnim(player,{"mp_player_intdrink","loop_bottle",false})
+      play_drink(player)
       vRP.closeMenu(player)
     end
   end
@@ -83,7 +104,7 @@ orangejuice_choices["Drink"] = {function(player,choice)
     if vRP.tryGetInventoryItem(user_id,"orangejuice",1) then
       vRP.varyThirst(user_id,-25)
       vRPclient.notify(player,{"~b~ Drinking Orange Juice."})
-      vRPclient.playUpperAnim(player,{"mp_player_intdrink","loop_bottle",false})
+      play_drink(player)
       vRP.closeMenu(player)
     end
   end
@@ -98,7 +119,7 @@ gocagola_choices["Drink"] = {function(player,choice)
     if vRP.tryGetInventoryItem(user_id,"gocagola",1) then
       vRP.varyThirst(user_id,-35)
       vRPclient.notify(player,{"~b~ Drinking Goca Gola."})
-      vRPclient.playUpperAnim(player,{"mp_player_intdrink","loop_bottle",false})
+      play_drink(player)
       vRP.closeMenu(player)
     end
   end
@@ -113,7 +134,7 @@ redgull_choices["Drink"] = {function(player,choice)
     if vRP.tryGetInventoryItem(user_id,"redgull",1) then
       vRP.varyThirst(user_id,-40)
       vRPclient.notify(player,{"~b~ Drinking RedGull."})
-      vRPclient.playUpperAnim(player,{"mp_player_intdrink","loop_bottle",false})
+      play_drink(player)
       vRP.closeMenu(player)
     end
   end
@@ -128,7 +149,7 @@ lemonlimonad_choices["Drink"] = {function(player,choice)
     if vRP.tryGetInventoryItem(user_id,"lemonlimonad",1) then
       vRP.varyThirst(user_id,-45)
       vRPclient.notify(player,{"~b~ Drinking Lemon limonad."})
-      vRPclient.playUpperAnim(player,{"mp_player_intdrink","loop_bottle",false})
+      play_drink(player)
       vRP.closeMenu(player)
     end
   end
@@ -144,7 +165,7 @@ vodka_choices["Drink"] = {function(player,choice)
       vRP.varyThirst(user_id,-65)
       vRP.varyHunger(user_id, 15)
       vRPclient.notify(player,{"~b~ Drinking Vodka."})
-      vRPclient.playUpperAnim(player,{"mp_player_intdrink","loop_bottle",false})
+      play_drink(player)
       vRP.closeMenu(player)
     end
   end
@@ -162,6 +183,7 @@ breed_choices["Eat"] = {function(player,choice)
     if vRP.tryGetInventoryItem(user_id,"breed",1) then
       vRP.varyHunger(user_id,-10)
       vRPclient.notify(player,{"~o~ Eating Breed."})
+      play_eat(player)
       vRP.closeMenu(player)
     end
   end
@@ -177,6 +199,7 @@ donut_choices["Eat"] = {function(player,choice)
     if vRP.tryGetInventoryItem(user_id,"donut",1) then
       vRP.varyHunger(user_id,-15)
       vRPclient.notify(player,{"~o~ Eating Donut."})
+      play_eat(player)
       vRP.closeMenu(player)
     end
   end
@@ -192,6 +215,7 @@ tacos_choices["Eat"] = {function(player,choice)
     if vRP.tryGetInventoryItem(user_id,"tacos",1) then
       vRP.varyHunger(user_id,-25)
       vRPclient.notify(player,{"~o~ Eating Tacos."})
+      play_eat(player)
       vRP.closeMenu(player)
     end
   end
@@ -207,6 +231,7 @@ sd_choices["Eat"] = {function(player,choice)
     if vRP.tryGetInventoryItem(user_id,"sandwich",1) then
       vRP.varyHunger(user_id,-25)
       vRPclient.notify(player,{"~o~ Eating sandwich."})
+      play_eat(player)
       vRP.closeMenu(player)
     end
   end
@@ -222,6 +247,7 @@ kebab_choices["Eat"] = {function(player,choice)
     if vRP.tryGetInventoryItem(user_id,"kebab",1) then
       vRP.varyHunger(user_id,-45)
       vRPclient.notify(player,{"~o~ Eating Kebab."})
+      play_eat(player)
       vRP.closeMenu(player)
     end
   end
@@ -237,6 +263,7 @@ pdonut_choices["Eat"] = {function(player,choice)
     if vRP.tryGetInventoryItem(user_id,"pdonut",1) then
       vRP.varyHunger(user_id,-25)
       vRPclient.notify(player,{"~o~ Eating Premium Donut."})
+      play_eat(player)
       vRP.closeMenu(player)
     end
   end
