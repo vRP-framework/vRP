@@ -53,6 +53,8 @@ Menu.prototype.open = function(name,choices) //menu name and choices as [name,de
   //build dom
   this.div_header.innerHTML = name;
 
+  this.div_choices.style.height = (this.div.offsetHeight-this.div_choices.offsetTop)+"px";
+
   this.setSelected(0);
 }
 
@@ -76,6 +78,12 @@ Menu.prototype.setSelected = function(i)
   if(this.selected >= 0 && this.selected < this.el_choices.length){
     //add selected class
     this.el_choices[this.selected].classList.add("selected");
+
+    //scroll to selected
+    var scrollto = $(this.el_choices[this.selected])
+    var container = $(this.div_choices)
+    if(scrollto.offset().top < container.offset().top || scrollto.offset().top + scrollto.height() >= container.offset().top+container.height())
+      container.scrollTop(scrollto.offset().top - container.offset().top + container.scrollTop());
 
     //show desc if exists
     var choice = this.choices[this.selected];

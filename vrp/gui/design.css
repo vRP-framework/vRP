@@ -45,6 +45,15 @@ html, body {
   padding: 6px;
 }
 
+.choices{
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.choices::-webkit-scrollbar{ 
+  display: none; 
+}
+
 .choices div{
   padding: 6px;
   font-size: 1.3em;

@@ -175,7 +175,7 @@ local function business_enter()
             vRPclient.notify(player,{lang.common.invalid_name()})
           end
         end)
-      end,lang.business.open.description()}
+      end,lang.business.open.description({cfg.minimum_capital})}
     end
 
     -- business list
