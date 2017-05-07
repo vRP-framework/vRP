@@ -217,6 +217,7 @@ end
 -- events
 
 AddEventHandler("playerSpawned",function()
+  NetworkSetTalkerProximity(cfg.voice_proximity+0.0001)
   TriggerServerEvent("vRP:playerSpawned")
 end)
 
