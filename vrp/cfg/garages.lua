@@ -217,7 +217,7 @@ cfg.garage_types = {
     ["sovereign"] = {"Sovereign",90000, ""},
     ["thrust"] = {"Thrust",75000, ""},
     ["vader"] = {"Vader",9000, ""},
-    ["vindicator"] = {"Vindicator",600000,""},
+    ["vindicator"] = {"Vindicator",600000,""}
   }
 }
 
@@ -228,7 +228,7 @@ cfg.garages = {
   {"sports",-1145.67, -1991.17, 13.162},
   {"sportsclassics",1174.76, 2645.46, 37.7545},
   {"supercars",112.275, 6619.83, 31.8154},
-  {"motorcycles",-205.789, -1308.02, -31.2916}
+  {"motorcycles",-205.789, -1308.02, 31.2916}
   --{"planes",1640, 3236, 40.4},
   --{"planes",2123, 4805, 41.19},
   --{"planes",-1348, -2230, 13.9},
