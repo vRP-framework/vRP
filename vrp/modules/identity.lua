@@ -54,7 +54,7 @@ function vRP.generateRegistrationNumber()
   while exists do
     -- generate registration number
     registration = string.char(abyte+math.random(0,25),abyte+math.random(0,25),abyte+math.random(0,25))
-    registration = registration..string.char(zbyte+math.random(0,9),zbyte+math.random(0,9),zbyte+math.random(0,9))
+    registration = registration..string.char(zbyte+math.random(0,9),zbyte+math.random(0,9),zbyte+math.random(0,9),zbyte+math.random(0,9),zbyte+math.random(0,9))
 
     q_get_userbyreg:bind("@registration",registration)
     exists = false
