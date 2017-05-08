@@ -58,7 +58,7 @@ local lang = {
       description = "Annuaire des entreprises",
       dprev = "> Précédent",
       dnext = "> Suivant",
-      info = "<em>capital: </em>{1} $<br /><em>propriétaire: </em>{2} {3}<br /><em>immatriculation: </em>{4}"
+      info = "<em>capital: </em>{1} $<br /><em>propriétaire: </em>{2} {3}<br /><em>immatriculation: </em>{4}<br /><em>téléphone: </em>{5}"
     },
     info = {
       title = "Information sur l'entreprise",
@@ -97,7 +97,7 @@ local lang = {
     },
     menu = {
       title = "Identité",
-      info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em> n° d'immatriculation: </em>{4}"
+      info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em> n° d'immatriculation: </em>{4}<br /><em>téléphone: </em>{5}"
     }
   },
   phone = {

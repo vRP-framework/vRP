@@ -97,11 +97,14 @@ function vRP.getUserIdByIdentifiers(ids)
       q_userid_byidentifier:bind("@identifier",v)
 
       local r = q_userid_byidentifier:query()
+      local val = nil
       if r:fetch() then
-        local v = r:getValue(0)
-        r:close()
-        return v
+        val = r:getValue(0)
       end
+
+      r:close()
+
+      return val
     end
   end
 
