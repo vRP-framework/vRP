@@ -214,6 +214,17 @@ function tvRP.stopAnim(upper)
   end
 end
 
+--[[
+-- not working
+function tvRP.setMovement(dict)
+  if dict then
+    SetPedMovementClipset(GetPlayerPed(-1),dict,true)
+  else
+    ResetPedMovementClipset(GetPlayerPed(-1),true)
+  end
+end
+--]]
+
 -- events
 
 AddEventHandler("playerSpawned",function()

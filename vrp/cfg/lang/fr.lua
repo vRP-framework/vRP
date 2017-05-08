@@ -10,12 +10,12 @@ local lang = {
   },
   money = {
     given = "Vous avez donné ~r~{1}$.",
-    received = "Vous avez recu ~g~{1}$.",
+    received = "Vous avez reçu ~g~{1}$.",
     not_enough = "~r~Pas assez d'argent.",
     paid = "Payé ~r~{1}$.",
     give = {
       title = "Donner de l'argent",
-      description = "Donnez de l'argent au joueur le plus proche.",
+      description = "Donner de l'argent au joueur le plus proche.",
       prompt = "Montant à donner:"
     }
   },
@@ -25,10 +25,10 @@ local lang = {
     iteminfo = "({1})<br /><br />{2}",
     give = {
       title = "Donner",
-      description = "Donnez un item au joueur le plus proche.",
+      description = "Donner un item au joueur le plus proche.",
       prompt = "Quantité à donner (max {1}):",
       given = "Vous avez donné ~r~{1} ~s~{2}.",
-      received = "Vous avez recu ~g~{1} ~s~{2}.",
+      received = "Vous avez reçu ~g~{1} ~s~{2}.",
     }
   },
   atm = {
@@ -52,22 +52,22 @@ local lang = {
     }
   },
   business = {
-    title = "Office des commerces",
+    title = "Chambre de commerce",
     directory = {
       title = "Annuaire",
       description = "Annuaire des entreprises",
       dprev = "> Précédent",
       dnext = "> Suivant",
-      info = "<em>capital: </em>{1} $<br /><em>propriétaire: </em>{2} {3}<br /><em>Immatriculation: </em>{4}"
+      info = "<em>capital: </em>{1} $<br /><em>propriétaire: </em>{2} {3}<br /><em>immatriculation: </em>{4}"
     },
     info = {
       title = "Information sur l'entreprise",
-      info = "<em>Nom: </em>{1}<br /><em>capital: </em>{2} $<br /><em>capital de transfert: </em>{3} $<br /><br/>Le capital de transfert représente la quantité d'argent transféré pour une période. Le maximum ne dois pas dépasser le capital initial."
+      info = "<em>nom: </em>{1}<br /><em>capital: </em>{2} $<br /><em>capital de transfert: </em>{3} $<br /><br/>Le capital de transfert représente la quantité d'argent transférée pour une période. Le maximum ne peut pas dépasser le capital de l'entreprise."
     },
     addcapital = {
       title = "Ajout de capital",
       description = "Augmentez le capital de votre entreprise.",
-      prompt = "Montant a ajouter à votre capital:",
+      prompt = "Montant à ajouter à votre capital:",
       added = "~r~{1}$ ~s~ ajoutés au capital de votre entreprise."
     },
     launder = {
@@ -97,7 +97,7 @@ local lang = {
     },
     menu = {
       title = "Identité",
-      info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em>Identité n°: </em>{4}"
+      info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em> n° d'immatriculation: </em>{4}"
     }
   },
   phone = {
@@ -115,7 +115,7 @@ local lang = {
         title = "Envoyer un SMS",
         prompt = " Entrez le message à envoyer (max {1} chars):",
         sent = "~g~ Envoyé au n°{1}.",
-        not_sent = "~r~ n°{1} inconnu."
+        not_sent = "~r~ n°{1} non disponible."
       },
       sendpos = {
         title = "Envoi de la position",
@@ -126,7 +126,7 @@ local lang = {
     },
     sms = {
       title = "Historique des SMS",
-      description = "Historique des SMS recus.",
+      description = "Historique des SMS reçus.",
       info = "<em>{1}</em><br /><br />{2}",
       notify = "SMS~b~ {1}:~s~ ~n~{2}"
     },
@@ -135,14 +135,14 @@ local lang = {
     },
     service = {
       title = "Service",
-      description = "Appelez un service ou un n°urgence."
+      description = "Appelez un service ou un n° d'urgence."
     }
   },
   emotes = {
-    title = "Animations",
+    title = "Emotes",
     clear = {
-      title = "> Nettoyer",
-      description = "Nettoyer toutes les emotes en cours."
+      title = "> Stopper",
+      description = "Stopper toutes les emotes en cours."
     }
   },
   garage = {
