@@ -41,7 +41,8 @@ client_scripts{
   "client/survival.lua",
   "client/map.lua",
   "client/identity.lua",
-  "client/basic_garage.lua"
+  "client/basic_garage.lua",
+  "client/vehicles.lua"
 }
 
 -- client files
