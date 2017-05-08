@@ -100,6 +100,51 @@ local lang = {
       info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em>Identité n°: </em>{4}"
     }
   },
+  phone = {
+    title = "Téléphone",
+    directory = {
+      title = "Répertoire",
+      description = "Ouvrir le Répertoire.",
+      add = {
+        title = "> Ajouter",
+        prompt_number = " Entrez le n° de téléphone à ajouter:",
+        prompt_name = "Entrez un nom associé au n° de téléphone:",
+        added = "~g~N° de téléphone ajouté."
+      },
+      sendsms = {
+        title = "Envoyer un SMS",
+        prompt = " Entrez le message à envoyer (max {1} chars):",
+        sent = "~g~ Envoyé au n°{1}.",
+        not_sent = "~r~ n°{1} inconnu."
+      },
+      sendpos = {
+        title = "Envoi de la position",
+      },
+      remove = {
+        title = "Supprimer"
+      }
+    },
+    sms = {
+      title = "Historique des SMS",
+      description = "Historique des SMS recus.",
+      info = "<em>{1}</em><br /><br />{2}",
+      notify = "SMS~b~ {1}:~s~ ~n~{2}"
+    },
+    smspos = {
+      notify = "SMS-Position ~b~ {1}"
+    },
+    service = {
+      title = "Service",
+      description = "Appelez un service ou un n°urgence."
+    }
+  },
+  emotes = {
+    title = "Animations",
+    clear = {
+      title = "> Nettoyer",
+      description = "Nettoyer toutes les emotes en cours."
+    }
+  },
   garage = {
     title = "Garage ({1})",
     owned = {
