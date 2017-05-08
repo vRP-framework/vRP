@@ -15,11 +15,12 @@ server_scripts{
   "modules/money.lua",
   "modules/inventory.lua",
   "modules/identity.lua",
-  "modules/basic_phone.lua",
   "modules/business.lua",
   "modules/item_transformer.lua",
+  "modules/emotes.lua",
 
   -- basic implementations
+  "modules/basic_phone.lua",
   "modules/basic_atm.lua",
   "modules/basic_market.lua",
   "modules/basic_gunshop.lua",

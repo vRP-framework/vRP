@@ -141,6 +141,13 @@ local lang = {
       description = "Call a service or an emergency number."
     }
   },
+  emotes = {
+    title = "Emotes",
+    clear = {
+      title = "> Clear",
+      description = "Clear all running emotes."
+    }
+  },
   garage = {
     title = "Garage ({1})",
     owned = {
