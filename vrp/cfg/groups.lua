@@ -22,6 +22,10 @@ cfg.groups = {
     "player.ban",
     "player.unban",
     "player.custom_emote"
+  },
+  -- the group user is auto added to all logged players
+  ["user"] = {
+    "player.phone"
   }
 }
 

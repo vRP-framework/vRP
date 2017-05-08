@@ -101,4 +101,7 @@ AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
       vRP.addUserGroup(user_id,v)
     end
   end
+
+  -- add default group user
+  vRP.addUserGroup(user_id,"user")
 end)

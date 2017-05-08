@@ -224,5 +224,9 @@ phone_menu[lang.phone.service.title()] = {ch_service,lang.phone.service.descript
 AddEventHandler("vRP:buildMainMenu",function(player) 
   local choices = {}
   choices[lang.phone.title()] = {function() vRP.openMenu(player,phone_menu) end}
-  vRP.buildMainMenu(player,choices)
+
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil and vRP.hasPermission(user_id, "player.phone") then
+    vRP.buildMainMenu(player,choices)
+  end
 end)
