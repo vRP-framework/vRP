@@ -13,6 +13,8 @@ Contributions are welcomed.
 * player state auto saved to database (hunger,thirst,weapons,player apparence,position)
 * player identity
 * business system
+* phone
+* emotes
 * money (wallet/bank)
 * inventory (with custom item definition)
 * basic implementations: ATM, market, gunshop, skinshop, garage
@@ -28,9 +30,7 @@ Contributions are welcomed.
 ## TODO LIST
 * home
 * police stuff
-* emotes
 * job/services
-* phone
 
 ## Tutorials
 
