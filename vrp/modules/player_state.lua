@@ -35,6 +35,7 @@ AddEventHandler("vRP:playerSpawned", function()
       vRP.setHunger(user_id,0)
       vRP.setThirst(user_id,0)
       vRP.clearInventory(user_id)
+      data.phone_directory = {} -- clear phone directory after death
 
       vRP.setMoney(user_id,0)
 

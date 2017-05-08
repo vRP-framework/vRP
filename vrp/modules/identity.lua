@@ -9,22 +9,25 @@ local lang = vRP.lang
 local q_init = vRP.sql:prepare([[
 CREATE TABLE IF NOT EXISTS vrp_user_identities(
   user_id INTEGER,
-  registration VARCHAR(50),
+  registration VARCHAR(20),
+  phone VARCHAR(20),
   firstname VARCHAR(50),
   name VARCHAR(50),
   age INTEGER,
   CONSTRAINT pk_user_identities PRIMARY KEY(user_id),
   CONSTRAINT fk_user_identities_users FOREIGN KEY(user_id) REFERENCES vrp_users(id) ON DELETE CASCADE,
-  INDEX(registration)
+  INDEX(registration),
+  INDEX(phone)
 );
 ]])
 
 q_init:execute()
 
 local q_get_user = vRP.sql:prepare("SELECT * FROM vrp_user_identities WHERE user_id = @user_id")
-local q_init_user = vRP.sql:prepare("INSERT IGNORE INTO vrp_user_identities(user_id,registration,firstname,name,age) VALUES(@user_id,@registration,@firstname,@name,@age)")
-local q_update_user = vRP.sql:prepare("UPDATE vrp_user_identities SET firstname = @firstname, name = @name, age = @age, registration = @registration WHERE user_id = @user_id")
+local q_init_user = vRP.sql:prepare("INSERT IGNORE INTO vrp_user_identities(user_id,registration,phone,firstname,name,age) VALUES(@user_id,@registration,@phone,@firstname,@name,@age)")
+local q_update_user = vRP.sql:prepare("UPDATE vrp_user_identities SET firstname = @firstname, name = @name, age = @age, registration = @registration, phone = @phone WHERE user_id = @user_id")
 local q_get_userbyreg = vRP.sql:prepare("SELECT user_id FROM vrp_user_identities WHERE registration = @registration")
+local q_get_userbyphone = vRP.sql:prepare("SELECT user_id FROM vrp_user_identities WHERE phone = @phone")
 
 -- api
 
@@ -43,18 +46,56 @@ function vRP.getUserIdentity(user_id)
   return identity
 end
 
--- generate a unique registration number (DDDLLL, D => digit, L => letter)
+-- return user_id by registration or nil
+function vRP.getUserByRegistration(registration)
+  local user_id = nil
+
+  q_get_userbyreg:bind("@registration",registration)
+  local r = q_get_userbyreg:query()
+  if r:fetch() then
+    user_id = r:getValue(0)
+  end
+  r:close()
+
+  return user_id
+end
+
+-- return user_id by phone or nil
+function vRP.getUserByPhone(phone)
+  local user_id = nil
+
+  q_get_userbyphone:bind("@phone",phone)
+  local r = q_get_userbyphone:query()
+  if r:fetch() then
+    user_id = r:getValue(0)
+  end
+  r:close()
+
+  return user_id
+end
+
+function vRP.generateStringNumber(format) -- (ex: DDDLLL, D => digit, L => letter)
+  local abyte = string.byte("A")
+  local zbyte = string.byte("0")
+
+  local number = ""
+  for i=0,#format-1 do
+    if format[i] == "D" then number = number..string.char(zbyte+math.random(0,9)) 
+    elseif format[i] == "L" then number = number..string.char(abyte+math.random(0,25)) 
+    else number = number..format[i] end
+  end
+
+  return number
+end
+
+-- generate a unique registration number
 function vRP.generateRegistrationNumber()
   local exists = true
   local registration = nil 
 
-  local abyte = string.byte("A")
-  local zbyte = string.byte("0")
-
   while exists do
     -- generate registration number
-    registration = string.char(abyte+math.random(0,25),abyte+math.random(0,25),abyte+math.random(0,25))
-    registration = registration..string.char(zbyte+math.random(0,9),zbyte+math.random(0,9),zbyte+math.random(0,9))
+    registration = vRP.generateStringNumber("DDDLLL")
 
     q_get_userbyreg:bind("@registration",registration)
     exists = false
@@ -68,17 +109,25 @@ function vRP.generateRegistrationNumber()
   return registration
 end
 
-function vRP.updateIdentity(user_id, firstname, name, age)
-  q_update_user:bind("@user_id",user_id)
+-- generate a unique phone number (0DDDDD, D => digit)
+function vRP.generatePhoneNumber()
+  local exists = true
+  local phone = nil 
 
-  if string.len(firstname) >= 50 then firstname = string.sub(firstname,1,50) end
-  if string.len(name) >= 50 then name = string.sub(name,1,50) end
+  while exists do
+    -- generate registration number
+    phone = vRP.generateStringNumber(cfg.phone_format)
 
-  q_update_user:bind("@firstname",name)
-  q_update_user:bind("@name",name)
-  q_update_user:bind("@age",age)
+    q_get_userbyphone:bind("@phone",phone)
+    exists = false
+    local r = q_get_userbyphone:query()
+    if r:fetch() then
+      exists = true
+    end
+    r:close()
+  end
 
-  q_update_user:execute()
+  return phone
 end
 
 -- events, init user identity at connection
@@ -87,6 +136,7 @@ AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
   if identity == nil then
     q_init_user:bind("@user_id",user_id) -- create if not exists player identity
     q_init_user:bind("@registration",vRP.generateRegistrationNumber())
+    q_init_user:bind("@phone",vRP.generatePhoneNumber())
     q_init_user:bind("@firstname","John")
     q_init_user:bind("@name","Smith")
     q_init_user:bind("@age",math.random(25,40))
@@ -110,12 +160,14 @@ local function ch_identity(player,choice)
               if age >= 16 and age <= 150 then
                 if vRP.tryPayment(user_id,cfg.new_identity_cost) then
                   local registration = vRP.generateRegistrationNumber()
+                  local phone = vRP.generatePhoneNumber()
 
                   q_update_user:bind("@user_id",user_id)
                   q_update_user:bind("@firstname",firstname)
                   q_update_user:bind("@name",name)
                   q_update_user:bind("@age",age)
                   q_update_user:bind("@registration",registration)
+                  q_update_user:bind("@phone",phone)
                   q_update_user:execute()
 
                   vRPclient.notify(player,{lang.money.paid({cfg.new_identity_cost})})
@@ -188,7 +240,7 @@ AddEventHandler("vRP:buildMainMenu",function(player)
 
     if identity then
       -- generate identity content
-      local content = lang.cityhall.menu.info({htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.age,identity.registration})
+      local content = lang.cityhall.menu.info({htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.age,identity.registration,identity.phone})
       local choices = {}
       choices[lang.cityhall.menu.title()] = {function()end, content}
 

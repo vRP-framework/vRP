@@ -79,7 +79,7 @@ local function open_business_directory(player,page) -- open business directory w
       local identity = vRP.getUserIdentity(row.user_id)
 
       if identity then
-        menu[htmlEntities.encode(row.name)] = {function()end, lang.business.directory.info({row.capital,htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.registration})}
+        menu[htmlEntities.encode(row.name)] = {function()end, lang.business.directory.info({row.capital,htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.registration,identity.phone})}
       end
     end
   end

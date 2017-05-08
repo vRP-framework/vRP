@@ -61,7 +61,7 @@ local lang = {
       description = "Business directory.",
       dprev = "> Prev",
       dnext = "> Next",
-      info = "<em>capital: </em>{1} $<br /><em>owner: </em>{2} {3}<br /><em>registration n°: </em>{4}"
+      info = "<em>capital: </em>{1} $<br /><em>owner: </em>{2} {3}<br /><em>registration n°: </em>{4}<br /><em>phone: </em>{5}"
     },
     info = {
       title = "Business info",
@@ -100,7 +100,45 @@ local lang = {
     },
     menu = {
       title = "Identity",
-      info = "<em>Name: </em>{1}<br /><em>First name: </em>{2}<br /><em>Age: </em>{3}<br /><em>Registration n°: </em>{4}"
+      info = "<em>Name: </em>{1}<br /><em>First name: </em>{2}<br /><em>Age: </em>{3}<br /><em>Registration n°: </em>{4}<br /><em>Phone: </em>{5}"
+    }
+  },
+  phone = {
+    title = "Phone",
+    directory = {
+      title = "Directory",
+      description = "Open the phone directory.",
+      add = {
+        title = "> Add",
+        prompt_number = "Enter the phone number to add:",
+        prompt_name = "Enter the entry name:",
+        added = "~g~Entry added."
+      },
+      sendsms = {
+        title = "Send SMS",
+        prompt = "Enter the message (max {1} chars):",
+        sent = "~g~ Sent to n°{1}.",
+        not_sent = "~r~ n°{1} unavailable."
+      },
+      sendpos = {
+        title = "Send position",
+      },
+      remove = {
+        title = "Remove"
+      }
+    },
+    sms = {
+      title = "SMS History",
+      description = "Received SMS history.",
+      info = "<em>{1}</em><br /><br />{2}",
+      notify = "SMS~b~ {1}:~s~ ~n~{2}"
+    },
+    smspos = {
+      notify = "SMS-Position ~b~ {1}"
+    },
+    service = {
+      title = "Service",
+      description = "Call a service or an emergency number."
     }
   },
   garage = {
