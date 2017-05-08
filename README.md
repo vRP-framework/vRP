@@ -125,6 +125,9 @@ vRP.getNearestPlayers(radius)
 -- return player or nil
 vRP.getNearestPlayer(radius)
 
+
+-- animations dict/name: see http://docs.ragepluginhook.net/html/62951c37-a440-478c-b389-c471230ddfc5.htm
+
 -- play animation (new version)
 -- upper: true, only upper body, false, full animation
 -- seq: list of animations as {dict,anim_name,loops} (loops is the number of loops, default 1)
@@ -134,18 +137,6 @@ vRP.playAnim(upper, seq, looping)
 -- stop animation (new version)
 -- upper: true, stop the upper animation, false, stop full animations
 vRP.stopAnim(upper)
-
--- (deprecated) play upper anim (player can move, only the upper part is animated)
--- dict,name: see http://docs.ragepluginhook.net/html/62951c37-a440-478c-b389-c471230ddfc5.htm
--- looping: if true, will play the anim forever until stopUpperAnim is called or another upper anim is played
-vRP.playUpperAnim(dict,name,looping)
-
--- (deprecated) stop the upper animation
-vRP.stopUpperAnim()
-
--- (deprecated) play full anim (player can't move until the animation finish)
--- dict,name: see http://docs.ragepluginhook.net/html/62951c37-a440-478c-b389-c471230ddfc5.htm
-vRP.playFullAnim(dict,name)
 ```
 
 #### Group/permission
