@@ -86,7 +86,7 @@ menu_pc[lang.police.pc.searchreg.title()] = {ch_searchreg,lang.police.pc.searchr
 menu_pc[lang.police.pc.closebusiness.title()] = {ch_closebusiness,lang.police.pc.closebusiness.description()}
 
 menu_pc.onclose = function(player) -- close pc gui
-  vRPclient.removeDiv(player,{"police_pc_id"})
+  vRPclient.removeDiv(player,{"police_identity"})
 end
 
 local function pc_enter(source,area)
