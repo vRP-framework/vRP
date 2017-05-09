@@ -30,7 +30,7 @@ local lang = {
     iteminfo = "({1})<br /><br />{2}",
     give = {
       title = "Donner",
-      description = "Donner un item au joueur le plus proche.",
+      description = "Donner un objet au joueur le plus proche.",
       prompt = "Quantité à donner (max {1}):",
       given = "Vous avez donné ~r~{1} ~s~{2}.",
       received = "Vous avez reçu ~g~{1} ~s~{2}.",
@@ -63,11 +63,11 @@ local lang = {
       description = "Annuaire des entreprises",
       dprev = "> Précédent",
       dnext = "> Suivant",
-      info = "<em>capital: </em>{1} $<br /><em>propriétaire: </em>{2} {3}<br /><em>immatriculation: </em>{4}<br /><em>téléphone: </em>{5}"
+      info = "<em>Capital: </em>{1} $<br /><em>Propriétaire: </em>{2} {3}<br /><em>Immatriculation: </em>{4}<br /><em>Téléphone: </em>{5}"
     },
     info = {
       title = "Information sur l'entreprise",
-      info = "<em>nom: </em>{1}<br /><em>capital: </em>{2} $<br /><em>capital de transfert: </em>{3} $<br /><br/>Le capital de transfert représente la quantité d'argent transférée pour une période. Le maximum ne peut pas dépasser le capital de l'entreprise."
+      info = "<em>Nom: </em>{1}<br /><em>Capital: </em>{2} $<br /><em>Capital de transfert: </em>{3} $<br /><br/>Le capital de transfert représente la quantité d'argent transférée pour une période. Le maximum ne peut pas dépasser le capital de l'entreprise."
     },
     addcapital = {
       title = "Ajout de capital",
@@ -102,7 +102,7 @@ local lang = {
     },
     menu = {
       title = "Identité",
-      info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em> n° d'immatriculation: </em>{4}<br /><em>téléphone: </em>{5}"
+      info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em>N° d'immatriculation: </em>{4}<br /><em>Téléphone: </em>{5}"
     }
   },
   police = {
@@ -146,11 +146,11 @@ local lang = {
         title = "Fouiller le joueur",
         description = "Fouiller l'argent, les objets et les armes du joueur le plus proche.",
         request_hide = "Fermer le rapport de fouille.",
-        info = "<em>argent: </em>{1} $<br /><br /><em>inventaire: </em>{2}<br /><br /><em>armes: </em>{3}"
+        info = "<em>Argent: </em>{1} $<br /><br /><em>Inventaire: </em>{2}<br /><br /><em>Armes: </em>{3}"
       }
     },
     identity = {
-      info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em>n° d'immatriculation: </em>{4}<br /><em>Téléphone: </em>{5}<br /><em>Entreprise: </em>{6}<br /><em>Capital de l'entreprise: </em>{7} $"
+      info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em>N° d'immatriculation: </em>{4}<br /><em>Téléphone: </em>{5}<br /><em>Entreprise: </em>{6}<br /><em>Capital de l'entreprise: </em>{7} $"
     }
   },
   phone = {
@@ -194,8 +194,8 @@ local lang = {
   emotes = {
     title = "Emotes",
     clear = {
-      title = "> Stopper",
-      description = "Stopper toutes les emotes en cours."
+      title = "> Arrêter",
+      description = "Arrête toutes les emotes en cours."
     }
   },
   garage = {
