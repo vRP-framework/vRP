@@ -56,3 +56,8 @@ function tvRP.despawnGarageVehicle(vtype,max_range)
     end
   end
 end
+
+function tvRP.getNearestVehicle(radius)
+  local x,y,z = tvRP.getPosition()
+  return GetClosestVehicle(x+0.0001,y+0.0001,z+0.0001, radius+0.0001, 0, 70) 
+end

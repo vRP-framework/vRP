@@ -5,7 +5,9 @@ local lang = {
   common = {
     no_player_near = "~r~No player near you.",
     invalid_value = "~r~Invalid value.",
-    invalid_name = "~r~Invalid name."
+    invalid_name = "~r~Invalid name.",
+    not_found = "~r~Not found.",
+    request_refused = "~r~Request refused."
   },
   survival = {
     starving = "starving",
@@ -101,6 +103,54 @@ local lang = {
     menu = {
       title = "Identity",
       info = "<em>Name: </em>{1}<br /><em>First name: </em>{2}<br /><em>Age: </em>{3}<br /><em>Registration n°: </em>{4}<br /><em>Phone: </em>{5}"
+    }
+  },
+  police = {
+    cloakroom = {
+      title = "Cloakroom",
+      uniform = {
+        title = "Uniform",
+        description = "Put uniform."
+      }
+    },
+    pc = {
+      title = "PC",
+      searchreg = {
+        title = "Registration search",
+        description = "Search identity by registration.",
+        prompt = "Enter registration number:"
+      },
+      closebusiness = {
+        title = "Close business",
+        description = "Close business of the nearest player.",
+        request = "Are you sure to close the business {3} owned by {1} {2} ?",
+        closed = "~g~Business closed."
+      }
+    },
+    menu = {
+      handcuff = {
+        title = "Handcuff",
+        description = "Handcuff/unhandcuff nearest player."
+      },
+      putinveh = {
+        title = "Put in vehicle",
+        description = "Put the nearest player in the nearest vehicle, as passenger."
+      },
+      askid = {
+        title = "Ask ID",
+        description = "Ask ID card from the nearest player.",
+        request = "Do you want to give your ID card ?",
+        request_hide = "Hide the ID card."
+      },
+      check = {
+        title = "Check player",
+        description = "Check money, inventory and weapons of the nearest player.",
+        request_hide = "Hide the check report.",
+        info = "<em>money: </em>{1} $<br /><br /><em>inventory: </em>{2}<br /><br /><em>weapons: </em>{3}"
+      }
+    },
+    identity = {
+      info = "<em>Name: </em>{1}<br /><em>First name: </em>{2}<br /><em>Age: </em>{3}<br /><em>Registration n°: </em>{4}<br /><em>Phone: </em>{5}<br /><em>Business: </em>{6}<br /><em>Business capital: </em>{7} $"
     }
   },
   phone = {

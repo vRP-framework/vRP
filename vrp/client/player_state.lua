@@ -176,4 +176,13 @@ function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] com
   end
 end
 
-
+-- fix invisible players by resetting customization every minutes
+Citizen.CreateThread(function()
+  while true do
+    Citizen.Wait(60000)
+    local custom = tvRP.getCustomization()
+    custom.model = nil
+    custom.modelhash = nil
+    tvRP.setCustomization(custom)
+  end
+end)

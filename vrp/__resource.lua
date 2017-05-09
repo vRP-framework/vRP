@@ -18,6 +18,7 @@ server_scripts{
   "modules/business.lua",
   "modules/item_transformer.lua",
   "modules/emotes.lua",
+  "modules/police.lua",
 
   -- basic implementations
   "modules/basic_phone.lua",
@@ -41,7 +42,8 @@ client_scripts{
   "client/survival.lua",
   "client/map.lua",
   "client/identity.lua",
-  "client/basic_garage.lua"
+  "client/basic_garage.lua",
+  "client/police.lua"
 }
 
 -- client files

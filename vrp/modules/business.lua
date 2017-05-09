@@ -55,6 +55,12 @@ function vRP.getUserBusiness(user_id)
   return business
 end
 
+-- close the business of an user
+function vRP.closeBusiness(user_id)
+  q_delete_business:bind("@user_id",user_id)
+  q_delete_business:execute()
+end
+
 -- add dirty money item
 
 local dm_choices = {}

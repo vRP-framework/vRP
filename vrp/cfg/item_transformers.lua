@@ -11,12 +11,12 @@ cfg.item_transformers = {
     r=0,g=125,b=255, -- color
     max_units=10,
     units_per_minute=5,
-    x=1858,y=3687.5,z=34.26, -- pos
+    x=1861,y=3680.5,z=33.26, -- pos
     radius=5, height=1.5, -- area
     action="Harvest", -- action name
     description="Harvest some water bottles.", -- action description
-    in_money=0, -- money taken per unit
-    out_money=0, -- money earned per unit
+    in_money=10, -- money taken per unit
+    out_money=50, -- money earned per unit
     reagents={}, -- items taken per unit
     products={ -- items given per unit
       ["water_bottle"] = 1

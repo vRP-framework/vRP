@@ -43,13 +43,13 @@ local function tr_tick(tr) -- do transformer tick
           tr.units = tr.units-1 -- sub work unit
 
           -- consume reagents
-          if tr.in_money > 0 then vRP.tryPayment(user_id,tr.itemtr.in_money) end
+          if tr.itemtr.in_money > 0 then vRP.tryPayment(user_id,tr.itemtr.in_money) end
           for l,w in pairs(tr.itemtr.reagents) do
             vRP.tryGetInventoryItem(user_id,l,w)
           end
 
           -- produce products
-          if tr.out_money > 0 then vRP.giveMoney(user_id,tr.itemtr.out_money) end
+          if tr.itemtr.out_money > 0 then vRP.giveMoney(user_id,tr.itemtr.out_money) end
           for l,w in pairs(tr.itemtr.products) do
             vRP.giveInventoryItem(user_id,l,w)
           end

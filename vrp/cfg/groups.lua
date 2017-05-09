@@ -26,6 +26,14 @@ cfg.groups = {
   -- the group user is auto added to all logged players
   ["user"] = {
     "player.phone"
+  },
+  ["police"] = {
+    "police.cloakroom",
+    "police.pc",
+    "police.handcuff",
+    "police.putinveh",
+    "police.askid",
+    "police.check"
   }
 }
 
