@@ -14,6 +14,7 @@ Contributions are welcomed.
 * player identity
 * business system
 * phone
+* basic police (PC, check, I.D., cloakroom, handcuff)
 * emotes
 * money (wallet/bank)
 * inventory (with custom item definition)
@@ -29,7 +30,6 @@ Contributions are welcomed.
 
 ## TODO LIST
 * home
-* police stuff
 * job/services
 
 ## Tutorials
