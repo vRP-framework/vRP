@@ -1,8 +1,13 @@
+
+
+
 local lang = {
   common = {
     no_player_near = "~r~Pas de joueur à proximité.",
     invalid_value = "~r~Valeur incorrecte.",
-    invalid_name = "~r~Nom incorrect."
+    invalid_name = "~r~Nom incorrect.",
+    not_found = "~r~Non trouvé.",
+    request_refused = "~r~Requête refusée."
   },
   survival = {
     starving = "Affamé",
@@ -93,11 +98,59 @@ local lang = {
       description = "Creez une nouvelle identité, frais de création = {1} $.",
       prompt_firstname = "Entrez votre prénom:",
       prompt_name = "Entrez votre nom de famille:",
-      prompt_age = "Entrez votre âge:",
+      prompt_age = "Entrez votre âge:"
     },
     menu = {
       title = "Identité",
       info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em> n° d'immatriculation: </em>{4}<br /><em>téléphone: </em>{5}"
+    }
+  },
+  police = {
+    cloakroom = {
+      title = "Vestiaire",
+      uniform = {
+        title = "Uniforme",
+        description = "Mettre l'uniforme."
+      }
+    },
+    pc = {
+      title = "PC",
+      searchreg = {
+        title = "Recherche immatriculation",
+        description = "Recherche d'identité par immatriculation.",
+        prompt = "Entrez l'immatriculation:"
+      },
+      closebusiness = {
+        title = "Fermer l'entreprise",
+        description = "Fermer l'entreprise du joueur le plus proche",
+        request = "Êtes vous sûr de vouloir fermer l'entreprise {3} gérée par {1} {2} ?",
+        closed = "~g~Entreprise fermée."
+      }
+    },
+    menu = {
+      handcuff = {
+        title = "Menotter",
+        description = "Menotter/démenotter le joueur le plus proche."
+      },
+      putinveh = {
+        title = "Mettre dans le véhicule",
+        description = "Mettre le joueur le plus proche dans le véhicule le plus proche."
+      },
+      askid = {
+        title = "Demander les papiers",
+        description = "Demander les papiers d'identité du joueur le plus proche.",
+        request = "Voulez vous montrer vos papiers d'identité ?",
+        request_hide = "Fermer les informations d'identité."
+      },
+      check = {
+        title = "Fouiller le joueur",
+        description = "Fouiller l'argent, les objets et les armes du joueur le plus proche.",
+        request_hide = "Fermer le rapport de fouille.",
+        info = "<em>argent: </em>{1} $<br /><br /><em>inventaire: </em>{2}<br /><br /><em>armes: </em>{3}"
+      }
+    },
+    identity = {
+      info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em>n° d'immatriculation: </em>{4}<br /><em>Téléphone: </em>{5}<br /><em>Entreprise: </em>{6}<br /><em>Capital de l'entreprise: </em>{7} $"
     }
   },
   phone = {
@@ -175,4 +228,5 @@ local lang = {
     title = "Magasin de vêtements"
   }
 }
+
 return lang
