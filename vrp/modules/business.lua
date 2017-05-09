@@ -77,8 +77,9 @@ local function open_business_directory(player,page) -- open business directory w
   q_get_page:bind("@b",page*10)
   q_get_page:bind("@n",10)
   local r = q_get_page:query()
-  while r:fetch() do 
-    local row = r:getRow()
+  r = r:toTable()
+  for k,v in pairs(r) do
+    local row = v
 
     if row.user_id ~= nil then
       -- get owner identity
