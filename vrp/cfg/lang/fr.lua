@@ -140,13 +140,15 @@ local lang = {
         title = "Demander les papiers",
         description = "Demander les papiers d'identité du joueur le plus proche.",
         request = "Voulez vous montrer vos papiers d'identité ?",
-        request_hide = "Fermer les informations d'identité."
+        request_hide = "Fermer les informations d'identité.",
+        asked = "Demande des papiers..."
       },
       check = {
         title = "Fouiller le joueur",
         description = "Fouiller l'argent, les objets et les armes du joueur le plus proche.",
         request_hide = "Fermer le rapport de fouille.",
-        info = "<em>argent: </em>{1} $<br /><br /><em>inventaire: </em>{2}<br /><br /><em>armes: </em>{3}"
+        info = "<em>argent: </em>{1} $<br /><br /><em>inventaire: </em>{2}<br /><br /><em>armes: </em>{3}",
+        checked = "Vous avez été fouillé."
       }
     },
     identity = {

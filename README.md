@@ -357,6 +357,7 @@ Item transformers can be dynamically set and removed, if you want to build rando
 -- name: transformer id name
 -- itemtr: item transformer definition table
 --- name
+--- permission (optional)
 --- max_units
 --- units_per_minute
 --- x,y,z,radius,height (area properties)

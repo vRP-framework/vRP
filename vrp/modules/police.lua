@@ -131,6 +131,7 @@ local choice_askid = {function(player,choice)
   vRPclient.getNearestPlayer(player,{10},function(nplayer)
     local nuser_id = vRP.getUserId(nplayer)
     if nuser_id ~= nil then
+      vRP.notify(player,{lang.police.menu.askid.asked()})
       vRP.request(nplayer,lang.police.menu.askid.request(),15,function(nplayer,ok)
         if ok then
           local identity = vRP.getUserIdentity(nuser_id)
@@ -172,6 +173,7 @@ local choice_check = {function(player,choice)
   vRPclient.getNearestPlayer(player,{5},function(nplayer)
     local nuser_id = vRP.getUserId(nplayer)
     if nuser_id ~= nil then
+      vRP.notify(player,{lang.police.menu.check.checked()})
       vRPclient.getWeapons(nplayer,{},function(weapons)
         -- prepare display data (money, items, weapons)
         local money = vRP.getMoney(nuser_id)

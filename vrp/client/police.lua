@@ -32,7 +32,7 @@ end
 -- keep handcuffed animation
 Citizen.CreateThread(function()
   while true do
-    Citizen.Wait(1000)
+    Citizen.Wait(30000)
     if handcuffed then
       tvRP.playAnim(true,{{"mp_arresting","idle",1}},true)
     end

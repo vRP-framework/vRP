@@ -140,13 +140,15 @@ local lang = {
         title = "Ask ID",
         description = "Ask ID card from the nearest player.",
         request = "Do you want to give your ID card ?",
-        request_hide = "Hide the ID card."
+        request_hide = "Hide the ID card.",
+        asked = "Asking ID..."
       },
       check = {
         title = "Check player",
         description = "Check money, inventory and weapons of the nearest player.",
         request_hide = "Hide the check report.",
-        info = "<em>money: </em>{1} $<br /><br /><em>inventory: </em>{2}<br /><br /><em>weapons: </em>{3}"
+        info = "<em>money: </em>{1} $<br /><br /><em>inventory: </em>{2}<br /><br /><em>weapons: </em>{3}",
+        checked = "You have being checked."
       }
     },
     identity = {

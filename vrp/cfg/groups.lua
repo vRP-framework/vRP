@@ -21,7 +21,8 @@ cfg.groups = {
     "player.kick",
     "player.ban",
     "player.unban",
-    "player.custom_emote"
+    "player.custom_emote",
+    "player.coords"
   },
   -- the group user is auto added to all logged players
   ["user"] = {

@@ -140,6 +140,12 @@ local function ch_emote(player,choice)
   end
 end
 
+local function ch_coords(player,choice)
+  vRPclient.getPosition(player,{},function(x,y,z)
+    vRP.prompt(player,"Copy the coordinates using Ctrl-A Ctrl-C",x..","..y..","..z,function(player,choice) end)
+  end)
+end
+
 AddEventHandler("vRP:buildMainMenu",function(player)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
@@ -171,6 +177,9 @@ AddEventHandler("vRP:buildMainMenu",function(player)
     end
     if vRP.hasPermission(user_id,"player.custom_emote") then
       choices["@Custom emote"] = {ch_emote}
+    end
+    if vRP.hasPermission(user_id,"player.coords") then
+      choices["@Coords"] = {ch_coords}
     end
 
     vRP.buildMainMenu(player,choices)

@@ -8,6 +8,7 @@ cfg.item_transformers = {
   -- example of harvest item transformer
   {
     name="Water bottles tree", -- menu name
+    -- permission = "harvest.water_bottle", -- you can add a permission
     r=0,g=125,b=255, -- color
     max_units=10,
     units_per_minute=5,

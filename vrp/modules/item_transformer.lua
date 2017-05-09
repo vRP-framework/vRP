@@ -109,7 +109,10 @@ function vRP.setItemTransformer(name,itemtr)
 
   -- build area
   tr.enter = function(player,area)
-    vRP.openMenu(player, tr.menu) -- open menu
+    local user_id = vRP.getUserId(player)
+    if user_id ~= nil and (itemtr.permission == nil or vRP.hasPermission(user_id,itemtr.permission)) then
+      vRP.openMenu(player, tr.menu) -- open menu
+    end
   end
 
   tr.leave = function(player,area)
