@@ -1,6 +1,5 @@
 
 
-
 local lang = {
   common = {
     no_player_near = "~r~Pas de joueur à proximité.",
@@ -147,12 +146,8 @@ local lang = {
         title = "Fouiller le joueur",
         description = "Fouiller l'argent, les objets et les armes du joueur le plus proche.",
         request_hide = "Fermer le rapport de fouille.",
-<<<<<<< HEAD
-        info = "<em>argent: </em>{1} $<br /><br /><em>inventaire: </em>{2}<br /><br /><em>armes: </em>{3}",
+        info = "<em>Argent: </em>{1} $<br /><br /><em>Inventaire: </em>{2}<br /><br /><em>Armes: </em>{3}",
         checked = "Vous avez été fouillé."
-=======
-        info = "<em>Argent: </em>{1} $<br /><br /><em>Inventaire: </em>{2}<br /><br /><em>Armes: </em>{3}"
->>>>>>> d9638624bc869a86297937d90b523b187b203238
       }
     },
     identity = {
