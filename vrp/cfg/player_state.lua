@@ -11,7 +11,7 @@ cfg.default_customization = {
 
 -- init default ped parts
 for i=0,19 do
-  cfg.default_customization[i] = {0,0,0}
+  cfg.default_customization[i] = {0,0}
 end
 
 return cfg
