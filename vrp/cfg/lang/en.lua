@@ -190,7 +190,8 @@ local lang = {
     },
     service = {
       title = "Service",
-      description = "Call a service or an emergency number."
+      description = "Call a service or an emergency number.",
+      prompt = "If needed, enter a message for the service:"
     }
   },
   emotes = {

@@ -34,7 +34,12 @@ cfg.groups = {
     "police.handcuff",
     "police.putinveh",
     "police.askid",
-    "police.check"
+    "police.check",
+    "police.service"
+  },
+  ["taxi"] = {
+    _config = { gtype = "job" },
+    "taxi.service"
   }
 }
 

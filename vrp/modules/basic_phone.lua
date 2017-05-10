@@ -2,10 +2,40 @@
 -- basic phone module
 
 local lang = vRP.lang
-local htmlEntities = require("resources/vrp/lib/htmlEntities")
 local cfg = require("resources/vrp/cfg/phone")
+local htmlEntities = require("resources/vrp/lib/htmlEntities")
+local services = cfg.services
 
 -- api
+
+-- Send a service alert to all service listeners
+--- service: service name
+--- x,y,z: coordinates
+--- notify: 
+function vRP.sendServiceAlert(service_name,x,y,z,msg)
+  local service = services[service_name]
+  if service then
+    local players = {}
+    for k,v in pairs(vRP.rusers) do
+      local player = vRP.getUserSource(k)
+      -- check user
+      if vRP.hasPermission(k,service.alert_permission) and player ~= nil then
+        table.insert(players,player)
+      end
+    end
+
+    -- send notify and alert
+    for k,v in pairs(players) do
+      vRPclient.notify(v,{service.alert_notify..msg})
+      -- add position for service.time seconds
+      vRPclient.addBlip(v,{x,y,z,service.blipid,service.blipcolor,"("..service_name..") "..msg}, function(bid)
+        SetTimeout(service.alert_time*1000,function()
+          vRPclient.removeBlip(v,{bid})
+        end)
+      end)
+    end
+  end
+end
 
 -- send an sms from an user to a phone number
 -- return true on success
@@ -212,7 +242,30 @@ local function ch_sms(player, choice)
   end
 end
 
+-- build service menu
+local service_menu = {name=lang.phone.service.title(),css={top="75px",header_color="rgba(0,125,255,0.75)"}}
+
+-- nest menu
+service_menu.onclose = function(player) vRP.openMenu(player, phone_menu) end
+
+local function ch_service_alert(player,choice) -- alert a service
+  local service = services[choice]
+  if service then
+    vRPclient.getPosition(player,{},function(x,y,z)
+      vRP.prompt(player,lang.phone.service.prompt(),"",function(player, msg)
+        vRPclient.notify(player,{service.notify}) -- notify player
+        vRP.sendServiceAlert(choice,x,y,z,msg) -- send service alert
+      end)
+    end)
+  end
+end
+
+for k,v in pairs(services) do
+  service_menu[k] = {ch_service_alert}
+end
+
 local function ch_service(player, choice)
+  vRP.openMenu(player,service_menu)
 end
 
 phone_menu[lang.phone.directory.title()] = {ch_directory,lang.phone.directory.description()}
