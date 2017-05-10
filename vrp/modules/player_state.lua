@@ -1,4 +1,5 @@
 local cfg = require("resources/vrp/cfg/player_state")
+local lang = vRP.lang
 
 -- client -> server events
 AddEventHandler("vRP:playerSpawned", function()
@@ -30,7 +31,7 @@ AddEventHandler("vRP:playerSpawned", function()
       end
  
       -- notify last login
-      SetTimeout(15000,function()vRPclient.notify(source,{"last login "..tmpdata.last_login})end)
+      SetTimeout(15000,function()vRPclient.notify(source,{lang.common.welcome({tmpdata.last_login})})end)
     else -- not first spawn (player died), don't load weapons, empty wallet, empty inventory
       vRP.setHunger(user_id,0)
       vRP.setThirst(user_id,0)

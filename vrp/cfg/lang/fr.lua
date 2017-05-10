@@ -2,6 +2,7 @@
 
 local lang = {
   common = {
+    welcome = "Bienvenue. Utilise les touches du téléphone pour les menus.~n~dernière connexion: {1}",
     no_player_near = "~r~Pas de joueur à proximité.",
     invalid_value = "~r~Valeur incorrecte.",
     invalid_name = "~r~Nom incorrect.",
