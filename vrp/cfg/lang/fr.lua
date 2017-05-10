@@ -124,6 +124,15 @@ local lang = {
         description = "Fermer l'entreprise du joueur le plus proche",
         request = "Êtes vous sûr de vouloir fermer l'entreprise {3} gérée par {1} {2} ?",
         closed = "~g~Entreprise fermée."
+      },
+      trackveh = {
+        title = "Localisation de véhicule",
+        description = "Localisation de véhicule par immatriculation.",
+        prompt_reg = "Entrez l'immatriculation:",
+        prompt_note = "Entrez une note ou une raison:",
+        tracking = "~b~Localisation commencée.",
+        track_failed = "~b~Recherche de {1}~s~ ({2}) ~n~~r~Echouée.",
+        tracked = "{1} ({2}) localisé."
       }
     },
     menu = {

@@ -15,4 +15,11 @@ cfg.cloakroom = {1848.21, 3688.51, 34.2671}
 -- PC position
 cfg.pc = {1853.21, 3689.51, 34.2671}
 
+-- vehicle tracking configuration
+cfg.trackveh = {
+  min_time = 300, -- min time in seconds
+  max_time = 600, -- max time in seconds
+  service = "police" -- service to alert when the tracking is successful
+}
+
 return cfg

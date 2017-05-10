@@ -61,3 +61,15 @@ function tvRP.getNearestVehicle(radius)
   local x,y,z = tvRP.getPosition()
   return GetClosestVehicle(x+0.0001,y+0.0001,z+0.0001, radius+0.0001, 0, 70) 
 end
+
+-- return ok,x,y,z
+function tvRP.getOwnedVehiclePosition()
+  for k,v in pairs(vehicles) do
+    if IsEntityAVehicle(v[3]) then
+      local x,y,z = table.unpack(GetEntityCoords(v[3],true))
+      return true,x,y,z
+    end
+  end
+
+  return false,0,0,0
+end

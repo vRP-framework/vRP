@@ -82,7 +82,38 @@ local function ch_closebusiness(player,choice)
   end)
 end
 
+-- track vehicle
+local function ch_trackveh(player,choice)
+  vRP.prompt(player,lang.police.pc.trackveh.prompt_reg(),"",function(player, reg) -- ask reg
+    local user_id = vRP.getUserByRegistration(reg)
+    if user_id ~= nil then
+      vRP.prompt(player,lang.police.pc.trackveh.prompt_note(),"",function(player, note) -- ask note
+        -- begin veh tracking
+        vRPclient.notify(player,{lang.police.pc.trackveh.tracking()})
+        local seconds = math.random(cfg.trackveh.min_time,cfg.trackveh.max_time)
+        SetTimeout(seconds*1000,function()
+          local tplayer = vRP.getUserSource(user_id)
+          if tplayer ~= nil then
+            vRPclient.getOwnedVehiclePosition(tplayer,{},function(ok,x,y,z)
+              if ok then -- track success
+                vRP.sendServiceAlert(cfg.trackveh.service,x,y,z,lang.police.pc.trackveh.tracked({reg,note}))
+              else
+                vRPclient.notify(player,{lang.police.pc.trackveh.track_failed({reg,note})}) -- failed
+              end
+            end)
+          else
+            vRPclient.notify(player,{lang.police.pc.trackveh.track_failed({reg,note})}) -- failed
+          end
+        end)
+      end)
+    else
+      vRPclient.notify(player,{lang.common.not_found()})
+    end
+  end)
+end
+
 menu_pc[lang.police.pc.searchreg.title()] = {ch_searchreg,lang.police.pc.searchreg.description()}
+menu_pc[lang.police.pc.trackveh.title()] = {ch_trackveh,lang.police.pc.trackveh.description()}
 menu_pc[lang.police.pc.closebusiness.title()] = {ch_closebusiness,lang.police.pc.closebusiness.description()}
 
 menu_pc.onclose = function(player) -- close pc gui

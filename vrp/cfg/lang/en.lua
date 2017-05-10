@@ -125,6 +125,15 @@ local lang = {
         description = "Close business of the nearest player.",
         request = "Are you sure to close the business {3} owned by {1} {2} ?",
         closed = "~g~Business closed."
+      },
+      trackveh = {
+        title = "Track vehicle",
+        description = "Track a vehicle by its registration number.",
+        prompt_reg = "Enter registration number:",
+        prompt_note = "Enter a tracking note/reason:",
+        tracking = "~b~Tracking started.",
+        track_failed = "~b~Tracking of {1}~s~ ({2}) ~n~~r~Failed.",
+        tracked = "Tracked {1} ({2})"
       }
     },
     menu = {
