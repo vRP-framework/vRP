@@ -91,8 +91,6 @@ local function open_business_directory(player,page) -- open business directory w
     end
   end
 
-  r:close()
-
   menu[lang.business.directory.dnext()] = {function() open_business_directory(player,page+1) end}
   menu[lang.business.directory.dprev()] = {function() open_business_directory(player,page-1) end}
 
