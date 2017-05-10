@@ -17,7 +17,7 @@ function vRP.sendServiceAlert(service_name,x,y,z,msg)
   if service then
     local players = {}
     for k,v in pairs(vRP.rusers) do
-      local player = vRP.getUserSource(k)
+      local player = vRP.getUserSource(tonumber(k))
       -- check user
       if vRP.hasPermission(k,service.alert_permission) and player ~= nil then
         table.insert(players,player)

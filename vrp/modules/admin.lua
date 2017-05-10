@@ -17,7 +17,7 @@ local function ch_list(player,choice)
         local source = vRP.getUserSource(k)
         local identity = vRP.getUserIdentity(k)
         if source ~= nil then
-          content = content.."<br />["..k.."] => "..GetPlayerName(k)
+          content = content.."<br />["..k.."] => "..GetPlayerName(source)
           if identity then
             content = content.." "..htmlEntities.encode(identity.firstname).." "..htmlEntities.encode(identity.name).." "..identity.registration
           end

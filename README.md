@@ -30,7 +30,8 @@ Contributions are welcomed.
 
 ## TODO LIST
 * home
-* job/services
+* group selector/services
+* external inventory (car trunk, etc)
 
 ## Tutorials
 
