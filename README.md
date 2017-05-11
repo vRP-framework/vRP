@@ -41,7 +41,7 @@ The home system is experimental, don't expect too much from it at this point. Bu
 
 #### How it works
 
-Homes are closed interiors allocated to players when they want to go inside their home, it means that if no slots are availables, you can't enter to your home. Slots get released when everyone moves out, however if a player dies, crashes or disconnects inside, the slot will not close itself, only "eject all" commande will close the slot. So it's possible that all slots are locked after a while, restarting the server will fix the issue. 
+Homes are closed interiors allocated to players when they want to go inside their home, it means that if no slots are availables, you can't enter to your home. Slots get released when everyone moves out, however if a player dies, crashes or disconnects inside, the slot will not close itself, only "eject all" command will close the slot. So it's possible that all slots are locked after a while, restarting the server will fix the issue. 
 
 Also, player addresses are bound to the home cluster name, it means that if you change the cluster configuration name, players will not be able enter/sell their home anymore. So choose the name well, if you don't want to deal with this.
 
