@@ -116,7 +116,6 @@ cfg.gunshop_types = {
 }
 
 -- list of gunshops positions
--- (default list by KonScyence, https://github.com/KonScyence/FiveM-GTAV-Blips/blob/master/default-blips/blips.lua)
 
 cfg.gunshops = {
   {"sandyshores1", 1692.41, 3758.22, 34.7053},
@@ -125,9 +124,9 @@ cfg.gunshops = {
   {"paletobay1", -331.624, 6082.46, 31.4548},
   {"vespuccibeach1", -664.147, -935.119, 21.8292},
   {"delperro1", -1320.983, -389.260, 36.483},
-  {"greatchaparral1", -1101.52, 2697.06, 18.5541},
+  {"greatchaparral1", -1119.48803710938,2697.08666992188,18.5541591644287},
   {"tataviammountains1", 2569.62, 294.453, 108.735},
-  {"chumash1", -3157.450, 1079.633, 20.692},
+  {"chumash1", -3172.60375976563,1085.74816894531,20.8387603759766},
   {"midlossantosrange", 21.70, -1107.41, 29.79},
   {"cypressflatsrange1", 810.15, -2156.88, 29.61}
 }
