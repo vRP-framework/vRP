@@ -125,7 +125,7 @@ end
 local function getAddressSlot(home_name,number)
   for k,v in pairs(uslots) do
     for l,w in pairs(v) do
-      if w.home_name == home_name and w.home_number == number then
+      if w.home_name == home_name and tostring(w.home_number) == tostring(number) then
         return k,l
       end
     end
@@ -253,7 +253,7 @@ local function build_entry_menu(user_id, home_name)
   -- intercom, used to enter in a home
   menu[lang.home.intercom.title()] = {function(player,choice)
     vRP.prompt(player, lang.home.intercom.prompt(), "", function(player,number)
-      local huser_id = vRP.getUserByAddress(home_name,number)
+      local huser_id = vRP.getUserByAddress(home_name,tonumber(number or 0))
       if huser_id ~= nil then
         if huser_id == user_id then -- identify owner (direct home access)
           if not vRP.accessHome(user_id, home_name, number) then
