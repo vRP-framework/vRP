@@ -146,6 +146,7 @@ end
 
 -- leave slot
 local function leave_slot(user_id,player,stype,sid) -- called when a player leave a slot
+  print(user_id.." leave slot "..stype.." "..sid)
   local slot = uslots[stype][sid]
   local home = cfg.homes[slot.home_name]
   
@@ -167,6 +168,7 @@ end
 
 -- enter slot
 local function enter_slot(user_id,player,stype,sid) -- called when a player enter a slot
+  print(user_id.." enter slot "..stype.." "..sid)
   local slot = uslots[stype][sid]
   local slot_entry = cfg.slot_types[stype][sid]
   local home = cfg.homes[slot.home_name]

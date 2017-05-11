@@ -146,6 +146,17 @@ local function ch_coords(player,choice)
   end)
 end
 
+local function ch_tptome(player,choice)
+  vRPclient.getPosition(player,{},function(x,y,z)
+    vRP.prompt(player,"User id:","",function(player,user_id) 
+      local tplayer = vRP.getUserSource(tonumber(user_id))
+      if tplayer ~= nil then
+        vRPclient.teleport(tplayer,{x,y,z})
+      end
+    end)
+  end)
+end
+
 AddEventHandler("vRP:buildMainMenu",function(player)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
@@ -180,6 +191,9 @@ AddEventHandler("vRP:buildMainMenu",function(player)
     end
     if vRP.hasPermission(user_id,"player.coords") then
       choices["@Coords"] = {ch_coords}
+    end
+    if vRP.hasPermission(user_id,"player.tptome") then
+      choices["@tptome"] = {ch_tptome}
     end
 
     vRP.buildMainMenu(player,choices)
