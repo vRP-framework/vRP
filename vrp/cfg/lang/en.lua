@@ -103,7 +103,7 @@ local lang = {
     },
     menu = {
       title = "Identity",
-      info = "<em>Name: </em>{1}<br /><em>First name: </em>{2}<br /><em>Age: </em>{3}<br /><em>Registration n°: </em>{4}<br /><em>Phone: </em>{5}"
+      info = "<em>Name: </em>{1}<br /><em>First name: </em>{2}<br /><em>Age: </em>{3}<br /><em>Registration n°: </em>{4}<br /><em>Phone: </em>{5}<br /><em>Address: </em>{7}, {6}"
     }
   },
   police = {
@@ -162,7 +162,7 @@ local lang = {
       }
     },
     identity = {
-      info = "<em>Name: </em>{1}<br /><em>First name: </em>{2}<br /><em>Age: </em>{3}<br /><em>Registration n°: </em>{4}<br /><em>Phone: </em>{5}<br /><em>Business: </em>{6}<br /><em>Business capital: </em>{7} $"
+      info = "<em>Name: </em>{1}<br /><em>First name: </em>{2}<br /><em>Age: </em>{3}<br /><em>Registration n°: </em>{4}<br /><em>Phone: </em>{5}<br /><em>Business: </em>{6}<br /><em>Business capital: </em>{7} $<br /><em>Address: </em>{9}, {8}"
     }
   },
   phone = {
@@ -209,6 +209,40 @@ local lang = {
     clear = {
       title = "> Clear",
       description = "Clear all running emotes."
+    }
+  },
+  home = {
+    buy = {
+      title = "Buy",
+      description = "Buy a home here, price is {1} $.",
+      bought = "~g~Bought.",
+      full = "~r~The place is full.",
+      have_home = "~r~You already have a home."
+    },
+    sell = {
+      title = "Sell",
+      description = "Sell your home for {1} $",
+      sold = "~g~Sold.",
+      no_home = "~r~You don't have a home here."
+    },
+    intercom = {
+      title = "Intercom",
+      description = "Use the intercom to enter in a home.",
+      prompt = "Number:",
+      not_available = "~r~Not available.",
+      refused = "~r~Refused to enter.",
+      prompt_who = "Say who you are:",
+      asked = "Asking...",
+      request = "Someone wants to open your home door: <em>{1}</em>"
+    },
+    slot = {
+      leave = {
+        title = "Leave"
+      },
+      ejectall = {
+        title = "Eject all",
+        description = "Eject all home visitors, including you, and close the home."
+      }
     }
   },
   garage = {

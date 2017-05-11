@@ -240,7 +240,16 @@ AddEventHandler("vRP:buildMainMenu",function(player)
 
     if identity then
       -- generate identity content
-      local content = lang.cityhall.menu.info({htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.age,identity.registration,identity.phone})
+      -- get address
+      local address = vRP.getUserAddress(user_id)
+      local home = ""
+      local number = ""
+      if address then
+        home = address.home
+        number = address.number
+      end
+
+      local content = lang.cityhall.menu.info({htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.age,identity.registration,identity.phone,home,number})
       local choices = {}
       choices[lang.cityhall.menu.title()] = {function()end, content}
 

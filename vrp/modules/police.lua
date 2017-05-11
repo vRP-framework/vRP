@@ -41,6 +41,8 @@ local function ch_searchreg(player,choice)
         local registration = identity.registration
         local bname = ""
         local bcapital = 0
+        local home = ""
+        local number = ""
 
         local business = vRP.getUserBusiness(user_id)
         if business then 
@@ -48,7 +50,13 @@ local function ch_searchreg(player,choice)
           bcapital = business.capital
         end
 
-        local content = lang.police.identity.info({name,firstname,age,registration,phone,bname,bcapital})
+        local address = vRP.getUserAddress(user_id)
+        if address then
+          home = address.home
+          number = address.number
+        end
+
+        local content = lang.police.identity.info({name,firstname,age,registration,phone,bname,bcapital,home,number})
         vRPclient.setDiv(player,{"police_identity",".div_police_identity{ background-color: rgba(0,0,0,0.75); color: white; font-weight: bold; width: 500px; padding: 10px; margin: auto; margin-top: 150px; }",content})
       else
         vRPclient.notify(player,{lang.common.not_found()})
@@ -175,6 +183,8 @@ local choice_askid = {function(player,choice)
             local registration = identity.registration
             local bname = ""
             local bcapital = 0
+            local home = ""
+            local number = ""
 
             local business = vRP.getUserBusiness(nuser_id)
             if business then 
@@ -182,7 +192,13 @@ local choice_askid = {function(player,choice)
               bcapital = business.capital
             end
 
-            local content = lang.police.identity.info({name,firstname,age,registration,phone,bname,bcapital})
+            local address = vRP.getUserAddress(nuser_id)
+            if address then
+              home = address.home
+              number = address.number
+            end
+
+            local content = lang.police.identity.info({name,firstname,age,registration,phone,bname,bcapital,home,number})
             vRPclient.setDiv(player,{"police_identity",".div_police_identity{ background-color: rgba(0,0,0,0.75); color: white; font-weight: bold; width: 500px; padding: 10px; margin: auto; margin-top: 150px; }",content})
             -- request to hide div
             vRP.request(player, lang.police.menu.askid.request_hide(), 1000, function(player,ok)

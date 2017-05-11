@@ -19,6 +19,7 @@ server_scripts{
   "modules/item_transformer.lua",
   "modules/emotes.lua",
   "modules/police.lua",
+  "modules/home.lua",
 
   -- basic implementations
   "modules/basic_phone.lua",

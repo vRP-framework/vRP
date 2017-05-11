@@ -102,7 +102,7 @@ local lang = {
     },
     menu = {
       title = "Identité",
-      info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em>N° d'immatriculation: </em>{4}<br /><em>Téléphone: </em>{5}"
+      info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em>N° d'immatriculation: </em>{4}<br /><em>Téléphone: </em>{5}<br /><em>Adresse: </em>{7}, {6}"
     }
   },
   police = {
@@ -161,7 +161,7 @@ local lang = {
       }
     },
     identity = {
-      info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em>N° d'immatriculation: </em>{4}<br /><em>Téléphone: </em>{5}<br /><em>Entreprise: </em>{6}<br /><em>Capital de l'entreprise: </em>{7} $"
+      info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em>N° d'immatriculation: </em>{4}<br /><em>Téléphone: </em>{5}<br /><em>Entreprise: </em>{6}<br /><em>Capital de l'entreprise: </em>{7} $<br /><em>Adresse: </em>{9}, {8}"
     }
   },
   phone = {
@@ -208,6 +208,40 @@ local lang = {
     clear = {
       title = "> Arrêter",
       description = "Arrête toutes les emotes en cours."
+    }
+  },
+  home = {
+    buy = {
+      title = "Acheter",
+      description = "Acheter un logement ici, le prix est {1} $.",
+      bought = "~g~Acheté.",
+      full = "~r~Plus de place.",
+      have_home = "~r~Vous avez déjà un logement."
+    },
+    sell = {
+      title = "Vendre",
+      description = "Vendre son logement pour {1} $",
+      sold = "~g~vendu.",
+      no_home = "~r~Vous n'avez pas de logement ici."
+    },
+    intercom = {
+      title = "Interphone",
+      description = "Utiliser l'interphone pour entrer dans un logement.",
+      prompt = "Numéro:",
+      not_available = "~r~Indisponible.",
+      refused = "~r~Entrée refusée.",
+      prompt_who = "Dites qui vous êtes:",
+      asked = "Demande...",
+      request = "Quelqu'un veut rentrer dans votre logement: <em>{1}</em>"
+    },
+    slot = {
+      leave = {
+        title = "Sortir"
+      },
+      ejectall = {
+        title = "Expulser",
+        description = "Expulse tous les visiteurs, même vous, et ferme le logement."
+      }
     }
   },
   garage = {

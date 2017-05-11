@@ -13,6 +13,7 @@ Contributions are welcomed.
 * player state auto saved to database (hunger,thirst,weapons,player apparence,position)
 * player identity
 * business system
+* homes (experimental, if a visitor leave in any other way than using the green circle, like crashing, flying or disconnecting, it will require an eject all)
 * phone
 * basic police (PC, check, I.D., cloakroom, handcuff)
 * emotes
@@ -29,9 +30,20 @@ Contributions are welcomed.
 * tunnel for easy server/clients communication
 
 ## TODO LIST
-* home
+* home stuff
 * group selector/services
 * external inventory (car trunk, etc)
+
+## NOTES
+### Homes
+
+The home system is experimental, don't expect too much from it at this point. But it's a good basis for some RP interactions, and further developments.
+
+#### How it works
+
+Homes are closed interiors allocated to players when they want to go inside their home, it means that if there are no slots left, you can't enter your home. Slots are freed when everyone is out, but if a player die, crash or disconnect in it, the slot will not close itself, only "eject all" will close the slot. So it's possible that all slots are locked after a while, restarting the server will fix the issue. 
+
+Also, player addresses are bound to the home cluster name, it means that if you change the cluster configuration name, players will not be able enter/sell their home anymore. So choose the name well, if you don't want to deal with this.
 
 ## Tutorials
 

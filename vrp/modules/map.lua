@@ -18,7 +18,7 @@ end
 -- delete a player area
 function vRP.removeArea(source,name)
   -- delete remote area
-  vRPclient.removeArea(name)
+  vRPclient.removeArea(source,{name})
 
   -- delete local area
   local areas = client_areas[source]
