@@ -327,7 +327,7 @@ local function build_client_homes(source)
 
       local function entry_enter(player,area)
         local user_id = vRP.getUserId(player)
-        if user_id ~= nil then
+        if user_id ~= nil and (v.permission == nil or vRP.hasPermission(user_id,v.permission)) then
           vRP.openMenu(source,build_entry_menu(user_id, k))
         end
       end
