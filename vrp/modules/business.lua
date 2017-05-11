@@ -64,7 +64,7 @@ end
 -- add dirty money item
 
 local dm_choices = {}
-vRP.defInventoryItem("dirty_money","Dirty money","Illegally earned money.",dm_choices)
+vRP.defInventoryItem("dirty_money",lang.items.dirty_money.title(),lang.items.dirty_money.description(),dm_choices)
 
 -- business interaction
 

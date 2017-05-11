@@ -273,6 +273,12 @@ local lang = {
   },
   skinshop = {
     title = "Skinshop"
+  },
+  items = {
+    dirty_money = {
+      title = "Dirty money",
+      description = "Illegally earned money."
+    }
   }
 }
 

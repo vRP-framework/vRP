@@ -272,6 +272,12 @@ local lang = {
   },
   skinshop = {
     title = "Magasin de vêtements"
+  },
+  items = {
+    dirty_money = {
+      title = "Argent sale",
+      description = "Argent obtenu illégalement."
+    }
   }
 }
 
