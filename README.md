@@ -6,6 +6,11 @@ The project aim to create a generic and simple RP framework to prevent everyone 
 
 Contributions are welcomed.
 
+If you want to try the framework somewhere, here is a list of servers using vRP, without whitelist and managed by me.
+
+vRP test server availables:
+* 93.115.96.185 (FR)
+
 ## Features
 * basic admin tools (kick,ban,whitelist)
 * groups/permissions
