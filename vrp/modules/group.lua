@@ -9,6 +9,7 @@
 local cfg = require("resources/vrp/cfg/groups")
 local groups = cfg.groups
 local users = cfg.users
+local selectors = cfg.selectors
 
 -- get groups keys of a connected user
 function vRP.getUserGroups(user_id)
@@ -30,7 +31,13 @@ function vRP.addUserGroup(user_id,group)
     local user_groups = vRP.getUserGroups(user_id)
     local ngroup = groups[group]
     if ngroup then
-      for k,v in pairs(user_groups) do -- remove all groups with the same gtype
+      -- copy group list to prevent iteration while removing
+      local _user_groups = {}
+      for k,v in pairs(user_groups) do
+        _user_groups[k] = v
+      end
+
+      for k,v in pairs(_user_groups) do -- remove all groups with the same gtype
         local kgroup = groups[k]
         if kgroup and kgroup._config and ngroup._config and kgroup._config.gtype == ngroup._config.gtype then
           vRP.removeUserGroup(user_id,k)
@@ -39,6 +46,9 @@ function vRP.addUserGroup(user_id,group)
 
       -- add group
       user_groups[group] = true
+      if ngroup._config.onjoin then
+        ngroup._config.onjoin(source) -- call join callback
+      end
     end
   end
 end
@@ -50,7 +60,9 @@ function vRP.removeUserGroup(user_id,group)
   if groupdef and groupdef._config and groupdef._config.onleave then
     local source = vRP.getUserSource(user_id)
     if source ~= nil then
-      groupdef._config.onleave(source) -- call leave callback
+      if groupdef._config.onleave then
+        groupdef._config.onleave(source) -- call leave callback
+      end
     end
   end
 
@@ -78,16 +90,79 @@ function vRP.hasPermission(user_id, perm)
   return false
 end
 
+-- GROUP SELECTORS
+
+local function ch_select(player,choice)
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil then
+    vRP.addUserGroup(user_id, choice)
+    vRP.closeMenu(player)
+  end
+end
+
+-- build menus
+local selector_menus = {}
+for k,v in pairs(selectors) do
+  local menu = {name=k, css={top="75px",header_color="rgba(255,154,24,0.75)"}}
+  for l,w in pairs(v) do
+    if l ~= "_config" then
+      menu[w] = {ch_select}
+    end
+  end
+
+  selector_menus[k] = menu
+end
+
+local function build_client_selectors(source)
+  local user_id = vRP.getUserId(source)
+  if user_id ~= nil then
+    for k,v in pairs(selectors) do
+      local gcfg = v._config
+      local menu = selector_menus[k]
+
+      if gcfg and menu then
+        local x = gcfg.x
+        local y = gcfg.y
+        local z = gcfg.z
+
+        local function selector_enter()
+          local user_id = vRP.getUserId(source)
+          if user_id ~= nil and (gcfg.permission == nil or vRP.hasPermission(user_id,gcfg.permission)) then
+            vRP.openMenu(source,menu) 
+          end
+        end
+
+        local function selector_leave()
+          vRP.closeMenu(source)
+        end
+
+        vRPclient.addBlip(source,{x,y,z,gcfg.blipid,gcfg.blipcolor,k})
+        vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,255,154,24,125,150})
+
+        vRP.setArea(source,"vRP:gselector:"..k,x,y,z,1,1.5,selector_enter,selector_leave)
+      end
+    end
+  end
+end
+
+-- events
+
 -- player spawn
 AddEventHandler("vRP:playerSpawned", function()
   local user_id = vRP.getUserId(source)
-  if user_id ~= nil then -- call group onspawn callback at spawn
+  if user_id ~= nil then 
+    -- call group onspawn callback at spawn
     local user_groups = vRP.getUserGroups(user_id)
     for k,v in pairs(user_groups) do
       local group = groups[k]
       if group and group._config and group._config.onspawn then
         group._config.onspawn(source)
       end
+    end
+    
+    -- add selectors on first spawn
+    if vRP.isFirstSpawn(user_id) then
+      build_client_selectors(source)
     end
   end
 end)
