@@ -122,7 +122,7 @@ for group,vehicles in pairs(vehicle_groups) do
   end,lang.garage.buy.description()}
 
   menu[lang.garage.store.title()] = {function(player,choice)
-    vRPclient.despawnGarageVehicle(player,{veh_type,75})
+    vRPclient.despawnGarageVehicle(player,{veh_type,10}) -- big range cause the car to not despawn
   end, lang.garage.store.description()}
 end
 

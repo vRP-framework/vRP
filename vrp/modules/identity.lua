@@ -170,6 +170,9 @@ local function ch_identity(player,choice)
                   q_update_user:bind("@phone",phone)
                   q_update_user:execute()
 
+                  -- update client registration
+                  vRPclient.setRegistrationNumber(player,{registration})
+
                   vRPclient.notify(player,{lang.money.paid({cfg.new_identity_cost})})
                 else
                   vRPclient.notify(player,{lang.money.not_enough()})
