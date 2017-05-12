@@ -36,7 +36,6 @@ vRP test server availables:
 
 ## TODO LIST
 * home stuff
-* group selector/services
 * external inventory (car trunk, etc)
 
 ## NOTES
