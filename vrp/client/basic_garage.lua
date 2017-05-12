@@ -25,7 +25,7 @@ function tvRP.spawnGarageVehicle(vtype,name) -- vtype is the vehicle type (one v
     -- spawn car
     if HasModelLoaded(mhash) then
       local x,y,z = tvRP.getPosition()
-      local nveh = CreateVehicle(mhash, x,y,z+1.0, 0.0, true, false)
+      local nveh = CreateVehicle(mhash, x,y,z+0.5, 0.0, true, false)
       SetVehicleOnGroundProperly(nveh)
       SetEntityInvincible(nveh,false)
       SetPedIntoVehicle(GetPlayerPed(-1),nveh,-1) -- put player inside

@@ -37,6 +37,9 @@ vRP test server availables:
 ## TODO LIST
 * home stuff
 * external inventory (car trunk, etc)
+* vehicle functions, try vehicle before buying
+* nearest player bug fix
+* more RP death
 
 ## NOTES
 ### Homes
