@@ -30,6 +30,7 @@ end)
 -- def
 local weapon_types = {
   "WEAPON_KNIFE",
+  "WEAPON_FLASHLIGHT",
   "WEAPON_NIGHTSTICK",
   "WEAPON_HAMMER",
   "WEAPON_BAT ",

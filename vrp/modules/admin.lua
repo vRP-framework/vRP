@@ -168,6 +168,22 @@ local function ch_tpto(player,choice)
   end)
 end
 
+local function ch_tptocoords(player,choice)
+  vRP.prompt(player,"Coords x,y,z:","",function(player,fcoords) 
+    local coords = {}
+    for coord in string.gmatch(fcoords,"[^,]+") do
+      table.insert(coords,tonumber(coord))
+    end
+
+    local x,y,z = 0,0,0
+    if coords[1] ~= nil then x = coords[1] end
+    if coords[2] ~= nil then y = coords[2] end
+    if coords[3] ~= nil then z = coords[3] end
+
+    vRPclient.teleport(player,{x,y,z})
+  end)
+end
+
 local function ch_givemoney(player,choice)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
@@ -224,6 +240,9 @@ AddEventHandler("vRP:buildMainMenu",function(player)
       end
       if vRP.hasPermission(user_id,"player.tpto") then
         menu["@TpTo"] = {ch_tpto}
+      end
+      if vRP.hasPermission(user_id,"player.tpto") then
+        menu["@TpToCoords"] = {ch_tptocoords}
       end
       if vRP.hasPermission(user_id,"player.givemoney") then
         menu["@Give money"] = {ch_givemoney}
