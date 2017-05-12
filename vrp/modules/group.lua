@@ -46,7 +46,7 @@ function vRP.addUserGroup(user_id,group)
 
       -- add group
       user_groups[group] = true
-      if ngroup._config.onjoin then
+      if ngroup._config and ngroup._config.onjoin then
         ngroup._config.onjoin(source) -- call join callback
       end
     end
@@ -60,9 +60,7 @@ function vRP.removeUserGroup(user_id,group)
   if groupdef and groupdef._config and groupdef._config.onleave then
     local source = vRP.getUserSource(user_id)
     if source ~= nil then
-      if groupdef._config.onleave then
-        groupdef._config.onleave(source) -- call leave callback
-      end
+      groupdef._config.onleave(source) -- call leave callback
     end
   end
 
@@ -171,7 +169,7 @@ end)
 AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
   -- add groups on user join 
   local user = users[user_id]
-  if user then
+  if user ~= nil then
     for k,v in pairs(user) do
       vRP.addUserGroup(user_id,v)
     end

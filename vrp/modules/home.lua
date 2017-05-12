@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS vrp_user_homes(
   home VARCHAR(255),
   number INTEGER,
   CONSTRAINT pk_user_homes PRIMARY KEY(user_id),
-  CONSTRAINT fk_user_homes_users FOREIGN KEY(user_id) REFERENCES vrp_users(id),
+  CONSTRAINT fk_user_homes_users FOREIGN KEY(user_id) REFERENCES vrp_users(id) ON DELETE CASCADE,
   UNIQUE(home,number)
 );
 ]])
