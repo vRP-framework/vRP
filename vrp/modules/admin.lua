@@ -171,7 +171,7 @@ end
 local function ch_tptocoords(player,choice)
   vRP.prompt(player,"Coords x,y,z:","",function(player,fcoords) 
     local coords = {}
-    for coord in string.gmatch(fcoords,"[^,]+") do
+    for coord in string.gmatch(fcoords or "0,0,0","[^,]+") do
       table.insert(coords,tonumber(coord))
     end
 
