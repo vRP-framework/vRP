@@ -12,7 +12,8 @@ cfg.groups = {
   ["superadmin"] = {
     _config = {onspawn = function(player) vRPclient.notify(player,{"You are superadmin."}) end},
     "player.group.add",
-    "player.group.remove"
+    "player.group.remove",
+    "player.givemoney"
   },
   ["admin"] = {
     "player.list",
@@ -23,7 +24,8 @@ cfg.groups = {
     "player.unban",
     "player.custom_emote",
     "player.coords",
-    "player.tptome"
+    "player.tptome",
+    "player.tpto"
   },
   -- the group user is auto added to all logged players
   ["user"] = {

@@ -157,44 +157,80 @@ local function ch_tptome(player,choice)
   end)
 end
 
+local function ch_tpto(player,choice)
+  vRP.prompt(player,"User id:","",function(player,user_id) 
+    local tplayer = vRP.getUserSource(tonumber(user_id))
+    if tplayer ~= nil then
+      vRPclient.getPosition(tplayer,{},function(x,y,z)
+        vRPclient.teleport(player,{x,y,z})
+      end)
+    end
+  end)
+end
+
+local function ch_givemoney(player,choice)
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil then
+    vRP.prompt(player,"Amount:","",function(player,amount) 
+      amount = tonumber(amount)
+      vRP.giveMoney(user_id, amount)
+    end)
+  end
+end
+
 AddEventHandler("vRP:buildMainMenu",function(player)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
     local choices = {}
 
-    if vRP.hasPermission(user_id,"player.list") then
-      choices["@User list"] = {ch_list,"Show/hide user list."}
-    end
-    if vRP.hasPermission(user_id,"player.whitelist") then
-      choices["@Whitelist user"] = {ch_whitelist}
-    end
-    if vRP.hasPermission(user_id,"player.group.add") then
-      choices["@Add group"] = {ch_addgroup}
-    end
-    if vRP.hasPermission(user_id,"player.group.remove") then
-      choices["@Remove group"] = {ch_removegroup}
-    end
-    if vRP.hasPermission(user_id,"player.unwhitelist") then
-      choices["@Un-whitelist user"] = {ch_unwhitelist}
-    end
-    if vRP.hasPermission(user_id,"player.kick") then
-      choices["@Kick"] = {ch_kick}
-    end
-    if vRP.hasPermission(user_id,"player.ban") then
-      choices["@Ban"] = {ch_ban}
-    end
-    if vRP.hasPermission(user_id,"player.unban") then
-      choices["@Unban"] = {ch_unban}
-    end
-    if vRP.hasPermission(user_id,"player.custom_emote") then
-      choices["@Custom emote"] = {ch_emote}
-    end
-    if vRP.hasPermission(user_id,"player.coords") then
-      choices["@Coords"] = {ch_coords}
-    end
-    if vRP.hasPermission(user_id,"player.tptome") then
-      choices["@tptome"] = {ch_tptome}
-    end
+    -- build admin menu
+    choices["Admin"] = {function(player,choice)
+
+      local menu = {name="Admin",css={top="75px",header_color="rgba(200,0,0,0.75)"}}
+      menu.onclose = function(player) vRP.openMainMenu(player) end -- nest menu
+
+      if vRP.hasPermission(user_id,"player.list") then
+        menu["@User list"] = {ch_list,"Show/hide user list."}
+      end
+      if vRP.hasPermission(user_id,"player.whitelist") then
+        menu["@Whitelist user"] = {ch_whitelist}
+      end
+      if vRP.hasPermission(user_id,"player.group.add") then
+        menu["@Add group"] = {ch_addgroup}
+      end
+      if vRP.hasPermission(user_id,"player.group.remove") then
+        menu["@Remove group"] = {ch_removegroup}
+      end
+      if vRP.hasPermission(user_id,"player.unwhitelist") then
+        menu["@Un-whitelist user"] = {ch_unwhitelist}
+      end
+      if vRP.hasPermission(user_id,"player.kick") then
+        menu["@Kick"] = {ch_kick}
+      end
+      if vRP.hasPermission(user_id,"player.ban") then
+        menu["@Ban"] = {ch_ban}
+      end
+      if vRP.hasPermission(user_id,"player.unban") then
+        menu["@Unban"] = {ch_unban}
+      end
+      if vRP.hasPermission(user_id,"player.custom_emote") then
+        menu["@Custom emote"] = {ch_emote}
+      end
+      if vRP.hasPermission(user_id,"player.coords") then
+        menu["@Coords"] = {ch_coords}
+      end
+      if vRP.hasPermission(user_id,"player.tptome") then
+        menu["@TpToMe"] = {ch_tptome}
+      end
+      if vRP.hasPermission(user_id,"player.tpto") then
+        menu["@TpTo"] = {ch_tpto}
+      end
+      if vRP.hasPermission(user_id,"player.givemoney") then
+        menu["@Give money"] = {ch_givemoney}
+      end
+
+      vRP.openMenu(player,menu)
+    end}
 
     vRP.buildMainMenu(player,choices)
   end
