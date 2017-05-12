@@ -25,7 +25,7 @@ end
 local function tr_tick(tr) -- do transformer tick
   for k,v in pairs(tr.players) do
     local user_id = vRP.getUserId(k)
-    if user_id ~= nil then -- for each player transforming
+    if v and user_id ~= nil then -- for each player transforming
       if tr.units > 0 then -- check units
         -- check reagents
         local reagents_ok = true

@@ -20,7 +20,7 @@ cfg.item_transformers = {
     out_money=50, -- money earned per unit
     reagents={}, -- items taken per unit
     products={ -- items given per unit
-      ["water_bottle"] = 1
+      ["water"] = 1
     }
   }
 }
