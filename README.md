@@ -40,6 +40,7 @@ vRP test server availables:
 * vehicle functions, try vehicle before buying
 * nearest player bug fix
 * more RP death
+* education (maybe)
 
 ## NOTES
 ### Homes

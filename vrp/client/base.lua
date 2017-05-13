@@ -1,4 +1,5 @@
 tvRP = {}
+local players = {} -- keep track of connected players (server id)
 
 -- bind client tunnel interface
 Tunnel.bindInterface("vRP",tvRP)
@@ -10,6 +11,7 @@ vRPserver = Tunnel.getInterface("vRP","vRP")
 Proxy.addInterface("vRP",tvRP)
 
 -- functions
+
 
 function tvRP.teleport(x,y,z)
   SetEntityCoords(GetPlayerPed(-1), x+0.0001, y+0.0001, z+0.0001, 1,0,0,1)
@@ -26,6 +28,14 @@ function tvRP.getSpeed()
   return math.sqrt(vx*vx+vy*vy+vz*vz)
 end
 
+function tvRP.addPlayer(player)
+  players[player] = true
+end
+
+function tvRP.removePlayer(player)
+  players[player] = nil
+end
+
 function tvRP.getNearestPlayers(radius)
   local r = {}
 
@@ -33,6 +43,7 @@ function tvRP.getNearestPlayers(radius)
   local pid = PlayerId()
   local px,py,pz = tvRP.getPosition()
 
+  --[[
   for i=0,GetNumberOfPlayers()-1 do
     if i ~= pid then
       local oped = GetPlayerPed(i)
@@ -41,6 +52,20 @@ function tvRP.getNearestPlayers(radius)
       local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
       if distance <= radius then
         r[GetPlayerServerId(i)] = distance
+      end
+    end
+  end
+  --]]
+
+  for k,v in pairs(players) do
+    local player = GetPlayerFromServerId(k)
+
+    if v and player ~= pid and NetworkIsPlayerConnected(player) then
+      local oped = GetPlayerPed(player)
+      local x,y,z = table.unpack(GetEntityCoords(oped,true))
+      local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
+      if distance <= radius then
+        r[GetPlayerServerId(player)] = distance
       end
     end
   end

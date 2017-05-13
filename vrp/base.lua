@@ -278,7 +278,6 @@ AddEventHandler("playerConnecting",function(name,setMessage)
       if not vRP.isBanned(user_id) then
         if not config.whitelist or vRP.isWhitelisted(user_id) then
           SetTimeout(1,function() -- create a delayed function to prevent the nil <-> string deadlock issue
-
           if vRP.rusers[user_id] == nil then -- not present on the server, init
             -- init entries
             vRP.users[ids[1]] = user_id
@@ -347,6 +346,9 @@ end)
 AddEventHandler("playerDropped",function(reason)
   local user_id = vRP.getUserId(source)
 
+  -- remove player from connected clients
+  vRPclient.removePlayer(-1,{source})
+
   if user_id ~= nil then
     TriggerEvent("vRP:playerLeave", user_id, source)
 
@@ -370,6 +372,14 @@ AddEventHandler("vRP:playerSpawned", function()
     vRP.user_sources[user_id] = source
     local tmp = vRP.getUserTmpTable(user_id)
     if tmp.first_spawn then
+      -- first spawn, reference player
+      -- send players to new player
+      for k,v in pairs(vRP.user_sources) do
+        vRPclient.addPlayer(source,{v})
+      end
+      -- send new player to all players
+      vRPclient.addPlayer(-1,{source})
+
       TriggerEvent("vRP:playerFirstSpawn",source)
       SetTimeout(1000,function() tmp.first_spawn = false end)
     end
