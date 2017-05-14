@@ -38,8 +38,9 @@ vRP test server availables:
 * home stuff
 * external inventory (car trunk, etc)
 * vehicle functions, try vehicle before buying
-* nearest player bug fix
 * more RP death
+* wanted reported to police, more punitive wanted
+* drop weapon/save weapon components
 * education (maybe)
 
 ## NOTES
