@@ -46,6 +46,13 @@ RegisterNUICallback("request",function(data,cb)
   end
 end)
 
+-- cfg
+RegisterNUICallback("cfg",function(data,cb)
+  SendNUIMessage({act="cfg",cfg=cfg.gui})
+end)
+
+
+
 -- PROGRESS BAR
 
 -- create/update a progress bar

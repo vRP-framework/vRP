@@ -20,6 +20,9 @@ window.addEventListener("load",function(){
   dynamic_menu.onClose = function(){ $.post("http://vrp/menu",JSON.stringify({act: "close", id: dynamic_menu.id})); }
   dynamic_menu.onValid = function(choice){ $.post("http://vrp/menu",JSON.stringify({act: "valid", id: dynamic_menu.id, choice: choice})); }
 
+ //request config
+ $.post("http://vrp/cfg",""); 
+
   var current_menu = dynamic_menu;
   var pbars = {}
   var divs = {}
@@ -36,7 +39,10 @@ window.addEventListener("load",function(){
   window.addEventListener("message",function(evt){ //lua actions
     var data = evt.data;
 
-    if(data.act == "open_menu"){ //OPEN DYNAMIC MENU
+    if(data.act == "cfg"){
+      cfg = data.cfg
+    }
+    else if(data.act == "open_menu"){ //OPEN DYNAMIC MENU
       current_menu.close();
       dynamic_menu.open(data.menudata.name,data.menudata.choices);
       dynamic_menu.id = data.menudata.id;
