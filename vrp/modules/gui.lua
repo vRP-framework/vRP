@@ -1,5 +1,7 @@
 local Tools = require("resources/vrp/lib/Tools")
 
+local cfg = require("resources/vrp/cfg/gui")
+
 -- MENU
 
 local menu_ids = Tools.newIDGenerator()
@@ -150,3 +152,15 @@ end
 function tvRP.openMainMenu()
   vRP.openMainMenu(source)
 end
+
+
+-- events
+AddEventHandler("vRP:playerSpawned",function()
+  local user_id = vRP.getUserId(source)
+  if user_id ~= nil and vRP.isFirstSpawn(user_id) then
+    -- load additional css using the div api
+    vRPclient.setDiv(source,{"additional_css",".div_additional_css{ display: none; }\n\n"..cfg.css,""})
+  end
+end)
+
+

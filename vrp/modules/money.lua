@@ -23,9 +23,9 @@ local q_set_bank = vRP.sql:prepare("UPDATE vrp_user_moneys SET bank = @bank WHER
 
 
 -- load config
-local config = require("resources/vrp/cfg/money")
-q_init_user:bind("@wallet",config.open_wallet)
-q_init_user:bind("@bank",config.open_bank)
+local cfg = require("resources/vrp/cfg/money")
+q_init_user:bind("@wallet",cfg.open_wallet)
+q_init_user:bind("@bank",cfg.open_bank)
 
 -- API
 
@@ -51,7 +51,7 @@ function vRP.setMoney(user_id,value)
   -- update client display
   local source = vRP.getUserSource(user_id)
   if source ~= nil then
-    vRPclient.setProgressBarText(source,{"vRP:money",value.." $"})
+    vRPclient.setDivContent(source,{"money",lang.money.display({value})})
   end
 end
 
@@ -134,9 +134,9 @@ end)
 -- money hud
 AddEventHandler("vRP:playerSpawned",function()
   local user_id = vRP.getUserId(source)
-  if user_id ~= nil then
-    -- temporary money display
-    vRPclient.setProgressBar(source,{"vRP:money","botright",vRP.getMoney(user_id).." $",0,0,0,100})
+  if user_id ~= nil and vRP.isFirstSpawn(user_id) then
+    -- add money display
+    vRPclient.setDiv(source,{"money",cfg.display_css,lang.money.display({vRP.getMoney(user_id)})})
   end
 end)
 

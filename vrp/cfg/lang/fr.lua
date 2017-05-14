@@ -14,6 +14,7 @@ local lang = {
     thirsty = "Assoiffé"
   },
   money = {
+    display = "{1} <span class=\"symbol\">$</span>",
     given = "Vous avez donné ~r~{1}$.",
     received = "Vous avez reçu ~g~{1}$.",
     not_enough = "~r~Pas assez d'argent.",
