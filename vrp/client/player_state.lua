@@ -119,14 +119,40 @@ function tvRP.giveWeapons(weapons,clear_before)
   vRPserver.updateWeapons({tvRP.getWeapons()})
 end
 
+--[[
+function tvRP.dropWeapon()
+  SetPedDropsWeapon(GetPlayerPed(-1))
+end
+--]]
+
 -- PLAYER CUSTOMIZATION
 
+-- parse part key (a ped part or a prop part)
+-- return is_proppart, index
+local function parse_part(key)
+  if type(key) == "string" and string.sub(key,1,1) == "p" then
+    return true,tonumber(string.sub(key,2))
+  else
+    return false,tonumber(key)
+  end
+end
+
 function tvRP.getDrawables(part)
-  return GetNumberOfPedDrawableVariations(GetPlayerPed(-1),part)
+  local isprop, index = parse_part(part)
+  if isprop then
+    return GetNumberOfPedPropDrawableVariations(GetPlayerPed(-1),index)
+  else
+    return GetNumberOfPedDrawableVariations(GetPlayerPed(-1),index)
+  end
 end
 
 function tvRP.getDrawableTextures(part,drawable)
-  return GetNumberOfPedTextureVariations(GetPlayerPed(-1),part,drawable)
+  local isprop, index = parse_part(part)
+  if isprop then
+    return GetNumberOfPedPropTextureVariations(GetPlayerPed(-1),index,drawable)
+  else
+    return GetNumberOfPedTextureVariations(GetPlayerPed(-1),index,drawable)
+  end
 end
 
 function tvRP.getCustomization()
@@ -136,19 +162,26 @@ function tvRP.getCustomization()
 
   custom.modelhash = GetEntityModel(ped)
 
+  -- ped parts
   for i=0,20 do -- index limit to 20
     custom[i] = {GetPedDrawableVariation(ped,i), GetPedTextureVariation(ped,i), GetPedPaletteVariation(ped,i)}
+  end
+
+  -- props
+  for i=0,10 do -- index limit to 10
+    custom["p"..i] = {GetPedPropIndex(ped,i), math.max(GetPedPropTextureIndex(ped,i),0)}
   end
 
   return custom
 end
 
 -- partial customization (only what is set is changed)
-function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] components plus .modelhash or .model
+function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] components or props (p0...) plus .modelhash or .model
   if custom then
     local ped = GetPlayerPed(-1)
     local mhash = nil
 
+    -- model
     if custom.modelhash ~= nil then
       mhash = custom.modelhash
     elseif custom.model ~= nil then
@@ -170,9 +203,19 @@ function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] com
 
     ped = GetPlayerPed(-1)
 
+    -- parts
     for k,v in pairs(custom) do
       if k ~= "model" and k ~= "modelhash" then
-        SetPedComponentVariation(ped,tonumber(k),v[1],v[2],v[3] or 2)
+        local isprop, index = parse_part(k)
+        if isprop then
+          if v[1] < 0 then
+            ClearPedProp(ped,index)
+          else
+            SetPedPropIndex(ped,index,v[1],v[2],v[3] or 2)
+          end
+        else
+          SetPedComponentVariation(ped,index,v[1],v[2],v[3] or 2)
+        end
       end
     end
   end

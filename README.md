@@ -42,6 +42,7 @@ vRP test server availables:
 * wanted reported to police, more punitive wanted
 * drop weapon/save weapon components
 * education (maybe)
+* skinshop presets
 
 ## NOTES
 ### Homes
@@ -238,6 +239,7 @@ vRP.giveWeapons(weapons,clear_before)
 -- get player apparence customization data
 -- return table with customization data, use print(json.encode(result)) to understand the structure
 -- .model or .modelhash define the player model, the indexes define each component as [drawable_id,texture_id,palette_id] array
+-- props are referenced using the prefix "p" for the key (p0,p1,p2,p...), -1 = no prop
 vRP.getCustomization()
 
 -- set player apparence

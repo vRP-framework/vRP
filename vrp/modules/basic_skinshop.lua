@@ -4,6 +4,16 @@ local cfg = require("resources/vrp/cfg/skinshops")
 local lang = vRP.lang
 local skinshops = cfg.skinshops
 
+-- parse part key (a ped part or a prop part)
+-- return is_proppart, index
+local function parse_part(key)
+  if type(key) == "string" and string.sub(key,1,1) == "p" then
+    return true,tonumber(string.sub(key,2))
+  else
+    return false,tonumber(key)
+  end
+end
+
 -- open the skin shop for the specified ped parts
 -- name = partid
 function vRP.openSkinshop(source,parts)
@@ -23,10 +33,17 @@ function vRP.openSkinshop(source,parts)
       local textures = {}
 
       local ondrawable = function(player, choice)
+        local isprop, index = parse_part(parts[choice])
+
         -- change drawable
         local drawable = drawables[choice]
         drawable[1] = drawable[1]+1
-        if drawable[1] >= drawable[2] then drawable[1] = 0 end -- circular selection
+
+        if isprop then
+          if drawable[1] >= drawable[2] then drawable[1] = -1 end -- circular selection (-1 for prop parts)
+        else
+          if drawable[1] >= drawable[2] then drawable[1] = 0 end -- circular selection
+        end
 
         -- apply change
         local custom = {}
