@@ -23,7 +23,8 @@ cfg.services = {
     alert_time = 300, -- 5 minutes
     alert_permission = "police.service",
     alert_notify = "~r~Police alert:~n~~s~",
-    notify = "~b~You called the police."
+    notify = "~b~You called the police.",
+    answer_notify = "~b~The police is coming."
   },
   ["taxi"] = {
     blipid = 198,
@@ -31,7 +32,8 @@ cfg.services = {
     alert_time = 300,
     alert_permission = "taxi.service",
     alert_notify = "~y~Taxi alert:~n~~s~",
-    notify = "~y~You called a taxi."
+    notify = "~y~You called a taxi.",
+    answer_notify = "~y~A taxi is coming."
   }
 }
 

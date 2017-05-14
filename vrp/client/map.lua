@@ -45,6 +45,13 @@ function tvRP.removeNamedBlip(name)
   end
 end
 
+-- GPS
+
+-- set the GPS destination marker coordinates
+function tvRP.setGPS(x,y)
+  SetNewWaypoint(x+0.0001,y+0.0001)
+end
+
 -- MARKER
 
 local markers = {}

@@ -202,7 +202,9 @@ local lang = {
     service = {
       title = "Service",
       description = "Call a service or an emergency number.",
-      prompt = "If needed, enter a message for the service:"
+      prompt = "If needed, enter a message for the service:",
+      ask_call = "Received {1} call, do you take it ? <em>{2}</em>",
+      taken = "~r~This call is already taken."
     }
   },
   emotes = {

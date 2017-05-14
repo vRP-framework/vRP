@@ -554,6 +554,9 @@ vRP.removeArea(source,name)
 
 -- TUNNEL CLIENT API
 
+-- set the GPS destination marker coordinates
+vRP.setGPS(x,y)
+
 -- create new blip, return native id
 vRP.addBlip(x,y,z,idtype,idcolor,text)
 

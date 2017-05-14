@@ -9,10 +9,11 @@ local services = cfg.services
 -- api
 
 -- Send a service alert to all service listeners
---- service: service name
+--- sender: a player or nil (optional, if not nil, it is a call request alert)
+--- service_name: service name
 --- x,y,z: coordinates
---- notify: 
-function vRP.sendServiceAlert(service_name,x,y,z,msg)
+--- msg: alert message
+function vRP.sendServiceAlert(sender, service_name,x,y,z,msg)
   local service = services[service_name]
   if service then
     local players = {}
@@ -24,7 +25,7 @@ function vRP.sendServiceAlert(service_name,x,y,z,msg)
       end
     end
 
-    -- send notify and alert
+    -- send notify and alert to all listening players
     for k,v in pairs(players) do
       vRPclient.notify(v,{service.alert_notify..msg})
       -- add position for service.time seconds
@@ -33,6 +34,23 @@ function vRP.sendServiceAlert(service_name,x,y,z,msg)
           vRPclient.removeBlip(v,{bid})
         end)
       end)
+
+      -- call request
+      if sender ~= nil then
+        local answered = false
+        vRP.request(v,lang.phone.service.ask_call({service_name, msg}), 30, function(v,ok)
+          if ok then -- take the call
+            if not answered then
+              -- answer the call
+              vRPclient.notify(sender,{service.answer_notify})
+              vRPclient.setGPS(v,{x,y})
+              answered = true
+            else
+              vRPclient.notify(v,{lang.phone.service.taken()})
+            end
+          end
+        end)
+      end
     end
   end
 end
@@ -254,7 +272,7 @@ local function ch_service_alert(player,choice) -- alert a service
     vRPclient.getPosition(player,{},function(x,y,z)
       vRP.prompt(player,lang.phone.service.prompt(),"",function(player, msg)
         vRPclient.notify(player,{service.notify}) -- notify player
-        vRP.sendServiceAlert(choice,x,y,z,msg) -- send service alert
+        vRP.sendServiceAlert(player,choice,x,y,z,msg) -- send service alert (call request)
       end)
     end)
   end
