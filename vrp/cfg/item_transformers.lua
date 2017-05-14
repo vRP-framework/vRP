@@ -16,8 +16,8 @@ cfg.item_transformers = {
     radius=5, height=1.5, -- area
     action="Harvest", -- action name
     description="Harvest some water bottles.", -- action description
-    in_money=10, -- money taken per unit
-    out_money=50, -- money earned per unit
+    in_money=0, -- money taken per unit
+    out_money=0, -- money earned per unit
     reagents={}, -- items taken per unit
     products={ -- items given per unit
       ["water"] = 1

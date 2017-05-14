@@ -14,6 +14,13 @@ AddEventHandler("vRP:playerSpawned", function()
         data.customization = cfg.default_customization
       end
 
+      if data.position == nil and cfg.spawn_enabled then
+        local x = cfg.spawn_position[1]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
+        local y = cfg.spawn_position[2]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
+        local z = cfg.spawn_position[3]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
+        data.position = {x,y,z}
+      end
+
       if data.position ~= nil then -- teleport to saved pos
         vRPclient.teleport(source,{data.position.x,data.position.y,data.position.z})
       end
@@ -40,6 +47,14 @@ AddEventHandler("vRP:playerSpawned", function()
       data.phone_directory = {} -- clear phone directory after death
 
       vRP.setMoney(user_id,0)
+
+      if cfg.spawn_enabled then -- respawn
+        local x = cfg.spawn_position[1]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
+        local y = cfg.spawn_position[2]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
+        local z = cfg.spawn_position[3]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
+        data.position = {x,y,z}
+        vRPclient.teleport(source,{x,y,z})
+      end
 
       -- load character customization
       if data.customization ~= nil then
