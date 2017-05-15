@@ -15,6 +15,7 @@ local services = cfg.services
 --- msg: alert message
 function vRP.sendServiceAlert(sender, service_name,x,y,z,msg)
   local service = services[service_name]
+  local answered = false
   if service then
     local players = {}
     for k,v in pairs(vRP.rusers) do
@@ -37,7 +38,6 @@ function vRP.sendServiceAlert(sender, service_name,x,y,z,msg)
 
       -- call request
       if sender ~= nil then
-        local answered = false
         vRP.request(v,lang.phone.service.ask_call({service_name, msg}), 30, function(v,ok)
           if ok then -- take the call
             if not answered then
