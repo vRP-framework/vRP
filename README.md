@@ -117,7 +117,14 @@ vRP.setUData(user_id,key,value)
 
 -- get user data (textual data)
 -- return nil if data not found
-vRP.getUData(user_id,key)
+vRP.getSData(user_id,key)
+
+-- set server data (textual data)
+vRP.setUData(key,value)
+
+-- get server data (textual data)
+-- return nil if data not found
+vRP.getSData(key)
 
 -- TUNNEL SERVER API
 

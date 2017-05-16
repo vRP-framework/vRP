@@ -67,6 +67,13 @@ CREATE TABLE IF NOT EXISTS vrp_user_data(
   CONSTRAINT pk_user_data PRIMARY KEY(user_id,dkey),
   CONSTRAINT fk_user_data_users FOREIGN KEY(user_id) REFERENCES vrp_users(id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS vrp_srv_data(
+  dkey VARCHAR(255),
+  dvalue TEXT,
+  CONSTRAINT pk_srv_data PRIMARY KEY(dkey)
+);
+
 ]])
 
 local q_create_user = vRP.sql:prepare("INSERT INTO vrp_users(whitelisted,banned) VALUES(false,false)")
@@ -75,6 +82,9 @@ local q_userid_byidentifier = vRP.sql:prepare("SELECT user_id FROM vrp_user_ids 
 
 local q_set_userdata = vRP.sql:prepare("REPLACE INTO vrp_user_data(user_id,dkey,dvalue) VALUES(@user_id,@key,@value)")
 local q_get_userdata = vRP.sql:prepare("SELECT dvalue FROM vrp_user_data WHERE user_id = @user_id AND dkey = @key")
+
+local q_set_srvdata = vRP.sql:prepare("REPLACE INTO vrp_srv_data(dkey,dvalue) VALUES(@key,@value)")
+local q_get_srvdata = vRP.sql:prepare("SELECT dvalue FROM vrp_srv_data WHERE dkey = @key")
 
 local q_get_banned = vRP.sql:prepare("SELECT banned FROM vrp_users WHERE id = @user_id")
 local q_set_banned = vRP.sql:prepare("UPDATE vrp_users SET banned = @banned WHERE id = @user_id")
@@ -193,15 +203,39 @@ function vRP.getUData(user_id,key)
   q_get_userdata:bind("@user_id",user_id)
   q_get_userdata:bind("@key",key)
 
+  local v = ""
+
   local r = q_get_userdata:query()
   if r:fetch() then
-    local v = r:getValue(0)
+    v = r:getValue(0)
     if type(v) ~= "string" then v = "" end
-    r:close()
-    return v
   end
 
-  return ""
+  r:close()
+
+  return v
+end
+
+function vRP.setSData(key,value)
+  q_set_srvdata:bind("@key",key)
+  q_set_srvdata:bind("@value",value)
+  q_set_srvdata:execute()
+end
+
+function vRP.getSData(key)
+  q_get_srvdata:bind("@key",key)
+
+  local v = ""
+
+  local r = q_get_srvdata:query()
+  if r:fetch() then
+    v = r:getValue(0)
+    if type(v) ~= "string" then v = "" end
+  end
+
+  r:close()
+
+  return v
 end
 
 -- return user data table for vRP internal persistant connected user storage

@@ -105,7 +105,25 @@ function vRP.setItemTransformer(name,itemtr)
 
   -- build menu
   tr.menu = {name=itemtr.name,css={top="75px",header_color="rgba("..itemtr.r..","..itemtr.g..","..itemtr.b..",0.75)"}}
-  tr.menu[itemtr.action] = {function(player,choice) tr_add_player(tr,player) end, itemtr.description}
+
+  local info = "<br /><br />"
+  if itemtr.in_money > 0 then info = info.."- "..itemtr.in_money end
+  for k,v in pairs(itemtr.reagents) do
+    local item = vRP.items[k]
+    if item then
+      info = info.."<br />"..v.." "..item.name
+    end
+  end
+  info = info.."<br /><span style=\"color: rgb(0,255,125)\">=></span>"
+  if itemtr.out_money > 0 then info = info.."<br />+ "..itemtr.out_money end
+  for k,v in pairs(itemtr.products) do
+    local item = vRP.items[k]
+    if item then
+      info = info.."<br />"..v.." "..item.name
+    end
+  end
+
+  tr.menu[itemtr.action] = {function(player,choice) tr_add_player(tr,player) end, itemtr.description..info}
 
   -- build area
   tr.enter = function(player,area)
@@ -179,7 +197,10 @@ AddEventHandler("vRP:playerSpawned",function()
   end
 end)
 
--- load item transformers from config file
-for k,v in pairs(cfg.item_transformers) do
-  vRP.setItemTransformer("cfg:"..k,v)
-end
+SetTimeout(5000,function()
+  -- delayed to wait item loading
+  -- load item transformers from config file
+  for k,v in pairs(cfg.item_transformers) do
+    vRP.setItemTransformer("cfg:"..k,v)
+  end
+end)
