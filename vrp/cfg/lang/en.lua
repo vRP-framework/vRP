@@ -277,6 +277,13 @@ local lang = {
   skinshop = {
     title = "Skinshop"
   },
+  itemtr = {
+    informer = {
+      title = "Illegal Informer",
+      description = "{1} $",
+      bought = "~g~Position sent to your GPS."
+    }
+  },
   items = {
     dirty_money = {
       title = "Dirty money",

@@ -5,6 +5,7 @@
 -- reagents => products (reagents can be nothing, as for an harvest transformer)
 
 local cfg = require("resources/vrp/cfg/item_transformers")
+local lang = vRP.lang
 
 -- api
 
@@ -197,10 +198,122 @@ AddEventHandler("vRP:playerSpawned",function()
   end
 end)
 
+-- STATIC TRANSFORMERS
+
 SetTimeout(5000,function()
-  -- delayed to wait item loading
+  -- delayed to wait items loading
   -- load item transformers from config file
   for k,v in pairs(cfg.item_transformers) do
     vRP.setItemTransformer("cfg:"..k,v)
   end
 end)
+
+-- HIDDEN TRANSFORMERS
+
+-- generate a random position for the hidden transformer
+local function gen_random_position(positions)
+  local n = #positions
+  if n > 0 then
+    return positions[math.random(1,n)]
+  else 
+    return {0,0,0}
+  end
+end
+
+local function hidden_placement_tick()
+  local hidden_trs = json.decode(vRP.getSData("vRP:hidden_trs")) or {}
+
+  for k,v in pairs(cfg.hidden_transformers) do
+    -- init entry
+    local htr = hidden_trs[k]
+    if htr == nil then
+      hidden_trs[k] = {timestamp=cast(int,os.time()), position=gen_random_position(v.positions)}
+      htr = hidden_trs[k]
+    end
+
+    -- remove hidden transformer if needs respawn
+    if tonumber(os.time())-htr.timestamp >= cfg.hidden_transformer_duration*60 then
+      htr.timestamp = cast(int,os.time())
+      vRP.removeItemTransformer("cfg:"..k)
+      -- generate new position
+      htr.position = gen_random_position(v.positions)
+    end
+
+    -- spawn if unspawned 
+    if transformers["cfg:"..k] == nil then
+      v.def.x = htr.position[1]
+      v.def.y = htr.position[2]
+      v.def.z = htr.position[3]
+
+      vRP.setItemTransformer("cfg:"..k, v.def)
+    end
+  end
+
+  vRP.setSData("vRP:hidden_trs",json.encode(hidden_trs)) -- save hidden transformers
+
+  SetTimeout(300000, hidden_placement_tick)
+end
+SetTimeout(5000, hidden_placement_tick) -- delayed to wait items loading
+
+-- INFORMER
+
+-- build informer menu
+local informer_menu = {name=lang.itemtr.informer.title(), css={top="75px",header_color="rgba(0,255,125,0.75)"}}
+
+local function ch_informer_buy(player,choice)
+  local user_id = vRP.getUserId(player)
+  local tr = transformers["cfg:"..choice]
+  local price = cfg.informer.infos[choice]
+
+  if user_id ~= nil and tr ~= nil then
+    if vRP.tryPayment(user_id, price) then
+      vRPclient.setGPS(player, {tr.itemtr.x,tr.itemtr.y}) -- set gps marker
+      vRPclient.notify(player, {lang.money.paid({price})})
+      vRPclient.notify(player, {lang.itemtr.informer.bought()})
+    else
+      vRPclient.notify(player, {lang.money.not_enough()})
+    end
+  end
+end
+
+for k,v in pairs(cfg.informer.infos) do
+  informer_menu[k] = {ch_informer_buy, lang.itemtr.informer.description({v})}
+end
+
+local function informer_enter()
+  local user_id = vRP.getUserId(source)
+  if user_id ~= nil then
+    vRP.openMenu(source,informer_menu) 
+  end
+end
+
+local function informer_leave()
+  vRP.closeMenu(source)
+end
+
+local function informer_placement_tick()
+  local pos = gen_random_position(cfg.informer.positions)
+  local x,y,z = table.unpack(pos)
+
+  for k,v in pairs(vRP.rusers) do
+    local player = vRP.getUserSource(tonumber(k))
+
+    -- add informer blip/marker/area
+    vRPclient.setNamedBlip(player,{"vRP:informer",x,y,z,cfg.informer.blipid,cfg.informer.blipcolor,lang.informer.title()})
+    vRPclient.setNamedMarker(player,{"vRP:informer",x,y,z-1,0.7,0.7,0.5,0,255,125,125,150})
+    vRP.setArea(player,"vRP:informer",x,y,z,1,1.5,informer_enter,informer_leave)
+  end
+
+  -- remove informer blip/marker/area after after a while
+  SetTimeout(cfg.informer.duration*60000, function()
+    for k,v in pairs(vRP.rusers) do
+      local player = vRP.getUserSource(tonumber(k))
+      vRPclient.removeNamedBlip(player,{"vRP:informer"})
+      vRPclient.removeNamedMarker(player,{"vRP:informer"})
+      vRP.removeArea(player,"vRP:informer")
+    end
+  end)
+
+  SetTimeout(cfg.informer.interval*60000, informer_placement_tick)
+end
+SetTimeout(cfg.informer.interval*60000,informer_placement_tick)
