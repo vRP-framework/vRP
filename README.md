@@ -1,36 +1,4 @@
 
-Table of Contents
-=================
-
-   * [vRP](#vrp)
-      * [Features](#features)
-      * [TODO LIST](#todo-list)
-      * [NOTES](#notes)
-         * [Homes](#homes)
-            * [How it works](#how-it-works)
-      * [Tutorials](#tutorials)
-         * [Events](#events)
-            * [Base](#base)
-         * [API](#api)
-            * [Base](#base-1)
-            * [Group/permission](#grouppermission)
-            * [Survival](#survival)
-            * [Player state](#player-state)
-            * [Identity](#identity)
-            * [Money](#money)
-            * [Inventory](#inventory)
-            * [Item transformer](#item-transformer)
-            * [GUI](#gui)
-               * [Registering choices to the main menu](#registering-choices-to-the-main-menu)
-            * [Map](#map)
-         * [Libs](#libs)
-            * [Proxy](#proxy)
-            * [Tunnel](#tunnel)
-            * [MySQL](#mysql)
-
-Created by [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
-
-
 # vRP
 FiveM RP addon/framework
 
@@ -88,6 +56,27 @@ Homes are closed interiors allocated to players when they want to go inside thei
 Also, player addresses are bound to the home cluster name, it means that if you change the cluster configuration name, players will not be able to enter/sell their home anymore. So choose the name well and don't change it, if you don't want to deal with this.
 
 ## Tutorials
+
+* [Events](#events)
+  * [Base](#base)
+* [API](#api)
+  * [Base](#base-1)
+  * [Group/permission](#grouppermission)
+  * [Survival](#survival)
+  * [Player state](#player-state)
+  * [Identity](#identity)
+  * [Money](#money)
+  * [Inventory](#inventory)
+  * [Item transformer](#item-transformer)
+  * [GUI](#gui)
+     * [Registering choices to the main menu](#registering-choices-to-the-main-menu)
+  * [Map](#map)
+* [Libs](#libs)
+  * [Proxy](#proxy)
+  * [Tunnel](#tunnel)
+  * [MySQL](#mysql)
+
+[(gh-md-toc)](https://github.com/ekalinin/github-markdown-toc)
 
 ### Events
 #### Base
