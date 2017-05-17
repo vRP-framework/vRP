@@ -40,6 +40,10 @@ function Tunnel.bindInterface(name,interface)
   -- receive request
   RegisterServerEvent(name..":tunnel_req")
   AddEventHandler(name..":tunnel_req",function(member,args,identifier,rid)
+    if Debug.active then
+      Debug.pbegin("tunnelreq#"..rid.."_"..name..":"..member.." "..json.encode(args))
+    end
+
     local f = interface[member]
 
     local rets = {}
@@ -51,6 +55,10 @@ function Tunnel.bindInterface(name,interface)
     -- send response (even if the function doesn't exist)
     if rid >= 0 then
       TriggerClientEvent(name..":"..identifier..":tunnel_res",source,rid,rets)
+    end
+
+    if Debug.active then
+      Debug.pend()
     end
   end)
 end
@@ -68,6 +76,8 @@ function Tunnel.getInterface(name,identifier)
   -- receive response
   RegisterServerEvent(name..":"..identifier..":tunnel_res")
   AddEventHandler(name..":"..identifier..":tunnel_res",function(rid,args)
+    Debug.pbegin("tunnelres#"..rid.."_"..name.." "..json.encode(args))
+
     local callback = callbacks[rid]
     if callback ~= nil then
       -- free request id
@@ -77,6 +87,8 @@ function Tunnel.getInterface(name,identifier)
       -- call
       callback(table.unpack(args))
     end
+
+    Debug.pend()
   end)
 
   return r

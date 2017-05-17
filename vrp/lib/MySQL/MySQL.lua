@@ -2,6 +2,8 @@
 --local Mono = require("resources/vRP/lib/Mono")
 --local lib = Mono.loadAssembly("resources/vRP/lib/MySQL/MySql.Data.dll").MySql.Data
 
+local Debug = require("resources/vrp/lib/Debug")
+
 -- global assembly loading, can create conflict with different mysql versions loaded
 clr.System.Reflection.Assembly.LoadFrom("resources/vrp/lib/MySQL/MySql.Data.dll")
 local lib = clr.MySql.Data
@@ -137,6 +139,7 @@ function Command:bind(param,value)
 end
 
 function Command:query()
+  Debug.pbegin("MySQL_query \""..self.command.CommandText.."\"")
   local r = setmetatable({},{ __index = Result })
 
   -- force close previous result
@@ -151,6 +154,7 @@ function Command:query()
 
   r.command = self
   r:init()
+  Debug.pend()
   return r
 end
 
@@ -159,6 +163,7 @@ function Command:last_insert_id()
 end
 
 function Command:execute()
+  Debug.pbegin("MySQL_execute \""..self.command.CommandText.."\"")
   -- force close previous result
   self.connection:closeActiveResult()
 
@@ -168,6 +173,7 @@ function Command:execute()
     print("[vRP MySQL_execute] "..self.command.CommandText.." => "..r)
   end
 
+  Debug.pend()
   return r
 end
 

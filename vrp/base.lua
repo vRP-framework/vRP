@@ -3,9 +3,11 @@ local MySQL = require("resources/vrp/lib/MySQL/MySQL")
 local Proxy = require("resources/vrp/lib/Proxy")
 local Tunnel = require("resources/vrp/lib/Tunnel")
 local Lang = require("resources/vrp/lib/Lang")
+Debug = require("resources/vrp/lib/Debug")
 
 local config = require("resources/vrp/cfg/base")
 local version = require("resources/vrp/version")
+Debug.active = config.debug
 
 -- versioning
 print("[vRP] launch version "..version)
@@ -31,7 +33,7 @@ Tunnel.bindInterface("vRP",tvRP) -- listening for client tunnel
 local dict = require("resources/vrp/cfg/lang/"..config.lang) or {}
 vRP.lang = Lang.new(dict)
 
-
+-- init
 vRPclient = Tunnel.getInterface("vRP","vRP") -- server -> client tunnel
 
 vRP.users = {} -- will store logged users (id) by first identifier
@@ -286,10 +288,12 @@ end
 -- tasks
 
 function task_save_datatables()
+  Debug.pbegin("vRP save datatables")
   for k,v in pairs(vRP.user_tables) do
     vRP.setUData(k,"vRP:datatable",json.encode(v))
   end
 
+  Debug.pend()
   SetTimeout(config.save_interval*1000, task_save_datatables)
 end
 task_save_datatables()
@@ -297,6 +301,7 @@ task_save_datatables()
 -- handlers
 
 AddEventHandler("playerConnecting",function(name,setMessage)
+  Debug.pbegin("playerConnecting")
   local ids = GetPlayerIdentifiers(source)
   
   if ids ~= nil and #ids > 0 then
@@ -312,6 +317,7 @@ AddEventHandler("playerConnecting",function(name,setMessage)
       if not vRP.isBanned(user_id) then
         if not config.whitelist or vRP.isWhitelisted(user_id) then
           SetTimeout(1,function() -- create a delayed function to prevent the nil <-> string deadlock issue
+          Debug.pbegin("playerConnecting_delayed")
           if vRP.rusers[user_id] == nil then -- not present on the server, init
             -- init entries
             vRP.users[ids[1]] = user_id
@@ -354,6 +360,7 @@ AddEventHandler("playerConnecting",function(name,setMessage)
             tmpdata.first_spawn = true
           end
 
+          Debug.pend()
           end)
         else
           print("[vRP] "..name.." ("..GetPlayerEP(source)..") rejected: not whitelisted (user_id = "..user_id..")")
@@ -375,9 +382,11 @@ AddEventHandler("playerConnecting",function(name,setMessage)
     setMessage("[vRP] Missing identifiers.")
     CancelEvent()
   end
+  Debug.pend()
 end)
 
 AddEventHandler("playerDropped",function(reason)
+  Debug.pbegin("playerDropped")
   local user_id = vRP.getUserId(source)
 
   -- remove player from connected clients
@@ -396,10 +405,12 @@ AddEventHandler("playerDropped",function(reason)
     vRP.user_tmp_tables[user_id] = nil
     vRP.user_sources[user_id] = nil
   end
+  Debug.pend()
 end)
 
 RegisterServerEvent("vRP:playerSpawned")
 AddEventHandler("vRP:playerSpawned", function()
+  Debug.pbegin("playerSpawned")
   -- register user sources and then set first spawn to false
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
@@ -418,6 +429,7 @@ AddEventHandler("vRP:playerSpawned", function()
       SetTimeout(1000,function() tmp.first_spawn = false end)
     end
   end
+  Debug.pend()
 end)
 
 RegisterServerEvent("vRP:playerDied")

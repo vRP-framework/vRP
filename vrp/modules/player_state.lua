@@ -3,6 +3,7 @@ local lang = vRP.lang
 
 -- client -> server events
 AddEventHandler("vRP:playerSpawned", function()
+  Debug.pbegin("playerSpawned_player_state")
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
     local data = vRP.getUserDataTable(user_id)
@@ -61,8 +62,8 @@ AddEventHandler("vRP:playerSpawned", function()
         vRPclient.setCustomization(source,{data.customization})
       end
     end
-
   end
+  Debug.pend()
 end)
 
 -- death, clear position and weapons

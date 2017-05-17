@@ -1,5 +1,7 @@
 -- Proxy interface system, used to add/call functions between resources
 
+local Debug = require("resources/vrp/lib/Debug")
+
 local Proxy = {}
 
 local function proxy_null_callback()
@@ -28,6 +30,10 @@ end
 --- Add event handler to call interface functions (can be called multiple times for the same interface name with different tables)
 function Proxy.addInterface(name, itable)
   AddEventHandler(name..":proxy",function(member,args,callback)
+    if Debug.active then
+      Debug.pbegin("proxy_"..name..":"..member.." "..json.encode(args))
+    end
+
     local f = itable[member]
 
     if type(f) == "function" then
@@ -35,6 +41,10 @@ function Proxy.addInterface(name, itable)
       -- CancelEvent() -- cancel event doesn't seem to cancel the event for the other handlers, but if it does, uncomment this
     else
       print("error: proxy call "..name..":"..member.." not found")
+    end
+
+    if Debug.active then
+      Debug.pend()
     end
   end)
 end
