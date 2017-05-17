@@ -47,11 +47,10 @@ RegisterNUICallback("request",function(data,cb)
 end)
 
 -- cfg
-RegisterNUICallback("cfg",function(data,cb)
+RegisterNUICallback("cfg",function(data,cb) -- if NUI loaded after
   SendNUIMessage({act="cfg",cfg=cfg.gui})
 end)
-
-
+SendNUIMessage({act="cfg",cfg=cfg.gui}) -- if NUI loaded before
 
 -- PROGRESS BAR
 
