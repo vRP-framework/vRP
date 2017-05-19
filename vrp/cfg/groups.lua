@@ -14,7 +14,8 @@ cfg.groups = {
     _config = {onspawn = function(player) vRPclient.notify(player,{"You are superadmin."}) end},
     "player.group.add",
     "player.group.remove",
-    "player.givemoney"
+    "player.givemoney",
+    "player.giveitem"
   },
   ["admin"] = {
     "player.list",
@@ -46,6 +47,12 @@ cfg.groups = {
     "police.askid",
     "police.check",
     "police.service"
+  },
+  ["emergency"] = {
+    _config = { gtype = "job" },
+    "emergency.revive",
+    "emergency.shop",
+    "emergency.service"
   },
   ["taxi"] = {
     _config = { gtype = "job" },

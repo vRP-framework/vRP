@@ -194,6 +194,19 @@ local function ch_givemoney(player,choice)
   end
 end
 
+local function ch_giveitem(player,choice)
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil then
+    vRP.prompt(player,"Id name:","",function(player,idname) 
+      idname = idname or ""
+      vRP.prompt(player,"Amount:","",function(player,amount) 
+        amount = tonumber(amount)
+        vRP.giveInventoryItem(user_id, idname, amount)
+      end)
+    end)
+  end
+end
+
 AddEventHandler("vRP:buildMainMenu",function(player)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
@@ -246,6 +259,9 @@ AddEventHandler("vRP:buildMainMenu",function(player)
       end
       if vRP.hasPermission(user_id,"player.givemoney") then
         menu["@Give money"] = {ch_givemoney}
+      end
+      if vRP.hasPermission(user_id,"player.giveitem") then
+        menu["@Give item"] = {ch_giveitem}
       end
 
       vRP.openMenu(player,menu)

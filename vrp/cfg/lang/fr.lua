@@ -35,7 +35,8 @@ local lang = {
       prompt = "Quantité à donner (max {1}):",
       given = "Vous avez donné ~r~{1} ~s~{2}.",
       received = "Vous avez reçu ~g~{1} ~s~{2}.",
-    }
+    },
+    missing = "~r~Manque {2} {1}."
   },
   atm = {
     title = "Distributeur de billets",
@@ -165,6 +166,15 @@ local lang = {
       info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em>N° d'immatriculation: </em>{4}<br /><em>Téléphone: </em>{5}<br /><em>Entreprise: </em>{6}<br /><em>Capital de l'entreprise: </em>{7} $<br /><em>Adresse: </em>{9}, {8}"
     }
   },
+  emergency = {
+    menu = {
+      revive = {
+        title = "Réanimer",
+        description = "Réanimer le joueur le plus proche.",
+        not_in_coma = "~r~Le joueur n'est pas dans le coma."
+      }
+    }
+  },
   phone = {
     title = "Téléphone",
     directory = {
@@ -287,6 +297,10 @@ local lang = {
     dirty_money = {
       title = "Argent sale",
       description = "Argent obtenu illégalement."
+    },
+    medkit = {
+      title = "Kit Médical",
+      description = "Utilisé pour réanimer des personnes inconscientes."
     }
   }
 }

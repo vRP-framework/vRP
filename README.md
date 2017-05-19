@@ -21,11 +21,12 @@ vRP test server availables:
 * homes (experimental, if a visitor leave in any other way than using the green circle, like crashing, flying or disconnecting, it will require an eject all)
 * phone
 * basic police (PC, check, I.D., cloakroom, handcuff)
+* basic emergency (coma, reanimate)
 * emotes
 * money (wallet/bank)
 * inventory (with custom item definition)
 * basic implementations: ATM, market, gunshop, skinshop, garage
-* item transformer (harvest, process, produce)
+* item transformer (harvest, process, produce) (illegal informer)
 * identification system (persistant user id for database storage)
 * user custom data key/value
 * gui (dynamic menu, progress bars, prompt) API
@@ -38,7 +39,6 @@ vRP test server availables:
 * home stuff
 * external inventory (car trunk, etc)
 * vehicle functions, try vehicle before buying
-* more RP death
 * wanted reported to police, more punitive wanted
 * drop weapon/save weapon components
 * education (maybe)
