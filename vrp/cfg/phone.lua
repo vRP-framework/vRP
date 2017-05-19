@@ -26,6 +26,15 @@ cfg.services = {
     notify = "~b~You called the police.",
     answer_notify = "~b~The police is coming."
   },
+  ["emergency"] = {
+    blipid = 153,
+    blipcolor = 1,
+    alert_time = 300, -- 5 minutes
+    alert_permission = "emergency.service",
+    alert_notify = "~r~Emergency alert:~n~~s~",
+    notify = "~b~You called the emergencies.",
+    answer_notify = "~b~The emergencies are coming."
+  },
   ["taxi"] = {
     blipid = 198,
     blipcolor = 5,

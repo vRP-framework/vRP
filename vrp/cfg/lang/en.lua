@@ -36,7 +36,8 @@ local lang = {
       prompt = "Amount to give (max {1}):",
       given = "Given ~r~{1} ~s~{2}.",
       received = "Received ~g~{1} ~s~{2}.",
-    }
+    },
+    missing = "~r~Missing {2} {1}."
   },
   atm = {
     title = "ATM",
@@ -166,6 +167,15 @@ local lang = {
       info = "<em>Name: </em>{1}<br /><em>First name: </em>{2}<br /><em>Age: </em>{3}<br /><em>Registration n°: </em>{4}<br /><em>Phone: </em>{5}<br /><em>Business: </em>{6}<br /><em>Business capital: </em>{7} $<br /><em>Address: </em>{9}, {8}"
     }
   },
+  emergency = {
+    menu = {
+      revive = {
+        title = "Reanimate",
+        description = "Reanimate the nearest player.",
+        not_in_coma = "~r~Not in coma."
+      }
+    }
+  },
   phone = {
     title = "Phone",
     directory = {
@@ -288,6 +298,10 @@ local lang = {
     dirty_money = {
       title = "Dirty money",
       description = "Illegally earned money."
+    },
+    medkit = {
+      title = "Medical Kit",
+      description = "Used to reanimate unconscious people."
     }
   }
 }

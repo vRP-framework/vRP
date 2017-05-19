@@ -1,3 +1,5 @@
+local lang = vRP.lang
+
 -- define some basic inventory items
 
 local function play_eat(player)
@@ -270,6 +272,27 @@ pdonut_choices["Eat"] = {function(player,choice)
 end}
 
 vRP.defInventoryItem("pdonut","Premium Donut","",pdonut_choices)
+
+-- MEDIC
+
+local pills_choices = {}
+pills_choices["Take"] = {function(player,choice)
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil then
+    if vRP.tryGetInventoryItem(user_id,"pills",1) then
+      vRPclient.varyHealth(player,{25})
+      vRPclient.notify(player,{"~g~ Taking pills."})
+      play_drink(player)
+      vRP.closeMenu(player)
+    end
+  end
+end}
+
+vRP.defInventoryItem("pills","Pills","A simple medication.",pills_choices)
+
+-- medkit item
+vRP.defInventoryItem("medkit", lang.items.medkit.title(), lang.items.medkit.description(), {})
+
 
 -- load config items
 local cfg = require("resources/vrp/cfg/items")
