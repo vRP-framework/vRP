@@ -85,7 +85,7 @@ Citizen.CreateThread(function() -- coma thread
       if not in_coma then -- go to coma state
         in_coma = true
         tvRP.setRagdoll(true)
-        coma_health = cfg.coma_threshold -- init coma health
+        coma_health = GetEntityHealth(ped)
       end
 
       -- stabilize health
