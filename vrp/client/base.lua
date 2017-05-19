@@ -174,6 +174,24 @@ function tvRP.stopAnim(upper)
   end
 end
 
+-- RAGDOLL
+local ragdoll = false
+
+-- set player ragdoll flag (true or false)
+function tvRP.setRagdoll(flag)
+  ragdoll = flag
+end
+
+-- ragdoll thread
+Citizen.CreateThread(function()
+  while true do
+    Citizen.Wait(10)
+    if ragdoll then
+      SetPedToRagdoll(GetPlayerPed(-1), 1000, 1000, 0, 0, 0, 0)
+    end
+  end
+end)
+
 --[[
 -- not working
 function tvRP.setMovement(dict)
