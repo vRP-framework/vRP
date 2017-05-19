@@ -33,7 +33,12 @@ cfg.groups = {
     "player.phone"
   },
   ["police"] = {
-    _config = { gtype = "job" },
+    _config = { 
+      gtype = "job",
+      onjoin = function(player) vRPclient.setCop(player,{true}) end,
+      onspawn = function(player) vRPclient.setCop(player,{true}) end,
+      onleave = function(player) vRPclient.setCop(player,{false}) end
+    },
     "police.cloakroom",
     "police.pc",
     "police.handcuff",

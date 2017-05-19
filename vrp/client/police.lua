@@ -3,6 +3,11 @@
 
 local handcuffed = false
 
+-- set player as cop (true or false)
+function tvRP.setCop(flag)
+  SetPedAsCop(GetPlayerPed(-1),flag)
+end
+
 function tvRP.toggleHandcuff()
   handcuffed = not handcuffed
 

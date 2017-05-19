@@ -238,6 +238,15 @@ vRP.varyThirst(user_id,variation)
 -- player health variation (+ to heal, - to deal damage)
 vRP.varyHealth(variation)
 
+-- get player health
+vRP.getHealth()
+
+-- set player health
+vRP.setHealth(health)
+
+-- check if the player is in coma
+vRP.isInComa()
+
 -- enable/disable spawned player ability to hurt friendly
 -- flag: boolean
 vRP.setFriendlyFire(flag)
@@ -245,6 +254,20 @@ vRP.setFriendlyFire(flag)
 -- enable/disable spawned player ability to be chased/arrested by cops
 -- flag: boolean
 vRP.setPolice(flag)
+```
+
+#### Police
+
+```lua
+-- PROXY API
+
+-- TUNNEL SERVER API
+
+-- TUNNEL CLIENT API
+
+-- true to enable, false to disable
+-- if enabled, will prevent NPC cops to fire at the player
+vRP.setCop(flag)
 ```
 
 #### Player state
