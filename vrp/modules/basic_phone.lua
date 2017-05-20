@@ -38,7 +38,7 @@ function vRP.sendServiceAlert(sender, service_name,x,y,z,msg)
 
       -- call request
       if sender ~= nil then
-        vRP.request(v,lang.phone.service.ask_call({service_name, msg}), 30, function(v,ok)
+        vRP.request(v,lang.phone.service.ask_call({service_name, htmlEntities.encode(msg)}), 30, function(v,ok)
           if ok then -- take the call
             if not answered then
               -- answer the call
