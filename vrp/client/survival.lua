@@ -123,6 +123,13 @@ function tvRP.isInComa()
   return in_coma
 end
 
+-- kill the player if in coma
+function tvRP.killComa()
+  if in_coma then
+    coma_left = 0
+  end
+end
+
 Citizen.CreateThread(function() -- coma decrease thread
   while true do 
     Citizen.Wait(1000)

@@ -214,6 +214,7 @@ Running, walking, being hurt/injured, and just living add hunger and thirst. Whe
 This module disable the basic health regen.
 
 The survival module implement also a coma system, if the health of the player is below the coma threshold, the player is in coma for a specific duration before dying. The health (thus coma) is recorded in the player state.
+If a player disconnect and reconnect while in coma, he will fall in coma again and die in a few seconds.
 
 ```lua
 -- PROXY API
