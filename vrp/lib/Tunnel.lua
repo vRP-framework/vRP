@@ -40,6 +40,9 @@ function Tunnel.bindInterface(name,interface)
   -- receive request
   RegisterServerEvent(name..":tunnel_req")
   AddEventHandler(name..":tunnel_req",function(member,args,identifier,rid)
+    local source = source
+    local delayed = false
+
     if Debug.active then
       Debug.pbegin("tunnelreq#"..rid.."_"..name..":"..member.." "..json.encode(args))
     end
@@ -48,12 +51,24 @@ function Tunnel.bindInterface(name,interface)
 
     local rets = {}
     if type(f) == "function" then
+      -- bind the global function to delay the return values using the returned function with args
+      TUNNEL_DELAYED = function()
+        delayed = true
+        return function(rets)
+          rets = rets or {}
+
+          if rid >= 0 then
+            TriggerClientEvent(name..":"..identifier..":tunnel_res",source,rid,rets)
+          end
+        end
+      end
+
       rets = {f(table.unpack(args))} -- call function 
       -- CancelEvent() -- cancel event doesn't seem to cancel the event for the other handlers, but if it does, uncomment this
     end
 
     -- send response (even if the function doesn't exist)
-    if rid >= 0 then
+    if not delayed and rid >= 0 then
       TriggerClientEvent(name..":"..identifier..":tunnel_res",source,rid,rets)
     end
 
@@ -76,7 +91,9 @@ function Tunnel.getInterface(name,identifier)
   -- receive response
   RegisterServerEvent(name..":"..identifier..":tunnel_res")
   AddEventHandler(name..":"..identifier..":tunnel_res",function(rid,args)
-    Debug.pbegin("tunnelres#"..rid.."_"..name.." "..json.encode(args))
+    if Debug.active then
+      Debug.pbegin("tunnelres#"..rid.."_"..name.." "..json.encode(args))
+    end
 
     local callback = callbacks[rid]
     if callback ~= nil then

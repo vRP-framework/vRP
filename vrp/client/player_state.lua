@@ -178,48 +178,54 @@ end
 
 -- partial customization (only what is set is changed)
 function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] components or props (p0...) plus .modelhash or .model
-  if custom then
-    local ped = GetPlayerPed(-1)
-    local mhash = nil
+  local exit = TUNNEL_DELAYED() -- delay the return values
 
-    -- model
-    if custom.modelhash ~= nil then
-      mhash = custom.modelhash
-    elseif custom.model ~= nil then
-      mhash = GetHashKey(custom.model)
-    end
+  Citizen.CreateThread(function() -- new thread
+    if custom then
+      local ped = GetPlayerPed(-1)
+      local mhash = nil
 
-    if mhash ~= nil then
-      local i = 0
-      while not HasModelLoaded(mhash) and i < 10000 do
-        RequestModel(mhash)
-        Citizen.Wait(10)
+      -- model
+      if custom.modelhash ~= nil then
+        mhash = custom.modelhash
+      elseif custom.model ~= nil then
+        mhash = GetHashKey(custom.model)
       end
 
-      if HasModelLoaded(mhash) then
-        SetPlayerModel(PlayerId(), mhash)
-        SetModelAsNoLongerNeeded(mhash)
+      if mhash ~= nil then
+        local i = 0
+        while not HasModelLoaded(mhash) and i < 10000 do
+          RequestModel(mhash)
+          Citizen.Wait(10)
+        end
+
+        if HasModelLoaded(mhash) then
+          SetPlayerModel(PlayerId(), mhash)
+          SetModelAsNoLongerNeeded(mhash)
+        end
       end
-    end
 
-    ped = GetPlayerPed(-1)
+      ped = GetPlayerPed(-1)
 
-    -- parts
-    for k,v in pairs(custom) do
-      if k ~= "model" and k ~= "modelhash" then
-        local isprop, index = parse_part(k)
-        if isprop then
-          if v[1] < 0 then
-            ClearPedProp(ped,index)
+      -- parts
+      for k,v in pairs(custom) do
+        if k ~= "model" and k ~= "modelhash" then
+          local isprop, index = parse_part(k)
+          if isprop then
+            if v[1] < 0 then
+              ClearPedProp(ped,index)
+            else
+              SetPedPropIndex(ped,index,v[1],v[2],v[3] or 2)
+            end
           else
-            SetPedPropIndex(ped,index,v[1],v[2],v[3] or 2)
+            SetPedComponentVariation(ped,index,v[1],v[2],v[3] or 2)
           end
-        else
-          SetPedComponentVariation(ped,index,v[1],v[2],v[3] or 2)
         end
       end
     end
-  end
+
+    exit({})
+  end)
 end
 
 -- fix invisible players by resetting customization every minutes

@@ -709,6 +709,19 @@ function clientdef.teleport(x,y,z)
   SetEntityCoords(GetPlayerPed(-1), x, y, z, 1,0,0,0) 
 end
 
+-- sometimes, you would want to return the tunnel call asynchronously
+-- ex:
+function clientdef.setModel(hash)
+  local exit = TUNNEL_DELAYED() -- get the delayed return function
+
+  Citizen.CreateThread(function()
+    -- do the asynchronous model loading
+    Citizen.Wait(1000)
+
+    exit({true}) -- return a boolean to confirm loading (calling exit will not really exit the function, but just send back the array as the tunnel call return values, so call it wisely)
+  end)
+end
+
 -- get the server-side access
 serveraccess = Tunnel.getInterface("myrsc","myrsc") -- the second argument is a unique id for this tunnel access, the current resource name is a good choice
 
@@ -716,6 +729,7 @@ serveraccess = Tunnel.getInterface("myrsc","myrsc") -- the second argument is a 
 serveraccess.test({"my client message"},function(r)
   print(r)
 end)
+
 ```
 
 Now if we want to use the same teleport function in another resource:
