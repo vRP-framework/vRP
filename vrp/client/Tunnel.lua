@@ -78,14 +78,27 @@ function Tunnel.bindInterface(name,interface)
   AddEventHandler(name..":tunnel_req",function(member,args,identifier,rid)
     local f = interface[member]
 
+    local delayed = false
+
     local rets = {}
     if type(f) == "function" then
+      -- bind the global function to delay the return values using the returned function with args
+      TUNNEL_DELAYED = function()
+        delayed = true
+        return function(rets)
+          rets = rets or {}
+          if rid >= 0 then
+            TriggerServerEvent(name..":"..identifier..":tunnel_res",rid,rets)
+          end
+        end
+      end
+
       rets = {f(table.unpack(args))} -- call function 
       -- CancelEvent() -- cancel event doesn't seem to cancel the event for the other handlers, but if it does, uncomment this
     end
 
     -- send response (event if the function doesn't exist)
-    if rid >= 0 then
+    if not delayed and rid >= 0 then
       TriggerServerEvent(name..":"..identifier..":tunnel_res",rid,rets)
     end
   end)
