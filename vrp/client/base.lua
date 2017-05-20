@@ -207,7 +207,10 @@ end
 
 AddEventHandler("playerSpawned",function()
   NetworkSetTalkerProximity(cfg.voice_proximity+0.0001)
-  TriggerServerEvent("vRP:playerSpawned")
+  Citizen.CreateThread(function() -- delay spawned event of 5 seconds
+    Citizen.Wait(5000)
+    TriggerServerEvent("vRP:playerSpawned")
+  end)
 end)
 
 AddEventHandler("onPlayerDied",function(player,reason)

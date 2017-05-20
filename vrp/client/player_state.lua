@@ -1,22 +1,22 @@
 
 -- periodic player state update
 
--- update_wait : prevent sending update before receiving spawn data
-local update_wait = false
-AddEventHandler("playerSpawned",function()
-  update_wait = true
+local state_ready = false
+
+AddEventHandler("playerSpawned",function() -- delay state recording
+  state_ready = false
+  
+  Citizen.CreateThread(function()
+    Citizen.Wait(10000)
+    state_ready = true
+  end)
 end)
 
 Citizen.CreateThread(function()
   while true do
     Citizen.Wait(30000)
 
-    if IsPlayerPlaying(PlayerId()) then
-      if update_wait then
-        update_wait = false
-        Citizen.Wait(10000)
-      end
-
+    if IsPlayerPlaying(PlayerId()) and state_ready then
       local x,y,z = table.unpack(GetEntityCoords(GetPlayerPed(-1),true))
       vRPserver.updatePos({x,y,z})
       vRPserver.updateHealth({tvRP.getHealth()})
@@ -226,9 +226,11 @@ end
 Citizen.CreateThread(function()
   while true do
     Citizen.Wait(60000)
-    local custom = tvRP.getCustomization()
-    custom.model = nil
-    custom.modelhash = nil
-    tvRP.setCustomization(custom)
+    if state_ready then
+      local custom = tvRP.getCustomization()
+      custom.model = nil
+      custom.modelhash = nil
+      tvRP.setCustomization(custom)
+    end
   end
 end)
