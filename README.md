@@ -211,6 +211,9 @@ vRP.hasPermission(user_id, perm)
 #### Survival
 
 Running, walking, being hurt/injured, and just living add hunger and thirst. When the hunger and the thirst are at their maximum level (100%), next hunger/thirst overflow will damage the character by the same amout (ex: when thirsty, don't run, take a car).
+This module disable the basic health regen.
+
+The survival module implement also a coma system, if the health of the player is below the coma threshold, the player is in coma for a specific duration before dying. The health (thus coma) is recorded in the player state.
 
 ```lua
 -- PROXY API
