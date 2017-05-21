@@ -130,6 +130,10 @@ end
 
 -- receive prompt result
 function tvRP.promptResult(text)
+  if text == nil then
+    text = ""
+  end
+
   local prompt = prompts[source]
   if prompt ~= nil then
     prompts[source] = nil
