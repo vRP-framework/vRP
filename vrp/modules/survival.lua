@@ -169,15 +169,14 @@ local revive_seq = {
 local choice_revive = {function(player,choice)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
-      local nplayer = player
---    vRPclient.getNearestPlayer(player,{10},function(nplayer)
+    vRPclient.getNearestPlayer(player,{10},function(nplayer)
       local nuser_id = vRP.getUserId(nplayer)
       if nuser_id ~= nil then
         vRPclient.isInComa(nplayer,{}, function(in_coma)
           if in_coma then
             if vRP.tryGetInventoryItem(user_id,"medkit",1) then
               vRPclient.playAnim(player,{false,revive_seq,false}) -- anim
-              SetTimeout(5000, function()
+              SetTimeout(15000, function()
                 vRPclient.varyHealth(nplayer,{50}) -- heal 50
               end)
             else
@@ -190,7 +189,7 @@ local choice_revive = {function(player,choice)
       else
         vRPclient.notify(player,{lang.common.no_player_near()})
       end
---    end)
+    end)
   end
 end,lang.emergency.menu.revive.description()}
 

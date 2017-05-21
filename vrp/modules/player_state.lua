@@ -4,6 +4,7 @@ local lang = vRP.lang
 -- client -> server events
 AddEventHandler("vRP:playerSpawned", function()
   Debug.pbegin("playerSpawned_player_state")
+  local player = source
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
     local data = vRP.getUserDataTable(user_id)
@@ -31,8 +32,13 @@ AddEventHandler("vRP:playerSpawned", function()
           if data.weapons ~= nil then -- load saved weapons
             vRPclient.giveWeapons(source,{data.weapons,true})
 
-            if data.health ~= nil then
+            if data.health ~= nil then -- set health
               vRPclient.setHealth(source,{data.health})
+              SetTimeout(5000, function() -- check coma, kill if in coma
+                vRPclient.isInComa(player,{}, function(in_coma)
+                  vRPclient.killComa(player,{})
+                end)
+              end)
             end
           end
         end)

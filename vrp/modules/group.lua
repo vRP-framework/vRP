@@ -158,23 +158,21 @@ AddEventHandler("vRP:playerSpawned", function()
       end
     end
     
-    -- add selectors on first spawn
+    -- first spawn
     if vRP.isFirstSpawn(user_id) then
+      -- add selectors 
       build_client_selectors(source)
+
+      -- add groups on user join 
+      local user = users[user_id]
+      if user ~= nil then
+        for k,v in pairs(user) do
+          vRP.addUserGroup(user_id,v)
+        end
+      end
+
+      -- add default group user
+      vRP.addUserGroup(user_id,"user")
     end
   end
-end)
-
--- user join
-AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
-  -- add groups on user join 
-  local user = users[user_id]
-  if user ~= nil then
-    for k,v in pairs(user) do
-      vRP.addUserGroup(user_id,v)
-    end
-  end
-
-  -- add default group user
-  vRP.addUserGroup(user_id,"user")
 end)

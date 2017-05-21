@@ -18,6 +18,7 @@ cfg.groups = {
     "player.giveitem"
   },
   ["admin"] = {
+    "admin.tickets",
     "player.list",
     "player.whitelist",
     "player.unwhitelist",
@@ -31,7 +32,8 @@ cfg.groups = {
   },
   -- the group user is auto added to all logged players
   ["user"] = {
-    "player.phone"
+    "player.phone",
+    "player.calladmin"
   },
   ["police"] = {
     _config = { 
