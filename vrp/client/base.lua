@@ -176,14 +176,14 @@ end
 
 -- start anim task
 function tvRP.playTask(name, anim)
-	ped = GetPlayerPed(-1)
- 	if name == "sitchair" then
-		pos = GetEntityCoords(ped)
-		head = GetEntityHeading(ped)
-		TaskStartScenarioAtPosition(ped, anim, pos['x'], pos['y'], pos['z'] - 1, head, 0, 0, false)
-	else
-		TaskStartScenarioInPlace(ped, anim, 0, true)
-	end
+  ped = GetPlayerPed(-1)
+  if name == "sitchair" then
+    pos = GetEntityCoords(ped)
+    head = GetEntityHeading(ped)
+    TaskStartScenarioAtPosition(ped, anim, pos['x'], pos['y'], pos['z'] - 1, head, 0, 0, false)
+  else
+    TaskStartScenarioInPlace(ped, anim, 0, true)
+  end
 end
 
 -- stop anim task
