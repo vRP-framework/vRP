@@ -104,63 +104,73 @@ local anim_ids = Tools.newIDGenerator()
 
 -- play animation (new version)
 -- upper: true, only upper body, false, full animation
--- seq: list of animations as {dict,anim_name,loops} (loops is the number of loops, default 1)
+-- seq: list of animations as {dict,anim_name,loops} (loops is the number of loops, default 1) or a task def (properties: task, play_exit)
 -- looping: if true, will infinitely loop the first element of the sequence until stopAnim is called
 function tvRP.playAnim(upper, seq, looping)
-  tvRP.stopAnim(upper)
+  if seq.task ~= nil then -- is a task (cf https://github.com/ImagicTheCat/vRP/pull/118)
+    tvRP.stopAnim(true)
 
+    local ped = GetPlayerPed(-1)
+    if seq.task == "PROP_HUMAN_SEAT_CHAIR_MP_PLAYER" then -- special case, sit in a chair
+      local x,y,z = tvRP.getPosition()
+      TaskStartScenarioAtPosition(ped, seq.task, x, y, z-1, GetEntityHeading(ped), 0, 0, false)
+    else
+      TaskStartScenarioInPlace(ped, seq.task, 0, not seq.play_exit)
+    end
+  else -- a regular animation sequence
+    tvRP.stopAnim(upper)
 
+    local flags = 0
+    if upper then flags = flags+48 end
+    if looping then flags = flags+1 end
 
-  local flags = 0
-  if upper then flags = flags+48 end
-  if looping then flags = flags+1 end
+    Citizen.CreateThread(function()
+      -- prepare unique id to stop sequence when needed
+      local id = anim_ids:gen()
+      anims[id] = true
 
-  Citizen.CreateThread(function()
-    -- prepare unique id to stop sequence when needed
-    local id = anim_ids:gen()
-    anims[id] = true
+      for k,v in pairs(seq) do
+        local dict = v[1]
+        local name = v[2]
+        local loops = v[3] or 1
 
-    for k,v in pairs(seq) do
-      local dict = v[1]
-      local name = v[2]
-      local loops = v[3] or 1
+        for i=1,loops do
+          if anims[id] then -- check animation working
+            local first = (k == 1 and i == 1)
+            local last = (k == #seq and i == loops)
 
-      for i=1,loops do
-        if anims[id] then -- check animation working
-          local first = (k == 1 and i == 1)
-          local last = (k == #seq and i == loops)
-
-          -- request anim dict
-          RequestAnimDict(dict)
-          local i = 0
-          while not HasAnimDictLoaded(dict) and i < 1000 do -- max time, 10 seconds
-            Citizen.Wait(10)
+            -- request anim dict
             RequestAnimDict(dict)
-            i = i+1
-          end
+            local i = 0
+            while not HasAnimDictLoaded(dict) and i < 1000 do -- max time, 10 seconds
+              Citizen.Wait(10)
+              RequestAnimDict(dict)
+              i = i+1
+            end
 
-          -- play anim
-          if HasAnimDictLoaded(dict) and anims[id] then
-            local inspeed = 8.0001
-            local outspeed = -8.0001
-            if not first then inspeed = 2.0001 end
-            if not last then outspeed = 2.0001 end
+            -- play anim
+            if HasAnimDictLoaded(dict) and anims[id] then
+              local inspeed = 8.0001
+              local outspeed = -8.0001
+              if not first then inspeed = 2.0001 end
+              if not last then outspeed = 2.0001 end
 
-            TaskPlayAnim(GetPlayerPed(-1),dict,name,inspeed,outspeed,-1,flags,0,0,0,0)
-          end
+              TaskPlayAnim(GetPlayerPed(-1),dict,name,inspeed,outspeed,-1,flags,0,0,0,0)
+            end
 
-          Citizen.Wait(0)
-          while GetEntityAnimCurrentTime(GetPlayerPed(-1),dict,name) <= 0.95 and IsEntityPlayingAnim(GetPlayerPed(-1),dict,name,3) and anims[id] do
             Citizen.Wait(0)
+            while GetEntityAnimCurrentTime(GetPlayerPed(-1),dict,name) <= 0.95 and IsEntityPlayingAnim(GetPlayerPed(-1),dict,name,3) and anims[id] do
+              Citizen.Wait(0)
+            end
           end
         end
       end
-    end
 
-    -- free id
-    anim_ids:free(id)
-    anims[id] = nil
-  end)
+      -- free id
+      anim_ids:free(id)
+      anims[id] = nil
+    end)
+  end
 end
 
 -- stop animation (new version)

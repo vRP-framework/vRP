@@ -138,10 +138,10 @@ vRP.setUData(user_id,key,value)
 
 -- get user data (textual data)
 -- return nil if data not found
-vRP.getSData(user_id,key)
+vRP.getUData(user_id,key)
 
 -- set server data (textual data)
-vRP.setUData(key,value)
+vRP.setSData(key,value)
 
 -- get server data (textual data)
 -- return nil if data not found
