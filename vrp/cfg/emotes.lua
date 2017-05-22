@@ -59,10 +59,10 @@ cfg.emotes = {
   ["Sunbath"] = {false, {task="WORLD_HUMAN_SUNBATHE_BACK"}, false},
   ["Sunbath2"] = {false, {task="WORLD_HUMAN_SUNBATHE"}, false},
 --  ["Weld"] = {false, {task="WORLD_HUMAN_WELDING"}, false},
-  ["Yoga"] = {false, {task="WORLD_HUMAN_YOGA"}, false},
 --  ["Kneel"] = {false, {task="CODE_HUMAN_MEDIC_KNEEL"}, false},
 --  ["Crowdcontrol"] = {false, {task="CODE_HUMAN_POLICE_CROWD_CONTROL"}, false},
---  ["Investigate"] = {false, {task="CODE_HUMAN_POLICE_INVESTIGATE"}, false}
+--  ["Investigate"] = {false, {task="CODE_HUMAN_POLICE_INVESTIGATE"}, false},
+  ["Yoga"] = {false, {task="WORLD_HUMAN_YOGA"}, false}
 }
 
 return cfg
