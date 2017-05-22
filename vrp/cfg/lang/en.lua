@@ -224,6 +224,13 @@ local lang = {
       description = "Clear all running emotes."
     }
   },
+  tasks = {
+    title = "Tasks",
+    clear = {
+      title = "> Clear",
+      description = "Clear all running tasks."
+    }
+  },
   home = {
     buy = {
       title = "Buy",
