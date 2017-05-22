@@ -9,7 +9,7 @@ Contributions are welcomed.
 If you want to try the framework somewhere, here is a list of servers using vRP, without whitelist and managed by me.
 
 vRP test server availables:
-* 93.115.96.185 (FR) [(config)](http://93.115.96.185/fivem/servers/FR_cfg.zip)
+* 93.115.96.185 (FR) [(config)](http://93.115.96.185/fivem/servers/FR_cfg.zip) [(discord)](https://discord.gg/ZAdE3eu)
 
 ## Features
 * basic admin tools (kick,ban,whitelist)
