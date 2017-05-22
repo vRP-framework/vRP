@@ -149,15 +149,6 @@ end
 AddEventHandler("vRP:playerSpawned", function()
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then 
-    -- call group onspawn callback at spawn
-    local user_groups = vRP.getUserGroups(user_id)
-    for k,v in pairs(user_groups) do
-      local group = groups[k]
-      if group and group._config and group._config.onspawn then
-        group._config.onspawn(source)
-      end
-    end
-    
     -- first spawn
     if vRP.isFirstSpawn(user_id) then
       -- add selectors 
@@ -173,6 +164,15 @@ AddEventHandler("vRP:playerSpawned", function()
 
       -- add default group user
       vRP.addUserGroup(user_id,"user")
+    end
+
+    -- call group onspawn callback at spawn
+    local user_groups = vRP.getUserGroups(user_id)
+    for k,v in pairs(user_groups) do
+      local group = groups[k]
+      if group and group._config and group._config.onspawn then
+        group._config.onspawn(source)
+      end
     end
   end
 end)

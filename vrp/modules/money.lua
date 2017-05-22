@@ -33,13 +33,13 @@ q_init_user:bind("@bank",cfg.open_bank)
 function vRP.getMoney(user_id)
   q_get_wallet:bind("@user_id",user_id)
   local r = q_get_wallet:query()
+  local v = 0
   if r:fetch() then
-    local v = r:getValue(0)
-    r:close()
-    return v
-  else
-    return 0
+    v = r:getValue(0)
   end
+
+  r:close()
+  return v
 end
 
 -- set money
@@ -77,13 +77,13 @@ end
 function vRP.getBankMoney(user_id)
   q_get_bank:bind("@user_id",user_id)
   local r = q_get_bank:query()
+  local v = 0
   if r:fetch() then
-    local v = r:getValue(0)
-    r:close()
-    return v
-  else
-    return 0
+    v = r:getValue(0)
   end
+
+  r:close()
+  return v
 end
 
 -- set bank money

@@ -149,11 +149,13 @@ end
 function vRP.isBanned(user_id)
   q_get_banned:bind("@user_id",user_id)
   local r = q_get_banned:query()
+  local v = false
   if r:fetch() then 
-    local v = r:getValue(0)
-    r:close()
-    return v
-  else return false end
+    v = r:getValue(0)
+  end
+
+  r:close()
+  return v
 end
 
 --- sql
@@ -168,11 +170,13 @@ end
 function vRP.isWhitelisted(user_id)
   q_get_whitelisted:bind("@user_id",user_id)
   local r = q_get_whitelisted:query()
+  local v = false
   if r:fetch() then 
-    local v = r:getValue(0)
-    r:close()
-    return v
-  else return false end
+    v = r:getValue(0)
+  end
+
+  r:close()
+  return v
 end
 
 --- sql
@@ -187,11 +191,13 @@ end
 function vRP.getLastLogin(user_id)
   q_get_last_login:bind("@user_id",user_id)
   local r = q_get_last_login:query()
+  local v = ""
   if r:fetch() then 
-    local v = r:getValue(0) 
-    r:close()
-    return v
-  else return "" end
+    v = r:getValue(0) 
+  end
+
+  r:close()
+  return v
 end
 
 function vRP.setUData(user_id,key,value)
@@ -236,7 +242,6 @@ function vRP.getSData(key)
   end
 
   r:close()
-
   return v
 end
 

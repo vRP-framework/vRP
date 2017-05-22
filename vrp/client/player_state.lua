@@ -229,6 +229,7 @@ function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] com
 end
 
 -- fix invisible players by resetting customization every minutes
+--[[
 Citizen.CreateThread(function()
   while true do
     Citizen.Wait(60000)
@@ -240,3 +241,4 @@ Citizen.CreateThread(function()
     end
   end
 end)
+--]]

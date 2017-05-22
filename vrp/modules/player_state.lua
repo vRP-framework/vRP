@@ -53,7 +53,6 @@ AddEventHandler("vRP:playerSpawned", function()
       end
  
       -- notify last login
-      local player = source
       SetTimeout(15000,function()vRPclient.notify(player,{lang.common.welcome({tmpdata.last_login})})end)
     else -- not first spawn (player died), don't load weapons, empty wallet, empty inventory
       vRP.setHunger(user_id,0)
