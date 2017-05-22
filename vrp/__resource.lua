@@ -18,6 +18,7 @@ server_scripts{
   "modules/business.lua",
   "modules/item_transformer.lua",
   "modules/emotes.lua",
+  "modules/tasks.lua",
   "modules/police.lua",
   "modules/home.lua",
 
