@@ -159,9 +159,8 @@ end
 
 
 -- events
-AddEventHandler("vRP:playerSpawned",function()
-  local user_id = vRP.getUserId(source)
-  if user_id ~= nil and vRP.isFirstSpawn(user_id) then
+AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
+  if first_spawn then
     -- load additional css using the div api
     vRPclient.setDiv(source,{"additional_css",".div_additional_css{ display: none; }\n\n"..cfg.css,""})
   end

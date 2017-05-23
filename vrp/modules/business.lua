@@ -212,13 +212,10 @@ local function build_client_business(source) -- build the city hall area/marker/
 end
 
 
-AddEventHandler("vRP:playerSpawned",function()
-  local user_id = vRP.getUserId(source)
-  if user_id ~= nil then
-    -- first spawn, build business
-    if vRP.isFirstSpawn(user_id) then
-      build_client_business(source)
-    end
+AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
+  -- first spawn, build business
+  if first_spawn then
+    build_client_business(source)
   end
 end)
 

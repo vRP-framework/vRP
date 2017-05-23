@@ -413,14 +413,17 @@ AddEventHandler("playerDropped",function(reason)
   Debug.pend()
 end)
 
-RegisterServerEvent("vRP:playerSpawned")
-AddEventHandler("vRP:playerSpawned", function()
+RegisterServerEvent("vRPcli:playerSpawned")
+AddEventHandler("vRPcli:playerSpawned", function()
   Debug.pbegin("playerSpawned")
   -- register user sources and then set first spawn to false
   local user_id = vRP.getUserId(source)
+  local player = source
   if user_id ~= nil then
     vRP.user_sources[user_id] = source
     local tmp = vRP.getUserTmpTable(user_id)
+    local first_spawn = tmp.first_spawn
+
     if tmp.first_spawn then
       -- first spawn, reference player
       -- send players to new player
@@ -430,9 +433,19 @@ AddEventHandler("vRP:playerSpawned", function()
       -- send new player to all players
       vRPclient.addPlayer(-1,{source})
 
-      TriggerEvent("vRP:playerFirstSpawn",source)
-      SetTimeout(1000,function() tmp.first_spawn = false end)
+      SetTimeout(30000,function() tmp.first_spawn = false end)
     end
+
+    -- set client tunnel delay at first spawn
+    Tunnel.setDestDelay(player, config.load_delay)
+
+    SetTimeout(2000, function() -- trigger spawn event
+      TriggerEvent("vRP:playerSpawn",user_id,player,first_spawn)
+
+      SetTimeout(config.load_duration*1000, function() -- set client delay to normal delay
+        Tunnel.setDestDelay(player, config.global_delay)
+      end)
+    end)
   end
   Debug.pend()
 end)

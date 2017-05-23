@@ -156,9 +156,8 @@ local function build_client_skinshops(source)
   end
 end
 
-AddEventHandler("vRP:playerSpawned",function()
-  local user_id = vRP.getUserId(source)
-  if user_id ~= nil and vRP.isFirstSpawn(user_id) then
+AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
+  if first_spawn then
     build_client_skinshops(source)
   end
 end)

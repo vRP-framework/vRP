@@ -346,9 +346,8 @@ local function build_client_homes(source)
   end
 end
 
-AddEventHandler("vRP:playerSpawned",function()
-  local user_id = vRP.getUserId(source)
-  if user_id ~= nil and vRP.isFirstSpawn(user_id) then -- first spawn, build homes
+AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
+  if first_spawn then -- first spawn, build homes
     build_client_homes(source)
   end
 end)

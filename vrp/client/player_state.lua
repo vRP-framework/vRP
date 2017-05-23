@@ -7,7 +7,7 @@ AddEventHandler("playerSpawned",function() -- delay state recording
   state_ready = false
   
   Citizen.CreateThread(function()
-    Citizen.Wait(10000)
+    Citizen.Wait(30000)
     state_ready = true
   end)
 end)

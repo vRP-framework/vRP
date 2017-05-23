@@ -54,9 +54,8 @@ end
 local cfg = require("resources/vrp/cfg/blips_markers")
 
 -- add additional static blips/markers
-AddEventHandler("vRP:playerSpawned",function()
-  local user_id = vRP.getUserId(source)
-  if user_id ~= nil and vRP.isFirstSpawn(user_id) then
+AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
+  if first_spawn then
     for k,v in pairs(cfg.blips) do
       vRPclient.addBlip(source,{v[1],v[2],v[3],v[4],v[5],v[6]})
     end

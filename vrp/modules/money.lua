@@ -132,9 +132,8 @@ AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
 end)
 
 -- money hud
-AddEventHandler("vRP:playerSpawned",function()
-  local user_id = vRP.getUserId(source)
-  if user_id ~= nil and vRP.isFirstSpawn(user_id) then
+AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
+  if first_spawn then
     -- add money display
     vRPclient.setDiv(source,{"money",cfg.display_css,lang.money.display({vRP.getMoney(user_id)})})
   end

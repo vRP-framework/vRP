@@ -5,6 +5,14 @@ local Tools = require("resources/vrp/lib/Tools")
 
 local Tunnel = {}
 
+-- define per dest regulator
+Tunnel.delays = {}
+
+-- set the base delay between Triggers for this destination in milliseconds (0 for instant trigger)
+function Tunnel.setDestDelay(dest, delay)
+  Tunnel.delays[dest] = {delay, 0}
+end
+
 local function tunnel_resolve(itable,key)
   local mtable = getmetatable(itable)
   local iname = mtable.name
@@ -17,16 +25,41 @@ local function tunnel_resolve(itable,key)
     if args == nil then
       args = {}
     end
-    
-    -- send request
-    if type(callback) == "function" then -- ref callback if exists (become a request)
-      local rid = ids:gen()
-      callbacks[rid] = callback
-      TriggerClientEvent(iname..":tunnel_req",dest,key,args,identifier,rid)
-    else -- regular trigger
-      TriggerClientEvent(iname..":tunnel_req",dest,key,args,"",-1)
+
+    -- get delay data
+    local delay_data = Tunnel.delays[dest]
+    if delay_data == nil then
+      delay_data = {0,0}
     end
 
+    -- increase delay
+    local add_delay = delay_data[1]
+    delay_data[2] = delay_data[2]+add_delay
+
+    if delay_data[2] > 0 then -- delay trigger
+      SetTimeout(delay_data[2], function() 
+        -- remove added delay
+        delay_data[2] = delay_data[2]-add_delay
+
+        -- send request
+        if type(callback) == "function" then -- ref callback if exists (become a request)
+          local rid = ids:gen()
+          callbacks[rid] = callback
+          TriggerClientEvent(iname..":tunnel_req",dest,key,args,identifier,rid)
+        else -- regular trigger
+          TriggerClientEvent(iname..":tunnel_req",dest,key,args,"",-1)
+        end
+      end)
+    else -- no delay
+      -- send request
+      if type(callback) == "function" then -- ref callback if exists (become a request)
+        local rid = ids:gen()
+        callbacks[rid] = callback
+        TriggerClientEvent(iname..":tunnel_req",dest,key,args,identifier,rid)
+      else -- regular trigger
+        TriggerClientEvent(iname..":tunnel_req",dest,key,args,"",-1)
+      end
+    end
   end
 
   itable[key] = fcall -- add generated call to table (optimization)

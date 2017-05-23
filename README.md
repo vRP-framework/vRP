@@ -90,7 +90,10 @@ AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login) end)
 -- (used after a client crash for example)
 AddEventHandler("vRP:playerRejoin",function(user_id,source,name) end)
 
--- (server) 
+-- (server) called when a logged player spawn
+AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn) end)
+
+-- (server) (doesn't work)
 AddEventHandler("vRP:playerLeave",function(user_id) end)
 ```
 

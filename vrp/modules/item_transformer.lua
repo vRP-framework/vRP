@@ -189,9 +189,8 @@ end
 transformers_regen()
 
 -- add transformers areas on player first spawn
-AddEventHandler("vRP:playerSpawned",function()
-  local user_id = vRP.getUserId(source)
-  if vRP.isFirstSpawn(user_id) then
+AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
+  if first_spawn then
     for k,tr in pairs(transformers) do
       bind_tr_area(source,tr)
     end
@@ -299,7 +298,7 @@ local function informer_placement_tick()
     local player = vRP.getUserSource(tonumber(k))
 
     -- add informer blip/marker/area
-    vRPclient.setNamedBlip(player,{"vRP:informer",x,y,z,cfg.informer.blipid,cfg.informer.blipcolor,lang.informer.title()})
+    vRPclient.setNamedBlip(player,{"vRP:informer",x,y,z,cfg.informer.blipid,cfg.informer.blipcolor,lang.itemtr.informer.title()})
     vRPclient.setNamedMarker(player,{"vRP:informer",x,y,z-1,0.7,0.7,0.5,0,255,125,125,150})
     vRP.setArea(player,"vRP:informer",x,y,z,1,1.5,informer_enter,informer_leave)
   end

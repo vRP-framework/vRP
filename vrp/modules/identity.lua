@@ -217,19 +217,16 @@ local function build_client_cityhall(source) -- build the city hall area/marker/
   end
 end
 
-AddEventHandler("vRP:playerSpawned",function()
-  local user_id = vRP.getUserId(source)
-  if user_id ~= nil then
-    -- send registration number to client at spawn
-    local identity = vRP.getUserIdentity(user_id)
-    if identity then
-      vRPclient.setRegistrationNumber(source,{identity.registration or "000AAA"})
-    end
+AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
+  -- send registration number to client at spawn
+  local identity = vRP.getUserIdentity(user_id)
+  if identity then
+    vRPclient.setRegistrationNumber(source,{identity.registration or "000AAA"})
+  end
 
-    -- first spawn, build city hall
-    if vRP.isFirstSpawn(user_id) then
-      build_client_cityhall(source)
-    end
+  -- first spawn, build city hall
+  if first_spawn then
+    build_client_cityhall(source)
   end
 end)
 
