@@ -433,7 +433,7 @@ AddEventHandler("vRPcli:playerSpawned", function()
       -- send new player to all players
       vRPclient.addPlayer(-1,{source})
 
-      SetTimeout(30000,function() tmp.first_spawn = false end)
+      SetTimeout(5000,function() tmp.first_spawn = false end)
     end
 
     -- set client tunnel delay at first spawn
