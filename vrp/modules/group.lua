@@ -53,6 +53,17 @@ function vRP.addUserGroup(user_id,group)
   end
 end
 
+-- return list of connected users by group
+function vRP.getUsersByGroup(group)
+  local users = {}
+
+  for k,v in pairs(vRP.rusers) do
+    if vRP.hasGroup(k,group) then table.insert(users, tonumber(k)) end
+  end
+
+  return users
+end
+
 -- remove a group from a connected user
 function vRP.removeUserGroup(user_id,group)
   local user_groups = vRP.getUserGroups(user_id)
