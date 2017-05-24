@@ -5,6 +5,7 @@
 -- reagents => products (reagents can be nothing, as for an harvest transformer)
 
 local cfg = require("resources/vrp/cfg/item_transformers")
+local cfg_inventory = require("resources/vrp/cfg/inventory")
 local lang = vRP.lang
 
 -- api
@@ -37,8 +38,18 @@ local function tr_tick(tr) -- do transformer tick
         -- check money
         local money_ok = (vRP.getMoney(user_id) >= tr.itemtr.in_money)
 
-        -- todo: check if inventory can carry products
+        -- weight check
+        local witems = {}
+        for k,v in pairs(tr.itemtr.products) do
+          witems[k] = {amount=v}
+        end
+        local new_weight = vRP.getInventoryWeight(user_id)+vRP.computeItemsWeight(witems)
+
         local inventory_ok = true
+        if new_weight > cfg_inventory.inventory_weight then
+          inventory_ok = false
+          vRPclient.notify(tonumber(k), {lang.inventory.full()})
+        end
 
         if money_ok and reagents_ok and inventory_ok then -- do transformation
           tr.units = tr.units-1 -- sub work unit

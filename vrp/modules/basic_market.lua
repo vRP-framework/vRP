@@ -27,20 +27,29 @@ local function build_market_menus()
 
       if item then
         -- prompt amount
-        vRP.prompt(player,lang.market.prompt({item.name}),"",function(player,amount)
-          local amount = tonumber(amount)
-          if amount > 0 then
-            local user_id = vRP.getUserId(player)
-            if user_id ~= nil and vRP.tryPayment(user_id,amount*price) then
-              vRP.giveInventoryItem(user_id,idname,amount)
-              vRPclient.notify(player,{lang.money.paid({amount*price})})
+        local user_id = vRP.getUserId(player)
+        if user_id ~= nil then
+          vRP.prompt(player,lang.market.prompt({item.name}),"",function(player,amount)
+            local amount = tonumber(amount)
+            if amount > 0 then
+              -- weight check
+              local new_weight = vRP.getInventoryWeight(user_id)+item.weight*amount
+              if new_weight <= cfg.inventory_weight then
+                -- payment
+                if vRP.tryPayment(user_id,amount*price) then
+                  vRP.giveInventoryItem(user_id,idname,amount)
+                  vRPclient.notify(player,{lang.money.paid({amount*price})})
+                else
+                  vRPclient.notify(player,{lang.money.not_enough()})
+                end
+              else
+                vRPclient.notify(player,{lang.inventory.full()})
+              end
             else
-              vRPclient.notify(player,{lang.money.not_enough()})
+              vRPclient.notify(player,{lang.common.invalid_value()})
             end
-          else
-            vRPclient.notify(player,{lang.common.invalid_value()})
-          end
-        end)
+          end)
+        end
       end
     end
 

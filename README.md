@@ -395,6 +395,14 @@ vRP.tryGetInventoryItem(user_id,idname,amount)
 -- clear connected user inventory
 vRP.clearInventory(user_id)
 
+-- compute weight of a list of items (in inventory/chest format)
+vRP.computeItemsWeight(items)
+
+-- return user inventory total weight
+vRP.getInventoryWeight(user_id)
+
+-- open a chest by name
+vRP.openChest(source, name, max_weight)
 
 -- TUNNEL SERVER API
 

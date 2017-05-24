@@ -29,7 +29,8 @@ local lang = {
   inventory = {
     title = "Inventory",
     description = "Open the inventory.",
-    iteminfo = "({1})<br /><br />{2}",
+    iteminfo = "({1})<br /><br />{2}<br /><em>{3} kg</em>",
+    info_weight = "weight {1}/{2} kg",
     give = {
       title = "Give",
       description = "Give items to the nearest player.",
@@ -37,7 +38,27 @@ local lang = {
       given = "Given ~r~{1} ~s~{2}.",
       received = "Received ~g~{1} ~s~{2}.",
     },
-    missing = "~r~Missing {2} {1}."
+    trash = {
+      title = "Trash",
+      description = "Destroy items.",
+      prompt = "Amount to trash (max {1}):",
+      done = "Trashed ~r~{1} ~s~{2}."
+    },
+    missing = "~r~Missing {2} {1}.",
+    full = "~r~Inventory full.",
+    chest = {
+      title = "Chest",
+      already_opened = "~r~This chest is already opened by someone else.",
+      full = "~r~Chest full.",
+      take = {
+        title = "Take",
+        prompt = "Amount to take (max {1}):"
+      },
+      put = {
+        title = "Put",
+        prompt = "Amount to put (max {1}):"
+      }
+    }
   },
   atm = {
     title = "ATM",

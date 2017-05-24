@@ -37,7 +37,7 @@ water_choices["Drink"] = {function(player,choice)
     end
   end
 end}
-vRP.defInventoryItem("water","Water bottle","",water_choices)
+vRP.defInventoryItem("water","Water bottle","",water_choices,0.5)
 
 -- create Milk item
 local milk_choices = {}
@@ -52,7 +52,7 @@ milk_choices["Drink"] = {function(player,choice)
     end
   end
 end}
-vRP.defInventoryItem("milk","Milk","",milk_choices)
+vRP.defInventoryItem("milk","Milk","",milk_choices,0.5)
 -- create Coffee item
 local coffee_choices = {}
 coffee_choices["Drink"] = {function(player,choice)
@@ -66,7 +66,7 @@ coffee_choices["Drink"] = {function(player,choice)
     end
   end
 end}
-vRP.defInventoryItem("coffee","Coffee","",coffee_choices)
+vRP.defInventoryItem("coffee","Coffee","",coffee_choices,0.2)
 
 -- create Tea item
 local tea_choices = {}
@@ -81,7 +81,7 @@ tea_choices["Drink"] = {function(player,choice)
     end
   end
 end}
-vRP.defInventoryItem("tea","Tea","",tea_choices)
+vRP.defInventoryItem("tea","Tea","",tea_choices,0.2)
 
 -- create iceTea item
 local icetea_choices = {}
@@ -96,7 +96,7 @@ icetea_choices["Drink"] = {function(player,choice)
     end
   end
 end}
-vRP.defInventoryItem("icetea","ice-Tea","",icetea_choices)
+vRP.defInventoryItem("icetea","ice-Tea","",icetea_choices,0.5)
 
 -- create Orange Juice item
 local orangejuice_choices = {}
@@ -111,7 +111,7 @@ orangejuice_choices["Drink"] = {function(player,choice)
     end
   end
 end}
-vRP.defInventoryItem("orangejuice","Orange Juice.","",orangejuice_choices)
+vRP.defInventoryItem("orangejuice","Orange Juice.","",orangejuice_choices,0.5)
 
 -- create Goca Gola item
 local gocagola_choices = {}
@@ -126,7 +126,7 @@ gocagola_choices["Drink"] = {function(player,choice)
     end
   end
 end}
-vRP.defInventoryItem("gocagola","Goca Gola","",gocagola_choices)
+vRP.defInventoryItem("gocagola","Goca Gola","",gocagola_choices,0.3)
 
 -- create RedGull item
 local redgull_choices = {}
@@ -141,7 +141,7 @@ redgull_choices["Drink"] = {function(player,choice)
     end
   end
 end}
-vRP.defInventoryItem("redgull","RedGull","",redgull_choices)
+vRP.defInventoryItem("redgull","RedGull","",redgull_choices,0.3)
 
 -- create Lemon limonad item
 local lemonlimonad_choices = {}
@@ -156,7 +156,7 @@ lemonlimonad_choices["Drink"] = {function(player,choice)
     end
   end
 end}
-vRP.defInventoryItem("lemonlimonad","Lemon limonad","",lemonlimonad_choices)
+vRP.defInventoryItem("lemonlimonad","Lemon limonad","",lemonlimonad_choices,0.3)
 
 -- create Vodka item
 local vodka_choices = {}
@@ -173,8 +173,7 @@ vodka_choices["Drink"] = {function(player,choice)
     end
   end
 end}
-vRP.defInventoryItem("vodka","Vodka","",vodka_choices)
-
+vRP.defInventoryItem("vodka","Vodka","",vodka_choices,0.5)
 
 --FOOD
 
@@ -192,7 +191,7 @@ breed_choices["Eat"] = {function(player,choice)
   end
 end}
 
-vRP.defInventoryItem("breed","Breed","",breed_choices)
+vRP.defInventoryItem("breed","Breed","",breed_choices,0.5)
 
 -- create Donut item
 local donut_choices = {}
@@ -208,7 +207,7 @@ donut_choices["Eat"] = {function(player,choice)
   end
 end}
 
-vRP.defInventoryItem("donut","Donut","",donut_choices)
+vRP.defInventoryItem("donut","Donut","",donut_choices,0.2)
 
 -- create Tacos item
 local tacos_choices = {}
@@ -224,7 +223,7 @@ tacos_choices["Eat"] = {function(player,choice)
   end
 end}
 
-vRP.defInventoryItem("tacos","Tacos","",tacos_choices)
+vRP.defInventoryItem("tacos","Tacos","",tacos_choices,0.2)
 
 -- create sandwich item
 local sd_choices = {}
@@ -240,7 +239,7 @@ sd_choices["Eat"] = {function(player,choice)
   end
 end}
 
-vRP.defInventoryItem("sandwich","Sandwich","A tasty snack.",sd_choices)
+vRP.defInventoryItem("sandwich","Sandwich","A tasty snack.",sd_choices,0.5)
 
 -- create Kebab item
 local kebab_choices = {}
@@ -256,7 +255,7 @@ kebab_choices["Eat"] = {function(player,choice)
   end
 end}
 
-vRP.defInventoryItem("kebab","Kebab","",kebab_choices)
+vRP.defInventoryItem("kebab","Kebab","",kebab_choices,0.85)
 
 -- create Premium Donut item
 local pdonut_choices = {}
@@ -272,7 +271,7 @@ pdonut_choices["Eat"] = {function(player,choice)
   end
 end}
 
-vRP.defInventoryItem("pdonut","Premium Donut","",pdonut_choices)
+vRP.defInventoryItem("pdonut","Premium Donut","",pdonut_choices,0.5)
 
 -- MEDIC
 
@@ -289,10 +288,10 @@ pills_choices["Take"] = {function(player,choice)
   end
 end}
 
-vRP.defInventoryItem("pills","Pills","A simple medication.",pills_choices)
+vRP.defInventoryItem("pills","Pills","A simple medication.",pills_choices,0.1)
 
 -- medkit item
-vRP.defInventoryItem("medkit", lang.items.medkit.title(), lang.items.medkit.description(), {})
+vRP.defInventoryItem("medkit", lang.items.medkit.title(), lang.items.medkit.description(), {}, 0.5)
 
 
 -- load config items

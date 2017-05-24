@@ -2,9 +2,9 @@
 
 local cfg = {}
 
--- idname = {name,description,choices}
+-- idname = {name,description,choices,weight}
 cfg.items = {
-  ["weed"] = {"Weed", "Some weed.", {}} -- no choices
+  ["weed"] = {"Weed", "Some weed.", {}, 0.01} -- no choices
 }
 
 return cfg

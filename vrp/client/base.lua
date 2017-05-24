@@ -103,7 +103,7 @@ function tvRP.playScreenEffect(name, duration)
   if duration < 0 then -- loop
     StartScreenEffect(name, 0, true)
   else
-    StartScreenEffect(name, math.floor(duration*1000), false)
+    StartScreenEffect(name, 0, true)
 
     Citizen.CreateThread(function() -- force stop the screen effect after duration+1 seconds
       Citizen.Wait(math.floor((duration+1)*1000))
