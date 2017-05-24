@@ -18,7 +18,7 @@ AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
       local x = cfg.spawn_position[1]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
       local y = cfg.spawn_position[2]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
       local z = cfg.spawn_position[3]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
-      data.position = {x,y,z}
+      data.position = {x=x,y=y,z=z}
     end
 
     if data.position ~= nil then -- teleport to saved pos
@@ -64,7 +64,7 @@ AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
       local x = cfg.spawn_position[1]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
       local y = cfg.spawn_position[2]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
       local z = cfg.spawn_position[3]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
-      data.position = {x,y,z}
+      data.position = {x=x,y=y,z=z}
       vRPclient.teleport(source,{x,y,z})
     end
 
