@@ -96,6 +96,7 @@ Citizen.CreateThread(function() -- coma thread
         SetEntityHealth(ped, cfg.coma_threshold)
         SetEntityInvincible(ped,true)
         tvRP.playScreenEffect(cfg.coma_effect,-1)
+        tvRP.ejectVehicle()
         tvRP.setRagdoll(true)
       else -- in coma
         -- maintain life

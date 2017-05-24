@@ -73,3 +73,11 @@ function tvRP.getOwnedVehiclePosition()
 
   return false,0,0,0
 end
+
+-- eject the ped from the vehicle
+function tvRP.ejectVehicle()
+  local ped = GetPlayerPed(-1)
+  if IsPedSittingInAnyVehicle(ped) then
+    KnockPedOffVehicle(ped)
+  end
+end
