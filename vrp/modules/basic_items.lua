@@ -298,5 +298,5 @@ vRP.defInventoryItem("medkit", lang.items.medkit.title(), lang.items.medkit.desc
 local cfg = require("resources/vrp/cfg/items")
 
 for k,v in pairs(cfg.items) do
-  vRP.defInventoryItem(k,v[1],v[2],v[3])
+  vRP.defInventoryItem(k,v[1],v[2],v[3],v[4])
 end
