@@ -37,7 +37,6 @@ vRP test server availables:
 
 ## TODO LIST
 * home stuff
-* external inventory (car trunk, etc)
 * vehicle functions, try vehicle before buying
 * wanted reported to police, more punitive wanted
 * drop weapon/save weapon components
