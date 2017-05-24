@@ -2,6 +2,7 @@
 
 local lang = vRP.lang
 local cfg = require("resources/vrp/cfg/markets")
+local cfg_inventory = require("resources/vrp/cfg/inventory")
 local market_types = cfg.market_types
 local markets = cfg.markets
 
@@ -34,7 +35,7 @@ local function build_market_menus()
             if amount > 0 then
               -- weight check
               local new_weight = vRP.getInventoryWeight(user_id)+item.weight*amount
-              if new_weight <= cfg.inventory_weight then
+              if new_weight <= cfg_inventory.inventory_weight then
                 -- payment
                 if vRP.tryPayment(user_id,amount*price) then
                   vRP.giveInventoryItem(user_id,idname,amount)

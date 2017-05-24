@@ -24,7 +24,7 @@ vRP test server availables:
 * basic emergency (coma, reanimate)
 * emotes
 * money (wallet/bank)
-* inventory (with custom item definition)
+* inventory (with custom item definition), chests (vehicle trunks)
 * basic implementations: ATM, market, gunshop, skinshop, garage
 * item transformer (harvest, process, produce) (illegal informer)
 * identification system (persistant user id for database storage)
