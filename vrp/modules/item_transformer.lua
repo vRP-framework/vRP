@@ -151,7 +151,13 @@ end
 function vRP.removeItemTransformer(name)
   local tr = transformers[name]
   if tr then
-    for k,v in pairs(tr.players) do -- remove players from transforming
+    -- copy players (to remove while iterating)
+    local players = {}
+    for k,v in pairs(tr.players) do
+      players[k] = v
+    end
+
+    for k,v in pairs(players) do -- remove players from transforming
       tr_remove_player(tr,k)
     end
 

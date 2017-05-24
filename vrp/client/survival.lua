@@ -92,8 +92,10 @@ Citizen.CreateThread(function() -- coma thread
 
         -- coma state
         in_coma = true
+        vRPserver.updateHealth({cfg.coma_threshold}) -- force health update
         SetEntityHealth(ped, cfg.coma_threshold)
         SetEntityInvincible(ped,true)
+        tvRP.playScreenEffect(cfg.coma_effect,-1)
         tvRP.setRagdoll(true)
       else -- in coma
         -- maintain life
@@ -106,6 +108,7 @@ Citizen.CreateThread(function() -- coma thread
         in_coma = false
         SetEntityInvincible(ped,false)
         tvRP.setRagdoll(false)
+        tvRP.stopScreenEffect(cfg.coma_effect)
 
         if coma_left <= 0 then -- get out of coma by death
           SetEntityHealth(ped, 0)

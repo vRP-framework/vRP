@@ -167,6 +167,7 @@ vodka_choices["Drink"] = {function(player,choice)
       vRP.varyThirst(user_id,-65)
       vRP.varyHunger(user_id, 15)
       vRPclient.notify(player,{"~b~ Drinking Vodka."})
+      vRPclient.playScreenEffect(player,{"DrugsDrivingIn",3*60})
       play_drink(player)
       vRP.closeMenu(player)
     end

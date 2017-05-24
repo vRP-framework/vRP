@@ -94,6 +94,29 @@ function tvRP.notify(msg)
   DrawNotification(true, false)
 end
 
+-- SCREEN
+
+-- play a screen effect
+-- name, see https://wiki.fivem.net/wiki/Screen_Effects
+-- duration: in seconds, if -1, will play until stopScreenEffect is called
+function tvRP.playScreenEffect(name, duration)
+  if duration < 0 then -- loop
+    StartScreenEffect(name, 0, true)
+  else
+    StartScreenEffect(name, math.floor(duration*1000), false)
+
+    Citizen.CreateThread(function() -- force stop the screen effect after duration+1 seconds
+      Citizen.Wait(math.floor((duration+1)*1000))
+      StopScreenEffect(name)
+    end)
+  end
+end
+
+-- stop a screen effect
+-- name, see https://wiki.fivem.net/wiki/Screen_Effects
+function tvRP.stopScreenEffect(name)
+  StopScreenEffect(name)
+end
 
 -- ANIM
 

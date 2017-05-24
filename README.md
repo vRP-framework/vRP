@@ -168,6 +168,16 @@ vRP.getSpeed()
 -- notify the player
 vRP.notify(message)
 
+-- play a screen effect
+-- name, see https://wiki.fivem.net/wiki/Screen_Effects
+-- duration: in seconds, if -1, will play until stopScreenEffect is called
+vRP.playScreenEffect(name, duration)
+
+-- stop a screen effect
+-- name, see https://wiki.fivem.net/wiki/Screen_Effects
+vRP.stopScreenEffect(name)
+
+
 
 -- FUNCTIONS BELOW ARE EXPERIMENTALS
 
