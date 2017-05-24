@@ -257,7 +257,8 @@ local function build_itemlist_menu(name, items, cb)
 end
 
 -- open a chest by name
-function vRP.openChest(source, name, max_weight)
+-- cb_close(): called when the chest is closed
+function vRP.openChest(source, name, max_weight, cb_close)
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
     local data = vRP.getUserDataTable(user_id)
@@ -365,6 +366,7 @@ function vRP.openChest(source, name, max_weight)
             -- save chest items
             vRP.setSData("chest:"..name, json.encode(chest.items))
             chests[name] = nil
+            if cb_close then cb_close() end -- close callback
           end
         end
 

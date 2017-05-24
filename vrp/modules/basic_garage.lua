@@ -17,6 +17,7 @@ local q_get_vehicles = vRP.sql:prepare("SELECT vehicle FROM vrp_user_vehicles WH
 -- load config
 
 local cfg = require("resources/vrp/cfg/garages")
+local cfg_inventory = require("resources/vrp/cfg/inventory")
 local vehicle_groups = cfg.garage_types
 local lang = vRP.lang
 
@@ -164,5 +165,55 @@ end
 AddEventHandler("vRP:playerSpawn",function(user_id,source,first_spawn)
   if first_spawn then
     build_client_garages(source)
+  end
+end)
+
+-- VEHICLE MENU
+
+-- define vehicle actions
+-- action => {cb(user_id,player,veh_group,veh_name),desc}
+local veh_actions = {}
+
+-- open trunk
+veh_actions[lang.vehicle.trunk.title()] = {function(user_id,player,vtype,name)
+  local chestname = "u"..user_id.."veh_"..string.lower(name)
+  local max_weight = cfg_inventory.vehicle_chest_weights[string.lower(name)] or cfg_inventory.default_vehicle_chest_weight
+
+  -- open chest
+  vRPclient.vc_openDoor(player, {vtype,5})
+  vRP.openChest(player, chestname, max_weight, function()
+    vRPclient.vc_closeDoor(player, {vtype,5})
+  end)
+end, lang.vehicle.trunk.description()}
+
+local function ch_vehicle(player,choice)
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil then
+    -- check vehicle
+    vRPclient.getNearestOwnedVehicle(player,{},function(ok,vtype,name)
+      if ok then
+        -- build vehicle menu
+        local menu = {name=lang.vehicle.title(), css={top="75px",header_color="rgba(255,125,0,0.75)"}}
+
+        for k,v in pairs(veh_actions) do 
+          menu[k] = {function(player,choice) v[1](user_id,player,vtype,name) end, v[2]}
+        end
+
+        vRP.openMenu(player,menu)
+      else
+        vRPclient.notify(player,{lang.vehicle.no_owned_near()})
+      end
+    end)
+  end
+end
+
+AddEventHandler("vRP:buildMainMenu",function(player)
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil then
+    -- add vehicle entry
+    local choices = {}
+    choices[lang.vehicle.title()] = {ch_vehicle}
+
+    vRP.buildMainMenu(player,choices)
   end
 end)

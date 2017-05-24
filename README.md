@@ -383,7 +383,8 @@ The inventory is autosaved and, as the wallet, empty upon death.
 -- name: display name
 -- description: item description (html)
 -- choices: menudata choices (see gui api)
-vRP.defInventoryItem(idname,name,description,choices)
+-- weight: weight of the item (thinking in kg is a good norm)
+vRP.defInventoryItem(idname,name,description,choices,weight)
 
 -- add item to a connected user inventory
 vRP.giveInventoryItem(user_id,idname,amount)
@@ -402,7 +403,8 @@ vRP.computeItemsWeight(items)
 vRP.getInventoryWeight(user_id)
 
 -- open a chest by name
-vRP.openChest(source, name, max_weight)
+-- cb_close(): called when the chest is closed
+vRP.openChest(source, name, max_weight, cb_close)
 
 -- TUNNEL SERVER API
 
@@ -437,7 +439,7 @@ wb_choices["Drink"] = {function(player,choice) -- add drink action
 end,"Do it."}
 
 -- add item definition
-vRP.defInventoryItem({"water_bottle","Water bottle","Drink this my friend.",wb_choices})
+vRP.defInventoryItem({"water_bottle","Water bottle","Drink this my friend.",wb_choices,0.5})
 
 -- (at any time later) give 2 water bottles to a connected user
 vRP.giveInventoryItem({user_id,"water_bottle",2})

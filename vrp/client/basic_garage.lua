@@ -31,7 +31,7 @@ function tvRP.spawnGarageVehicle(vtype,name) -- vtype is the vehicle type (one v
       SetPedIntoVehicle(GetPlayerPed(-1),nveh,-1) -- put player inside
       SetVehicleNumberPlateText(nveh, "P "..tvRP.getRegistrationNumber())
 
-      vehicles[vtype] = {group,name,nveh} -- set current vehicule
+      vehicles[vtype] = {vtype,name,nveh} -- set current vehicule
 
       SetModelAsNoLongerNeeded(mhash)
     end
@@ -59,7 +59,23 @@ end
 
 function tvRP.getNearestVehicle(radius)
   local x,y,z = tvRP.getPosition()
-  return GetClosestVehicle(x+0.0001,y+0.0001,z+0.0001, radius+0.0001, 0, 70) 
+  local ped = GetPlayerPed(-1)
+  if IsPedSittingInAnyVehicle(ped) then
+    return GetVehiclePedIsIn(ped, true)
+  else
+    return GetClosestVehicle(x+0.0001,y+0.0001,z+0.0001, radius+0.0001, 0, 70) 
+  end
+end
+
+-- return ok,vtype,name
+function tvRP.getNearestOwnedVehicle()
+  local veh = tvRP.getNearestVehicle(5)
+
+  for k,v in pairs(vehicles) do
+    if v[3] == veh then return true,v[1],v[2] end
+  end
+
+  return false,"",""
 end
 
 -- return ok,x,y,z
@@ -79,5 +95,20 @@ function tvRP.ejectVehicle()
   local ped = GetPlayerPed(-1)
   if IsPedSittingInAnyVehicle(ped) then
     KnockPedOffVehicle(ped)
+  end
+end
+
+-- vehicle commands
+function tvRP.vc_openDoor(vtype, door_index)
+  local vehicle = vehicles[vtype]
+  if vehicle then
+    SetVehicleDoorOpen(vehicle[3],door_index,0,false)
+  end
+end
+
+function tvRP.vc_closeDoor(vtype, door_index)
+  local vehicle = vehicles[vtype]
+  if vehicle then
+    SetVehicleDoorShut(vehicle[3],door_index)
   end
 end

@@ -295,6 +295,14 @@ local lang = {
       description = "Put your current vehicle in the garage."
     }
   },
+  vehicle = {
+    title = "Vehicle",
+    no_owned_near = "~r~No owned vehicle near.",
+    trunk = {
+      title = "Trunk",
+      description = "Open the vehicle trunk."
+    }
+  },
   gunshop = {
     title = "Gunshop ({1})",
     prompt_ammo = "Amount of ammo to buy for the {1}:",
