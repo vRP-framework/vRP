@@ -260,7 +260,7 @@ end
 
 function vRP.isFirstSpawn(user_id)
   local tmp = vRP.getUserTmpTable(user_id)
-  return tmp and tmp.first_spawn
+  return tmp and tmp.spawns == 1
 end
 
 function vRP.getUserId(source)
@@ -343,7 +343,7 @@ AddEventHandler("playerConnecting",function(name,setMessage)
             -- init user tmp table
             local tmpdata = vRP.getUserTmpTable(user_id)
             tmpdata.last_login = vRP.getLastLogin(user_id) or ""
-            tmpdata.first_spawn = true
+            tmpdata.spawns = 0
 
             -- set last login
             local ep = GetPlayerEP(source)
@@ -362,7 +362,7 @@ AddEventHandler("playerConnecting",function(name,setMessage)
 
             -- reset first spawn
             local tmpdata = vRP.getUserTmpTable(user_id)
-            tmpdata.first_spawn = true
+            tmpdata.spawns = 0
           end
 
           Debug.pend()
@@ -422,9 +422,10 @@ AddEventHandler("vRPcli:playerSpawned", function()
   if user_id ~= nil then
     vRP.user_sources[user_id] = source
     local tmp = vRP.getUserTmpTable(user_id)
-    local first_spawn = tmp.first_spawn
+    tmp.spawns = tmp.spawns+1
+    local first_spawn = (tmp.spawns == 1)
 
-    if tmp.first_spawn then
+    if first_spawn then
       -- first spawn, reference player
       -- send players to new player
       for k,v in pairs(vRP.user_sources) do
@@ -432,8 +433,6 @@ AddEventHandler("vRPcli:playerSpawned", function()
       end
       -- send new player to all players
       vRPclient.addPlayer(-1,{source})
-
-      SetTimeout(5000,function() tmp.first_spawn = false end)
     end
 
     -- set client tunnel delay at first spawn
