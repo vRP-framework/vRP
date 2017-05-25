@@ -112,3 +112,10 @@ function tvRP.vc_closeDoor(vtype, door_index)
     SetVehicleDoorShut(vehicle[3],door_index)
   end
 end
+
+function tvRP.vc_detachTrailer(vtype)
+  local vehicle = vehicles[vtype]
+  if vehicle then
+    DetachVehicleFromTrailer(vehicle[3])
+  end
+end

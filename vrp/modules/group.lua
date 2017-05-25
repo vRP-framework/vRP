@@ -58,7 +58,18 @@ function vRP.getUsersByGroup(group)
   local users = {}
 
   for k,v in pairs(vRP.rusers) do
-    if vRP.hasGroup(k,group) then table.insert(users, tonumber(k)) end
+    if vRP.hasGroup(tonumber(k),group) then table.insert(users, tonumber(k)) end
+  end
+
+  return users
+end
+
+-- return list of connected users by permission
+function vRP.getUsersByPermission(perm)
+  local users = {}
+
+  for k,v in pairs(vRP.rusers) do
+    if vRP.hasPermission(tonumber(k),perm) then table.insert(users, tonumber(k)) end
   end
 
   return users

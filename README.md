@@ -221,6 +221,9 @@ vRP.hasPermission(user_id, perm)
 
 -- return list of connected users by group
 vRP.getUsersByGroup(group)
+
+-- return list of connected users by permission
+vRP.getUsersByPermission(perm)
 ```
 
 #### Survival

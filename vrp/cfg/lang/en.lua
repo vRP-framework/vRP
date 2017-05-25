@@ -130,6 +130,7 @@ local lang = {
     }
   },
   police = {
+    wanted = "Wanted rank {1}",
     cloakroom = {
       title = "Cloakroom",
       uniform = {
@@ -301,6 +302,10 @@ local lang = {
     trunk = {
       title = "Trunk",
       description = "Open the vehicle trunk."
+    },
+    detach_trailer = {
+      title = "Detach trailer",
+      description = "Detach trailer."
     }
   },
   gunshop = {

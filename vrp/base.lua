@@ -220,7 +220,6 @@ function vRP.getUData(user_id,key)
   end
 
   r:close()
-
   return v
 end
 

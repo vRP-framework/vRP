@@ -43,3 +43,47 @@ Citizen.CreateThread(function()
     end
   end
 end)
+
+-- wanted level sync
+local wanted_level = 0
+
+function tvRP.applyWantedLevel(new_wanted)
+  Citizen.CreateThread(function()
+    local old_wanted = GetPlayerWantedLevel(PlayerId())
+    local wanted = math.max(old_wanted,new_wanted)
+    ClearPlayerWantedLevel(PlayerId())
+    SetPlayerWantedLevelNow(PlayerId(),false)
+    Citizen.Wait(10)
+    SetPlayerWantedLevel(PlayerId(),wanted,false)
+    SetPlayerWantedLevelNow(PlayerId(),false)
+  end)
+end
+
+-- update wanted level
+Citizen.CreateThread(function()
+  while true do
+    Citizen.Wait(2000)
+
+    local nwanted_level = GetPlayerWantedLevel(PlayerId())
+    if nwanted_level ~= wanted_level then
+      wanted_level = nwanted_level
+      vRPserver.updateWantedLevel({wanted_level})
+    end
+  end
+end)
+
+-- detect vehicle stealing
+Citizen.CreateThread(function()
+  while true do
+    Citizen.Wait(1)
+    local ped = GetPlayerPed(-1)
+    if IsPedTryingToEnterALockedVehicle(ped) or IsPedJacking(ped) then
+      Citizen.Wait(2000) -- wait x seconds before setting wanted
+      for i=0,4 do -- keep wanted for 1 minutes 30 seconds
+        tvRP.applyWantedLevel(2)
+        Citizen.Wait(15000)
+      end
+      Citizen.Wait(15000) -- wait 15 seconds before checking again
+    end
+  end
+end)

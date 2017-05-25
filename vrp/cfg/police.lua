@@ -22,4 +22,11 @@ cfg.trackveh = {
   service = "police" -- service to alert when the tracking is successful
 }
 
+-- wanted display
+cfg.wanted = {
+  blipid = 458,
+  blipcolor = 38,
+  service = "police"
+}
+
 return cfg

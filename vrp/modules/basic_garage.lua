@@ -186,6 +186,12 @@ veh_actions[lang.vehicle.trunk.title()] = {function(user_id,player,vtype,name)
   end)
 end, lang.vehicle.trunk.description()}
 
+-- detach trailer
+veh_actions[lang.detach_trailer.trunk.title()] = {function(user_id,player,vtype,name)
+  vRPclient.vc_detachTrailer(player, {vtype})
+end, lang.vehicle.detach_trailer.description()}
+
+
 local function ch_vehicle(player,choice)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
