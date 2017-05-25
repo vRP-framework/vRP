@@ -244,6 +244,10 @@ local function ch_calladmin(player,choice)
   end
 end
 
+local function ch_noclip(player, choice)
+  vRPclient.toggleNoclip(player, {})
+end
+
 AddEventHandler("vRP:buildMainMenu",function(player)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
@@ -278,6 +282,9 @@ AddEventHandler("vRP:buildMainMenu",function(player)
       end
       if vRP.hasPermission(user_id,"player.unban") then
         menu["@Unban"] = {ch_unban}
+      end
+      if vRP.hasPermission(user_id,"player.noclip") then
+        menu["@Noclip"] = {ch_noclip}
       end
       if vRP.hasPermission(user_id,"player.custom_emote") then
         menu["@Custom emote"] = {ch_emote}

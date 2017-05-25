@@ -25,6 +25,7 @@ cfg.groups = {
     "player.kick",
     "player.ban",
     "player.unban",
+    "player.noclip",
     "player.custom_emote",
     "player.coords",
     "player.tptome",

@@ -44,7 +44,8 @@ client_scripts{
   "client/map.lua",
   "client/identity.lua",
   "client/basic_garage.lua",
-  "client/police.lua"
+  "client/police.lua",
+  "client/admin.lua"
 }
 
 -- client files

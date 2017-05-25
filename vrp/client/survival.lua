@@ -40,7 +40,7 @@ Citizen.CreateThread(function()
       local vhunger = 0
 
       -- on foot, increase thirst/hunger in function of velocity
-      if IsPedOnFoot(ped) then
+      if IsPedOnFoot(ped) and not tvRP.isNoclip() then
         local factor = math.min(tvRP.getSpeed(),10)
 
         vthirst = vthirst+1*factor

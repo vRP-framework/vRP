@@ -28,6 +28,25 @@ function tvRP.getSpeed()
   return math.sqrt(vx*vx+vy*vy+vz*vz)
 end
 
+function tvRP.getCamDirection()
+  local heading = GetGameplayCamRelativeHeading()+GetEntityHeading(GetPlayerPed(-1))
+  local pitch = GetGameplayCamRelativePitch()
+
+  local x = -math.sin(heading*math.pi/180.0)
+  local y = math.cos(heading*math.pi/180.0)
+  local z = math.sin(pitch*math.pi/180.0)
+
+  -- normalize
+  local len = math.sqrt(x*x+y*y+z*z)
+  if len ~= 0 then
+    x = x/len
+    y = y/len
+    z = z/len
+  end
+
+  return x,y,z
+end
+
 function tvRP.addPlayer(player)
   players[player] = true
 end
