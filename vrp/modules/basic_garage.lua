@@ -187,7 +187,7 @@ veh_actions[lang.vehicle.trunk.title()] = {function(user_id,player,vtype,name)
 end, lang.vehicle.trunk.description()}
 
 -- detach trailer
-veh_actions[lang.detach_trailer.title()] = {function(user_id,player,vtype,name)
+veh_actions[lang.vehicle.detach_trailer.title()] = {function(user_id,player,vtype,name)
   vRPclient.vc_detachTrailer(player, {vtype})
 end, lang.vehicle.detach_trailer.description()}
 

@@ -6,7 +6,8 @@ cfg.uniform_customization = {
   [4] = {25,2},
   [6] = {24,0},
   [8] = {58,0},
-  [11] = {55,0}
+  [11] = {55,0},
+  ["p2"] = {5,0}
 }
 
 -- cloakroom position
