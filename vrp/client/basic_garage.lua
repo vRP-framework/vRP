@@ -69,10 +69,11 @@ end
 
 -- return ok,vtype,name
 function tvRP.getNearestOwnedVehicle()
-  local veh = tvRP.getNearestVehicle(5)
-
+  local px,py,pz = tvRP.getPosition()
   for k,v in pairs(vehicles) do
-    if v[3] == veh then return true,v[1],v[2] end
+    local x,y,z = table.unpack(GetEntityCoords(v[3],true))
+    local dist = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
+    if dist <= 5.0001 then return true,v[1],v[2] end
   end
 
   return false,"",""
