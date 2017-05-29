@@ -306,6 +306,11 @@ local lang = {
     detach_trailer = {
       title = "Detach trailer",
       description = "Detach trailer."
+    },
+    asktrunk = {
+      title = "Ask open trunk",
+      asked = "~g~Asking...",
+      request = "Do you want to open the trunk ?"
     }
   },
   gunshop = {

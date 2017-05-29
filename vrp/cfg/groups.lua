@@ -34,7 +34,8 @@ cfg.groups = {
   -- the group user is auto added to all logged players
   ["user"] = {
     "player.phone",
-    "player.calladmin"
+    "player.calladmin",
+    "police.askid"
   },
   ["police"] = {
     _config = { 
@@ -47,7 +48,6 @@ cfg.groups = {
     "police.pc",
     "police.handcuff",
     "police.putinveh",
-    "police.askid",
     "police.check",
     "police.service",
     "police.wanted"

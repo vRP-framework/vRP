@@ -258,7 +258,9 @@ end
 
 -- open a chest by name
 -- cb_close(): called when the chest is closed
-function vRP.openChest(source, name, max_weight, cb_close)
+-- cb_in(idname, amount): called when an item is added
+-- cb_out(idname, amount): called when an item is taken
+function vRP.openChest(source, name, max_weight, cb_close, cb_in, cb_out)
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
     local data = vRP.getUserDataTable(user_id)
@@ -290,6 +292,8 @@ function vRP.openChest(source, name, max_weight, cb_close)
                 if citem.amount <= 0 then
                   chest.items[idname] = nil -- remove item entry
                 end
+
+                if cb_out then cb_out(idname,amount) end
 
                 -- actualize by closing
                 vRP.closeMenu(player)
@@ -326,11 +330,15 @@ function vRP.openChest(source, name, max_weight, cb_close)
             if new_weight <= max_weight then
               if amount >= 0 and vRP.tryGetInventoryItem(user_id, idname, amount) then
                 local citem = chest.items[idname]
+
                 if citem ~= nil then
                   citem.amount = citem.amount+amount
                 else -- create item entry
                   chest.items[idname] = {amount=amount}
                 end
+
+                -- callback
+                if cb_in then cb_in(idname,amount) end
 
                 -- actualize by closing
                 vRP.closeMenu(player)

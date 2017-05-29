@@ -213,12 +213,56 @@ local function ch_vehicle(player,choice)
   end
 end
 
+-- ask trunk (open other user car chest)
+local function ch_asktrunk(player,choice)
+  vRPclient.getNearestPlayer(player,{10},function(nplayer)
+    local nuser_id = vRP.getUserId(nplayer)
+    if nuser_id ~= nil then
+      vRPclient.notify(player,{lang.vehicle.asktrunk.asked()})
+      vRP.request(nplayer,lang.vehicle.asktrunk.request(),15,function(nplayer,ok)
+        if ok then -- request accepted, open trunk
+          vRPclient.getNearestOwnedVehicle(player,{},function(ok,vtype,name)
+            if ok then
+              local chestname = "u"..nuser_id.."veh_"..string.lower(name)
+              local max_weight = cfg_inventory.vehicle_chest_weights[string.lower(name)] or cfg_inventory.default_vehicle_chest_weight
+
+              -- open chest
+              local cb_out = function(idname,amount)
+                vRPclient.notify(nplayer,{lang.inventory.give.given({idname,amount})})
+              end
+
+              local cb_in = function(idname,amount)
+                vRPclient.notify(nplayer,{lang.inventory.give.received({idname,amount})})
+              end
+
+              vRPclient.vc_openDoor(nplayer, {vtype,5})
+              vRP.openChest(player, chestname, max_weight, function()
+                vRPclient.vc_closeDoor(nplayer, {vtype,5})
+              end,cb_in,cb_out)
+            else
+              vRPclient.notify(player,{lang.vehicle.no_owned_near()})
+              vRPclient.notify(nplayer,{lang.vehicle.no_owned_near()})
+            end
+          end)
+        else
+          vRPclient.notify(player,{lang.common.request_refused()})
+        end
+      end)
+    else
+      vRPclient.notify(player,{lang.common.no_player_near()})
+    end
+  end)
+end
+
 AddEventHandler("vRP:buildMainMenu",function(player)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
     -- add vehicle entry
     local choices = {}
     choices[lang.vehicle.title()] = {ch_vehicle}
+
+    -- add ask trunk
+    choices[lang.vehicle.asktrunk.title()] = {ch_asktrunk}
 
     vRP.buildMainMenu(player,choices)
   end

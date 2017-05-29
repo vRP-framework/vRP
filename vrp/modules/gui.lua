@@ -6,6 +6,7 @@ local cfg = require("resources/vrp/cfg/gui")
 
 local menu_ids = Tools.newIDGenerator()
 local client_menus = {}
+local rclient_menus = {}
 
 -- open dynamic menu to client
 -- menudef: .name and choices as key/{callback,description} (optional element html description) 
@@ -31,6 +32,7 @@ function vRP.openMenu(source,menudef)
 
   -- add client menu
   client_menus[menudata.id] = {def = menudef, source = source}
+  rclient_menus[source] = menudata.id
 
   -- openmenu
   vRPclient.openMenuData(source,{menudata})
@@ -114,6 +116,7 @@ function tvRP.closeMenu(id)
 
     menu_ids:free(id)
     client_menus[id] = nil
+    rclient_menus[source] = nil
   end
 end
 
@@ -160,7 +163,6 @@ function tvRP.openMainMenu()
   vRP.openMainMenu(source)
 end
 
-
 -- events
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
   if first_spawn then
@@ -169,4 +171,20 @@ AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
   end
 end)
 
+AddEventHandler("vRP:playerLeave", function(user_id, source)
+  -- force close opened menu on leave
+  local id = rclient_menus[source]
+  if id ~= nil then
+    local menu = client_menus[id]
+    if menu and menu.source == source then
+      -- call callback
+      if menu.def.onclose then
+        menu.def.onclose(source)
+      end
 
+      menu_ids:free(id)
+      client_menus[id] = nil
+      rclient_menus[source] = nil
+    end
+  end
+end)

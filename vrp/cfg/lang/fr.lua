@@ -305,6 +305,11 @@ local lang = {
     detach_trailer = {
       title = "Détacher remorque",
       description = "Détacher la remorque."
+    },
+    asktrunk = {
+      title = "Demander ouvrir coffre",
+      asked = "~g~Demande...",
+      request = "Voulez vous ouvrir le coffre ?"
     }
   },
   gunshop = {
