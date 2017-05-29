@@ -219,6 +219,10 @@ vRP.hasGroup(user_id,group)
 -- check if the user has a specific permission
 vRP.hasPermission(user_id, perm)
 
+-- get user group by group type
+-- return group name or an empty string
+vRP.getUserGroupByType(user_id,gtype)
+
 -- return list of connected users by group
 vRP.getUsersByGroup(group)
 

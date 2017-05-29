@@ -53,6 +53,22 @@ function vRP.addUserGroup(user_id,group)
   end
 end
 
+-- get user group by type
+-- return group name or an empty string
+function vRP.getUserGroupByType(user_id,gtype)
+  local user_groups = vRP.getUserGroups(user_id)
+  for k,v in pairs(user_groups) do
+    local kgroup = groups[k]
+    if kgroup then
+      if kgroup._config and kgroup._config.gtype and kgroup._config.gtype == gtype then
+        return k
+      end
+    end
+  end
+
+  return ""
+end
+
 -- return list of connected users by group
 function vRP.getUsersByGroup(group)
   local users = {}
