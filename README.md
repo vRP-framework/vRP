@@ -37,8 +37,9 @@ vRP test server availables:
 
 ## TODO LIST
 * home stuff
-* vehicle functions, try vehicle before buying
-* wanted reported to police, more punitive wanted
+* vehicle functions, try vehicle before buying, way of customization
+* police jails, seize illegal stuff, seize weapons
+* static chests
 * drop weapon/save weapon components
 * education (maybe)
 * skinshop presets
