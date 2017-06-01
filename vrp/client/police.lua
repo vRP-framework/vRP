@@ -16,6 +16,13 @@ function tvRP.toggleHandcuff()
     tvRP.playAnim(true,{{"mp_arresting","idle",1}},true)
   else
     tvRP.stopAnim(true)
+    SetPedStealthMovement(GetPlayerPed(-1),false,"") 
+  end
+end
+
+function tvRP.setHandcuffed(flag)
+  if handcuffed ~= flag then
+    tvRP.toggleHandcuff()
   end
 end
 
@@ -44,6 +51,16 @@ Citizen.CreateThread(function()
     Citizen.Wait(30000)
     if handcuffed then
       tvRP.playAnim(true,{{"mp_arresting","idle",1}},true)
+    end
+  end
+end)
+
+-- force stealth movement while handcuffed (prevent use of fist and slow the player)
+Citizen.CreateThread(function()
+  while true do
+    Citizen.Wait(1)
+    if handcuffed then
+      SetPedStealthMovement(GetPlayerPed(-1),true,"")
     end
   end
 end)

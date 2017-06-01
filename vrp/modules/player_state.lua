@@ -57,8 +57,10 @@ AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
     vRP.setThirst(user_id,0)
     vRP.clearInventory(user_id)
     data.phone_directory = {} -- clear phone directory after death
-
     vRP.setMoney(user_id,0)
+
+    -- disable handcuff
+    vRPclient.setHandcuffed(player,{false})
 
     if cfg.spawn_enabled then -- respawn
       local x = cfg.spawn_position[1]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius

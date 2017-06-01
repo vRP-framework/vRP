@@ -36,5 +36,4 @@ cfg.seizable_items = {
   "weed"
 }
 
-
 return cfg
