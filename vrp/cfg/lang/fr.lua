@@ -183,7 +183,7 @@ local lang = {
         request_hide = "Fermer le rapport de fouille.",
         info = "<em>Argent: </em>{1} $<br /><br /><em>Inventaire: </em>{2}<br /><br /><em>Armes: </em>{3}",
         checked = "Vous avez été fouillé."
-      }
+      },
       seize = {
         seized = "Saisis {2} ~r~{1}",
         weapons = {
