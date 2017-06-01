@@ -51,7 +51,7 @@ The home system is experimental, don't expect too much from it at this point. Bu
 
 #### How it works
 
-Homes are closed interiors allocated to players when they want to go inside their home, it means that if no slots are availables, you can't enter your home. Slots are freed when everyone is out, but if a player die, crash or disconnect in it, the slot will not close itself, only "eject all" will close the slot. So it's possible that all slots are locked after a while, restarting the server will fix the issue. 
+Homes are closed interiors allocated to players when they want to go inside their home, it means that if no slots are availables, you can't enter to your home. Slots are freed when everyone moves out, however if a player dies, crashes or disconnects inside, the slot will not close itself, only "eject all" will close the slot. So it's possible that all slots are locked after a while, restarting the server will fix the issue. 
 
 Also, player addresses are bound to the home cluster name, it means that if you change the cluster configuration name, players will not be able to enter/sell their home anymore. So choose the name well and don't change it, if you don't want to deal with this.
 
@@ -153,7 +153,7 @@ vRP.getUserId({source},function(user_id)
 end)
 ```
 
-You can also do it client-side, the API is the same as the TUNNEL CLIENT APIs (copy and add the vrp/client/Proxy.lua to your resource, first).
+You can also do it client-side, the API is the same as the TUNNEL CLIENT APIs (copy and add the vrp/client/Proxy.lua to your resources list, first).
 
 ```lua
 vRP = Proxy.getInterface("vRP")
@@ -274,7 +274,7 @@ vRP.getUsersByPermission(perm)
 
 #### Survival
 
-Running, walking, being hurt/injured, and just living add hunger and thirst. When the hunger and the thirst are at their maximum level (100%), next hunger/thirst overflow will damage the character by the same amout (ex: when thirsty, don't run, take a car).
+Running, walking, being hurt/injured, and just living add hunger and thirst. When the hunger and the thirst are at their maximum level (100%), next hunger/thirst overflow will damage the character by the same amount (ex: when thirsty, don't run, take a car).
 This module disable the basic health regen.
 
 The survival module implement also a coma system, if the health of the player is below the coma threshold, the player is in coma for a specific duration before dying. The health (thus coma) is recorded in the player state.
@@ -381,8 +381,8 @@ vRP.getUserIdentity(user_id)
 
 #### Money
 
-The money is managed with direct SQL requests to prevent most potential value corruptions.
-The wallet empty itself when respawning (after death).
+The money is managed with direct SQL queries to prevent most potential value corruptions.
+The wallet empties itself when respawning (after death).
 
 ```lua
 -- PROXY API
@@ -421,7 +421,7 @@ vRP.tryDeposit(user_id,amount)
 
 #### Inventory
 
-The inventory is autosaved and, as the wallet, empty upon death.
+The inventory is autosaved and, as the wallet, gets empty upon death.
 
 ```lua
 -- PROXY API
@@ -500,7 +500,7 @@ The item transformer is a very generic way to create harvest and processing area
 The concept is simple: 
 * you can use the action of the item transformer when entering the area
 * the item transformer has a number of work units, regenerated at a specific rate
-* the item transformer take reagents (money, items or none) to produce products (money or items) and consume a work unit
+* the item transformer takes reagents (money, items or none) to produce products (money or items) and it consumes a work unit
 
 This way, processing and harvesting are limited by the work units.
 Item transformers can be dynamically set and removed, if you want to build random harvest points.
