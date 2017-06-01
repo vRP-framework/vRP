@@ -57,12 +57,18 @@ Also, player addresses are bound to the home cluster name, it means that if you 
 
 ## Tutorials
 
+* [Deployment](#deployment)
+  * [Installation](#installation)
+  * [Configuration](#configuration)
+  * [Update](#update)
+  * [Issues / Features / Help](#issues--features--help)
 * [Events](#events)
   * [Base](#base)
 * [API](#api)
   * [Base](#base-1)
   * [Group/permission](#grouppermission)
   * [Survival](#survival)
+  * [Police](#police)
   * [Player state](#player-state)
   * [Identity](#identity)
   * [Money](#money)
@@ -83,7 +89,7 @@ Also, player addresses are bound to the home cluster name, it means that if you 
 
 vRP has been tested under Windows and GNU/Linux with Mono 4.8.
 
-First, make sure you don't have any other resources loaded (especially resources using MySQL, add them later and see if they break vRP).
+First, make sure you don't have other resources loaded (especially resources using MySQL, add them later and see if they break vRP).
 vRP use a new version of MySql.Data.dll, the 4.5, since only one version can be loaded at a time, if another resource load an older version, things will get crazy.
 
 Then copy the *vrp/* directory to your resource folder. Add "vrp" to the loading resource list (first after the basic FiveM resources is better).
@@ -99,7 +105,7 @@ If you have troubles configuring, look at the configuration files of the vRP LaT
 
 #### Update
 
-vRP will warn you at the server launch if a new version is available. You can also update while I commit things, but do that only if you like to beta test, because you will need to update a lot.
+vRP will warn you at server launch if a new version is available. You can also update while I commit things, but do that only if you like to beta test, because you will need to update a lot.
 
 A way to update:
 * save your *cfg/* folder somewhere
