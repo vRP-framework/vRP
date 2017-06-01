@@ -8,6 +8,8 @@ function tvRP.setCop(flag)
   SetPedAsCop(GetPlayerPed(-1),flag)
 end
 
+-- HANDCUFF
+
 function tvRP.toggleHandcuff()
   handcuffed = not handcuffed
 
@@ -65,6 +67,52 @@ Citizen.CreateThread(function()
   end
 end)
 
+-- JAIL
+
+local jail = nil
+
+-- jail the player in a no-top no-bottom cylinder 
+function tvRP.jail(x,y,z,radius)
+  tvRP.teleport(x,y,z) -- teleport to center
+  jail = {x+0.0001,y+0.0001,z+0.0001,radius+0.0001}
+end
+
+-- unjail the player
+function tvRP.unjail()
+  jail = nil
+end
+
+function tvRP.isJailed()
+  return jail ~= nil
+end
+
+Citizen.CreateThread(function()
+  while true do
+    Citizen.Wait(5)
+    if jail then
+      local x,y,z = tvRP.getPosition()
+
+      local dx = x-jail[1]
+      local dy = y-jail[2]
+      local dist = math.sqrt(dx*dx+dy*dy)
+
+      if dist >= jail[4] then
+        local ped = GetPlayerPed(-1)
+        SetEntityVelocity(ped, 0.0001, 0.0001, 0.0001) -- stop player
+
+        -- normalize + push to the edge + add origin
+        dx = dx/dist*jail[4]+jail[1]
+        dy = dy/dist*jail[4]+jail[2]
+
+        -- teleport player at the edge
+        SetEntityCoordsNoOffset(ped,dx,dy,z,true,true,true)
+      end
+    end
+  end
+end)
+
+-- WANTED
+
 -- wanted level sync
 local wanted_level = 0
 
@@ -111,3 +159,4 @@ Citizen.CreateThread(function()
     end
   end
 end)
+

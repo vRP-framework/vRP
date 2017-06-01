@@ -197,6 +197,15 @@ local lang = {
           description = "Seize illegal items",
           seized = "~b~Your illegal stuff has been seized."
         }
+      },
+      jail = {
+        title = "Jail",
+        description = "Jail/UnJail nearest player in/from the nearest jail.",
+        not_found = "~r~No jail found.",
+        jailed = "~b~Jailed.",
+        unjailed = "~b~Unjailed.",
+        notify_jailed = "~b~You have been jailed.",
+        notify_unjailed = "~b~You have been unjailed."
       }
     },
     identity = {

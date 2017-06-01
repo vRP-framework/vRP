@@ -174,4 +174,26 @@ Citizen.CreateThread(function()
   end
 end)
 
+-- DOOR
 
+-- set the closest door state
+-- doordef: .model or .modelhash
+-- locked: boolean
+-- doorswing: -1 to 1
+function tvRP.setStateOfClosestDoor(doordef, locked, doorswing)
+  local x,y,z = tvRP.getPosition()
+  local hash = doordef.modelhash
+  if hash == nil then
+    hash = GetHashKey(doordef.model)
+  end
+
+  SetStateOfClosestDoorOfType(hash,x,y,z,locked,doorswing+0.0001)
+end
+
+function tvRP.openClosestDoor(doordef)
+  tvRP.setStateOfClosestDoor(doordef, false, 0)
+end
+
+function tvRP.closeClosestDoor(doordef)
+  tvRP.setStateOfClosestDoor(doordef, true, 0)
+end

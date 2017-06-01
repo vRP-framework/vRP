@@ -291,6 +291,51 @@ local choice_seize_items = {function(player, choice)
   end
 end, lang.police.menu.seize.items.description()}
 
+-- toggle jail nearest player
+local choice_jail = {function(player, choice)
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil then
+    vRPclient.getNearestPlayer(player, {5}, function(nplayer)
+      local nuser_id = vRP.getUserId(nplayer)
+      if nuser_id ~= nil then
+        vRPclient.isJailed(nplayer, {}, function(jailed)
+          if jailed then -- unjail
+            vRPclient.unjail(nplayer, {})
+            vRPclient.notify(nplayer,{lang.police.menu.jail.notify_unjailed()})
+            vRPclient.notify(player,{lang.police.menu.jail.unjailed()})
+          else -- find the nearest jail
+            vRPclient.getPosition(nplayer,{},function(x,y,z)
+              local d_min = 1000
+              local v_min = nil
+              for k,v in pairs(cfg.jails) do
+                local dx,dy,dz = x-v[1],y-v[2],z-v[3]
+                local dist = math.sqrt(dx*dx+dy*dy+dz*dz)
+
+                if dist <= d_min and dist <= 15 then -- limit the research to 15 meters
+                  d_min = dist
+                  v_min = v
+                end
+
+                -- jail
+                if v_min then
+                  vRPclient.jail(nplayer,{v_min[1],v_min[2],v_min[3],v_min[4]})
+                  vRPclient.notify(nplayer,{lang.police.menu.jail.notify_jailed()})
+                  vRPclient.notify(player,{lang.police.menu.jail.jailed()})
+                else
+                  vRPclient.notify(player,{lang.police.menu.jail.not_found()})
+                end
+              end
+            end)
+          end
+        end)
+      else
+        vRPclient.notify(player,{lang.common.no_player_near()})
+      end
+    end)
+  end
+end, lang.police.menu.jail.description()}
+
+
 -- add choices to the menu
 AddEventHandler("vRP:buildMainMenu",function(player) 
   local user_id = vRP.getUserId(player)
@@ -320,13 +365,17 @@ AddEventHandler("vRP:buildMainMenu",function(player)
       choices[lang.police.menu.seize.items.title()] = choice_seize_items
     end
 
+    if vRP.hasPermission(user_id,"police.jail") then
+      choices[lang.police.menu.jail.title()] = choice_jail
+    end
+
     vRP.buildMainMenu(player,choices)
   end
 end)
 
 local function build_client_points(source)
   -- PC
-  x,y,z = table.unpack(cfg.pc)
+  local x,y,z = table.unpack(cfg.pc)
   vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,125,255,125,150})
   vRP.setArea(source,"vRP:police:pc",x,y,z,1,1.5,pc_enter,pc_leave)
 end

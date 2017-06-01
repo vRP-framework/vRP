@@ -196,6 +196,15 @@ local lang = {
           description = "Saisir les objets illégaux.",
           seized = "~b~Vos objets illégaux ont été saisis."
         }
+      },
+      jail = {
+        title = "Mettre en prison",
+        description = "Mettre en prison/libérer le joueur le plus proche dans la prison la plus proche.",
+        not_found = "~r~Pas de prison trouvée.",
+        jailed = "~b~Emprisonné.",
+        unjailed = "~b~Libéré.",
+        notify_jailed = "~b~Vous avez été emprisonné.",
+        notify_unjailed = "~b~Vous avez été libéré."
       }
     },
     identity = {

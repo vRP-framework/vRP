@@ -1,15 +1,6 @@
 
 local cfg = {}
 
--- define police uniform applied customization
-cfg.uniform_customization = {
-  [4] = {25,2},
-  [6] = {24,0},
-  [8] = {58,0},
-  [11] = {55,0},
-  ["p2"] = {5,0}
-}
-
 -- PC position
 cfg.pc = {1853.21, 3689.51, 34.2671}
 
@@ -31,6 +22,13 @@ cfg.wanted = {
 cfg.seizable_items = {
   "dirty_money",
   "weed"
+}
+
+-- jails {x,y,z,radius}
+cfg.jails = {
+  {459.485870361328,-1001.61560058594,24.914867401123,2.1},
+  {459.305603027344,-997.873718261719,24.914867401123,2.1},
+  {459.999938964844,-994.331298828125,24.9148578643799,1.6}
 }
 
 return cfg
