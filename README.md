@@ -78,6 +78,41 @@ Also, player addresses are bound to the home cluster name, it means that if you 
 
 [(gh-md-toc)](https://github.com/ekalinin/github-markdown-toc)
 
+### Deployment
+#### Installation
+
+vRP has been tested under Windows and GNU/Linux with Mono 4.8.
+
+First, make sure you don't have any other resources loaded (especially resources using MySQL, add them later and see if they break vRP).
+vRP use a new version of MySql.Data.dll, the 4.5, since only one version can be loaded at a time, if another resource load an older version, things will get crazy.
+
+Then copy the *vrp/* directory to your resource folder. Add "vrp" to the loading resource list (first after the basic FiveM resources is better).
+
+#### Configuration
+
+Only the files in the *cfg/* directory should be modified. Modifying the vRP core files is highly discouraged (don't open an issue if it's about modified core files).
+
+There is only one required file to configure before launching the server, *cfg/base.lua*, to setup the MySQL database credentials.
+
+There is a lot to configure in vRP, nothing comes preconfigured so everyone can make his unique server. 
+If you have troubles configuring, look at the configuration files of the vRP LaTest servers above.
+
+#### Update
+
+vRP will warn you at the server launch if a new version is available. You can also update while I commit things, but do that only if you like to beta test, because you will need to update a lot.
+
+A way to update:
+* save your *cfg/* folder somewhere
+* copy all new files in *vrp/*
+* compare your old *cfg/* folder with the new one, fill the gaps (one mistake will break everything, take your time)
+* replace the new *cfg/* folder with the old modified *cfg/* folder
+
+#### Issues / Features / Help
+
+The issue section is only for bug reports and feature requests. I will close (and ban) issues not related to the core of vRP, to keep the github clean.
+
+For questions, help, discussions around the project, please go instead on the vRP thread of the FiveM forum here: 
+
 ### Events
 #### Base
 
