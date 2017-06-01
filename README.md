@@ -20,7 +20,8 @@ vRP test server availables:
 * business system
 * homes (experimental, if a visitor leave in any other way than using the green circle, like crashing, flying or disconnecting, it will require an eject all)
 * phone
-* basic police (PC, check, I.D., cloakroom, handcuff)
+* cloakrooms (uniform for jobs)
+* basic police (PC, check, I.D., handcuff, jails, seize weapons/items)
 * basic emergency (coma, reanimate)
 * emotes
 * money (wallet/bank)
@@ -38,7 +39,6 @@ vRP test server availables:
 ## TODO LIST
 * home stuff
 * vehicle functions, try vehicle before buying, way of customization
-* police jails, seize illegal stuff, seize weapons
 * static chests
 * drop weapon/save weapon components
 * education (maybe)
