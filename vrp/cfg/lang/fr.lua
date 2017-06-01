@@ -351,16 +351,6 @@ local lang = {
       description = "{1} $",
       bought = "~g~Position envoyée au GPS."
     }
-  },
-  items = {
-    dirty_money = {
-      title = "Argent sale",
-      description = "Argent obtenu illégalement."
-    },
-    medkit = {
-      title = "Kit Médical",
-      description = "Utilisé pour réanimer des personnes inconscientes."
-    }
   }
 }
 

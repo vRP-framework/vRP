@@ -61,11 +61,6 @@ function vRP.closeBusiness(user_id)
   q_delete_business:execute()
 end
 
--- add dirty money item
-
-local dm_choices = {}
-vRP.defInventoryItem("dirty_money",lang.items.dirty_money.title(),lang.items.dirty_money.description(),dm_choices,0)
-
 -- business interaction
 
 -- page start at 0
