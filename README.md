@@ -92,7 +92,7 @@ vRP has been tested under Windows and GNU/Linux with Mono 4.8.
 First, make sure you don't have other resources loaded (especially resources using MySQL, add them later and see if they break vRP).
 vRP use a new version of MySql.Data.dll, the 4.5, since only one version can be loaded at a time, if another resource load an older version, things will get crazy.
 
-Then copy the `vrp/` directory to your resource folder. Add "vrp" to the loading resource list (first after the basic FiveM resources is better).
+Then clone the repository or download the master [archive](https://github.com/ImagicTheCat/vRP/archive/master.zip) and copy the `vrp/` directory to your resource folder. Add "vrp" to the loading resource list (first after the basic FiveM resources is better).
 
 #### Configuration
 
@@ -101,7 +101,7 @@ Only the files in the `cfg/` directory should be modified. Modifying the vRP cor
 There is only one required file to configure before launching the server, `cfg/base.lua`, to setup the MySQL database credentials.
 
 There is a lot to configure in vRP, nothing comes preconfigured so everyone can make his unique server. 
-If you have troubles configuring, look at the configuration files of the vRP LaTest servers above.
+Everything you need to know is in the configuration files, but if you have troubles configuring, look at the configuration of the vRP LaTest servers above.
 
 #### Update
 
@@ -117,7 +117,7 @@ A way to update:
 
 The issue section is only for bug reports and feature requests. I will close (and ban) issues not related to the core of vRP, to keep the github clean.
 
-For questions, help, discussions around the project, please go instead on the vRP thread of the FiveM forum here: 
+For questions, help, discussions around the project, please go instead on the vRP thread of the FiveM forum here: https://forum.fivem.net/t/release-vrp-framework/22894
 
 ### Events
 #### Base
@@ -153,7 +153,7 @@ vRP.getUserId({source},function(user_id)
 end)
 ```
 
-You can also do it client-side, the API is the same as the TUNNEL CLIENT APIs (copy and add the `vrp/client/Proxy.lua` to your resources list, first).
+You can also do it client-side, the API is the same as the TUNNEL CLIENT APIs (copy and add the `vrp/client/Proxy.lua` to your resources, first).
 
 ```lua
 vRP = Proxy.getInterface("vRP")
