@@ -252,6 +252,64 @@ local choice_check = {function(player,choice)
   end)
 end, lang.police.menu.check.description()}
 
+local choice_seize_weapons = {function(player, choice)
+  vRPclient.getNearestPlayer(player, {5}, function(nplayer)
+    local nuser_id = vRP.getUserId(nplayer)
+    if nuser_id ~= nil then
+      vRPclient.isHandcuffed(nplayer,{}, function(handcuffed)  -- check handcuffed
+        if handcuffed then
+          vRPclient.getWeapons(nplayer,{},function(weapons)
+            for k,v in pairs(weapons) do -- display seized weapons
+              vRPclient.notify(player,{lang.police.menu.seize.seized({k,v.ammo})})
+            end
+
+            -- clear all weapons
+            vRPclient.giveWeapons(nplayer,{{},true})
+            vRPclient.notify(nplayer,{lang.police.menu.seize.weapons.seized()})
+          end)
+        else
+          vRPclient.notify(player,{lang.police.not_handcuffed()})
+        end
+      end)
+    else
+      vRPclient.notify(player,{lang.common.no_player_near()})
+    end
+  end)
+end, lang.police.menu.seize.weapons.description()}
+
+local choice_seize_items = {function(player, choice)
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil then
+    vRPclient.getNearestPlayer(player, {5}, function(nplayer)
+      local nuser_id = vRP.getUserId(nplayer)
+      if nuser_id ~= nil then
+        vRPclient.isHandcuffed(nplayer,{}, function(handcuffed)  -- check handcuffed
+          if handcuffed then
+            for k,v in pairs(cfg.seizable_items) do -- transfer seizable items
+              local amount = vRP.getInventoryItemAmount(nuser_id,v)
+              if amount > 0 then
+                local item = vRP.items[v]
+                if item then -- do transfer
+                  if vRP.tryGetInventoryItem(nuser_id,v,amount) then
+                    vRP.giveInventoryItem(user_id,v,amount)
+                    vRPclient.notify(player,{lang.police.menu.seize.seized({item.name,amount})})
+                  end
+                end
+              end
+            end
+
+            vRPclient.notify(nplayer,{lang.police.menu.seize.items.seized()})
+          else
+            vRPclient.notify(player,{lang.police.not_handcuffed()})
+          end
+        end)
+      else
+        vRPclient.notify(player,{lang.common.no_player_near()})
+      end
+    end)
+  end
+end, lang.police.menu.seize.items.description()}
+
 -- add choices to the menu
 AddEventHandler("vRP:buildMainMenu",function(player) 
   local user_id = vRP.getUserId(player)
@@ -271,6 +329,14 @@ AddEventHandler("vRP:buildMainMenu",function(player)
 
     if vRP.hasPermission(user_id,"police.check") then
       choices[lang.police.menu.check.title()] = choice_check
+    end
+
+    if vRP.hasPermission(user_id,"police.seize.weapons") then
+      choices[lang.police.menu.seize.weapons.title()] = choice_seize_weapons
+    end
+
+    if vRP.hasPermission(user_id,"police.seize.items") then
+      choices[lang.police.menu.seize.items.title()] = choice_seize_items
     end
 
     vRP.buildMainMenu(player,choices)

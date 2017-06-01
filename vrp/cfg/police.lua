@@ -30,4 +30,11 @@ cfg.wanted = {
   service = "police"
 }
 
+-- illegal items (seize)
+cfg.seizable_items = {
+  "dirty_money",
+  "weed"
+}
+
+
 return cfg

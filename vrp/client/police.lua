@@ -19,6 +19,10 @@ function tvRP.toggleHandcuff()
   end
 end
 
+function tvRP.isHandcuffed()
+  return handcuffed
+end
+
 function tvRP.putInNearestVehicleAsPassenger(radius)
   local veh = tvRP.getNearestVehicle(radius)
 

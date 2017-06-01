@@ -50,7 +50,9 @@ cfg.groups = {
     "police.putinveh",
     "police.check",
     "police.service",
-    "police.wanted"
+    "police.wanted",
+    "police.seize.weapons",
+    "police.seize.items"
   },
   ["emergency"] = {
     _config = { gtype = "job" },

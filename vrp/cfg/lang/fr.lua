@@ -130,6 +130,7 @@ local lang = {
   },
   police = {
     wanted = "Recherché rang {1}",
+    not_handcuffed = "~r~Pas menotté.",
     cloakroom = {
       title = "Vestiaire",
       uniform = {
@@ -182,6 +183,19 @@ local lang = {
         request_hide = "Fermer le rapport de fouille.",
         info = "<em>Argent: </em>{1} $<br /><br /><em>Inventaire: </em>{2}<br /><br /><em>Armes: </em>{3}",
         checked = "Vous avez été fouillé."
+      }
+      seize = {
+        seized = "Saisis {2} ~r~{1}",
+        weapons = {
+          title = "Saisir armes",
+          description = "Saisir les armes du joueur à proximité.",
+          seized = "~b~Vos armes ont été saisies."
+        },
+        items = {
+          title = "Saisir illégaux",
+          description = "Saisir les objets illégaux.",
+          seized = "~b~Vos objets illégaux ont été saisis."
+        }
       }
     },
     identity = {
