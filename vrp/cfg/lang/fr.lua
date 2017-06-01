@@ -339,6 +339,12 @@ local lang = {
   skinshop = {
     title = "Magasin de vêtements"
   },
+  cloakroom = {
+    title = "Vestiaire ({1})",
+    undress = {
+      title = "> Enlever"
+    }
+  },
   itemtr = {
     informer = {
       title = "Informateur illégal",

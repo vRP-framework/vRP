@@ -3,25 +3,6 @@
 local lang = vRP.lang
 local cfg = require("resources/vrp/cfg/police")
 
--- police cloakroom
-
-local menu_cloak = {name=lang.police.cloakroom.title(),css={top="75px",header_color="rgba(0,125,255,0.75)"}}
-
-menu_cloak[lang.police.cloakroom.uniform.title()] = {function(player, choice)
-  vRPclient.setCustomization(player,{cfg.uniform_customization})
-end,lang.police.cloakroom.uniform.description()}
-
-local function cloakroom_enter(source,area)
-  local user_id = vRP.getUserId(source)
-  if user_id ~= nil and vRP.hasPermission(user_id,"police.cloakroom") then
-    vRP.openMenu(source,menu_cloak)
-  end
-end
-
-local function cloakroom_leave(source,area)
-  vRP.closeMenu(source)
-end
-
 -- police PC
 
 local menu_pc = {name=lang.police.pc.title(),css={top="75px",header_color="rgba(0,125,255,0.75)"}}
@@ -344,11 +325,6 @@ AddEventHandler("vRP:buildMainMenu",function(player)
 end)
 
 local function build_client_points(source)
-  -- cloakroom
-  local x,y,z = table.unpack(cfg.cloakroom)
-  vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,125,255,125,150})
-  vRP.setArea(source,"vRP:police:cloakroom",x,y,z,1,1.5,cloakroom_enter,cloakroom_leave)
-
   -- PC
   x,y,z = table.unpack(cfg.pc)
   vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,125,255,125,150})

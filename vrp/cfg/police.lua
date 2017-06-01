@@ -10,9 +10,6 @@ cfg.uniform_customization = {
   ["p2"] = {5,0}
 }
 
--- cloakroom position
-cfg.cloakroom = {1848.21, 3688.51, 34.2671}
-
 -- PC position
 cfg.pc = {1853.21, 3689.51, 34.2671}
 

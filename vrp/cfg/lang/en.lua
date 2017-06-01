@@ -340,6 +340,12 @@ local lang = {
   skinshop = {
     title = "Skinshop"
   },
+  cloakroom = {
+    title = "Cloakroom ({1})",
+    undress = {
+      title = "> Undress"
+    }
+  },
   itemtr = {
     informer = {
       title = "Illegal Informer",
