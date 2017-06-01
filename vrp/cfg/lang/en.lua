@@ -206,6 +206,12 @@ local lang = {
         unjailed = "~b~Unjailed.",
         notify_jailed = "~b~You have been jailed.",
         notify_unjailed = "~b~You have been unjailed."
+      },
+      fine = {
+        title = "Fine",
+        description = "Fine the nearest player.",
+        fined = "~b~Fined ~s~{2} $ for ~b~{1}.",
+        notify_fined = "~b~You have been fined ~s~ {2} $ for ~b~{1}."
       }
     },
     identity = {

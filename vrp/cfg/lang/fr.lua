@@ -205,6 +205,12 @@ local lang = {
         unjailed = "~b~Libéré.",
         notify_jailed = "~b~Vous avez été emprisonné.",
         notify_unjailed = "~b~Vous avez été libéré."
+      },
+      fine = {
+        title = "Amende",
+        description = "Mettre une amende au joueur le plus proche.",
+        fined = "~b~Vous avez mis une amende de ~s~{2} $ pour ~b~{1}.",
+        notify_fined = "~b~Vous avez été condamné à une amende de~s~ {2} $ pour~b~ {1}."
       }
     },
     identity = {
