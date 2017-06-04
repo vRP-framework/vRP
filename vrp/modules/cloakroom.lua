@@ -7,7 +7,10 @@ local cfg = require("resources/vrp/cfg/cloakrooms")
 
 local menus = {}
 
+-- save idle custom (return current idle custom copy table)
 local function save_idle_custom(player, custom)
+  local r_idle = {}
+
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
     local data = vRP.getUserDataTable(user_id)
@@ -15,8 +18,15 @@ local function save_idle_custom(player, custom)
       if data.cloakroom_idle == nil then -- set cloakroom idle if not already set
         data.cloakroom_idle = custom
       end
+
+      -- copy custom
+      for k,v in pairs(data.cloakroom_idle) do
+        r_idle[k] = v
+      end
     end
   end
+
+  return r_idle
 end
 
 local function rollback_idle_custom(player)
@@ -41,13 +51,16 @@ for k,v in pairs(cfg.cloakroom_types) do
     local custom = v[choice]
     if custom then
       vRPclient.getCustomization(player,{},function(custom)
-        custom.model = nil
-        custom.modelhash = nil
         -- save old customization if not already saved (idle customization)
-        save_idle_custom(player, custom)
+        local idle_copy = save_idle_custom(player, custom)
+
+        -- write on idle custom copy
+        for k,v in pairs(v[choice]) do
+          idle_copy[k] = v
+        end
 
         -- set cloak customization
-        vRPclient.setCustomization(player,{v[choice]})
+        vRPclient.setCustomization(player,{idle_copy})
       end)
     end
   end
