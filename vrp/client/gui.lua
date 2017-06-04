@@ -52,6 +52,11 @@ RegisterNUICallback("cfg",function(data,cb) -- if NUI loaded after
 end)
 SendNUIMessage({act="cfg",cfg=cfg.gui}) -- if NUI loaded before
 
+-- try to fix missing cfg issue (cf: https://github.com/ImagicTheCat/vRP/issues/89)
+for i=1,5 do
+  SetTimeout(5000*i, function() SendNUIMessage({act="cfg",cfg=cfg.gui}) end)
+end
+
 -- PROGRESS BAR
 
 -- create/update a progress bar
