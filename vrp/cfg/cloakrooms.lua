@@ -8,12 +8,12 @@ cfg.cloakroom_types = {
   ["police"] = {
     _config = { permission = "police.cloakroom" },
     ["Uniform"] = {
-      [3] = {32,0},
+      [3] = {30,0},
       [4] = {25,2},
       [6] = {24,0},
       [8] = {58,0},
       [11] = {55,0},
-      ["p2"] = {5,0}
+      ["p2"] = {2,0}
     }
   }
 }
