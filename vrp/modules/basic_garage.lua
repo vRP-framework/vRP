@@ -123,7 +123,7 @@ for group,vehicles in pairs(vehicle_groups) do
   end,lang.garage.buy.description()}
 
   menu[lang.garage.store.title()] = {function(player,choice)
-    vRPclient.despawnGarageVehicle(player,{veh_type,10}) -- big range cause the car to not despawn
+    vRPclient.despawnGarageVehicle(player,{veh_type,15}) 
   end, lang.garage.store.description()}
 end
 
@@ -196,7 +196,7 @@ local function ch_vehicle(player,choice)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
     -- check vehicle
-    vRPclient.getNearestOwnedVehicle(player,{},function(ok,vtype,name)
+    vRPclient.getNearestOwnedVehicle(player,{5},function(ok,vtype,name)
       if ok then
         -- build vehicle menu
         local menu = {name=lang.vehicle.title(), css={top="75px",header_color="rgba(255,125,0,0.75)"}}
@@ -221,7 +221,7 @@ local function ch_asktrunk(player,choice)
       vRPclient.notify(player,{lang.vehicle.asktrunk.asked()})
       vRP.request(nplayer,lang.vehicle.asktrunk.request(),15,function(nplayer,ok)
         if ok then -- request accepted, open trunk
-          vRPclient.getNearestOwnedVehicle(player,{},function(ok,vtype,name)
+          vRPclient.getNearestOwnedVehicle(player,{5},function(ok,vtype,name)
             if ok then
               local chestname = "u"..nuser_id.."veh_"..string.lower(name)
               local max_weight = cfg_inventory.vehicle_chest_weights[string.lower(name)] or cfg_inventory.default_vehicle_chest_weight

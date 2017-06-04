@@ -271,6 +271,16 @@ function vRP.getUserId(source)
   return nil
 end
 
+-- return map of user_id -> player source
+function vRP.getUsers()
+  local users = {}
+  for k,v in pairs(vRP.user_sources) do
+    users[k] = v
+  end
+
+  return users
+end
+
 -- return source or nil
 function vRP.getUserSource(user_id)
   return vRP.user_sources[user_id]

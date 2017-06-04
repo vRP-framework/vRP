@@ -30,6 +30,7 @@ function tvRP.spawnGarageVehicle(vtype,name) -- vtype is the vehicle type (one v
       SetEntityInvincible(nveh,false)
       SetPedIntoVehicle(GetPlayerPed(-1),nveh,-1) -- put player inside
       SetVehicleNumberPlateText(nveh, "P "..tvRP.getRegistrationNumber())
+      Citizen.InvokeNative(0xAD738C3085FE7E11, nveh, true, true)
 
       vehicles[vtype] = {vtype,name,nveh} -- set current vehicule
 
@@ -57,6 +58,8 @@ function tvRP.despawnGarageVehicle(vtype,max_range)
   end
 end
 
+-- (deprecated) this function return the nearest vehicle
+-- (don't work with lot of vehicles, police, etc...)
 function tvRP.getNearestVehicle(radius)
   local x,y,z = tvRP.getPosition()
   local ped = GetPlayerPed(-1)
@@ -68,12 +71,12 @@ function tvRP.getNearestVehicle(radius)
 end
 
 -- return ok,vtype,name
-function tvRP.getNearestOwnedVehicle()
+function tvRP.getNearestOwnedVehicle(radius)
   local px,py,pz = tvRP.getPosition()
   for k,v in pairs(vehicles) do
     local x,y,z = table.unpack(GetEntityCoords(v[3],true))
     local dist = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
-    if dist <= 5.0001 then return true,v[1],v[2] end
+    if dist <= radius+0.0001 then return true,v[1],v[2] end
   end
 
   return false,"",""
@@ -89,6 +92,16 @@ function tvRP.getOwnedVehiclePosition()
   end
 
   return false,0,0,0
+end
+
+-- return ok, vehicule network id
+function tvRP.getOwnedVehicleId(vtype)
+  local vehicle = vehicles[vtype]
+  if vehicle then
+    return true, NetworkGetNetworkIdFromEntity(vehicle[3])
+  else
+    return false, 0
+  end
 end
 
 -- eject the ped from the vehicle

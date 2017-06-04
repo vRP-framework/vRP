@@ -169,7 +169,7 @@ local lang = {
       },
       putinveh = {
         title = "Put in vehicle",
-        description = "Put the nearest player in the nearest vehicle, as passenger."
+        description = "Put the nearest handcuffed player in the nearest owned vehicle, as passenger."
       },
       askid = {
         title = "Ask ID",

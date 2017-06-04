@@ -39,11 +39,15 @@ local function tr_tick(tr) -- do transformer tick
         local money_ok = (vRP.getMoney(user_id) >= tr.itemtr.in_money)
 
         -- weight check
-        local witems = {}
+        local out_witems = {}
         for k,v in pairs(tr.itemtr.products) do
-          witems[k] = {amount=v}
+          out_witems[k] = {amount=v}
         end
-        local new_weight = vRP.getInventoryWeight(user_id)+vRP.computeItemsWeight(witems)
+        local in_witems = {}
+        for k,v in pairs(tr.itemtr.reagents) do
+          in_witems[k] = {amount=v}
+        end
+        local new_weight = vRP.getInventoryWeight(user_id)+vRP.computeItemsWeight(out_witems)-vRP.computeItemsWeight(in_witems)
 
         local inventory_ok = true
         if new_weight > cfg_inventory.inventory_weight then

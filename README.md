@@ -171,6 +171,9 @@ In the config files callbacks, you can use directly vRP and vRPclient (the tunne
 ```lua
 -- PROXY API
 
+-- return map of user_id -> player source
+vRP.getUsers()
+
 -- return user id or nil if the source is invalid
 vRP.getUserId(source)
 
