@@ -159,6 +159,17 @@ local lang = {
         tracking = "~b~Localisation commencée.",
         track_failed = "~b~Recherche de {1}~s~ ({2}) ~n~~r~Echouée.",
         tracked = "{1} ({2}) localisé."
+      },
+      records = {
+        show = {
+          title = "Afficher casier",
+          description = "Afficher casier judiciaire par immatriculation."
+        },
+        delete = {
+          title = "Effacer casier",
+          description = "Effacer casier judiciaire par immatriculation",
+          deleted = "~b~Casier judiciaire effacé."
+        }
       }
     },
     menu = {
@@ -210,7 +221,8 @@ local lang = {
         title = "Amende",
         description = "Mettre une amende au joueur le plus proche.",
         fined = "~b~Vous avez mis une amende de ~s~{2} $ pour ~b~{1}.",
-        notify_fined = "~b~Vous avez été condamné à une amende de~s~ {2} $ pour~b~ {1}."
+        notify_fined = "~b~Vous avez été condamné à une amende de~s~ {2} $ pour~b~ {1}.",
+        record = "[Amende] {2} $ pour {1}"
       }
     },
     identity = {

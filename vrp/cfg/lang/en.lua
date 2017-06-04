@@ -160,6 +160,17 @@ local lang = {
         tracking = "~b~Tracking started.",
         track_failed = "~b~Tracking of {1}~s~ ({2}) ~n~~r~Failed.",
         tracked = "Tracked {1} ({2})"
+      },
+      records = {
+        show = {
+          title = "Show records",
+          description = "Show police records by registration number."
+        },
+        delete = {
+          title = "Clear records",
+          description = "Clear police records by registration number.",
+          deleted = "~b~Police records deleted"
+        }
       }
     },
     menu = {
@@ -211,7 +222,8 @@ local lang = {
         title = "Fine",
         description = "Fine the nearest player.",
         fined = "~b~Fined ~s~{2} $ for ~b~{1}.",
-        notify_fined = "~b~You have been fined ~s~ {2} $ for ~b~{1}."
+        notify_fined = "~b~You have been fined ~s~ {2} $ for ~b~{1}.",
+        record = "[Fine] {2} $ for {1}"
       }
     },
     identity = {

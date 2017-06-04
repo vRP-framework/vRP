@@ -3,6 +3,17 @@
 local lang = vRP.lang
 local cfg = require("resources/vrp/cfg/police")
 
+-- police records
+
+-- insert a police record for a specific user
+--- line: text for one line (can be html)
+function vRP.insertPoliceRecord(user_id, line)
+  if user_id ~= nil then
+    local records = vRP.getUData(user_id, "vRP:police_records")..line.."<br />"
+    vRP.setUData(user_id, "vRP:police_records", records)
+  end
+end
+
 -- police PC
 
 local menu_pc = {name=lang.police.pc.title(),css={top="75px",header_color="rgba(0,125,255,0.75)"}}
@@ -38,10 +49,36 @@ local function ch_searchreg(player,choice)
         end
 
         local content = lang.police.identity.info({name,firstname,age,registration,phone,bname,bcapital,home,number})
-        vRPclient.setDiv(player,{"police_identity",".div_police_identity{ background-color: rgba(0,0,0,0.75); color: white; font-weight: bold; width: 500px; padding: 10px; margin: auto; margin-top: 150px; }",content})
+        vRPclient.setDiv(player,{"police_pc",".div_police_pc{ background-color: rgba(0,0,0,0.75); color: white; font-weight: bold; width: 500px; padding: 10px; margin: auto; margin-top: 150px; }",content})
       else
         vRPclient.notify(player,{lang.common.not_found()})
       end
+    else
+      vRPclient.notify(player,{lang.common.not_found()})
+    end
+  end)
+end
+
+-- show police records by registration
+local function ch_show_police_records(player,choice)
+  vRP.prompt(player,lang.police.pc.searchreg.prompt(),"",function(player, reg)
+    local user_id = vRP.getUserByRegistration(reg)
+    if user_id ~= nil then
+      local content = vRP.getUData(user_id, "vRP:police_records")
+      vRPclient.setDiv(player,{"police_pc",".div_police_pc{ background-color: rgba(0,0,0,0.75); color: white; font-weight: bold; width: 500px; padding: 10px; margin: auto; margin-top: 150px; }",content})
+    else
+      vRPclient.notify(player,{lang.common.not_found()})
+    end
+  end)
+end
+
+-- delete police records by registration
+local function ch_delete_police_records(player,choice)
+  vRP.prompt(player,lang.police.pc.searchreg.prompt(),"",function(player, reg)
+    local user_id = vRP.getUserByRegistration(reg)
+    if user_id ~= nil then
+      vRP.setUData(user_id, "vRP:police_records", "")
+      vRPclient.notify(player,{lang.police.pc.records.delete.deleted()})
     else
       vRPclient.notify(player,{lang.common.not_found()})
     end
@@ -103,10 +140,12 @@ end
 
 menu_pc[lang.police.pc.searchreg.title()] = {ch_searchreg,lang.police.pc.searchreg.description()}
 menu_pc[lang.police.pc.trackveh.title()] = {ch_trackveh,lang.police.pc.trackveh.description()}
+menu_pc[lang.police.pc.records.show.title()] = {ch_show_police_records,lang.police.pc.records.show.description()}
+menu_pc[lang.police.pc.records.delete.title()] = {ch_delete_police_records, lang.police.pc.records.delete.description()}
 menu_pc[lang.police.pc.closebusiness.title()] = {ch_closebusiness,lang.police.pc.closebusiness.description()}
 
 menu_pc.onclose = function(player) -- close pc gui
-  vRPclient.removeDiv(player,{"police_identity"})
+  vRPclient.removeDiv(player,{"police_pc"})
 end
 
 local function pc_enter(source,area)
@@ -366,6 +405,7 @@ local choice_fine = {function(player, choice)
           local amount = cfg.fines[choice]
           if amount ~= nil then
             if vRP.tryFullPayment(nuser_id, amount) then
+              vRP.insertPoliceRecord(nuser_id, lang.police.menu.fine.record({choice,amount}))
               vRPclient.notify(player,{lang.police.menu.fine.fined({choice,amount})})
               vRPclient.notify(nplayer,{lang.police.menu.fine.notify_fined({choice,amount})})
               vRP.closeMenu(player)

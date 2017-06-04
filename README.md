@@ -341,6 +341,10 @@ vRP.setPolice(flag)
 ```lua
 -- PROXY API
 
+-- insert a police record for a specific user
+--- line: text for one line (can be html)
+vRP.insertPoliceRecord(user_id, line)
+
 -- TUNNEL SERVER API
 
 -- TUNNEL CLIENT API
