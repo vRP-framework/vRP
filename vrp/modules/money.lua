@@ -125,6 +125,21 @@ function vRP.tryDeposit(user_id,amount)
   end
 end
 
+-- try full payment (wallet + bank to complete payment)
+-- return true or false (debited if true)
+function vRP.tryFullPayment(user_id,amount)
+  local money = vRP.getMoney(user_id)
+  if money >= amount then -- enough, simple payment
+    return vRP.tryPayment(user_id, amount)
+  else  -- not enough, withdraw -> payment
+    if vRP.tryWithdraw(user_id, amount-money) then -- withdraw to complete amount
+      return vRP.tryPayment(user_id, amount)
+    end
+  end
+
+  return false
+end
+
 -- events, init user account at connection
 AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
   q_init_user:bind("@user_id",user_id) -- create if not exists player money account

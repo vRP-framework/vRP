@@ -357,7 +357,7 @@ local choice_fine = {function(player, choice)
     vRPclient.getNearestPlayer(player, {5}, function(nplayer)
       local nuser_id = vRP.getUserId(nplayer)
       if nuser_id ~= nil then
-        local money = vRP.getMoney(nuser_id)
+        local money = vRP.getMoney(nuser_id)+vRP.getBankMoney(nuser_id)
 
         -- build fine menu
         local menu = {name=lang.police.menu.fine.title(),css={top="75px",header_color="rgba(0,125,255,0.75)"}}
@@ -365,7 +365,7 @@ local choice_fine = {function(player, choice)
         local choose = function(player,choice) -- fine action
           local amount = cfg.fines[choice]
           if amount ~= nil then
-            if vRP.tryPayment(nuser_id, amount) then
+            if vRP.tryFullPayment(nuser_id, amount) then
               vRPclient.notify(player,{lang.police.menu.fine.fined({choice,amount})})
               vRPclient.notify(nplayer,{lang.police.menu.fine.notify_fined({choice,amount})})
               vRP.closeMenu(player)

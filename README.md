@@ -134,8 +134,17 @@ AddEventHandler("vRP:playerRejoin",function(user_id,source,name) end)
 -- (server) called when a logged player spawn
 AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn) end)
 
--- (server) (doesn't work)
-AddEventHandler("vRP:playerLeave",function(user_id) end)
+-- (server) called when a player leave
+AddEventHandler("vRP:playerLeave",function(user_id, source) end)
+
+-- (server) called when a player join a group
+-- gtype can be nil
+AddEventHandler("vRP:playerJoinGroup", function(user_id, group, gtype) end)
+
+-- (server) called when a player leave a group
+-- gtype can be nil
+AddEventHandler("vRP:playerLeaveGroup", function(user_id, group, gtype) end)
+
 ```
 
 ### API
@@ -399,6 +408,10 @@ vRP.setMoney(user_id,value)
 -- try a payment (wallet only)
 -- return true or false (debited if true)
 vRP.tryPayment(user_id,amount)
+
+-- try full payment (wallet + bank to complete payment)
+-- return true or false (debited if true)
+vRP.tryFullPayment(user_id,amount)
 
 -- give money to wallet
 vRP.giveMoney(user_id,amount)
