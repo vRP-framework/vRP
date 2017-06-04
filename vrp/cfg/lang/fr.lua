@@ -209,7 +209,7 @@ local lang = {
         }
       },
       jail = {
-        title = "Mettre en prison",
+        title = "Prison",
         description = "Mettre en prison/libérer le joueur le plus proche dans la prison la plus proche.",
         not_found = "~r~Pas de prison trouvée.",
         jailed = "~b~Emprisonné.",
