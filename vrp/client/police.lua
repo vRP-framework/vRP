@@ -62,6 +62,18 @@ function tvRP.putInNetVehicleAsPassenger(net_veh)
   end
 end
 
+function tvRP.putInVehiclePositionAsPassenger(x,y,z)
+  local veh = tvRP.getVehicleAtPosition(x,y,z)
+  if IsEntityAVehicle(veh) then
+    for i=1,GetVehicleMaxNumberOfPassengers(veh) do
+      if IsVehicleSeatFree(veh,i) then
+        SetPedIntoVehicle(GetPlayerPed(-1),veh,i)
+        return true
+      end
+    end
+  end
+end
+
 -- keep handcuffed animation
 Citizen.CreateThread(function()
   while true do

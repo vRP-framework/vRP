@@ -120,7 +120,7 @@ local function ch_trackveh(player,choice)
         SetTimeout(seconds*1000,function()
           local tplayer = vRP.getUserSource(user_id)
           if tplayer ~= nil then
-            vRPclient.getOwnedVehiclePosition(tplayer,{},function(ok,x,y,z)
+            vRPclient.getAnyOwnedVehiclePosition(tplayer,{},function(ok,x,y,z)
               if ok then -- track success
                 vRP.sendServiceAlert(nil, cfg.trackveh.service,x,y,z,lang.police.pc.trackveh.tracked({reg,note}))
               else
@@ -182,10 +182,8 @@ local choice_putinveh = {function(player,choice)
         if handcuffed then
           vRPclient.getNearestOwnedVehicle(player, {10}, function(ok,vtype,name) -- get nearest owned vehicle
             if ok then
-              vRPclient.getOwnedVehicleId(player, {vtype}, function(ok,veh_id)
-                if ok then
-                  vRPclient.putInNetVehicleAsPassenger(nplayer,{veh_id}) -- put player in vehicle
-                end
+              vRPclient.getOwnedVehiclePosition(player, {vtype}, function(x,y,z)
+                vRPclient.putInVehiclePositionAsPassenger(nplayer,{x,y,z}) -- put player in vehicle
               end)
             else
               vRPclient.notify(player,{lang.vehicle.no_owned_near()})
