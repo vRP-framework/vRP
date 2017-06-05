@@ -29,7 +29,9 @@ cfg.groups = {
     "player.custom_emote",
     "player.coords",
     "player.tptome",
-    "player.tpto"
+    "player.tpto",
+	"player.copWhitelist",
+	"player.copUnwhitelist"
   },
   -- the group user is auto added to all logged players
   ["user"] = {

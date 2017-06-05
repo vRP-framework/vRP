@@ -6,6 +6,7 @@
 
 -- api
 
+local police = require("resources/vrp/cfg/police")
 local cfg = require("resources/vrp/cfg/groups")
 local groups = cfg.groups
 local users = cfg.users
@@ -145,8 +146,18 @@ end
 local function ch_select(player,choice)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
-    vRP.addUserGroup(user_id, choice)
-    vRP.closeMenu(player)
+	--if police check whitelist
+	if choice == "police" and police.whitelist then 
+		if vRP.isCopWhitelisted(user_id) then 
+			vRP.addUserGroup(user_id, choice)
+			vRP.closeMenu(player)
+		else
+			vRPclient.notify(player,{"You are not whitelisted for cop."})
+		end
+	else
+		vRP.addUserGroup(user_id, choice)
+		vRP.closeMenu(player)
+	end
   end
 end
 

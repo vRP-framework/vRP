@@ -248,6 +248,28 @@ local function ch_noclip(player, choice)
   vRPclient.toggleNoclip(player, {})
 end
 
+local function ch_copWhitelist(player,choice)
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil and vRP.hasPermission(user_id,"player.copWhitelist") then
+    vRP.prompt(player,"User id to whitelist: ","",function(player,id)
+      id = tonumber(id)
+      vRP.setCopWhitelisted(id,true)
+      vRPclient.notify(player,{"Cop whitelisted user "..id})
+    end)
+  end
+end
+
+local function ch_copUnwhitelist(player,choice)
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil and vRP.hasPermission(user_id,"player.copUnwhitelist") then
+    vRP.prompt(player,"User id to un-whitelist: ","",function(player,id)
+      id = tonumber(id)
+      vRP.setCopWhitelisted(id,false)
+      vRPclient.notify(player,{"Cop un-whitelisted user "..id})
+    end)
+  end
+end
+
 AddEventHandler("vRP:buildMainMenu",function(player)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
@@ -310,6 +332,12 @@ AddEventHandler("vRP:buildMainMenu",function(player)
       if vRP.hasPermission(user_id,"player.calladmin") then
         menu["@Call admin"] = {ch_calladmin}
       end
+	  if vRP.hasPermission(user_id,"player.copWhitelist") then
+		menu["@Whitelist Cop"] = {ch_copWhitelist}
+	  end 
+	  if vRP.hasPermission(user_id,"player.copUnwhitelist") then
+		menu["@Un-whitelist Cop"] = {ch_copUnwhitelist}
+	  end
 
       vRP.openMenu(player,menu)
     end}
