@@ -81,7 +81,7 @@ cfg.users = {
 
 -- group selectors
 -- _config
---- x,y,z, blipid, blipcolor permission (optional)
+--- x,y,z, blipid, blipcolor, permission (optional)
 
 cfg.selectors = {
   ["Job Selector"] = {

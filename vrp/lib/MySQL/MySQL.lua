@@ -36,7 +36,7 @@ function Result:close() -- always close the result when unused
 end
 
 function Result:fetch()
-  if self.reader ~= nil and self.reader.HasRows then
+  if self.reader ~= nil then
     return not (cast(int,self.reader.Read()) == 0)
   else
     return false

@@ -134,7 +134,8 @@ end
 function tvRP.ejectVehicle()
   local ped = GetPlayerPed(-1)
   if IsPedSittingInAnyVehicle(ped) then
-    KnockPedOffVehicle(ped)
+    local veh = GetVehiclePedIsIn(ped,false)
+    TaskLeaveVehicle(ped, veh, 4160)
   end
 end
 

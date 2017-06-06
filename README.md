@@ -43,6 +43,8 @@ vRP test server availables:
 * drop weapon/save weapon components
 * education (maybe)
 * skinshop presets
+* plastic surgery shop
+* police pc: add custom police records 
 
 ## NOTES
 ### Homes
