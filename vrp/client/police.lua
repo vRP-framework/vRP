@@ -87,9 +87,12 @@ end)
 -- force stealth movement while handcuffed (prevent use of fist and slow the player)
 Citizen.CreateThread(function()
   while true do
-    Citizen.Wait(1)
+    Citizen.Wait(0)
     if handcuffed then
       SetPedStealthMovement(GetPlayerPed(-1),true,"")
+      DisableControlAction(0,21,true) -- disable sprint
+      DisableControlAction(0,24,true) -- disable attack
+      DisableControlAction(0,25,true) -- disable aim
     end
   end
 end)

@@ -29,7 +29,14 @@ function vRP.setHunger(user_id,value)
     elseif data.hunger > 100 then data.hunger = 100 
     end
 
-    vRPclient.setProgressBarValue(vRP.getUserSource(user_id),{"vRP:hunger",data.hunger})
+    -- update bar
+    local source = vRP.getUserSource(user_id)
+    vRPclient.setProgressBarValue(source, {"vRP:hunger",data.hunger})
+    if data.hunger >= 100 then
+      vRPclient.setProgressBarText(source,{"vRP:hunger",lang.survival.starving()})
+    else
+      vRPclient.setProgressBarText(source,{"vRP:hunger",""})
+    end
   end
 end
 
@@ -41,7 +48,14 @@ function vRP.setThirst(user_id,value)
     elseif data.thirst > 100 then data.thirst = 100 
     end
 
-    vRPclient.setProgressBarValue(vRP.getUserSource(user_id),{"vRP:thirst",data.thirst})
+    -- update bar
+    local source = vRP.getUserSource(user_id)
+    vRPclient.setProgressBarValue(source, {"vRP:thirst",data.thirst})
+    if data.thirst >= 100 then
+      vRPclient.setProgressBarText(source,{"vRP:thirst",lang.survival.thirsty()})
+    else
+      vRPclient.setProgressBarText(source,{"vRP:thirst",""})
+    end
   end
 end
 
@@ -150,13 +164,10 @@ AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
   -- set friendly fire
   vRPclient.setFriendlyFire(source,{cfg.pvp})
 
-  local htxt = ""
-  if data.hunger >= 100 then htxt = lang.survival.starving() end
-  local ttxt = ""
-  if data.thirst >= 100 then ttxt = lang.survival.thirsty() end
-
-  vRPclient.setProgressBar(source,{"vRP:hunger","minimap",htxt,255,153,0,data.hunger})
-  vRPclient.setProgressBar(source,{"vRP:thirst","minimap",ttxt,0,125,255,data.thirst})
+  vRPclient.setProgressBar(source,{"vRP:hunger","minimap",htxt,255,153,0,0})
+  vRPclient.setProgressBar(source,{"vRP:thirst","minimap",ttxt,0,125,255,0})
+  vRP.setHunger(user_id, data.hunger)
+  vRP.setThirst(user_id, data.thirst)
 end)
 
 -- EMERGENCY
