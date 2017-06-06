@@ -6,7 +6,6 @@ function tvRP.spawnGarageVehicle(vtype,name) -- vtype is the vehicle type (one v
   local vehicle = vehicles[vtype]
   if vehicle and not IsVehicleDriveable(vehicle[3]) then -- precheck if vehicle is undriveable
     -- despawn vehicle
-    SetEntityAsMissionEntity(vehicle[3],true,true)
     Citizen.InvokeNative(0xEA386986E786A54F, Citizen.PointerValueIntInitialized(vehicle[3]))
     vehicles[vtype] = nil
   end
@@ -31,8 +30,7 @@ function tvRP.spawnGarageVehicle(vtype,name) -- vtype is the vehicle type (one v
       SetEntityInvincible(nveh,false)
       SetPedIntoVehicle(GetPlayerPed(-1),nveh,-1) -- put player inside
       SetVehicleNumberPlateText(nveh, "P "..tvRP.getRegistrationNumber())
-      SetEntityAsMissionEntity(nveh,false,false)
---      Citizen.InvokeNative(0xAD738C3085FE7E11, nveh, true, true)
+      Citizen.InvokeNative(0xAD738C3085FE7E11, nveh, true, true) -- set as mission entity
 
       vehicles[vtype] = {vtype,name,nveh} -- set current vehicule
 
@@ -51,7 +49,6 @@ function tvRP.despawnGarageVehicle(vtype,max_range)
 
     if GetDistanceBetweenCoords(x,y,z,px,py,pz,true) < max_range then -- check distance with the vehicule
       -- remove vehicle
-      SetEntityAsMissionEntity(vehicle[3],true,true)
       Citizen.InvokeNative(0xEA386986E786A54F, Citizen.PointerValueIntInitialized(vehicle[3]))
       vehicles[vtype] = nil
       tvRP.notify("Vehicle stored.")

@@ -119,6 +119,9 @@ A way to update:
 
 The issue section is only for bug reports and feature requests. I will close (and ban) issues not related to the core of vRP, to keep the github clean.
 
+When submitting an issue, add any information you can find, with all details. Saying that something doesn't work is useless and will not solve the issue. 
+If you have errors in your console BEFORE the issue happen, everything could be corrupted, so the issue is irrelevant, you should solve all unrelated errors before submitting issues.
+
 For questions, help, discussions around the project, please go instead on the vRP thread of the FiveM forum here: https://forum.fivem.net/t/release-vrp-framework/22894
 
 ### Events
