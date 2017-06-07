@@ -58,15 +58,15 @@ function tvRP.despawnGarageVehicle(vtype,max_range)
   end
 end
 
--- (deprecated) this function return the nearest vehicle
--- (don't work with lot of vehicles, police, etc...)
+-- (experimental) this function return the nearest vehicle
+-- (don't work with all vehicles, but aim to)
 function tvRP.getNearestVehicle(radius)
   local x,y,z = tvRP.getPosition()
   local ped = GetPlayerPed(-1)
   if IsPedSittingInAnyVehicle(ped) then
     return GetVehiclePedIsIn(ped, true)
   else
-    return GetClosestVehicle(x+0.0001,y+0.0001,z+0.0001, radius+0.0001, 0, 70) 
+    return GetClosestVehicle(x+0.0001,y+0.0001,z+0.0001, radius+0.0001, 0, 7) 
   end
 end
 
