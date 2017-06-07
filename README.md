@@ -11,6 +11,10 @@ If you want to try the framework somewhere, here is a list of servers using vRP,
 vRP test server availables:
 * 93.115.96.185 (FR) [(config)](http://93.115.96.185/fivem/servers/FR_cfg.zip) [(discord)](https://discord.gg/ZAdE3eu)
 
+Since vRP is a lot of work, some of you asked for a way to support me and the project, so here it is:
+
+[![Click here to lend your support to: vRP - a FiveM open source RP Framework and make a donation at pledgie.com !](https://pledgie.com/campaigns/34016.png?skin_name=chrome)](https://pledgie.com/campaigns/34016)
+
 ## Features
 * basic admin tools (kick,ban,whitelist)
 * groups/permissions
