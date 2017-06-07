@@ -45,6 +45,9 @@ function vRP.defInventoryItem(idname,name,description,choices,weight)
                   vRP.giveInventoryItem(nuser_id,idname,amount)
                   vRPclient.notify(player,{lang.inventory.give.given({name,amount})})
                   vRPclient.notify(nplayer,{lang.inventory.give.received({name,amount})})
+
+                  vRPclient.playAnim(player,{true,{{"mp_common","givetake1_a",1}},false})
+                  vRPclient.playAnim(nplayer,{true,{{"mp_common","givetake2_a",1}},false})
                 else
                   vRPclient.notify(player,{lang.common.invalid_value()})
                 end
@@ -71,6 +74,7 @@ function vRP.defInventoryItem(idname,name,description,choices,weight)
         local amount = tonumber(amount)
         if vRP.tryGetInventoryItem(user_id,idname,amount) then
           vRPclient.notify(player,{lang.inventory.trash.done({name,amount})})
+          vRPclient.playAnim(player,{true,{{"pickup_object","pickup_low",1}},false})
         else
           vRPclient.notify(player,{lang.common.invalid_value()})
         end
