@@ -115,9 +115,6 @@ function tvRP.giveWeapons(weapons,clear_before)
 
     GiveWeaponToPed(player, hash, ammo, false)
   end
-  
-  -- send weapons update
-  vRPserver.updateWeapons({tvRP.getWeapons()})
 end
 
 --[[
