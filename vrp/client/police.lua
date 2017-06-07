@@ -93,6 +93,12 @@ Citizen.CreateThread(function()
       DisableControlAction(0,21,true) -- disable sprint
       DisableControlAction(0,24,true) -- disable attack
       DisableControlAction(0,25,true) -- disable aim
+      DisableControlAction(0,263,true) -- disable melee
+      DisableControlAction(0,264,true) -- disable melee
+      DisableControlAction(0,140,true) -- disable melee
+      DisableControlAction(0,141,true) -- disable melee
+      DisableControlAction(0,142,true) -- disable melee
+      DisableControlAction(0,143,true) -- disable melee
     end
   end
 end)
