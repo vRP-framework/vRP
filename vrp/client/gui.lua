@@ -2,6 +2,7 @@
 
 function tvRP.openMenuData(menudata)
   SendNUIMessage({act="open_menu", menudata = menudata})
+  SetPlayerControl(PlayerId(), 0, 0)
 end
 
 function tvRP.closeMenu()
@@ -25,6 +26,7 @@ end
 RegisterNUICallback("menu",function(data,cb)
   if data.act == "close" then
     vRPserver.closeMenu({data.id})
+    SetPlayerControl(PlayerId(), 256, 256)
   elseif data.act == "valid" then
     vRPserver.validMenuChoice({data.id,data.choice})
   end
