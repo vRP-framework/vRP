@@ -1,6 +1,8 @@
 
 local cfg = {}
 
+cfg.whitelist = true	--enable/disable whitelisted cops
+
 -- PC position
 cfg.pc = {1853.21, 3689.51, 34.2671}
 
