@@ -5,7 +5,9 @@ cfg = {
   hunger_per_minute = 1.25,
   overflow_damage_factor = 2,
   pvp = true,
-  police = false
+  police = false,
+  max_value = 100,
+  reverse = false
 }
 
 return cfg
