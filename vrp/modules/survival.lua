@@ -26,13 +26,13 @@ function vRP.setHunger(user_id,value)
   if data then
     data.hunger = value
     if data.hunger < 0 then data.hunger = 0
-    elseif data.hunger > cfg.max_value then data.hunger = cfg.max_value 
+    elseif data.hunger > 100 then data.hunger = 100
     end
 
     -- update bar
     local source = vRP.getUserSource(user_id)
     vRPclient.setProgressBarValue(source, {"vRP:hunger",data.hunger})
-    if (data.hunger >= cfg.max_value and not cfg.reverse) or (data.hunger <=0 and cfg.reverse) then
+    if (data.hunger >= 100 and not cfg.reverse) or (data.hunger <=0 and cfg.reverse) then
       vRPclient.setProgressBarText(source,{"vRP:hunger",lang.survival.starving()})
     else
       vRPclient.setProgressBarText(source,{"vRP:hunger",""})
@@ -45,13 +45,13 @@ function vRP.setThirst(user_id,value)
   if data then
     data.thirst = value
     if data.thirst < 0 then data.thirst = 0
-    elseif data.thirst > cfg.max_value then data.thirst = cfg.max_value 
+    elseif data.thirst > 100 then data.thirst = 100 
     end
 
     -- update bar
     local source = vRP.getUserSource(user_id)
     vRPclient.setProgressBarValue(source, {"vRP:thirst",data.thirst})
-    if (data.thirst >= cfg.max_value and not cfg.reverse) or (data.thirst <=0 and cfg.reverse) then
+    if (data.thirst >= 100 and not cfg.reverse) or (data.thirst <=0 and cfg.reverse) then
       vRPclient.setProgressBarText(source,{"vRP:thirst",lang.survival.thirsty()})
     else
       vRPclient.setProgressBarText(source,{"vRP:thirst",""})
@@ -61,7 +61,7 @@ end
 
 function vRP.resetHunger(user_id)
   if cfg.reverse then
-    vRP.setHunger(user_id, cfg.max_value)
+    vRP.setHunger(user_id, 100)
   else
     vRP.setHunger(user_id, 0)
   end
@@ -69,7 +69,7 @@ end
 
 function vRP.resetThirst(user_id)
   if cfg.reverse then
-    vRP.setThirst(user_id, cfg.max_value)
+    vRP.setThirst(user_id, 100)
   else
     vRP.setThirst(user_id, 0)
   end
@@ -82,26 +82,26 @@ function vRP.varyHunger(user_id, variation)
     local is_starving
     local overflow
     if cfg.reverse then
-      was_starving data.hunger <= 0
+      was_starving = data.hunger <= 0
       data.hunger = data.hunger - variation
       is_starving = data.hunger <= 0
 
       -- apply overflow as damage
       overflow = -data.hunger
     else
-      was_starving = data.hunger >= cfg.max_value
+      was_starving = data.hunger >= 100
       data.hunger = data.hunger + variation
-      is_starving = data.hunger >= cfg.max_value
+      is_starving = data.hunger >= 100
 
       -- apply overflow as damage
-      overflow = data.hunger-cfg.max_value
+      overflow = data.hunger - 100
     end
     if overflow > 0 then
       vRPclient.varyHealth(vRP.getUserSource(user_id),{-overflow*cfg.overflow_damage_factor})
     end
 
     if data.hunger < 0 then data.hunger = 0
-    elseif data.hunger > cfg.max_value then data.hunger = cfg.max_value 
+    elseif data.hunger > 100 then data.hunger = 100
     end
 
     -- set progress bar data
@@ -129,19 +129,19 @@ function vRP.varyThirst(user_id, variation)
       -- apply overflow as damage
       overflow = -data.thirst
     else
-      was_thirsty = data.thirst >= cfg.max_value
+      was_thirsty = data.thirst >= 100
       data.thirst = data.thirst + variation
-      is_thirsty = data.thirst >= cfg.max_value
+      is_thirsty = data.thirst >= 100
 
       -- apply overflow as damage
-      overflow = data.thirst-cfg.max_value
+      overflow = data.thirst - 100
     end
     if overflow > 0 then
       vRPclient.varyHealth(vRP.getUserSource(user_id),{-overflow*cfg.overflow_damage_factor})
     end
 
     if data.thirst < 0 then data.thirst = 0
-    elseif data.thirst > cfg.max_value then data.thirst = cfg.max_value 
+    elseif data.thirst > 100 then data.thirst = 100 
     end
 
     -- set progress bar data
