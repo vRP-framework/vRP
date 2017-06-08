@@ -183,16 +183,16 @@ local breed_choices = {}
 breed_choices["Eat"] = {function(player,choice)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
-    if vRP.tryGetInventoryItem(user_id,"breed",1) then
+    if vRP.tryGetInventoryItem(user_id,"bread",1) then
       vRP.varyHunger(user_id,-10)
-      vRPclient.notify(player,{"~o~ Eating Breed."})
+      vRPclient.notify(player,{"~o~ Eating Bread."})
       play_eat(player)
       vRP.closeMenu(player)
     end
   end
 end}
 
-items["breed"] = {"Breed","",breed_choices,0.5}
+items["bread"] = {"Bread","",breed_choices,0.5}
 
 -- create Donut item
 local donut_choices = {}

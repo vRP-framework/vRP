@@ -22,7 +22,7 @@ cfg.market_types = {
     ["vodka"] = 30,
 
     --Food
-    ["breed"] = 2,
+    ["bread"] = 2,
     ["donut"] = 2,
     ["tacos"] = 8,
     ["sandwich"] = 20,

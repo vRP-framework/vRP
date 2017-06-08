@@ -137,8 +137,8 @@ AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
     q_init_user:bind("@user_id",user_id) -- create if not exists player identity
     q_init_user:bind("@registration",vRP.generateRegistrationNumber())
     q_init_user:bind("@phone",vRP.generatePhoneNumber())
-    q_init_user:bind("@firstname","John")
-    q_init_user:bind("@name","Smith")
+    q_init_user:bind("@firstname",cfg.random_first_names[math.random(1,#cfg.random_first_names)])
+    q_init_user:bind("@name",cfg.random_last_names[math.random(1,#cfg.random_last_names)])
     q_init_user:bind("@age",math.random(25,40))
     q_init_user:execute()
   end
