@@ -6,7 +6,6 @@ cfg = {
   overflow_damage_factor = 2,
   pvp = true,
   police = false,
-  max_value = 100,
   reverse = false
 }
 
