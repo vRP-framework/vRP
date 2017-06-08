@@ -227,6 +227,24 @@ function tvRP.stopAnim(upper)
   end
 end
 
+-- start anim task
+function tvRP.playTask(name, anim)
+  ped = GetPlayerPed(-1)
+  if name == "sitchair" then
+    pos = GetEntityCoords(ped)
+    head = GetEntityHeading(ped)
+    TaskStartScenarioAtPosition(ped, anim, pos['x'], pos['y'], pos['z'] - 1, head, 0, 0, false)
+  else
+    TaskStartScenarioInPlace(ped, anim, 0, true)
+  end
+end
+
+-- stop anim task
+function tvRP.stopTask()
+  ped = GetPlayerPed(-1)
+  ClearPedTasks(ped)
+end
+
 -- RAGDOLL
 local ragdoll = false
 
