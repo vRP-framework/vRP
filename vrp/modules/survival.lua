@@ -94,7 +94,7 @@ function vRP.varyHunger(user_id, variation)
       is_starving = data.hunger >= cfg.max_value
 
       -- apply overflow as damage
-      overflow = data.hunger-100
+      overflow = data.hunger-cfg.max_value
     end
     if overflow > 0 then
       vRPclient.varyHealth(vRP.getUserSource(user_id),{-overflow*cfg.overflow_damage_factor})
@@ -134,7 +134,7 @@ function vRP.varyThirst(user_id, variation)
       is_thirsty = data.thirst >= cfg.max_value
 
       -- apply overflow as damage
-      overflow = data.thirst-100
+      overflow = data.thirst-cfg.max_value
     end
     if overflow > 0 then
       vRPclient.varyHealth(vRP.getUserSource(user_id),{-overflow*cfg.overflow_damage_factor})
