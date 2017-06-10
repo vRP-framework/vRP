@@ -190,9 +190,11 @@ end
 
 -- task: transformers ticks (every 3 seconds)
 local function transformers_tick()
-  for k,tr in pairs(transformers) do
-    tr_tick(tr)
-  end
+  SetTimeout(0,function() -- error death protection for transformers_tick() 
+    for k,tr in pairs(transformers) do
+      tr_tick(tr)
+    end
+  end)
 
   SetTimeout(3000,transformers_tick)
 end
