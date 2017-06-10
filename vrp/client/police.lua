@@ -39,7 +39,7 @@ function tvRP.putInNearestVehicleAsPassenger(radius)
   local veh = tvRP.getNearestVehicle(radius)
 
   if IsEntityAVehicle(veh) then
-    for i=1,GetVehicleMaxNumberOfPassengers(veh) do
+    for i=1,math.max(GetVehicleMaxNumberOfPassengers(veh),3) do
       if IsVehicleSeatFree(veh,i) then
         SetPedIntoVehicle(GetPlayerPed(-1),veh,i)
         return true
