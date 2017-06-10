@@ -48,6 +48,7 @@ cfg.groups = {
     "police.pc",
     "police.handcuff",
     "police.putinveh",
+    "police.getoutveh",
     "police.check",
     "police.service",
     "police.wanted",

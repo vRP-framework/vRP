@@ -219,6 +219,22 @@ local choice_putinveh = {function(player,choice)
   end)
 end,lang.police.menu.putinveh.description()}
 
+local choice_getoutveh = {function(player,choice)
+  vRPclient.getNearestPlayer(player,{10},function(nplayer)
+    local nuser_id = vRP.getUserId(nplayer)
+    if nuser_id ~= nil then
+      vRPclient.isHandcuffed(nplayer,{}, function(handcuffed)  -- check handcuffed
+        if handcuffed then
+          vRPclient.ejectVehicle(nplayer, {})
+        else
+          vRPclient.notify(player,{lang.police.not_handcuffed()})
+        end
+      end)
+    else
+      vRPclient.notify(player,{lang.common.no_player_near()})
+    end
+  end)
+end,lang.police.menu.getoutveh.description()}
 
 ---- askid
 local choice_askid = {function(player,choice)
@@ -460,6 +476,10 @@ AddEventHandler("vRP:buildMainMenu",function(player)
 
     if vRP.hasPermission(user_id,"police.putinveh") then
       choices[lang.police.menu.putinveh.title()] = choice_putinveh
+    end
+
+    if vRP.hasPermission(user_id,"police.getoutveh") then
+      choices[lang.police.menu.getoutveh.title()] = choice_getoutveh
     end
 
     if vRP.hasPermission(user_id,"police.askid") then

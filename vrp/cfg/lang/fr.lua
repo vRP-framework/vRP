@@ -182,6 +182,10 @@ local lang = {
         title = "Mettre dans le véhicule",
         description = "Mettre le joueur menotté le plus proche dans le véhicule le plus proche vous appartenant."
       },
+      getoutveh = {
+        title = "Sortir du véhicule",
+        description = "Sortir du véhicule le joueur menotté le plus proche."
+      },
       askid = {
         title = "Demander les papiers",
         description = "Demander les papiers d'identité du joueur le plus proche.",
