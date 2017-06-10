@@ -230,6 +230,9 @@ vRP.getPosition()
 -- return speed 
 vRP.getSpeed()
 
+-- return false if in exterior, true if inside a building
+vRP.isInside()
+
 -- notify the player
 vRP.notify(message)
 
