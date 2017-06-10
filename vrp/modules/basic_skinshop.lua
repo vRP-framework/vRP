@@ -19,6 +19,12 @@ end
 function vRP.openSkinshop(source,parts)
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
+    -- notify player if wearing a uniform
+    local data = vRP.getUserDataTable(user_id)
+    if data.cloakroom_idle ~= nil then
+      vRPclient.notify(source,{lang.common.wearing_uniform()})
+    end
+
     -- get old customization to compute the price
     vRPclient.getCustomization(source,{},function(old_custom)
       old_custom.modelhash = nil
