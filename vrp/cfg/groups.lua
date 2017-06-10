@@ -65,7 +65,8 @@ cfg.groups = {
   ["repair"] = {
     _config = { gtype = "job"},
     "vehicle.repair",
-    "vehicle.replace"
+    "vehicle.replace",
+    "repair.service"
   },
   ["taxi"] = {
     _config = { gtype = "job" },
@@ -93,6 +94,7 @@ cfg.selectors = {
     _config = {x = -268.363739013672, y = -957.255126953125, z = 31.22313880920410, blipid = 351, blipcolor = 47},
     "police",
     "taxi",
+    "repair",
     "citizen"
   }
 }
