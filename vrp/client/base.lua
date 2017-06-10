@@ -253,6 +253,21 @@ Citizen.CreateThread(function()
   end
 end)
 
+-- SOUND
+-- some lists: 
+-- pastebin.com/A8Ny8AHZ
+-- https://wiki.gtanet.work/index.php?title=FrontEndSoundlist
+
+-- play sound at a specific position
+function tvRP.playSpatializedSound(dict,name,x,y,z,range)
+  PlaySoundFromCoord(-1,name,x+0.0001,y+0.0001,z+0.0001,dict,0,range+0.0001,0)
+end
+
+-- play sound
+function tvRP.playSound(dict,name)
+  PlaySound(-1,name,dict,0,0,1)
+end
+
 --[[
 -- not working
 function tvRP.setMovement(dict)

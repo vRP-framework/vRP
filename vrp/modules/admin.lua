@@ -140,6 +140,19 @@ local function ch_emote(player,choice)
   end
 end
 
+local function ch_sound(player,choice)
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil and vRP.hasPermission(user_id,"player.custom_sound") then
+    vRP.prompt(player,"Sound 'dict name': ","",function(player,content)
+      local args = {}
+      for arg in string.gmatch(content,"[^%s]+") do
+        table.insert(args,arg)
+      end
+      vRPclient.playSound(player,{args[1] or "", args[2] or ""})
+    end)
+  end
+end
+
 local function ch_coords(player,choice)
   vRPclient.getPosition(player,{},function(x,y,z)
     vRP.prompt(player,"Copy the coordinates using Ctrl-A Ctrl-C",x..","..y..","..z,function(player,choice) end)
@@ -288,6 +301,9 @@ AddEventHandler("vRP:buildMainMenu",function(player)
       end
       if vRP.hasPermission(user_id,"player.custom_emote") then
         menu["@Custom emote"] = {ch_emote}
+      end
+      if vRP.hasPermission(user_id,"player.custom_sound") then
+        menu["@Custom sound"] = {ch_sound}
       end
       if vRP.hasPermission(user_id,"player.coords") then
         menu["@Coords"] = {ch_coords}

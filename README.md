@@ -267,6 +267,17 @@ vRP.playAnim(upper, seq, looping)
 -- stop animation (new version)
 -- upper: true, stop the upper animation, false, stop full animations
 vRP.stopAnim(upper)
+
+-- SOUND
+-- some lists: 
+-- pastebin.com/A8Ny8AHZ
+-- https://wiki.gtanet.work/index.php?title=FrontEndSoundlist
+
+-- play sound at a specific position
+vRP.playSpatializedSound(dict,name,x,y,z,range)
+
+-- play sound
+vRP.playSound(dict,name)
 ```
 
 #### Group/permission

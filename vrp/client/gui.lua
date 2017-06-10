@@ -19,6 +19,7 @@ end
 
 function tvRP.request(id,text,time)
   SendNUIMessage({act="request",id=id,text=tostring(text),time = time})
+  tvRP.playSound("HUD_MINI_GAME_SOUNDSET","5_SEC_WARNING")
 end
 
 -- gui menu events
