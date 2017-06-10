@@ -352,6 +352,14 @@ local lang = {
       title = "Ask open trunk",
       asked = "~g~Asking...",
       request = "Do you want to open the trunk ?"
+    },
+    replace = {
+      title = "Replace vehicle",
+      description = "Replace on ground the nearest vehicle."
+    },
+    repair = {
+      title = "Repair vehicle",
+      description = "Repair the nearest vehicle."
     }
   },
   gunshop = {

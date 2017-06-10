@@ -469,6 +469,9 @@ The inventory is autosaved and, as the wallet, gets empty upon death.
 -- weight: weight of the item (thinking in kg is a good norm)
 vRP.defInventoryItem(idname,name,description,choices,weight)
 
+-- return item name or idname if not found
+vRP.getItemName(idname)
+
 -- add item to a connected user inventory
 vRP.giveInventoryItem(user_id,idname,amount)
 

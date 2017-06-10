@@ -193,7 +193,7 @@ local choice_revive = {function(player,choice)
                 vRPclient.varyHealth(nplayer,{50}) -- heal 50
               end)
             else
-              vRPclient.notify(player,{lang.inventory.missing({lang.items.medkit.title(),1})})
+              vRPclient.notify(player,{lang.inventory.missing({vRP.getItemName("medkit"),1})})
             end
           else
             vRPclient.notify(player,{lang.emergency.menu.revive.not_in_coma()})

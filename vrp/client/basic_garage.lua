@@ -77,6 +77,20 @@ function tvRP.getNearestVehicle(radius)
   end
 end
 
+function tvRP.fixeNearestVehicle(radius)
+  local veh = tvRP.getNearestVehicle(radius)
+  if IsEntityAVehicle(veh) then
+    SetVehicleFixed(veh)
+  end
+end
+
+function tvRP.replaceNearestVehicle(radius)
+  local veh = tvRP.getNearestVehicle(radius)
+  if IsEntityAVehicle(veh) then
+    SetVehicleOnGroundProperly(veh)
+  end
+end
+
 -- try to get a vehicle at a specific position (using raycast)
 function tvRP.getVehicleAtPosition(x,y,z)
   x = x+0.0001

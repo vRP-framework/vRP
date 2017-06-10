@@ -351,6 +351,14 @@ local lang = {
       title = "Demander ouvrir coffre",
       asked = "~g~Demande...",
       request = "Voulez vous ouvrir le coffre ?"
+    },
+    replace = {
+      title = "Replacer véhicule",
+      description = "Replacer sur le sol le véhicule le plus proche."
+    },
+    repair = {
+      title = "Réparer véhicule",
+      description = "Réparer le véhicule le plus proche."
     }
   },
   gunshop = {

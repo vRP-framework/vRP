@@ -62,6 +62,11 @@ cfg.groups = {
     "emergency.shop",
     "emergency.service"
   },
+  ["repair"] = {
+    _config = { gtype = "job"},
+    "vehicle.repair",
+    "vehicle.replace"
+  },
   ["taxi"] = {
     _config = { gtype = "job" },
     "taxi.service"
