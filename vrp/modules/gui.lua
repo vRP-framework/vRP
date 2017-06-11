@@ -85,11 +85,10 @@ local menu_builds = {}
 
 --any resource in need of a menu calls this function instead of vRP.openMenu
 
-function vRP.constructMenu(source, menudata, event, ...) 
-  local payload = {...}
+function vRP.constructMenu(source, menudata, event)
   menu_builds[source] = menudata
 
-  TriggerEvent(event,source,{...}) -- all resources can add choices to the menu via argument event handlers
+  TriggerEvent(event,source) -- all resources can add choices to the menu via argument event handlers
 
   vRP.openMenu(source,menudata) -- open the generated menu
 end
