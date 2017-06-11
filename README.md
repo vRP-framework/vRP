@@ -699,7 +699,7 @@ vRP.removeDiv(name)
 
 Menus are generated using events, this is useful to add special choices if needed.
 The full list of menu events from core modules is available in 'vrp/cfg/gui.lua'.
-IMPORTANT: menu registration via vRP.openMenu(source, menudata, event) is deprecated. Use vRP.constructMenu(source, menudata, event) instead.
+IMPORTANT: menu registration via vRP.openMenu(source, menudata) is deprecated. Use vRP.constructMenu(source, menudata, event) instead.
 
 ```lua
 -- in another resource using the proxy interface
