@@ -199,7 +199,7 @@ function vRP.openInventory(source)
             end
 
             -- open menu
-            vRP.openMenu(source,submenudata)
+            vRP.constructMenu(source,submenudata,"vRP:buildInventoryItemMenu")
           end
         end
       end
@@ -214,7 +214,7 @@ function vRP.openInventory(source)
       end
 
       -- open menu
-      vRP.openMenu(source,menudata)
+      vRP.constructMenu(source,menudata,"vRP:buildInventoryMenu")
     end
   end
 end

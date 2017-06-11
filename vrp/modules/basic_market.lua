@@ -89,7 +89,7 @@ local function build_client_markets(source)
         local function market_enter()
           local user_id = vRP.getUserId(source)
           if user_id ~= nil and (gcfg.permission == nil or vRP.hasPermission(user_id,gcfg.permission)) then
-            vRP.openMenu(source,menu) 
+            vRP.constructMenu(source,menu,"vRP:buildMarketMenu") 
           end
         end
 

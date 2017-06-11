@@ -19,3 +19,33 @@ body{
 ]]
 
 return cfg
+
+--[[This is the full list of Menu building events available from vRP core modules:
+vRP:buildMainMenu
+vRP:buildATMMenu
+vRP:buildGarageMenu
+vRP:buildGarageOwnedMenu
+vRP:buildGarageBuyMenu
+vRP:buildGunshopMenu
+vRP:buildMarketMenu (you can get the exact Market name from the Menu data passed to the event)
+vRP:buildPhoneMenu
+vRP:buildPhoneDirectoryMenu
+vRP:buildPhoneContactMenu
+vRP:buildPhoneSMSMenu
+vRP:buildPhoneServiceMenu
+vRP:buildSkinshopMenu
+vRP:buildBusinessDirectoryMenu
+vRP:buildBusinessMenu
+vRP:buildCloacroomMenu
+vRP:buildEmoteMenu
+vRP:buildGroupMenu
+vRP:buildHouseMenu
+vRP:buildHouseEnterMenu
+vRP:buildIdentityMenu
+VRP:buildInventoryMenu
+vRP:buildInventoryItemMenu (you can get the exact Item name from the Menu data passed to the event)
+vRP:buildTransformerMenu
+vRP:buildInformerMenu
+vRP:buildPoliceMenu
+vRP:buildPoliceFineMenu
+]]--

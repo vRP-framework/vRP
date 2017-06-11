@@ -43,7 +43,7 @@ for group,vehicles in pairs(vehicle_groups) do
       local kitems = {}
       local submenu = {name=lang.garage.title({lang.garage.owned.title()}), css={top="75px",header_color="rgba(255,125,0,0.75)"}}
       submenu.onclose = function()
-        vRP.openMenu(player,menu)
+        vRP.constructMenu(player,menu,"vRP:buildGarageMenu")
       end
 
       local choose = function(player, choice)
@@ -70,7 +70,7 @@ for group,vehicles in pairs(vehicle_groups) do
         end
       end
 
-      vRP.openMenu(player,submenu)
+      vRP.constructMenu(player,submenu,"vRP:buildGarageOwnedMenu")
     end
   end,lang.garage.owned.description()}
 
@@ -81,7 +81,7 @@ for group,vehicles in pairs(vehicle_groups) do
       local kitems = {}
       local submenu = {name=lang.garage.title({lang.garage.buy.title()}), css={top="75px",header_color="rgba(255,125,0,0.75)"}}
       submenu.onclose = function()
-        vRP.openMenu(player,menu)
+        vRP.constructMenu(player,menu,"vRP:buildGarageMenu")
       end
 
       local choose = function(player, choice)
@@ -118,7 +118,7 @@ for group,vehicles in pairs(vehicle_groups) do
         end
       end
 
-      vRP.openMenu(player,submenu)
+      vRP.constructMenu(player,submenu,"vRP:buildGarageBuyMenu")
     end
   end,lang.garage.buy.description()}
 
@@ -143,7 +143,7 @@ local function build_client_garages(source)
           if user_id ~= nil and (gcfg.permission == nil or vRP.hasPermission(user_id,gcfg.permission)) then
             local menu = garage_menus[gtype]
             if menu then
-              vRP.openMenu(player,menu)
+              vRP.constructMenu(player,menu,"vRP:buildGarageMenu")
             end
           end
         end
@@ -191,7 +191,6 @@ veh_actions[lang.vehicle.detach_trailer.title()] = {function(user_id,player,vtyp
   vRPclient.vc_detachTrailer(player, {vtype})
 end, lang.vehicle.detach_trailer.description()}
 
-
 local function ch_vehicle(player,choice)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
@@ -205,7 +204,7 @@ local function ch_vehicle(player,choice)
           menu[k] = {function(player,choice) v[1](user_id,player,vtype,name) end, v[2]}
         end
 
-        vRP.openMenu(player,menu)
+        vRP.constructMenu(player,menu,"vRP:buildVehicleMenu")
       else
         vRPclient.notify(player,{lang.vehicle.no_owned_near()})
       end

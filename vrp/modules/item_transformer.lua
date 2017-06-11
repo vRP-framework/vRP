@@ -145,7 +145,7 @@ function vRP.setItemTransformer(name,itemtr)
   tr.enter = function(player,area)
     local user_id = vRP.getUserId(player)
     if user_id ~= nil and (itemtr.permission == nil or vRP.hasPermission(user_id,itemtr.permission)) then
-      vRP.openMenu(player, tr.menu) -- open menu
+      vRP.constructMenu(player, tr.menu, "vRP:buildTransformerMenu") -- open menu
     end
   end
 
@@ -305,7 +305,7 @@ end
 local function informer_enter()
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
-    vRP.openMenu(source,informer_menu) 
+    vRP.constructMenu(source,informer_menu,"vRP:buildInformerMenu") 
   end
 end
 

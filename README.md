@@ -81,7 +81,7 @@ Also, player addresses are bound to the home cluster name, it means that if you 
   * [Inventory](#inventory)
   * [Item transformer](#item-transformer)
   * [GUI](#gui)
-     * [Registering choices to the main menu](#registering-choices-to-the-main-menu)
+     * [Registering choices to menus](#registering-choices-to-menus)
   * [Map](#map)
 * [Libs](#libs)
   * [Proxy](#proxy)
@@ -695,9 +695,11 @@ vRP.removeDiv(name)
 
 ```
 
-##### Registering choices to the main menu
+##### Registering choices to menus
 
-The main menu is generated using an event, this is useful to add special choices if needed.
+Menus are generated using events, this is useful to add special choices if needed.
+The full list of menu events from core modules is available in 'vrp/cfg/gui.lua'.
+IMPORTANT: menu registration via vRP.openMenu(source, menudata, event) is deprecated. Use vRP.constructMenu(source, menudata, event) instead.
 
 ```lua
 -- in another resource using the proxy interface
@@ -712,7 +714,7 @@ AddEventHandler("vRP:buildMainMenu",function(player)
   choices["My Choice"] = {fchoice,"My choice description."}
   choices["My Choice 2"] = {fchoice,"My choice 2 description."}
 
-  vRP.buildMainMenu({player,choices}) -- add choices to the player main menu
+  vRP.buildMainMenu(player,choices) -- add choices to the player main menu
 end)
 ```
 

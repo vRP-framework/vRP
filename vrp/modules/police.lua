@@ -151,7 +151,7 @@ end
 local function pc_enter(source,area)
   local user_id = vRP.getUserId(source)
   if user_id ~= nil and vRP.hasPermission(user_id,"police.pc") then
-    vRP.openMenu(source,menu_pc)
+    vRP.constructMenu(source,menu_pc,"vRP:buildPolicePCMenu")
   end
 end
 
@@ -457,7 +457,7 @@ local choice_fine = {function(player, choice)
         end
 
         -- open menu
-        vRP.openMenu(player, menu)
+        vRP.constructMenu(player, menu,"vRP:buildPoliceFineMenu")
       else
         vRPclient.notify(player,{lang.common.no_player_near()})
       end

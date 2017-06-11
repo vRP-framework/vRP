@@ -206,7 +206,7 @@ local function enter_slot(user_id,player,stype,sid) -- called when a player ente
   -- build the slot entry menu marker/area
 
   local function entry_enter(player,area)
-    vRP.openMenu(player,menu)
+    vRP.constructMenu(player,menu,"vRP:buildHouseEnterMenu")
   end
 
   local function entry_leave(player,area)
@@ -330,7 +330,7 @@ local function build_client_homes(source)
       local function entry_enter(player,area)
         local user_id = vRP.getUserId(player)
         if user_id ~= nil and (v.permission == nil or vRP.hasPermission(user_id,v.permission)) then
-          vRP.openMenu(source,build_entry_menu(user_id, k))
+          vRP.constructMenu(source,build_entry_menu(user_id, k),"vRP:buildHouseMenu")
         end
       end
 
