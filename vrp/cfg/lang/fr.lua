@@ -336,6 +336,10 @@ local lang = {
       description = "Acheter des véhicules.",
       info = "{1} $<br /><br />{2}"
     },
+    rent = {
+      title = "Location",
+      description = "Louer un véhicule pour la session (jusqu'à déconnexion)."
+    },
     store = {
       title = "Rentrer au garage",
       description = "Rentrez votre véhicule au garage."

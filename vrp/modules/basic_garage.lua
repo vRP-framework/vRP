@@ -39,6 +39,13 @@ for group,vehicles in pairs(vehicle_groups) do
   menu[lang.garage.owned.title()] = {function(player,choice)
     local user_id = vRP.getUserId(player)
     if user_id ~= nil then
+      -- init tmpdata for rents
+      local tmpdata = vRP.getUserTmpTable(user_id)
+      if tmpdata.rent_vehicles == nil then
+        tmpdata.rent_vehicles = {}
+      end
+
+
       -- build nested menu
       local kitems = {}
       local submenu = {name=lang.garage.title({lang.garage.owned.title()}), css={top="75px",header_color="rgba(255,125,0,0.75)"}}
@@ -62,6 +69,13 @@ for group,vehicles in pairs(vehicle_groups) do
       q_get_vehicles:bind("@user_id",user_id)
       local pvehicles = q_get_vehicles:query():toTable()
 
+      -- add rents to whitelist
+      for k,v in pairs(tmpdata.rent_vehicles) do
+        if v then -- check true, prevent future neolua issues
+          table.insert(pvehicles,{vehicle = k})
+        end
+      end
+
       for k,v in pairs(pvehicles) do
         local vehicle = vehicles[v.vehicle]
         if vehicle then
@@ -77,6 +91,7 @@ for group,vehicles in pairs(vehicle_groups) do
   menu[lang.garage.buy.title()] = {function(player,choice)
     local user_id = vRP.getUserId(player)
     if user_id ~= nil then
+
       -- build nested menu
       local kitems = {}
       local submenu = {name=lang.garage.title({lang.garage.buy.title()}), css={top="75px",header_color="rgba(255,125,0,0.75)"}}
@@ -121,6 +136,66 @@ for group,vehicles in pairs(vehicle_groups) do
       vRP.openMenu(player,submenu)
     end
   end,lang.garage.buy.description()}
+
+  menu[lang.garage.rent.title()] = {function(player,choice)
+    local user_id = vRP.getUserId(player)
+    if user_id ~= nil then
+      -- init tmpdata for rents
+      local tmpdata = vRP.getUserTmpTable(user_id)
+      if tmpdata.rent_vehicles == nil then
+        tmpdata.rent_vehicles = {}
+      end
+
+      -- build nested menu
+      local kitems = {}
+      local submenu = {name=lang.garage.title({lang.garage.rent.title()}), css={top="75px",header_color="rgba(255,125,0,0.75)"}}
+      submenu.onclose = function()
+        vRP.openMenu(player,menu)
+      end
+
+      local choose = function(player, choice)
+        local vname = kitems[choice]
+        if vname then
+          -- rent vehicle
+          local vehicle = vehicles[vname]
+          local price = math.ceil(vehicle[2]*cfg.rent_factor)
+          if vehicle and vRP.tryPayment(user_id,price) then
+            -- add vehicle to rent tmp data
+            tmpdata.rent_vehicles[vname] = true
+
+            vRPclient.notify(player,{lang.money.paid({price})})
+            vRP.closeMenu(player)
+          else
+            vRPclient.notify(player,{lang.money.not_enough()})
+          end
+        end
+      end
+      
+      -- get player owned vehicles (indexed by vehicle type name in lower case)
+      q_get_vehicles:bind("@user_id",user_id)
+      local _pvehicles = q_get_vehicles:query():toTable()
+      local pvehicles = {}
+      for k,v in pairs(_pvehicles) do
+        pvehicles[string.lower(v.vehicle)] = true
+      end
+
+      -- add rents to blacklist
+      for k,v in pairs(tmpdata.rent_vehicles) do
+        pvehicles[string.lower(k)] = true
+      end
+
+      -- for each existing vehicle in the garage group
+      for k,v in pairs(vehicles) do
+        if k ~= "_config" and pvehicles[string.lower(k)] == nil then -- not already owned
+          local price = math.ceil(v[2]*cfg.rent_factor)
+          submenu[v[1]] = {choose,lang.garage.buy.info({price,v[3]})}
+          kitems[v[1]] = k
+        end
+      end
+
+      vRP.openMenu(player,submenu)
+    end
+  end,lang.garage.rent.description()}
 
   menu[lang.garage.store.title()] = {function(player,choice)
     vRPclient.despawnGarageVehicle(player,{veh_type,15}) 
