@@ -1,7 +1,40 @@
 local cfg = require("resources/vrp/cfg/survival")
 local lang = vRP.lang
 
+-- update bars event handling
+
+AddEventHandler("vRP:updateHunger",function(user_id,value)
+  if not cfg.disable then
+    local source = vRP.getUserSource(user_id)
+    vRPclient.setProgressBarValue(source,{"vRP:hunger",value})
+    if value >= 100 then
+      vRPclient.setProgressBarText(source,{"vRP:hunger",lang.survival.starving()})
+    else
+      vRPclient.setProgressBarText(source,{"vRP:hunger",""})
+    end
+  end
+end)
+
+AddEventHandler("vRP:updateThirst",function(user_id,value)
+  if not cfg.disable then
+    local source = vRP.getUserSource(user_id)
+    vRPclient.setProgressBarValue(source,{"vRP:thirst",value})
+    if value >= 100 then
+      vRPclient.setProgressBarText(source,{"vRP:thirst",lang.survival.thirsty()})
+    else
+      vRPclient.setProgressBarText(source,{"vRP:thirst",""})
+    end
+  end
+end)
+
 -- api
+
+function vRP.normalize(value)
+  if value < 0 then value = 0
+  elseif value > 100 then value = 100 
+  end
+  return value
+end
 
 function vRP.getHunger(user_id)
   local data = vRP.getUserDataTable(user_id)
@@ -24,94 +57,56 @@ end
 function vRP.setHunger(user_id,value)
   local data = vRP.getUserDataTable(user_id)
   if data then
-    data.hunger = value
-    if data.hunger < 0 then data.hunger = 0
-    elseif data.hunger > 100 then data.hunger = 100 
-    end
+    data.hunger = vRP.normalize(value)
 
     -- update bar
-    local source = vRP.getUserSource(user_id)
-    vRPclient.setProgressBarValue(source, {"vRP:hunger",data.hunger})
-    if data.hunger >= 100 then
-      vRPclient.setProgressBarText(source,{"vRP:hunger",lang.survival.starving()})
-    else
-      vRPclient.setProgressBarText(source,{"vRP:hunger",""})
-    end
+    TriggerEvent("vRP:updateHunger",user_id, data.hunger)
   end
 end
 
 function vRP.setThirst(user_id,value)
   local data = vRP.getUserDataTable(user_id)
   if data then
-    data.thirst = value
-    if data.thirst < 0 then data.thirst = 0
-    elseif data.thirst > 100 then data.thirst = 100 
-    end
+    data.thirst = vRP.normalize(value)
 
     -- update bar
-    local source = vRP.getUserSource(user_id)
-    vRPclient.setProgressBarValue(source, {"vRP:thirst",data.thirst})
-    if data.thirst >= 100 then
-      vRPclient.setProgressBarText(source,{"vRP:thirst",lang.survival.thirsty()})
-    else
-      vRPclient.setProgressBarText(source,{"vRP:thirst",""})
-    end
+   TriggerEvent("vRP:updateThirst",user_id, data.thirst) 
   end
 end
 
 function vRP.varyHunger(user_id, variation)
   local data = vRP.getUserDataTable(user_id)
   if data then
-    local was_starving = data.hunger >= 100
     data.hunger = data.hunger + variation
-    local is_starving = data.hunger >= 100
-
+    
     -- apply overflow as damage
     local overflow = data.hunger-100
     if overflow > 0 then
       vRPclient.varyHealth(vRP.getUserSource(user_id),{-overflow*cfg.overflow_damage_factor})
     end
 
-    if data.hunger < 0 then data.hunger = 0
-    elseif data.hunger > 100 then data.hunger = 100 
-    end
+    data.hunger = vRP.normalize(data.hunger)
 
     -- set progress bar data
-    local source = vRP.getUserSource(user_id)
-    vRPclient.setProgressBarValue(source,{"vRP:hunger",data.hunger})
-    if was_starving and not is_starving then
-      vRPclient.setProgressBarText(source,{"vRP:hunger",""})
-    elseif not was_starving and is_starving then
-      vRPclient.setProgressBarText(source,{"vRP:hunger",lang.survival.starving()})
-    end
+    TriggerEvent("vRP:updateHunger",user_id, data.hunger)
   end
 end
 
 function vRP.varyThirst(user_id, variation)
   local data = vRP.getUserDataTable(user_id)
   if data then
-    local was_thirsty = data.thirst >= 100
     data.thirst = data.thirst + variation
-    local is_thirsty = data.thirst >= 100
-
+    
     -- apply overflow as damage
     local overflow = data.thirst-100
     if overflow > 0 then
       vRPclient.varyHealth(vRP.getUserSource(user_id),{-overflow*cfg.overflow_damage_factor})
     end
 
-    if data.thirst < 0 then data.thirst = 0
-    elseif data.thirst > 100 then data.thirst = 100 
-    end
+    data.thirst = vRP.normalize(data.thirst)
 
     -- set progress bar data
-    local source = vRP.getUserSource(user_id)
-    vRPclient.setProgressBarValue(source,{"vRP:thirst",data.thirst})
-    if was_thirsty and not is_thirsty then
-      vRPclient.setProgressBarText(source,{"vRP:thirst",""})
-    elseif not was_thirsty and is_thirsty then
-      vRPclient.setProgressBarText(source,{"vRP:thirst",lang.survival.thirsty()})
-    end
+    TriggerEvent("vRP:updateThirst",user_id, data.thirst)
   end
 end
 
@@ -164,10 +159,12 @@ AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
   -- set friendly fire
   vRPclient.setFriendlyFire(source,{cfg.pvp})
 
-  vRPclient.setProgressBar(source,{"vRP:hunger","minimap",htxt,255,153,0,0})
-  vRPclient.setProgressBar(source,{"vRP:thirst","minimap",ttxt,0,125,255,0})
-  vRP.setHunger(user_id, data.hunger)
-  vRP.setThirst(user_id, data.thirst)
+  if not cfg.disable then
+	  vRPclient.setProgressBar(source,{"vRP:hunger","minimap",htxt,255,153,0,0})
+	  vRPclient.setProgressBar(source,{"vRP:thirst","minimap",ttxt,0,125,255,0})
+	  vRP.setHunger(user_id, data.hunger)
+	  vRP.setThirst(user_id, data.thirst)
+  end
 end)
 
 -- EMERGENCY
