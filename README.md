@@ -50,7 +50,6 @@ Since vRP is a lot of work, some of you asked for a way to support me and the pr
 * police pc: add custom police records 
 * job mission system
 * admin: tp to marker
-* voice proximity bike
 * police research per veh type
 
 ## NOTES

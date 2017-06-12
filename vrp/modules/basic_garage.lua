@@ -191,6 +191,25 @@ veh_actions[lang.vehicle.detach_trailer.title()] = {function(user_id,player,vtyp
   vRPclient.vc_detachTrailer(player, {vtype})
 end, lang.vehicle.detach_trailer.description()}
 
+-- detach towtruck
+veh_actions[lang.vehicle.detach_towtruck.title()] = {function(user_id,player,vtype,name)
+  vRPclient.vc_detachTowTruck(player, {vtype})
+end, lang.vehicle.detach_towtruck.description()}
+
+-- detach cargobob
+veh_actions[lang.vehicle.detach_cargobob.title()] = {function(user_id,player,vtype,name)
+  vRPclient.vc_detachCargobob(player, {vtype})
+end, lang.vehicle.detach_cargobob.description()}
+
+-- lock/unlock
+veh_actions[lang.vehicle.lock.title()] = {function(user_id,player,vtype,name)
+  vRPclient.vc_toggleLock(player, {vtype})
+end, lang.vehicle.lock.description()}
+
+-- engine on/off
+veh_actions[lang.vehicle.engine.title()] = {function(user_id,player,vtype,name)
+  vRPclient.vc_toggleEngine(player, {vtype})
+end, lang.vehicle.engine.description()}
 
 local function ch_vehicle(player,choice)
   local user_id = vRP.getUserId(player)

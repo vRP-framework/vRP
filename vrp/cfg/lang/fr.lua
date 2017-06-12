@@ -352,6 +352,22 @@ local lang = {
       title = "Détacher remorque",
       description = "Détacher la remorque."
     },
+    detach_towtruck = {
+      title = "Détacher dépanneuse",
+      description = "Détacher le lien de la dépanneuse."
+    },
+    detach_cargobob = {
+      title = "Détacher cargobob",
+      description = "Détacher le lien de l'hélico de transport."
+    },
+    lock = {
+      title = "Fermer/ouvrir",
+      description = "Fermer ou ouvrir le véhicule."
+    },
+    engine = {
+      title = "Moteur on/off",
+      description = "Démarrer ou arrêter le moteur."
+    },
     asktrunk = {
       title = "Demander ouvrir coffre",
       asked = "~g~Demande...",

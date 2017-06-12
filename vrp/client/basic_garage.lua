@@ -180,3 +180,51 @@ function tvRP.vc_detachTrailer(vtype)
     DetachVehicleFromTrailer(vehicle[3])
   end
 end
+
+function tvRP.vc_detachTowTruck(vtype)
+  local vehicle = vehicles[vtype]
+  if vehicle then
+    local ent = GetEntityAttachedToTowTruck(vehicle[3])
+    if IsEntityAVehicle(ent) then
+      DetachVehicleFromTowTruck(vehicle[3],ent)
+    end
+  end
+end
+
+function tvRP.vc_detachCargobob(vtype)
+  local vehicle = vehicles[vtype]
+  if vehicle then
+    local ent = GetVehicleAttachedToCargobob(vehicle[3])
+    if IsEntityAVehicle(ent) then
+      DetachVehicleFromCargobob(vehicle[3],ent)
+    end
+  end
+end
+
+function tvRP.vc_toggleEngine(vtype)
+  local vehicle = vehicles[vtype]
+  if vehicle then
+    local running = Citizen.InvokeNative(0xAE31E7DF9B5B132E,vehicle[3]) -- GetIsVehicleEngineRunning
+    SetVehicleEngineOn(vehicle[3],not running,true,true)
+  end
+end
+
+function tvRP.vc_toggleLock(vtype)
+  local vehicle = vehicles[vtype]
+  if vehicle then
+    local veh = vehicle[3]
+    local locked = GetVehicleDoorLockStatus(veh) >= 2
+    if locked then -- unlock
+      SetVehicleDoorsLockedForAllPlayers(veh, false)
+      SetVehicleDoorsLocked(veh,1)
+      SetVehicleDoorsLockedForPlayer(veh, PlayerId(), false)
+      tvRP.notify("Vehicle unlocked.")
+    else -- lock
+      SetVehicleDoorsLocked(veh,2)
+      SetVehicleDoorsLockedForAllPlayers(veh, true)
+      tvRP.notify("Vehicle locked.")
+    end
+  end
+end
+
+

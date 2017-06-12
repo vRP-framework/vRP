@@ -353,6 +353,22 @@ local lang = {
       title = "Detach trailer",
       description = "Detach trailer."
     },
+    detach_towtruck = {
+      title = "Detach tow truck",
+      description = "Detach tow truck."
+    },
+    detach_cargobob = {
+      title = "Detach cargobob",
+      description = "Detach cargobob."
+    },
+    lock = {
+      title = "Lock/unlock",
+      description = "Lock or unlock the vehicle."
+    },
+    engine = {
+      title = "Engine on/off",
+      description = "Start or stop the engine."
+    },
     asktrunk = {
       title = "Ask open trunk",
       asked = "~g~Asking...",
