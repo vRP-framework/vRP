@@ -7,6 +7,7 @@ local cfg = require("resources/vrp/cfg/gui")
 local menu_ids = Tools.newIDGenerator()
 local client_menus = {}
 local rclient_menus = {}
+local is_menu_opened = false
 
 -- open dynamic menu to client
 -- menudef: .name and choices as key/{callback,description} (optional element html description) 
@@ -36,11 +37,14 @@ function vRP.openMenu(source,menudef)
 
   -- openmenu
   vRPclient.openMenuData(source,{menudata})
+  
+  is_menu_opened = true
 end
 
 -- force close player menu
 function vRP.closeMenu(source)
   vRPclient.closeMenu(source,{})
+  is_menu_opened = false
 end
 
 -- PROMPT
@@ -103,6 +107,10 @@ function vRP.buildMainMenu(source,choices)
   end
 end
 
+function vRP.isMenuOpened()
+  return is_menu_opened
+end
+
 -- SERVER TUNNEL API
 
 function tvRP.closeMenu(id)
@@ -117,6 +125,8 @@ function tvRP.closeMenu(id)
     menu_ids:free(id)
     client_menus[id] = nil
     rclient_menus[source] = nil
+    
+    is_menu_opened = false
   end
 end
 
@@ -161,6 +171,10 @@ end
 -- open the general player menu
 function tvRP.openMainMenu()
   vRP.openMainMenu(source)
+end
+
+function tvRP.isMenuOpened()
+  vRP.isMenuOpened()
 end
 
 -- events
