@@ -301,7 +301,12 @@ Citizen.CreateThread(function()
     local proximity = cfg.voice_proximity
 
     if IsPedSittingInAnyVehicle(ped) then
-      proximity = cfg.voice_proximity_vehicle
+      local veh = GetVehiclePedIsIn(ped,false)
+      local hash = GetEntityModel(veh)
+      -- make open vehicles (bike,etc) use the default proximity
+      if IsThisModelACar(hash) or IsThisModelAHeli(hash) or IsThisModelAPlane(hash) then
+        proximity = cfg.voice_proximity_vehicle
+      end
     elseif tvRP.isInside() then
       proximity = cfg.voice_proximity_inside
     end

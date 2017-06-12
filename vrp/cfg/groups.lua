@@ -28,6 +28,7 @@ cfg.groups = {
     "player.noclip",
     "player.custom_emote",
     "player.custom_sound",
+    "player.display_custom",
     "player.coords",
     "player.tptome",
     "player.tpto"

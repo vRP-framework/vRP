@@ -42,13 +42,16 @@ Since vRP is a lot of work, some of you asked for a way to support me and the pr
 
 ## TODO LIST
 * home stuff
-* vehicle functions, try vehicle before buying, way of customization
+* vehicle functions, try vehicle before buying, way of customization (detach tow truck)
 * static chests
 * drop weapon/save weapon components
 * education (maybe)
 * skinshop presets
 * police pc: add custom police records 
 * job mission system
+* admin: tp to marker
+* voice proximity bike
+* police research per veh type
 
 ## NOTES
 ### Homes

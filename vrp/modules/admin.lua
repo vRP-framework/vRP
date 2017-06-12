@@ -257,6 +257,25 @@ local function ch_calladmin(player,choice)
   end
 end
 
+local player_customs = {}
+
+local function ch_display_custom(player, choice)
+  vRPclient.getCustomization(player,{},function(custom)
+    if player_customs[player] then -- hide
+      player_customs[player] = nil
+      vRPclient.removeDiv(player,{"customization"})
+    else -- show
+      local content = ""
+      for k,v in pairs(custom) do
+        content = content..k.." => "..json.encode(v).."<br />" 
+      end
+
+      player_customs[player] = true
+      vRPclient.setDiv(player,{"customization",".div_customization{ margin: auto; padding: 8px; width: 500px; margin-top: 80px; background: black; color: white; font-weight: bold; ", content})
+    end
+  end)
+end
+
 local function ch_noclip(player, choice)
   vRPclient.toggleNoclip(player, {})
 end
@@ -322,6 +341,9 @@ AddEventHandler("vRP:buildMainMenu",function(player)
       end
       if vRP.hasPermission(user_id,"player.giveitem") then
         menu["@Give item"] = {ch_giveitem}
+      end
+      if vRP.hasPermission(user_id,"player.display_custom") then
+        menu["@Display customization"] = {ch_display_custom}
       end
       if vRP.hasPermission(user_id,"player.calladmin") then
         menu["@Call admin"] = {ch_calladmin}

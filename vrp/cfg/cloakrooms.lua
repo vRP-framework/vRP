@@ -19,17 +19,25 @@ end
 cfg.cloakroom_types = {
   ["police"] = {
     _config = { permission = "police.cloakroom" },
-    ["Uniform"] = {
+    ["Male uniform"] = {
       [3] = {30,0},
       [4] = {25,2},
       [6] = {24,0},
       [8] = {58,0},
       [11] = {55,0},
       ["p2"] = {2,0}
+    },
+    ["Female uniform"] = {
+      [3] = {35,0},
+      [4] = {30,0},
+      [6] = {24,0},
+      [8] = {6,0},
+      [11] = {48,0},
+      ["p2"] = {2,0}
     }
   },
   ["surgery"] = {
-    _config = { permission = "police.cloakroom", not_uniform = true },
+    _config = { not_uniform = true },
     ["Male"] = surgery_male,
     ["Female"] = surgery_female
   }
