@@ -79,28 +79,54 @@ function vRP.request(source,text,time,cb_ok)
   end)
 end
 
--- MAIN MENU
+-- MENU GENERATOR
 
-local main_menu_builds = {}
+local menu_builds = {}
 
--- open the player main menu
-function vRP.openMainMenu(source)
-  local menudata = {name="Main menu",css={top="75px",header_color="rgba(0,125,255,0.75)"}}
-  main_menu_builds[source] = menudata
+--any resource in need of a menu calls this function instead of vRP.openMenu
 
-  TriggerEvent("vRP:buildMainMenu",source) -- all resources can add choices to the menu using vRP.buildMainMenu(player,choices)
+function vRP.constructMenu(source, menudata, event)
+  menu_builds[source] = menudata
+
+  TriggerEvent(event,source) -- all resources can add choices to the menu via argument event handlers
 
   vRP.openMenu(source,menudata) -- open the generated menu
 end
 
--- called inside a vRP:buildMainMenu event to build the player main menu (to add choices)
-function vRP.buildMainMenu(source,choices)
-  local menudata = main_menu_builds[source]
+-- called inside a menu construction event to build the menu
+function vRP.buildMenu(source,choices)
+  local menudata = menu_builds[source]
   if menudata ~= nil then
     for k,v in pairs(choices) do
       menudata[k] = v
     end
   end
+end
+
+-- MAIN MENU deprecated interface, for backward compatibility
+
+--local main_menu_builds = {}
+
+-- open the player main menu
+function vRP.openMainMenu(source)
+  local menudata = {name="Main menu",css={top="75px",header_color="rgba(0,125,255,0.75)"}}
+  vRP.constructMenu(source,menudata,"vRP:buildMainMenu")
+  --[[main_menu_builds[source] = menudata
+
+  TriggerEvent("vRP:buildMainMenu",source) -- all resources can add choices to the menu using vRP.buildMainMenu(player,choices)
+
+  vRP.openMenu(source,menudata) -- open the generated menu]]--
+end
+
+-- called inside a vRP:buildMainMenu event to build the player main menu (to add choices)
+function vRP.buildMainMenu(source,choices)
+  vRP.buildMenu(source,choices)
+  --[[local menudata = main_menu_builds[source]
+  if menudata ~= nil then
+    for k,v in pairs(choices) do
+      menudata[k] = v
+    end
+  end]]--
 end
 
 -- SERVER TUNNEL API

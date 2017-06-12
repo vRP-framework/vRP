@@ -89,7 +89,7 @@ local function open_business_directory(player,page) -- open business directory w
   menu[lang.business.directory.dnext()] = {function() open_business_directory(player,page+1) end}
   menu[lang.business.directory.dprev()] = {function() open_business_directory(player,page-1) end}
 
-  vRP.openMenu(player,menu)
+  vRP.constructMenu(player,menu,"vRP:buildBusinessDirectoryMenu")
 end
 
 local function business_enter()
@@ -184,7 +184,7 @@ local function business_enter()
     end,lang.business.directory.description()}
 
     -- open menu
-    vRP.openMenu(source,menu) 
+    vRP.constructMenu(source,menu,"vRP:buildBusinessMenu") 
   end
 end
 

@@ -30,6 +30,6 @@ end
 
 AddEventHandler("vRP:buildMainMenu",function(player) 
   local choices = {}
-  choices[lang.emotes.title()] = {function() vRP.openMenu(player,menu) end}
+  choices[lang.emotes.title()] = {function() vRP.constructMenu(player,menu,"vRP:buildEmoteMenu") end}
   vRP.buildMainMenu(player,choices)
 end)

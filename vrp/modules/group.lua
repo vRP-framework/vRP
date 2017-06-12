@@ -178,7 +178,7 @@ local function build_client_selectors(source)
         local function selector_enter()
           local user_id = vRP.getUserId(source)
           if user_id ~= nil and (gcfg.permission == nil or vRP.hasPermission(user_id,gcfg.permission)) then
-            vRP.openMenu(source,menu) 
+            vRP.constructMenu(source,menu,"vRP:buildGroupMenu") 
           end
         end
 

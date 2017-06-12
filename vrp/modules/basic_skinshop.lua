@@ -131,7 +131,7 @@ function vRP.openSkinshop(source,parts)
       end
 
       -- open menu
-      vRP.openMenu(source,menudata)
+      vRP.constructMenu(source,menudata,"vRP:buildSkinshopMenu")
     end)
   end
 end

@@ -197,7 +197,7 @@ cityhall_menu[lang.cityhall.identity.title()] = {ch_identity,lang.cityhall.ident
 local function cityhall_enter()
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
-    vRP.openMenu(source,cityhall_menu) 
+    vRP.constructMenu(source,cityhall_menu,"vRP:buildIdentityMenu")
   end
 end
 

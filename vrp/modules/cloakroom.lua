@@ -112,7 +112,7 @@ local function build_client_points(source)
             end
           end
 
-          vRP.openMenu(source,menu)
+          vRP.constructMenu(source,menu,"vRP:buildCloakroomMenu")
         end
       end
 

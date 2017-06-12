@@ -70,8 +70,8 @@ atm_menu[lang.atm.withdraw.title()] = {atm_choice_withdraw,lang.atm.withdraw.des
 local function atm_enter()
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
-    atm_menu[lang.atm.info.title()] = {function()end,lang.atm.info.bank({vRP.getBankMoney(user_id)})}
-    vRP.openMenu(source,atm_menu) 
+	atm_menu[lang.atm.info.title()] = {function()end,lang.atm.info.bank({vRP.getBankMoney(user_id)})}
+    vRP.constructMenu(source,atm_menu,"vRP:buildATMMenu") 
   end
 end
 
