@@ -337,6 +337,10 @@ local lang = {
       description = "Buy vehicles.",
       info = "{1} $<br /><br />{2}"
     },
+    sell = {
+      title = "Sell",
+      description = "Sell vehicles."
+    },
     rent = {
       title = "Rent",
       description = "Rent a vehicle for the session (until you disconnect)."

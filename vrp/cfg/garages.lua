@@ -9,6 +9,7 @@ local cfg = {}
 -- _config: vtype, blipid, blipcolor, permission (optional, only users with the permission will have access to the shop)
 
 cfg.rent_factor = 0.1 -- 10% of the original price if a rent
+cfg.sell_factor = 0.75 -- sell for 75% of the original price
 
 cfg.garage_types = {
   ["compacts"]  = {
