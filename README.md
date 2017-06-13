@@ -41,16 +41,19 @@ Since vRP is a lot of work, some of you asked for a way to support me and the pr
 * tunnel for easy server/clients communication
 
 ## TODO LIST
-* home stuff
+* home stuff (home garage,etc)
 * vehicle functions, try vehicle before buying, way of customization (detach tow truck)
 * static chests
 * drop weapon/save weapon components
 * education (maybe)
-* skinshop presets
+* skinshop presets (as wardrobe)
 * police pc: add custom police records 
 * job mission system
 * admin: tp to marker
 * police research per veh type
+* display some permission/group count
+* news system for better city presence
+* advanced parametric items
 
 ## NOTES
 ### Homes

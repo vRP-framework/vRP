@@ -337,8 +337,8 @@ local lang = {
       info = "{1} $<br /><br />{2}"
     },
     sell = {
-      title = "Sell",
-      description = "Sell vehicles."
+      title = "Vendre",
+      description = "Vendre des véhicules."
     },
     rent = {
       title = "Location",

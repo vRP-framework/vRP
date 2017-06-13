@@ -201,7 +201,7 @@ local function ch_givemoney(player,choice)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
     vRP.prompt(player,"Amount:","",function(player,amount) 
-      amount = tonumber(amount)
+      amount = parseInt(amount)
       vRP.giveMoney(user_id, amount)
     end)
   end
@@ -213,7 +213,7 @@ local function ch_giveitem(player,choice)
     vRP.prompt(player,"Id name:","",function(player,idname) 
       idname = idname or ""
       vRP.prompt(player,"Amount:","",function(player,amount) 
-        amount = tonumber(amount)
+        amount = parseInt(amount)
         vRP.giveInventoryItem(user_id, idname, amount)
       end)
     end)

@@ -5,6 +5,9 @@ local Tunnel = require("resources/vrp/lib/Tunnel")
 local Lang = require("resources/vrp/lib/Lang")
 Debug = require("resources/vrp/lib/Debug")
 
+-- load global utils
+require("resources/vrp/lib/utils")
+
 local config = require("resources/vrp/cfg/base")
 local version = require("resources/vrp/version")
 Debug.active = config.debug
