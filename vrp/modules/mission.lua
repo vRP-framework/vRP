@@ -3,7 +3,7 @@
 local lang = vRP.lang
 local cfg = require("resources/vrp/cfg/mission")
 
--- start a mission fr a player
+-- start a mission for a player
 --- mission_data: 
 ---- name: Mission name
 ---- steps: ordered list of
@@ -76,6 +76,19 @@ function vRP.stopMission(player)
     vRPclient.removeDiv(player,{"mission"})
     vRP.removeArea(player,"vRP:mission")
   end
+end
+
+-- check if the player has a mission
+function vRP.hasMission(player)
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil then
+    local tmpdata = vRP.getUserTmpTable(user_id)
+    if tmpdata.mission_step ~= nil then
+      return true
+    end
+  end
+
+  return false
 end
 
 

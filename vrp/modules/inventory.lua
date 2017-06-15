@@ -83,6 +83,10 @@ function vRP.defInventoryItem(idname,name,description,choices,weight)
   end,lang.inventory.trash.description()}
 end
 
+function vRP.getInventoryItemDefinition(idname)
+  return vRP.items[idname]
+end
+
 -- return item name or idname if not found
 function vRP.getItemName(idname)
   local item = vRP.items[idname]

@@ -15,6 +15,9 @@ Since vRP is a lot of work, some of you asked for a way to support me and the pr
 
 [![Click here to lend your support to: vRP - a FiveM open source RP Framework and make a donation at pledgie.com !](https://pledgie.com/campaigns/34016.png?skin_name=chrome)](https://pledgie.com/campaigns/34016)
 
+See also (and use it as a basis to understand how to develop extensions for vRP) : 
+* https://github.com/ImagicTheCat/vRP-basic-mission (repair/delivery missions extension)
+
 ## Features
 * basic admin tools (kick,ban,whitelist)
 * groups/permissions
@@ -606,7 +609,7 @@ For static areas, configure the file `cfg/item_transformers.lua`, the transforme
 ```lua
 -- PROXY API
 
--- start a mission fr a player
+-- start a mission for a player
 --- mission_data: 
 ---- name: Mission name
 ---- steps: ordered list of
@@ -622,6 +625,9 @@ vRP.nextMissionStep(player)
 
 -- stop the player mission
 vRP.stopMission(player)
+
+-- check if the player has a mission 
+vRP.hasMission(player)
 ```
 
 #### GUI
