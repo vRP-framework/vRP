@@ -52,6 +52,11 @@ function tvRP.setGPS(x,y)
   SetNewWaypoint(x+0.0001,y+0.0001)
 end
 
+-- set route to native blip id
+function tvRP.setBlipRoute(id)
+  SetBlipRoute(id,true)
+end
+
 -- MARKER
 
 local markers = {}

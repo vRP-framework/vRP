@@ -163,11 +163,75 @@ function tvRP.openMainMenu()
   vRP.openMainMenu(source)
 end
 
+
+-- STATIC MENUS
+local static_menu_choices = {}
+
+-- define choices to a static menu by name
+function vRP.addStaticMenuChoices(name, choices)
+  local mchoices = static_menu_choices[name]
+  if mchoices == nil then
+    static_menu_choices[name] = {}
+    mchoices = static_menu_choices[name]
+  end
+
+  for k,v in pairs(choices) do
+    mchoices[k] = v
+  end
+end
+
+-- build static menus
+local static_menus = {}
+SetTimeout(10000,function() -- wait for vRP.addStaticMenuChoices calls
+  for k,v in pairs(cfg.static_menu_types) do
+    local menu = {name=v.title, css={top="75px",header_color="rgba(255,226,0,0.75)"}}
+    local choices = static_menu_choices[k] or {}
+
+    for l,w in pairs(choices) do
+      menu[l] = w
+    end
+
+    static_menus[k] = menu
+  end
+end)
+
+local function build_client_static_menus(source)
+  local user_id = vRP.getUserId(source)
+  if user_id ~= nil then
+    for k,v in pairs(cfg.static_menus) do
+      local mtype,x,y,z = table.unpack(v)
+      local menu = static_menus[mtype]
+      local smenu = cfg.static_menu_types[mtype]
+
+      if menu and smenu then
+        local function smenu_enter()
+          local user_id = vRP.getUserId(source)
+          if user_id ~= nil and (smenu.permission == nil or vRP.hasPermission(user_id,smenu.permission)) then
+            vRP.openMenu(source,menu) 
+          end
+        end
+
+        local function smenu_leave()
+          vRP.closeMenu(source)
+        end
+
+        vRPclient.addBlip(source,{x,y,z,smenu.blipid,smenu.blipcolor,smenu.title})
+        vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,255,226,0,125,150})
+
+        vRP.setArea(source,"vRP:static_menu:"..k,x,y,z,1,1.5,smenu_enter,smenu_leave)
+      end
+    end
+  end
+end
+
 -- events
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
   if first_spawn then
     -- load additional css using the div api
     vRPclient.setDiv(source,{"additional_css",".div_additional_css{ display: none; }\n\n"..cfg.css,""})
+
+    -- load static menus
+    build_client_static_menus(source)
   end
 end)
 

@@ -18,4 +18,19 @@ body{
 }
 ]]
 
+-- list of static menu types (map of name => {.title,.blipid,.blipcolor,.permission (optional)})
+-- static menus are menu with choices defined by vRP.addStaticMenuChoices(name, choices)
+cfg.static_menu_types = {
+  ["missions"] = {
+    title = "Missions",
+    blipid = 205, 
+    blipcolor = 5
+  }
+}
+
+-- list of static menu points
+cfg.static_menus = {
+  {"missions", 1855.13940429688,3688.68579101563,34.2670478820801}
+}
+
 return cfg
