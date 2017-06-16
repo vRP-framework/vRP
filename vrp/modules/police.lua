@@ -512,9 +512,11 @@ end)
 
 local function build_client_points(source)
   -- PC
-  local x,y,z = table.unpack(cfg.pc)
-  vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,125,255,125,150})
-  vRP.setArea(source,"vRP:police:pc",x,y,z,1,1.5,pc_enter,pc_leave)
+  for k,v in pairs(cfg.pcs) do
+    local x,y,z = table.unpack(v)
+    vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,125,255,125,150})
+    vRP.setArea(source,"vRP:police:pc",x,y,z,1,1.5,pc_enter,pc_leave)
+  end
 end
 
 -- build police points
