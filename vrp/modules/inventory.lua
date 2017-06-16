@@ -87,6 +87,10 @@ function vRP.getInventoryItemDefinition(idname)
   return vRP.items[idname]
 end
 
+function vRP.getInventoryItemDefinitions()
+  return vRP.items
+end
+
 -- return item name or idname if not found
 function vRP.getItemName(idname)
   local item = vRP.items[idname]
