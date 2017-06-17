@@ -1,3 +1,5 @@
+local is_opened = false
+
 -- MENU
 
 function tvRP.openMenuData(menudata)
@@ -128,10 +130,21 @@ Citizen.CreateThread(function()
     if IsControlJustPressed(3,174) then SendNUIMessage({act="event",event="LEFT"}) end
     if IsControlJustPressed(3,175) then SendNUIMessage({act="event",event="RIGHT"}) end
     if IsControlJustPressed(3,176) then SendNUIMessage({act="event",event="SELECT"}) end
-    if IsControlJustPressed(3,177) then SendNUIMessage({act="event",event="CANCEL"}) end
+    if IsControlJustPressed(3,177) then
+	  SendNUIMessage({act="event",event="CANCEL"}) 
+	  is_opened = false
+	end
 
     -- INPUT_PHONE, open general menu
-    if IsControlJustPressed(3,27) and (not tvRP.isInComa() or not cfg.coma_disable_menu) and (not tvRP.isHandcuffed() or not cfg.handcuff_disable_menu) then vRPserver.openMainMenu({}) end
+    if IsControlJustPressed(3,244) and (not tvRP.isInComa() or not cfg.coma_disable_menu) and (not tvRP.isHandcuffed() or not cfg.handcuff_disable_menu) then
+       if not is_opened then
+         vRPserver.openMainMenu({})
+	     is_opened = true
+	   else
+    	 SendNUIMessage({act="event",event="CANCEL"})
+    	 is_opened = false
+       end
+    end
 
     -- F5,F6 (control michael, control franklin)
     if IsControlJustPressed(1,166) then SendNUIMessage({act="event",event="F5"}) end
