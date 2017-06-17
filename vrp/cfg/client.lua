@@ -14,6 +14,25 @@ cfg.gui = {
   anchor_minimap_bottom = 213
 }
 
+-- gui controls (see https://wiki.fivem.net/wiki/Controls)
+-- recommended to keep the default values and ask players to change their keys
+cfg.controls = {
+  phone = {
+    -- PHONE CONTROLS
+    up = {3,172},
+    down = {3,173},
+    left = {3,174},
+    right = {3,175},
+    select = {3,176},
+    cancel = {3,177},
+    open = {3,27} -- INPUT_PHONE, open general menu
+  },
+  request = {
+    yes = {1,166}, -- Michael, F5
+    no = {1,167} -- Franklin, F6
+  }
+}
+
 -- disable menu if handcuffed
 cfg.handcuff_disable_menu = true
 
@@ -32,3 +51,5 @@ cfg.coma_effect = "DeathFailMPIn"
 
 -- if true, vehicles can be controlled by others, but this might corrupts the vehicles id and prevent players from interacting with their vehicles
 cfg.vehicle_migration = false
+
+

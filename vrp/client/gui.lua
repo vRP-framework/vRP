@@ -122,20 +122,20 @@ end
 Citizen.CreateThread(function()
   while true do
     Citizen.Wait(0)
-    -- PHONE CONTROLS
-    if IsControlJustPressed(3,172) then SendNUIMessage({act="event",event="UP"}) end
-    if IsControlJustPressed(3,173) then SendNUIMessage({act="event",event="DOWN"}) end
-    if IsControlJustPressed(3,174) then SendNUIMessage({act="event",event="LEFT"}) end
-    if IsControlJustPressed(3,175) then SendNUIMessage({act="event",event="RIGHT"}) end
-    if IsControlJustPressed(3,176) then SendNUIMessage({act="event",event="SELECT"}) end
-    if IsControlJustPressed(3,177) then SendNUIMessage({act="event",event="CANCEL"}) end
+    -- menu controls
+    if IsControlJustPressed(table.unpack(cfg.controls.phone.up)) then SendNUIMessage({act="event",event="UP"}) end
+    if IsControlJustPressed(table.unpack(cfg.controls.phone.down)) then SendNUIMessage({act="event",event="DOWN"}) end
+    if IsControlJustPressed(table.unpack(cfg.controls.phone.left)) then SendNUIMessage({act="event",event="LEFT"}) end
+    if IsControlJustPressed(table.unpack(cfg.controls.phone.right)) then SendNUIMessage({act="event",event="RIGHT"}) end
+    if IsControlJustPressed(table.unpack(cfg.controls.phone.select)) then SendNUIMessage({act="event",event="SELECT"}) end
+    if IsControlJustPressed(table.unpack(cfg.controls.phone.cancel)) then SendNUIMessage({act="event",event="CANCEL"}) end
 
-    -- INPUT_PHONE, open general menu
-    if IsControlJustPressed(3,27) and (not tvRP.isInComa() or not cfg.coma_disable_menu) and (not tvRP.isHandcuffed() or not cfg.handcuff_disable_menu) then vRPserver.openMainMenu({}) end
+    -- open general menu
+    if IsControlJustPressed(table.unpack(cfg.controls.phone.open)) and (not tvRP.isInComa() or not cfg.coma_disable_menu) and (not tvRP.isHandcuffed() or not cfg.handcuff_disable_menu) then vRPserver.openMainMenu({}) end
 
-    -- F5,F6 (control michael, control franklin)
-    if IsControlJustPressed(1,166) then SendNUIMessage({act="event",event="F5"}) end
-    if IsControlJustPressed(1,167) then SendNUIMessage({act="event",event="F6"}) end
+    -- F5,F6 (default: control michael, control franklin)
+    if IsControlJustPressed(table.unpack(cfg.controls.request.yes)) then SendNUIMessage({act="event",event="F5"}) end
+    if IsControlJustPressed(table.unpack(cfg.controls.request.no)) then SendNUIMessage({act="event",event="F6"}) end
 
   end
 end)
