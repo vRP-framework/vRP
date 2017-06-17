@@ -31,7 +31,7 @@ end
 function Proxy.addInterface(name, itable)
   AddEventHandler(name..":proxy",function(member,args,callback)
     if Debug.active then
-      Debug.pbegin("proxy_"..name..":"..member.." "..json.encode(args))
+      Debug.pbegin("proxy_"..name..":"..member.." "..json.encode(Debug.safeTableCopy(args)))
     end
 
     local f = itable[member]

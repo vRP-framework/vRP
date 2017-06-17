@@ -420,7 +420,7 @@ local lang = {
     blip = "Mission ({1}) {2}/{3}",
     display = "<span class=\"name\">{1}</span> <span class=\"step\">{2}/{3}</span><br /><br />{4}",
     cancel = {
-      title = "Abandonner mission"
+      title = "Abandonner la mission"
     }
   }
 }

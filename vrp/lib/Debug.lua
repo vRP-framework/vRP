@@ -23,4 +23,20 @@ function Debug.pend()
   end
 end
 
+-- copy table without userdata
+function Debug.safeTableCopy(t)
+  local r = t
+
+  if type(t) == "table" then
+    r = {}
+    for k,v in pairs(t) do
+      if type(v) ~= "userdata" then
+        r[k] = Debug.safeTableCopy(v)
+      end
+    end
+  end
+
+  return r
+end
+
 return Debug
