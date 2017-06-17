@@ -577,6 +577,9 @@ Item transformers can be dynamically set and removed, if you want to build rando
 --- out_money
 --- reagents: items as idname => amount
 --- products: items as idname => amount
+--- onstart(player): optional callback
+--- onstep(player): optional callback
+--- onstop(player): optional callback
 vRP.setItemTransformer(name,itemtr)
 
 

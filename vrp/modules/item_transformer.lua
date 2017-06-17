@@ -16,12 +16,18 @@ local function tr_remove_player(tr,player) -- remove player from transforming
   tr.players[player] = nil -- dereference player
   vRPclient.removeProgressBar(player,{"vRP:tr:"..tr.name})
   vRP.closeMenu(player)
+
+  -- onstop
+  if tr.itemtr.onstop then tr.itemtr.onstop(player) end
 end
 
 local function tr_add_player(tr,player) -- add player to transforming
   tr.players[player] = true -- reference player as using transformer
   vRP.closeMenu(player)
   vRPclient.setProgressBar(player,{"vRP:tr:"..tr.name,"center",tr.itemtr.action.."...",tr.itemtr.r,tr.itemtr.g,tr.itemtr.b,0})
+
+  -- onstart
+  if tr.itemtr.onstart then tr.itemtr.onstart(player) end
 end
 
 local function tr_tick(tr) -- do transformer tick
@@ -69,6 +75,9 @@ local function tr_tick(tr) -- do transformer tick
           for l,w in pairs(tr.itemtr.products) do
             vRP.giveInventoryItem(user_id,l,w)
           end
+
+          -- onstep
+          if tr.itemtr.onstep then tr.itemtr.onstep(tonumber(k)) end
         end
       end
     end

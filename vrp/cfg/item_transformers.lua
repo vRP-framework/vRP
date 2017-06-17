@@ -22,6 +22,9 @@ cfg.item_transformers = {
     products={ -- items given per unit
       ["water"] = 1
     }
+    --, onstart = function(player) end, -- optional start callback
+    -- onstep = function(player) end, -- optional step callback
+    -- onstop = function(player) end -- optional stop callback
   }
 }
 
