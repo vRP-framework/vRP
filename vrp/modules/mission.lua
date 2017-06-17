@@ -91,4 +91,17 @@ function vRP.hasMission(player)
   return false
 end
 
+-- MAIN MENU
+AddEventHandler("vRP:buildMainMenu",function(player)
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil then
+    local choices = {}
 
+    -- build admin menu
+    choices[lang.mission.cancel.title()] = {function(player,choice)
+      vRP.stopMission(player)
+    end}
+
+    vRP.buildMainMenu(player,choices)
+  end
+end)
