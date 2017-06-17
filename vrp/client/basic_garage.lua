@@ -33,6 +33,11 @@ function tvRP.spawnGarageVehicle(vtype,name) -- vtype is the vehicle type (one v
       SetVehicleNumberPlateText(nveh, "P "..tvRP.getRegistrationNumber())
       Citizen.InvokeNative(0xAD738C3085FE7E11, nveh, true, true) -- set as mission entity
 
+      if not cfg.vehicle_migration then
+        local nid = NetworkGetNetworkIdFromEntity(nveh)
+        SetNetworkIdCanMigrate(nid,false)
+      end
+
       vehicles[vtype] = {vtype,name,nveh} -- set current vehicule
 
       SetModelAsNoLongerNeeded(mhash)
@@ -206,6 +211,11 @@ function tvRP.vc_toggleEngine(vtype)
   if vehicle then
     local running = Citizen.InvokeNative(0xAE31E7DF9B5B132E,vehicle[3]) -- GetIsVehicleEngineRunning
     SetVehicleEngineOn(vehicle[3],not running,true,true)
+    if running then
+      SetVehicleUndriveable(vehicle[3],true)
+    else
+      SetVehicleUndriveable(vehicle[3],false)
+    end
   end
 end
 
