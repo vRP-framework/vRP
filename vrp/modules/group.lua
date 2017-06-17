@@ -31,16 +31,18 @@ function vRP.addUserGroup(user_id,group)
     local user_groups = vRP.getUserGroups(user_id)
     local ngroup = groups[group]
     if ngroup then
-      -- copy group list to prevent iteration while removing
-      local _user_groups = {}
-      for k,v in pairs(user_groups) do
-        _user_groups[k] = v
-      end
+      if ngroup._config and ngroup._config.gtype ~= nil then 
+        -- copy group list to prevent iteration while removing
+        local _user_groups = {}
+        for k,v in pairs(user_groups) do
+          _user_groups[k] = v
+        end
 
-      for k,v in pairs(_user_groups) do -- remove all groups with the same gtype
-        local kgroup = groups[k]
-        if kgroup and kgroup._config and ngroup._config and kgroup._config.gtype == ngroup._config.gtype then
-          vRP.removeUserGroup(user_id,k)
+        for k,v in pairs(_user_groups) do -- remove all groups with the same gtype
+          local kgroup = groups[k]
+          if kgroup and kgroup._config and ngroup._config and kgroup._config.gtype == ngroup._config.gtype then
+            vRP.removeUserGroup(user_id,k)
+          end
         end
       end
 
