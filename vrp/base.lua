@@ -315,6 +315,33 @@ function task_save_datatables()
 end
 task_save_datatables()
 
+local max_pings = math.ceil(config.ping_timeout*60/30)
+function task_timeout() -- kick users not sending ping event in 2 minutes
+  local users = vRP.getUsers()
+  for k,v in pairs(users) do
+    local tmpdata = vRP.getUserTmpTable(tonumber(k))
+    if tmpdata.pings == nil then
+      tmpdata.pings = 0
+    end
+
+    tmpdata.pings = tmpdata.pings+1
+    if tmpdata.pings >= max_pings then
+      vRP.kick(v,"[vRP] Ping timeout.")
+    end
+  end
+
+  SetTimeout(30000, task_timeout)
+end
+task_timeout()
+
+function tvRP.ping()
+  local user_id = vRP.getUserId(source)
+  if user_id ~= nil then
+    local tmpdata = vRP.getUserTmpTable(user_id)
+    tmpdata.pings = 0 -- reinit ping countdown
+  end
+end
+
 -- handlers
 
 AddEventHandler("playerConnecting",function(name,setMessage)
@@ -466,3 +493,4 @@ AddEventHandler("vRPcli:playerSpawned", function()
 end)
 
 RegisterServerEvent("vRP:playerDied")
+
