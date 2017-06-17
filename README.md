@@ -45,18 +45,17 @@ See also (and use it as a basis to understand how to develop extensions for vRP)
 
 ## TODO LIST
 * home stuff (home garage,etc)
-* vehicle functions, try vehicle before buying, way of customization (detach tow truck)
+* vehicle customization
 * static chests
 * drop weapon/save weapon components
 * education (maybe)
 * skinshop presets (as wardrobe)
 * police pc: add custom police records 
-* job mission system
 * admin: tp to marker
 * police research per veh type
 * display some permission/group count
 * news system for better city presence
-* advanced parametric items
+* advanced parametric items (bag of money, crate of weapons)
 
 ## NOTES
 ### Homes
@@ -381,6 +380,10 @@ vRP.insertPoliceRecord(user_id, line)
 -- TUNNEL SERVER API
 
 -- TUNNEL CLIENT API
+
+-- apply wanted level
+-- stars 1-5
+vRP.applyWantedLevel(stars)
 
 -- true to enable, false to disable
 -- if enabled, will prevent NPC cops to fire at the player
