@@ -968,3 +968,4 @@ r:close() -- don't forget to close the result
 local r = q_select:query() 
 local list = r:toTable() -- result is autoclosed
 ```
+
