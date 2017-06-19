@@ -383,8 +383,8 @@ local lang = {
       request = "Do you want to open the trunk ?"
     },
     replace = {
-      title = "Lift vehicle",
-      description = "Put the nearest vehicle on the wheels."
+      title = "Place vehicle",
+      description = "Place the nearest vehicle back on the ground."
     },
     repair = {
       title = "Repair vehicle",
