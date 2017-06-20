@@ -314,4 +314,3 @@ Citizen.CreateThread(function()
     NetworkSetTalkerProximity(proximity+0.0001)
   end
 end)
-
