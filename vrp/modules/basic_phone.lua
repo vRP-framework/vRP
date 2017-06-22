@@ -6,6 +6,8 @@ local cfg = require("resources/vrp/cfg/phone")
 local htmlEntities = require("resources/vrp/lib/htmlEntities")
 local services = cfg.services
 
+local sanitizes = require("resources/vrp/cfg/sanitizes")
+
 -- api
 
 -- Send a service alert to all service listeners
@@ -159,8 +161,8 @@ local function ch_directory(player,choice)
     local ch_add = function(player, choice) -- add to directory
       vRP.prompt(player,lang.phone.directory.add.prompt_number(),"",function(player,phone)
         vRP.prompt(player,lang.phone.directory.add.prompt_name(),"",function(player,name)
-          name = tostring(name)
-          phone = tostring(phone)
+          name = sanitizeString(tostring(name),sanitizes.text[1],sanitizes.text[2])
+          phone = sanitizeString(tostring(phone),sanitizes.text[1],sanitizes.text[2])
           if #name > 0 and #phone > 0 then
             phone_directory[name] = phone -- set entry
             vRPclient.notify(player, {lang.phone.directory.add.added()})
@@ -185,6 +187,7 @@ local function ch_directory(player,choice)
 
       local ch_sendsms = function(player, choice) -- send sms to directory entry
         vRP.prompt(player,lang.phone.directory.sendsms.prompt({cfg.sms_size}),"",function(player,msg)
+          msg = sanitizeString(msg,sanitizes.text[1],sanitizes.text[2])
           if vRP.sendSMS(user_id, phone, msg) then
             vRPclient.notify(player,{lang.phone.directory.sendsms.sent({phone})})
           else
@@ -243,6 +246,7 @@ local function ch_sms(player, choice)
       menu["#"..k.." "..from] = {function(player,choice)
         -- answer to sms
         vRP.prompt(player,lang.phone.directory.sendsms.prompt({cfg.sms_size}),"",function(player,msg)
+          msg = sanitizeString(msg,sanitizes.text[1],sanitizes.text[2])
           if vRP.sendSMS(user_id, phone, msg) then
             vRPclient.notify(player,{lang.phone.directory.sendsms.sent({phone})})
           else
@@ -271,6 +275,7 @@ local function ch_service_alert(player,choice) -- alert a service
   if service then
     vRPclient.getPosition(player,{},function(x,y,z)
       vRP.prompt(player,lang.phone.service.prompt(),"",function(player, msg)
+        msg = sanitizeString(msg,sanitizes.text[1],sanitizes.text[2])
         vRPclient.notify(player,{service.notify}) -- notify player
         vRP.sendServiceAlert(player,choice,x,y,z,msg) -- send service alert (call request)
       end)

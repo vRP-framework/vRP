@@ -56,7 +56,11 @@ AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
     vRP.setHunger(user_id,0)
     vRP.setThirst(user_id,0)
     vRP.clearInventory(user_id)
-    data.phone_directory = {} -- clear phone directory after death
+
+    if cfg.clear_phone_directory_on_death then
+      data.phone_directory = {} -- clear phone directory after death
+    end
+
     vRP.setMoney(user_id,0)
 
     -- disable handcuff

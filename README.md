@@ -56,6 +56,7 @@ See also (and use it as a basis to understand how to develop extensions for vRP)
 * display some permission/group count
 * news system for better city presence
 * advanced parametric items (bag of money, crate of weapons)
+* negative permission ("!police.askid" -> ignore any police.askid permission)
 
 ## NOTES
 ### Homes
