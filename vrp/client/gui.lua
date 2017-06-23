@@ -47,6 +47,15 @@ RegisterNUICallback("request",function(data,cb)
   end
 end)
 
+-- ANNOUNCE
+
+-- add an announce to the queue
+-- background: image url (800x150)
+-- content: announce html content
+function tvRP.announce(background,content)
+  SendNUIMessage({act="announce",background=background,content=content})
+end
+
 -- cfg
 RegisterNUICallback("cfg",function(data,cb) -- if NUI loaded after
   SendNUIMessage({act="cfg",cfg=cfg.gui})

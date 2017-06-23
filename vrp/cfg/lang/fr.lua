@@ -8,7 +8,8 @@ local lang = {
     invalid_name = "~r~Nom incorrect.",
     not_found = "~r~Non trouvé.",
     request_refused = "~r~Requête refusée.",
-    wearing_uniform = "~r~Attention, vous portez un uniforme."
+    wearing_uniform = "~r~Attention, vous portez un uniforme.",
+    not_allowed = "~r~Non autorisé."
   },
   survival = {
     starving = "Affamé",
@@ -282,6 +283,12 @@ local lang = {
       prompt = "Si besoin, entrez un message pour le service:",
       ask_call = "Reception d'un appel ({1}), voulez vous le prendre ? <em>{2}</em>",
       taken = "~r~Cet appel est déjà pris."
+    },
+    announce = {
+      title = "Annonce",
+      description = "Envoyer une annonce visible à tous pendant quelques secondes.",
+      item_desc = "{1} $<br /><br/>{2}",
+      prompt = "Contenu de l'annonce (10-1000 caractères): "
     }
   },
   emotes = {

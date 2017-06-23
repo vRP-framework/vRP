@@ -60,5 +60,6 @@ files{
   "gui/ProgressBar.js",
   "gui/WPrompt.js",
   "gui/RequestManager.js",
+  "gui/AnnounceManager.js",
   "gui/Div.js"
 }

@@ -149,3 +149,21 @@ html, body {
   font-size: 1em;
 }
 
+/* announce */
+
+.announce{
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 780px;
+  height: 130px;
+  padding: 10px;
+  margin-left: -400px;
+  font-weight: bold;
+  font-size: 1.1em;
+  text-shadow: 2px 2px black;
+  color: white;
+  display: none;
+  opacity: 0.90;
+}
+

@@ -9,7 +9,8 @@ local lang = {
     invalid_name = "~r~Invalid name.",
     not_found = "~r~Not found.",
     request_refused = "~r~Request refused.",
-    wearing_uniform = "~r~Be careful, you are wearing a uniform."
+    wearing_uniform = "~r~Be careful, you are wearing a uniform.",
+    not_allowed = "~r~Not allowed."
   },
   survival = {
     starving = "starving",
@@ -283,6 +284,12 @@ local lang = {
       prompt = "If needed, enter a message for the service:",
       ask_call = "Received {1} call, do you take it ? <em>{2}</em>",
       taken = "~r~This call is already taken."
+    },
+    announce = {
+      title = "Announce",
+      description = "Post an announce visible to everyone for a few seconds.",
+      item_desc = "{1} $<br /><br/>{2}",
+      prompt = "Announce content (10-1000 chars): "
     }
   },
   emotes = {

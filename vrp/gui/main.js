@@ -14,6 +14,7 @@ window.addEventListener("load",function(){
   var dynamic_menu = new Menu();
   var wprompt = new WPrompt();
   var requestmgr = new RequestManager();
+  var announcemgr = new AnnounceManager();
 
   requestmgr.onResponse = function(id,ok){ $.post("http://vrp/request",JSON.stringify({act: "response", id: id, ok: ok})); }
   wprompt.onClose = function(){ $.post("http://vrp/prompt",JSON.stringify({act: "close", result: wprompt.result})); }
@@ -92,6 +93,10 @@ window.addEventListener("load",function(){
     // REQUEST
     else if(data.act == "request"){
       requestmgr.addRequest(data.id,data.text,data.time);
+    }
+    // ANNOUNCE
+    else if(data.act == "announce"){
+      announcemgr.addAnnounce(data.background,data.content);
     }
     // DIV
     else if(data.act == "set_div"){

@@ -19,6 +19,7 @@ cfg.groups = {
   },
   ["admin"] = {
     "admin.tickets",
+    "admin.announce",
     "player.list",
     "player.whitelist",
     "player.unwhitelist",
@@ -57,7 +58,8 @@ cfg.groups = {
     "police.seize.weapons",
     "police.seize.items",
     "police.jail",
-    "police.fine"
+    "police.fine",
+    "police.announce"
   },
   ["emergency"] = {
     _config = { gtype = "job" },

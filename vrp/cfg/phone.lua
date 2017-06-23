@@ -55,4 +55,34 @@ cfg.services = {
   }
 }
 
+-- define phone announces
+-- image: background image for the announce (800x150 px)
+-- price: amount to pay to post the announce
+-- description (optional)
+-- permission (optional): permission required to post the announce
+cfg.announces = {
+  ["admin"] = {
+    image = "nui://vrp_mod/announce_admin.png",
+    price = 0,
+    description = "Admin only.",
+    permission = "admin.announce"
+  },
+  ["police"] = {
+    image = "nui://vrp_mod/announce_police.png",
+    price = 0,
+    description = "Only for police, ex: wanted advert.",
+    permission = "police.announce"
+  },
+  ["commercial"] = {
+    image = "nui://vrp_mod/announce_commercial.png",
+    description = "Commercial stuff (buy, sell, work).",
+    price = 5000
+  },
+  ["party"] = {
+    image = "nui://vrp_mod/announce_party.png",
+    description = "Organizing a party ? Let everyone know the rendez-vous.",
+    price = 5000
+  }
+}
+
 return cfg

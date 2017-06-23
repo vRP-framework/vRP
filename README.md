@@ -49,7 +49,6 @@ See also (and use it as a basis to understand how to develop extensions for vRP)
 * static chests
 * drop weapon/save weapon components
 * education (maybe)
-* skinshop presets (as wardrobe)
 * police pc: add custom police records 
 * admin: tp to marker
 * police research per veh type
