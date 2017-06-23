@@ -323,6 +323,13 @@ local lang = {
         title = "Expulser",
         description = "Expulse tous les visiteurs, même vous, et ferme le logement."
       }
+    },
+    wardrobe = {
+      title = "Garde-robe",
+      save = {
+        title = "> Sauvegarder",
+        prompt = "Nom de la sauvegarde:"
+      }
     }
   },
   garage = {

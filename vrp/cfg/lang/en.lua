@@ -324,6 +324,13 @@ local lang = {
         title = "Eject all",
         description = "Eject all home visitors, including you, and close the home."
       }
+    },
+    wardrobe = {
+      title = "Wardrobe",
+      save = {
+        title = "> Save",
+        prompt = "Save name:"
+      }
     }
   },
   garage = {
