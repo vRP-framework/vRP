@@ -53,7 +53,6 @@ See also (and use it as a basis to understand how to develop extensions for vRP)
 * admin: tp to marker
 * police research per veh type
 * display some permission/group count
-* news system for better city presence
 * advanced parametric items (bag of money, crate of weapons)
 * negative permission ("!police.askid" -> ignore any police.askid permission)
 
@@ -639,6 +638,14 @@ _config = {
 }
 ```
 
+###### Wardrobe
+
+Save your character customization in the wardrobe, so you don't need to customize/pay clothes in skinshop again.
+
+###### Game table
+
+* Bet with other peoples.
+
 #### Mission
 
 ```lua
@@ -767,6 +774,13 @@ vRP.divExecuteJS(name,js)
 
 -- remove the div
 vRP.removeDiv(name)
+
+-- announce
+
+-- add an announce to the queue
+-- background: image url (800x150)
+-- content: announce html content
+vRP.announce(background,content)
 
 ```
 

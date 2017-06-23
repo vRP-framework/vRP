@@ -338,6 +338,16 @@ local lang = {
         title = "> Save",
         prompt = "Save name:"
       }
+    },
+    gametable = {
+      title = "Game table",
+      bet = {
+        title = "Start bet",
+        description = "Start a bet with players near you, the winner will be randomly selected.",
+        prompt = "Bet amount:",
+        request = "[BET] Do you want to bet {1} $ ?",
+        started = "~g~Bet started."
+      }
     }
   },
   garage = {

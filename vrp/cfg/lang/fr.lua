@@ -337,6 +337,16 @@ local lang = {
         title = "> Sauvegarder",
         prompt = "Nom de la sauvegarde:"
       }
+    },
+    gametable = {
+      title = "Table de jeux",
+      bet = {
+        title = "Commencer un pari",
+        description = "Commencer un pari avec les joueurs à proximité, le gagnant sera choisis aléatoirement.",
+        prompt = "Mise du pari:",
+        request = "[PARI] Voulez vous parier {1} $ ?",
+        started = "~g~Pari commencé."
+      }
     }
   },
   garage = {
