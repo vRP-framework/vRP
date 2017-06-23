@@ -276,9 +276,9 @@ local function build_itemlist_menu(name, items, cb)
 end
 
 -- open a chest by name
--- cb_close(): called when the chest is closed
--- cb_in(idname, amount): called when an item is added
--- cb_out(idname, amount): called when an item is taken
+-- cb_close(): called when the chest is closed (optional)
+-- cb_in(idname, amount): called when an item is added (optional)
+-- cb_out(idname, amount): called when an item is taken (optional)
 function vRP.openChest(source, name, max_weight, cb_close, cb_in, cb_out)
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then

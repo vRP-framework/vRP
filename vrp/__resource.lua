@@ -20,6 +20,7 @@ server_scripts{
   "modules/emotes.lua",
   "modules/police.lua",
   "modules/home.lua",
+  "modules/home_components.lua",
   "modules/mission.lua",
 
   -- basic implementations

@@ -25,7 +25,7 @@ local q_set_address = vRP.sql:prepare("REPLACE INTO vrp_user_homes(user_id,home,
 
 -- api
 
-local instances = {}
+local components = {}
 
 -- return user address (home and number) or nil
 function vRP.getUserAddress(user_id)
@@ -82,6 +82,14 @@ function vRP.findFreeNumber(home,max)
   end
 
   return nil
+end
+
+-- define home component
+-- name: unique component id
+-- oncreate(owner_id, slot_type, slot_id, config, x, y, z, player)
+-- ondestroy(owner_id, slot_type, slot_id, config, x, y, z, player)
+function vRP.defHomeComponent(name, oncreate, ondestroy)
+  components[name] = {oncreate,ondestroy}
 end
 
 -- SLOTS
@@ -156,10 +164,23 @@ local function leave_slot(user_id,player,stype,sid) -- called when a player leav
   -- uncount player
   slot.players[user_id] = nil
 
-  -- remove marker/area
-  local nid = "vRP:home:slot"..stype..sid
-  vRPclient.removeNamedMarker(player,{nid})
-  vRP.removeArea(player,nid)
+  -- destroy loaded components and special entry component
+  for k,v in pairs(cfg.slot_types[stype][sid]) do
+    local name,x,y,z = table.unpack(v)
+
+    if name == "entry" then
+      -- remove marker/area
+      local nid = "vRP:home:slot"..stype..sid
+      vRPclient.removeNamedMarker(player,{nid})
+      vRP.removeArea(player,nid)
+    else
+      local component = components[v[1]]
+      if component then
+        -- ondestroy(owner_id, slot_type, slot_id, config, x, y, z, player)
+        component[2](slot.owner_id, stype, sid, v._config or {}, x, y, z, player)
+      end
+    end
+  end
 
   if is_empty(slot.players) then -- free the slot
     freeSlot(stype,sid)
@@ -170,12 +191,7 @@ end
 local function enter_slot(user_id,player,stype,sid) -- called when a player enter a slot
   print(user_id.." enter slot "..stype.." "..sid)
   local slot = uslots[stype][sid]
-  local slot_entry = cfg.slot_types[stype][sid]
   local home = cfg.homes[slot.home_name]
-
-  local x,y,z = table.unpack(slot_entry)
-  -- teleport to the slot entry point
-  vRPclient.teleport(player, slot_entry) -- already an array of params (x,y,z)
 
   -- count
   slot.players[user_id] = player
@@ -213,9 +229,25 @@ local function enter_slot(user_id,player,stype,sid) -- called when a player ente
     vRP.closeMenu(player)
   end
 
-  local nid = "vRP:home:slot"..stype..sid
-  vRPclient.setNamedMarker(player,{nid,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150})
-  vRP.setArea(player,nid,x,y,z,1,1.5,entry_enter,entry_leave)
+  -- build components and special entry component
+  for k,v in pairs(cfg.slot_types[stype][sid]) do
+    local name,x,y,z = table.unpack(v)
+
+    if name == "entry" then
+      -- teleport to the slot entry point
+      vRPclient.teleport(player, {x,y,z}) -- already an array of params (x,y,z)
+
+      local nid = "vRP:home:slot"..stype..sid
+      vRPclient.setNamedMarker(player,{nid,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150})
+      vRP.setArea(player,nid,x,y,z,1,1.5,entry_enter,entry_leave)
+    else -- load regular component
+      local component = components[v[1]]
+      if component then
+        -- oncreate(owner_id, slot_type, slot_id, config, x, y, z, player)
+        component[1](slot.owner_id, stype, sid, v._config or {}, x, y, z, player)
+      end
+    end
+  end
 end
 
 -- access a home by address
@@ -234,6 +266,7 @@ function vRP.accessHome(user_id, home, number)
         local slot = uslots[stype][slotid]
         slot.home_name = home
         slot.home_number = number
+        slot.owner_id = vRP.getUserByAddress(home,number)
         slot.players = {} -- map user_id => player
       end
     end
@@ -255,7 +288,8 @@ local function build_entry_menu(user_id, home_name)
   -- intercom, used to enter in a home
   menu[lang.home.intercom.title()] = {function(player,choice)
     vRP.prompt(player, lang.home.intercom.prompt(), "", function(player,number)
-      local huser_id = vRP.getUserByAddress(home_name,tonumber(number or 0))
+      number = parseInt(number)
+      local huser_id = vRP.getUserByAddress(home_name,number)
       if huser_id ~= nil then
         if huser_id == user_id then -- identify owner (direct home access)
           if not vRP.accessHome(user_id, home_name, number) then

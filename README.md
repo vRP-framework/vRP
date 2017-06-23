@@ -88,6 +88,7 @@ Also, player addresses are bound to the home cluster name, it means that if you 
   * [Money](#money)
   * [Inventory](#inventory)
   * [Item transformer](#item-transformer)
+  * [Home](#home)
   * [Mission](#mission)
   * [GUI](#gui)
      * [Registering choices to the main menu](#registering-choices-to-the-main-menu)
@@ -610,6 +611,34 @@ vRP.setItemTransformer({"my_unique_transformer",itemtr})
 ```
 
 For static areas, configure the file `cfg/item_transformers.lua`, the transformers will be automatically added.
+
+#### Home
+
+```lua
+-- PROXY API
+
+-- define home component
+-- name: unique component id
+-- oncreate(owner_id, slot_type, slot_id, config, x, y, z, player)
+-- ondestroy(owner_id, slot_type, slot_id, config, x, y, z, player)
+vRP.defHomeComponent(name, oncreate, ondestroy)
+
+-- user access a home by address (without asking)
+-- return true on success
+vRP.accessHome(user_id, home, number)
+```
+
+##### Basic components
+
+###### Chest
+
+A home chest.
+
+```lua
+_config = {
+  weight = 200
+}
+```
 
 #### Mission
 
