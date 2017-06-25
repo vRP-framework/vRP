@@ -86,8 +86,8 @@ end
 
 -- define home component
 -- name: unique component id
--- oncreate(owner_id, slot_type, slot_id, config, x, y, z, player)
--- ondestroy(owner_id, slot_type, slot_id, config, x, y, z, player)
+-- oncreate(owner_id, slot_type, slot_id, cid, config, x, y, z, player)
+-- ondestroy(owner_id, slot_type, slot_id, cid, config, x, y, z, player)
 function vRP.defHomeComponent(name, oncreate, ondestroy)
   components[name] = {oncreate,ondestroy}
 end
@@ -176,8 +176,8 @@ local function leave_slot(user_id,player,stype,sid) -- called when a player leav
     else
       local component = components[v[1]]
       if component then
-        -- ondestroy(owner_id, slot_type, slot_id, config, x, y, z, player)
-        component[2](slot.owner_id, stype, sid, v._config or {}, x, y, z, player)
+        -- ondestroy(owner_id, slot_type, slot_id, cid, config, x, y, z, player)
+        component[2](slot.owner_id, stype, sid, k, v._config or {}, x, y, z, player)
       end
     end
   end
@@ -243,8 +243,8 @@ local function enter_slot(user_id,player,stype,sid) -- called when a player ente
     else -- load regular component
       local component = components[v[1]]
       if component then
-        -- oncreate(owner_id, slot_type, slot_id, config, x, y, z, player)
-        component[1](slot.owner_id, stype, sid, v._config or {}, x, y, z, player)
+        -- oncreate(owner_id, slot_type, slot_id, cid, config, x, y, z, player)
+        component[1](slot.owner_id, stype, sid, k, v._config or {}, x, y, z, player)
       end
     end
   end

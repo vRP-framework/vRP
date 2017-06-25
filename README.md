@@ -602,16 +602,20 @@ Item transformers can be dynamically set and removed, if you want to build rando
 --- units_per_minute
 --- x,y,z,radius,height (area properties)
 --- r,g,b (color)
---- action
---- description
---- in_money
---- out_money
---- reagents: items as idname => amount
---- products: items as idname => amount
+--- recipes, map of action =>
+---- description
+---- in_money
+---- out_money
+---- reagents: items as idname => amount
+---- products: items as idname => amount
+---- aptitudes: list as "group.aptitude" => exp amount generated
 --- onstart(player,recipe): optional callback
 --- onstep(player,recipe): optional callback
 --- onstop(player,recipe): optional callback
 vRP.setItemTransformer(name,itemtr)
+
+-- remove an item transformer
+vRP.removeItemTransformer(name)
 
 
 -- Example from another resource using proxy
@@ -623,13 +627,16 @@ local itemtr = {
   units_per_minute=5,
   x=1858,y=3687.5,z=34.26, -- pos
   radius=5, height=1.5, -- area
-  action="Harvest", -- action name
-  description="Harvest some water bottles.", -- action description
-  in_money=0, -- money taken per unit
-  out_money=0, -- money earned per unit
-  reagents={}, -- items taken per unit
-  products={ -- items given per unit
-    ["water_bottle"] = 1
+  recipes = {
+    ["Harvest"] = { -- action name
+      description="Harvest some water bottles.", -- action description
+      in_money=0, -- money taken per unit
+      out_money=0, -- money earned per unit
+      reagents={}, -- items taken per unit
+      products={ -- items given per unit
+        ["water_bottle"] = 1
+      }
+    }
   }
 }
 
@@ -645,8 +652,8 @@ For static areas, configure the file `cfg/item_transformers.lua`, the transforme
 
 -- define home component
 -- name: unique component id
--- oncreate(owner_id, slot_type, slot_id, config, x, y, z, player)
--- ondestroy(owner_id, slot_type, slot_id, config, x, y, z, player)
+-- oncreate(owner_id, slot_type, slot_id, cid, config, x, y, z, player)
+-- ondestroy(owner_id, slot_type, slot_id, cid, config, x, y, z, player)
 vRP.defHomeComponent(name, oncreate, ondestroy)
 
 -- user access a home by address (without asking)
@@ -658,6 +665,7 @@ vRP.accessHome(user_id, home, number)
 
 ###### Chest
 
+`chest`
 A home chest.
 
 ```lua
@@ -668,11 +676,19 @@ _config = {
 
 ###### Wardrobe
 
+`wardrobe`
 Save your character customization in the wardrobe, so you don't need to customize/pay clothes in skinshop again.
 
 ###### Game table
 
+`gametable`
 * Bet with other peoples.
+
+###### Item transformer
+
+`itemtr`
+Set the config as any item transformer structure configuration.
+
 
 #### Mission
 

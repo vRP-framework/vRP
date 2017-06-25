@@ -22,6 +22,9 @@ cfg.item_transformers = {
         reagents={}, -- items taken per unit
         products={ -- items given per unit
           ["water"] = 1
+        },
+        aptitudes={ -- optional
+          ["physical.strength"] = 1 -- "group.aptitude", give 1 exp per unit
         }
       },
       ["Harvest tacos"] = { -- action name

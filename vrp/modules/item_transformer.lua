@@ -77,6 +77,14 @@ local function tr_tick(tr) -- do transformer tick
             vRP.giveInventoryItem(user_id,l,w)
           end
 
+          -- give exp
+          for l,w in pairs(recipe.aptitudes or {}) do
+            local parts = splitString(l,".")
+            if #parts == 2 then
+              vRP.varyExp(user_id,parts[1],parts[2],w)
+            end
+          end
+
           -- onstep
           if tr.itemtr.onstep then tr.itemtr.onstep(tonumber(k),v) end
         end
@@ -148,6 +156,15 @@ function vRP.setItemTransformer(name,itemtr)
       local item = vRP.items[k]
       if item then
         info = info.."<br />"..v.." "..item.name
+      end
+    end
+    for k,v in pairs(recipe.aptitudes or {}) do
+      local parts = splitString(k,".")
+      if #parts == 2 then
+        local def = vRP.getAptitudeDefinition(parts[1],parts[2])
+        if def then
+          info = info.."<br />[EXP] "..v.." "..vRP.getAptitudeGroupTitle(parts[1]).."/"..def[1]
+        end
       end
     end
 
