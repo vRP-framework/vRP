@@ -446,6 +446,18 @@ local lang = {
     cancel = {
       title = "Abandonner la mission"
     }
+  },
+  aptitude = {
+    title = "Compétences",
+    description = "Afficher les compétences.",
+    lose_exp = "Compétence ~b~{1}/{2} ~r~-{3} ~s~exp.",
+    earn_exp = "Compétence ~b~{1}/{2} ~g~+{3} ~s~exp.",
+    level_down = "Compétence ~b~{1}/{2} ~r~descend en niveau ({3}).",
+    level_up = "Compétence ~b~{1}/{2} ~g~monte en niveau ({3}).",
+    display = {
+      group = "{1}: ",
+      aptitude = "--- {1} | exp {2} | niv. {3} | progression {4}%"
+    }
   }
 }
 

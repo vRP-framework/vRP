@@ -22,6 +22,7 @@ server_scripts{
   "modules/home.lua",
   "modules/home_components.lua",
   "modules/mission.lua",
+  "modules/aptitude.lua",
 
   -- basic implementations
   "modules/basic_phone.lua",

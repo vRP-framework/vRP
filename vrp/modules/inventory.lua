@@ -40,7 +40,7 @@ function vRP.defInventoryItem(idname,name,description,choices,weight)
               local amount = parseInt(amount)
               -- weight check
               local new_weight = vRP.getInventoryWeight(nuser_id)+vRP.items[idname].weight*amount
-              if new_weight <= cfg.inventory_weight then
+              if new_weight <= vRP.getInventoryMaxWeight(nuser_id) then
                 if vRP.tryGetInventoryItem(user_id,idname,amount) then
                   vRP.giveInventoryItem(nuser_id,idname,amount)
                   vRPclient.notify(player,{lang.inventory.give.given({name,amount})})
@@ -167,6 +167,11 @@ function vRP.getInventoryWeight(user_id)
   return 0
 end
 
+-- return maximum weight of the user inventory
+function vRP.getInventoryMaxWeight(user_id)
+  return math.floor(vRP.expToLevel(vRP.getExp(user_id, "physical", "strength")))*cfg.inventory_weight_per_strength
+end
+
 -- clear connected user inventory
 function vRP.clearInventory(user_id)
   local data = vRP.getUserDataTable(user_id)
@@ -187,7 +192,7 @@ function vRP.openInventory(source)
       -- build inventory menu
       local menudata = {name=lang.inventory.title(),css={top="75px",header_color="rgba(0,125,255,0.75)"}}
       -- add inventory info
-      menudata["@ "..lang.inventory.info_weight({vRP.getInventoryWeight(user_id), cfg.inventory_weight})] = {function()end}
+      menudata["@ "..lang.inventory.info_weight({vRP.getInventoryWeight(user_id), vRP.getInventoryMaxWeight(user_id)})] = {function()end}
       local kitems = {}
 
       -- choose callback, nested menu, create the item menu
@@ -304,7 +309,7 @@ function vRP.openChest(source, name, max_weight, cb_close, cb_in, cb_out)
               
               -- weight check
               local new_weight = vRP.getInventoryWeight(user_id)+vRP.items[idname].weight*amount
-              if new_weight <= cfg.inventory_weight then
+              if new_weight <= vRP.getInventoryMaxWeight(user_id) then
                 vRP.giveInventoryItem(user_id, idname, amount)
                 citem.amount = citem.amount-amount
 
@@ -373,7 +378,7 @@ function vRP.openChest(source, name, max_weight, cb_close, cb_in, cb_out)
         local ch_put = function(player, choice)
           local submenu = build_itemlist_menu(lang.inventory.chest.put.title(), data.inventory, cb_put)
           -- add weight info
-          submenu["@ "..lang.inventory.info_weight({vRP.computeItemsWeight(data.inventory),cfg.inventory_weight})] = {function() end}
+          submenu["@ "..lang.inventory.info_weight({vRP.computeItemsWeight(data.inventory),vRP.getInventoryMaxWeight(user_id)})] = {function() end}
 
           submenu.onclose = function() 
             close_count = close_count-1

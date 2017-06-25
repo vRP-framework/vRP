@@ -5,7 +5,6 @@
 -- reagents => products (reagents can be nothing, as for an harvest transformer)
 
 local cfg = require("resources/vrp/cfg/item_transformers")
-local cfg_inventory = require("resources/vrp/cfg/inventory")
 local lang = vRP.lang
 
 -- api
@@ -56,7 +55,7 @@ local function tr_tick(tr) -- do transformer tick
         local new_weight = vRP.getInventoryWeight(user_id)+vRP.computeItemsWeight(out_witems)-vRP.computeItemsWeight(in_witems)
 
         local inventory_ok = true
-        if new_weight > cfg_inventory.inventory_weight then
+        if new_weight > vRP.getInventoryMaxWeight(user_id) then
           inventory_ok = false
           vRPclient.notify(tonumber(k), {lang.inventory.full()})
         end

@@ -34,7 +34,8 @@ vRP.defHomeComponent("chest", chest_create, chest_destroy)
 -- WARDROBE
 
 local function wardrobe_create(owner_id, stype, sid, config, x, y, z, player)
-  local wardrobe_enter = function(player,area)
+  local wardrobe_enter = nil
+  wardrobe_enter = function(player,area)
     local user_id = vRP.getUserId(player)
     if user_id ~= nil and user_id == owner_id then
       -- notify player if wearing a uniform

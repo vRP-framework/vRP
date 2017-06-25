@@ -54,7 +54,7 @@ See also (and use it as a basis to understand how to develop extensions for vRP)
 * police research per veh type
 * display some permission/group count
 * advanced parametric items (bag of money, crate of weapons)
-* negative permission ("!police.askid" -> ignore any police.askid permission)
+* advanced permissions, parsed aptitude permissions, negative permission ("!police.askid" -> ignore any police.askid permission)
 
 ## NOTES
 ### Homes
