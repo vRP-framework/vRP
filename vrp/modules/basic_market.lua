@@ -37,7 +37,7 @@ local function build_market_menus()
               if new_weight <= vRP.getInventoryMaxWeight(user_id) then
                 -- payment
                 if vRP.tryPayment(user_id,amount*price) then
-                  vRP.giveInventoryItem(user_id,idname,amount)
+                  vRP.giveInventoryItem(user_id,idname,amount,true)
                   vRPclient.notify(player,{lang.money.paid({amount*price})})
                 else
                   vRPclient.notify(player,{lang.money.not_enough()})

@@ -133,7 +133,7 @@ local function business_enter()
         vRP.prompt(player,lang.business.launder.prompt({launder_left}),""..launder_left,function(player,amount)
           amount = tonumber(amount)
           if amount > 0 and amount <= launder_left then
-            if vRP.tryGetInventoryItem(user_id,"dirty_money",amount) then
+            if vRP.tryGetInventoryItem(user_id,"dirty_money",amount,false) then
               -- add laundered amount
               q_add_laundered:bind("@user_id",user_id)
               q_add_laundered:bind("@laundered",amount)

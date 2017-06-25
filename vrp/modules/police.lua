@@ -361,8 +361,8 @@ local choice_seize_items = {function(player, choice)
               if amount > 0 then
                 local item = vRP.items[v]
                 if item then -- do transfer
-                  if vRP.tryGetInventoryItem(nuser_id,v,amount) then
-                    vRP.giveInventoryItem(user_id,v,amount)
+                  if vRP.tryGetInventoryItem(nuser_id,v,amount,true) then
+                    vRP.giveInventoryItem(user_id,v,amount,false)
                     vRPclient.notify(player,{lang.police.menu.seize.seized({item.name,amount})})
                   end
                 end

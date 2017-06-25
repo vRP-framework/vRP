@@ -507,26 +507,33 @@ vRP.tryDeposit(user_id,amount)
 
 The inventory is autosaved and, as the wallet, gets empty upon death.
 
+##### Items
+
+Items are simple identifiers associated with a quantity in an inventory. But they can also be parametrics.
+
+Parametrics items are identified like other items in the inventory but also have arguments as: `weapon|pistol` instead of just an ID. Parametric items don't contain any data, they are generic item definitions that will be specialized by the arguments.
+
 ```lua
 -- PROXY API
 
--- define an inventory item (call this once at server start)
+-- define an inventory item (call this at server start) (parametric or plain text data)
 -- idname: unique item name
--- name: display name
--- description: item description (html)
--- choices: menudata choices (see gui api)
--- weight: weight of the item (thinking in kg is a good norm)
+-- name: display name or genfunction
+-- description: item description (html) or genfunction
+-- choices: menudata choices (see gui api) only as genfunction or nil
+-- weight: weight or genfunction
+--
+-- genfunction are functions returning a correct value as: function(args) return value end
+-- where args is a list of {base_idname,arg,arg,arg,...}
+
 vRP.defInventoryItem(idname,name,description,choices,weight)
 
--- return item name or idname if not found
-vRP.getItemName(idname)
-
 -- add item to a connected user inventory
-vRP.giveInventoryItem(user_id,idname,amount)
+vRP.giveInventoryItem(user_id,idname,amount,notify)
 
 -- try to get item from a connected user inventory
 -- return true if the item has been found and the quantity removed
-vRP.tryGetInventoryItem(user_id,idname,amount)
+vRP.tryGetInventoryItem(user_id,idname,amount,notify)
 
 -- clear connected user inventory
 vRP.clearInventory(user_id)
@@ -536,6 +543,9 @@ vRP.computeItemsWeight(items)
 
 -- return user inventory total weight
 vRP.getInventoryWeight(user_id)
+
+-- return user inventory max weight
+vRP.getInventoryMaxWeight(user_id)
 
 -- open a chest by name
 -- cb_close(): called when the chest is closed
@@ -574,7 +584,7 @@ wb_choices["Drink"] = {function(player,choice) -- add drink action
 end,"Do it."}
 
 -- add item definition
-vRP.defInventoryItem({"water_bottle","Water bottle","Drink this my friend.",wb_choices,0.5})
+vRP.defInventoryItem({"water_bottle","Water bottle","Drink this my friend.",function() return wb_choices end,0.5})
 
 -- (at any time later) give 2 water bottles to a connected user
 vRP.giveInventoryItem({user_id,"water_bottle",2})

@@ -24,6 +24,6 @@ pills_choices["Take"] = {function(player,choice)
   end
 end}
 
-items["pills"] = {"Pills","A simple medication.",pills_choices,0.1}
+items["pills"] = {"Pills","A simple medication.",function(args) return pills_choices end,0.1}
 
 return items

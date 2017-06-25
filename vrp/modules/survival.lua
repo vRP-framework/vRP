@@ -187,13 +187,11 @@ local choice_revive = {function(player,choice)
       if nuser_id ~= nil then
         vRPclient.isInComa(nplayer,{}, function(in_coma)
           if in_coma then
-            if vRP.tryGetInventoryItem(user_id,"medkit",1) then
+            if vRP.tryGetInventoryItem(user_id,"medkit",1,true) then
               vRPclient.playAnim(player,{false,revive_seq,false}) -- anim
               SetTimeout(15000, function()
                 vRPclient.varyHealth(nplayer,{50}) -- heal 50
               end)
-            else
-              vRPclient.notify(player,{lang.inventory.missing({vRP.getItemName("medkit"),1})})
             end
           else
             vRPclient.notify(player,{lang.emergency.menu.revive.not_in_coma()})

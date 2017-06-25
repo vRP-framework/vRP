@@ -214,7 +214,7 @@ local function ch_giveitem(player,choice)
       idname = idname or ""
       vRP.prompt(player,"Amount:","",function(player,amount) 
         amount = parseInt(amount)
-        vRP.giveInventoryItem(user_id, idname, amount)
+        vRP.giveInventoryItem(user_id, idname, amount,true)
       end)
     end)
   end

@@ -23,253 +23,66 @@ local function play_drink(player)
   vRPclient.playAnim(player,{true,seq,false})
 end
 
+-- gen food choices as genfunc
+-- idname
+-- ftype: eat or drink
+-- vary_hunger
+-- vary_thirst
+local function gen(ftype, vary_hunger, vary_thirst)
+  local fgen = function(args)
+    local idname = args[1]
+    local choices = {}
+    local act = "Unknown"
+    if ftype == "eat" then act = "Eat" elseif ftype == "drink" then act = "Drink" end
+    local name = vRP.getItemName(idname)
+
+    choices[act] = {function(player,choice)
+      local user_id = vRP.getUserId(player)
+      if user_id ~= nil then
+        if vRP.tryGetInventoryItem(user_id,idname,1,false) then
+          if vary_hunger ~= 0 then vRP.varyHunger(user_id,vary_hunger) end
+          if vary_thirst ~= 0 then vRP.varyThirst(user_id,vary_thirst) end
+
+          if ftype == "drink" then
+            vRPclient.notify(player,{"~b~ Drinking "..name.."."})
+            play_drink(player)
+          elseif ftype == "eat" then
+            vRPclient.notify(player,{"~o~ Eating "..name.."."})
+            play_eat(player)
+          end
+
+          vRP.closeMenu(player)
+        end
+      end
+    end}
+
+    return choices
+  end
+
+  return fgen
+end
+
 -- DRINKS --
--- create Water item
-local water_choices = {}
-water_choices["Drink"] = {function(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
-    if vRP.tryGetInventoryItem(user_id,"water",1) then
-      vRP.varyThirst(user_id,-25)
-      vRPclient.notify(player,{"~b~ Drinking water."})
-      play_drink(player)
-      vRP.closeMenu(player)
-    end
-  end
-end}
-items["water"] = {"Water bottle","",water_choices,0.5}
 
--- create Milk item
-local milk_choices = {}
-milk_choices["Drink"] = {function(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
-    if vRP.tryGetInventoryItem(user_id,"milk",1) then
-      vRP.varyThirst(user_id,-5)
-      vRPclient.notify(player,{"~b~ Drinking Milk."})
-      play_drink(player)
-      vRP.closeMenu(player)
-    end
-  end
-end}
-items["milk"] = {"Milk","",milk_choices,0.5}
-
--- create Coffee item
-local coffee_choices = {}
-coffee_choices["Drink"] = {function(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
-    if vRP.tryGetInventoryItem(user_id,"coffee",1) then
-      vRP.varyThirst(user_id,-10)
-      vRPclient.notify(player,{"~b~ Drinking Coffee."})
-      play_drink(player)
-      vRP.closeMenu(player)
-    end
-  end
-end}
-items["coffee"] = {"Coffee","",coffee_choices,0.2}
-
--- create Tea item
-local tea_choices = {}
-tea_choices["Drink"] = {function(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
-    if vRP.tryGetInventoryItem(user_id,"tea",1) then
-      vRP.varyThirst(user_id,-15)
-      vRPclient.notify(player,{"~b~ Drinking Tea."})
-      play_drink(player)
-      vRP.closeMenu(player)
-    end
-  end
-end}
-items["tea"] = {"Tea","",tea_choices,0.2}
-
--- create iceTea item
-local icetea_choices = {}
-icetea_choices["Drink"] = {function(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
-    if vRP.tryGetInventoryItem(user_id,"icetea",1) then
-      vRP.varyThirst(user_id,-20)
-      vRPclient.notify(player,{"~b~ Drinking ice-Tea."})
-      play_drink(player)
-      vRP.closeMenu(player)
-    end
-  end
-end}
-items["icetea"] = {"ice-Tea","",icetea_choices,0.5}
-
--- create Orange Juice item
-local orangejuice_choices = {}
-orangejuice_choices["Drink"] = {function(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
-    if vRP.tryGetInventoryItem(user_id,"orangejuice",1) then
-      vRP.varyThirst(user_id,-25)
-      vRPclient.notify(player,{"~b~ Drinking Orange Juice."})
-      play_drink(player)
-      vRP.closeMenu(player)
-    end
-  end
-end}
-items["orangejuice"] = {"Orange Juice.","",orangejuice_choices,0.5}
-
--- create Goca Gola item
-local gocagola_choices = {}
-gocagola_choices["Drink"] = {function(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
-    if vRP.tryGetInventoryItem(user_id,"gocagola",1) then
-      vRP.varyThirst(user_id,-35)
-      vRPclient.notify(player,{"~b~ Drinking Goca Gola."})
-      play_drink(player)
-      vRP.closeMenu(player)
-    end
-  end
-end}
-items["gocagola"] = {"Goca Gola","",gocagola_choices,0.3}
-
--- create RedGull item
-local redgull_choices = {}
-redgull_choices["Drink"] = {function(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
-    if vRP.tryGetInventoryItem(user_id,"redgull",1) then
-      vRP.varyThirst(user_id,-40)
-      vRPclient.notify(player,{"~b~ Drinking RedGull."})
-      play_drink(player)
-      vRP.closeMenu(player)
-    end
-  end
-end}
-items["redgull"] = {"RedGull","",redgull_choices,0.3}
-
--- create Lemon limonad item
-local lemonlimonad_choices = {}
-lemonlimonad_choices["Drink"] = {function(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
-    if vRP.tryGetInventoryItem(user_id,"lemonlimonad",1) then
-      vRP.varyThirst(user_id,-45)
-      vRPclient.notify(player,{"~b~ Drinking Lemon limonad."})
-      play_drink(player)
-      vRP.closeMenu(player)
-    end
-  end
-end}
-items["lemonlimonad"] = {"Lemon limonad","",lemonlimonad_choices,0.3}
-
--- create Vodka item
-local vodka_choices = {}
-vodka_choices["Drink"] = {function(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
-    if vRP.tryGetInventoryItem(user_id,"vodka",1) then
-      vRP.varyThirst(user_id,-65)
-      vRP.varyHunger(user_id, 15)
-      vRPclient.notify(player,{"~b~ Drinking Vodka."})
-      vRPclient.playScreenEffect(player,{"DrugsDrivingIn",3*60})
-      play_drink(player)
-      vRP.closeMenu(player)
-    end
-  end
-end}
-items["vodka"] = {"Vodka","",vodka_choices,0.5}
+items["water"] = {"Water bottle","", gen("drink",0,-25),0.5}
+items["milk"] = {"Milk","", gen("drink",0,-5),0.5}
+items["coffee"] = {"Coffee","", gen("drink",0,-10),0.2}
+items["tea"] = {"Tea","", gen("drink",0,-15),0.2}
+items["icetea"] = {"ice-Tea","", gen("drink",0,-20), 0.5}
+items["orangejuice"] = {"Orange Juice.","", gen("drink",0,-25),0.5}
+items["gocagola"] = {"Goca Gola","", gen("drink",0,-35),0.3}
+items["redgull"] = {"RedGull","", gen("drink",0,-40),0.3}
+items["lemonlimonad"] = {"Lemon limonad","", gen("drink",0,-45),0.3}
+items["vodka"] = {"Vodka","", gen("drink",15,-65),0.5}
 
 --FOOD
 
 -- create Breed item
-local breed_choices = {}
-breed_choices["Eat"] = {function(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
-    if vRP.tryGetInventoryItem(user_id,"bread",1) then
-      vRP.varyHunger(user_id,-10)
-      vRPclient.notify(player,{"~o~ Eating Bread."})
-      play_eat(player)
-      vRP.closeMenu(player)
-    end
-  end
-end}
-
-items["bread"] = {"Bread","",breed_choices,0.5}
-
--- create Donut item
-local donut_choices = {}
-donut_choices["Eat"] = {function(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
-    if vRP.tryGetInventoryItem(user_id,"donut",1) then
-      vRP.varyHunger(user_id,-15)
-      vRPclient.notify(player,{"~o~ Eating Donut."})
-      play_eat(player)
-      vRP.closeMenu(player)
-    end
-  end
-end}
-items["donut"] = {"Donut","",donut_choices,0.2}
-
--- create Tacos item
-local tacos_choices = {}
-tacos_choices["Eat"] = {function(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
-    if vRP.tryGetInventoryItem(user_id,"tacos",1) then
-      vRP.varyHunger(user_id,-25)
-      vRPclient.notify(player,{"~o~ Eating Tacos."})
-      play_eat(player)
-      vRP.closeMenu(player)
-    end
-  end
-end}
-items["tacos"] = {"Tacos","",tacos_choices,0.2}
-
--- create sandwich item
-local sd_choices = {}
-sd_choices["Eat"] = {function(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
-    if vRP.tryGetInventoryItem(user_id,"sandwich",1) then
-      vRP.varyHunger(user_id,-25)
-      vRPclient.notify(player,{"~o~ Eating sandwich."})
-      play_eat(player)
-      vRP.closeMenu(player)
-    end
-  end
-end}
-
-items["sandwich"] = {"Sandwich","A tasty snack.",sd_choices,0.5}
-
--- create Kebab item
-local kebab_choices = {}
-kebab_choices["Eat"] = {function(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
-    if vRP.tryGetInventoryItem(user_id,"kebab",1) then
-      vRP.varyHunger(user_id,-45)
-      vRPclient.notify(player,{"~o~ Eating Kebab."})
-      play_eat(player)
-      vRP.closeMenu(player)
-    end
-  end
-end}
-
-items["kebab"] = {"Kebab","",kebab_choices,0.85}
-
--- create Premium Donut item
-local pdonut_choices = {}
-pdonut_choices["Eat"] = {function(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
-    if vRP.tryGetInventoryItem(user_id,"pdonut",1) then
-      vRP.varyHunger(user_id,-25)
-      vRPclient.notify(player,{"~o~ Eating Premium Donut."})
-      play_eat(player)
-      vRP.closeMenu(player)
-    end
-  end
-end}
-
-items["pdonut"] = {"Premium Donut","",pdonut_choices,0.5}
+items["bread"] = {"Bread","", gen("eat",-10,0),0.5}
+items["donut"] = {"Donut","", gen("eat",-15,0),0.2}
+items["tacos"] = {"Tacos","", gen("eat",-20,0),0.2}
+items["sandwich"] = {"Sandwich","A tasty snack.", gen("eat",-25,0),0.5}
+items["kebab"] = {"Kebab","", gen("eat",-45,0),0.85}
+items["pdonut"] = {"Premium Donut","", gen("eat",-25,0),0.5}
 
 return items
