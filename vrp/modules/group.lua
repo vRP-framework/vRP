@@ -130,17 +130,77 @@ end
 -- check if the user has a specific permission
 function vRP.hasPermission(user_id, perm)
   local user_groups = vRP.getUserGroups(user_id)
-  for k,v in pairs(user_groups) do
-    local group = groups[k]
-    if group then
-      for l,w in pairs(group) do -- for each group permission
-        if l ~= "_config" and w == perm then return true end
+
+  local fchar = string.sub(perm,1,1)
+
+  if fchar == "@" then -- special aptitude permission
+    local _perm = string.sub(perm,2,string.len(perm))
+    local parts = splitString(_perm,".")
+    if #parts == 3 then -- decompose group.aptitude.operator
+      local group = parts[1]
+      local aptitude = parts[2]
+      local op = parts[3]
+
+      local alvl = math.floor(vRP.expToLevel(vRP.getExp(user_id,group,aptitude)))
+
+      local fop = string.sub(op,1,1)
+      if fop == "<" then  -- less (group.aptitude.<x)
+        local lvl = parseInt(string.sub(op,2,string.len(op)))
+        if alvl < lvl then return true end
+      elseif fop == ">" then -- greater (group.aptitude.>x)
+        local lvl = parseInt(string.sub(op,2,string.len(op)))
+        if alvl > lvl then return true end
+      else -- equal (group.aptitude.x)
+        local lvl = parseInt(string.sub(op,1,string.len(op)))
+        if alvl == lvl then return true end
+      end
+    end
+  elseif fchar == "#" then -- special item permission
+    local _perm = string.sub(perm,2,string.len(perm))
+    local parts = splitString(_perm,".")
+    if #parts == 2 then -- decompose item.operator
+      local item = parts[1]
+      local op = parts[2]
+
+      local amount = vRP.getInventoryItemAmount(user_id, item)
+
+      local fop = string.sub(op,1,1)
+      if fop == "<" then  -- less (item.<x)
+        local n = parseInt(string.sub(op,2,string.len(op)))
+        if amount < n then return true end
+      elseif fop == ">" then -- greater (item.>x)
+        local n = parseInt(string.sub(op,2,string.len(op)))
+        if amount > n then return true end
+      else -- equal (item.x)
+        local n = parseInt(string.sub(op,1,string.len(op)))
+        if amount == n then return true end
+      end
+    end
+  else -- regular plain permission
+    for k,v in pairs(user_groups) do
+      local group = groups[k]
+      if group then
+        for l,w in pairs(group) do -- for each group permission
+          if l ~= "_config" and w == perm then return true end
+        end
       end
     end
   end
 
   return false
 end
+
+-- check if the user has a specific list of permissions (all of them)
+function vRP.hasPermissions(user_id, perms)
+  for k,v in pairs(perms) do
+    if not vRP.hasPermission(user_id, v) then
+      return false
+    end
+  end
+
+  return true
+end
+
 
 -- GROUP SELECTORS
 

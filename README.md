@@ -55,6 +55,7 @@ See also (and use it as a basis to understand how to develop extensions for vRP)
 * display some permission/group count
 * advanced parametric items (bag of money, crate of weapons)
 * advanced permissions, parsed aptitude permissions, negative permission ("!police.askid" -> ignore any police.askid permission)
+* itemtransformers home component
 
 ## NOTES
 ### Homes
@@ -289,6 +290,30 @@ vRP.playSound(dict,name)
 ```
 
 #### Group/permission
+
+Group and permissions are a way to limit features to specific players.
+Each group have a set of permissions defined in `cfg/groups.lua`.
+Permissions can be used with most of the vRP modules, giving the ability to create specific garages, item transformers, etc.
+
+##### Regular permissions
+
+Regular permissions are plain text permissions, they can be added to groups.
+
+##### Special item permission
+
+You can use a special permission to check for items.
+Form: `#idname.operator`, operators to check the amount are greater `>`, less `<`, equal ``. Ex:
+* `#tacos.>0` -> one or more tacos
+* `#weed.1` -> exactly one weed
+
+##### Special aptitude permission
+
+You can use a special permission to check for aptitudes.
+Form: `@group.aptitude.operator`, operators to check the level are greater `>`, less `<`, equal ``. Ex:
+* `@physical.strength.3` -> strength level equal to 4
+* `@science.chemicals.>4` -> chemicals science level greater or equal to 5
+
+##### API
 
 ```lua
 -- PROXY API
