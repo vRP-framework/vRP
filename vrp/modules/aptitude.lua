@@ -170,7 +170,7 @@ end
 
 local player_apts = {}
 
-local function choice_aptitude(player,choice)
+local function ch_aptitude(player,choice)
   -- display aptitudes
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
@@ -207,7 +207,7 @@ AddEventHandler("vRP:buildMainMenu",function(player)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
     local choices = {}
-    choices[lang.aptitude.title()] = {choice_aptitude,lang.aptitude.description()}
+    choices[lang.aptitude.title()] = {ch_aptitude,lang.aptitude.description()}
 
     vRP.buildMainMenu(player,choices)
   end

@@ -302,15 +302,15 @@ Regular permissions are plain text permissions, they can be added to groups.
 ##### Special item permission
 
 You can use a special permission to check for items.
-Form: `#idname.operator`, operators to check the amount are greater `>`, less `<`, equal ``. Ex:
+Form: `#idname.operator`, operators to check the amount are greater `>`, less `<`, equal ` `. Ex:
 * `#tacos.>0` -> one or more tacos
 * `#weed.1` -> exactly one weed
 
 ##### Special aptitude permission
 
 You can use a special permission to check for aptitudes.
-Form: `@group.aptitude.operator`, operators to check the level are greater `>`, less `<`, equal ``. Ex:
-* `@physical.strength.3` -> strength level equal to 4
+Form: `@group.aptitude.operator`, operators to check the level are greater `>`, less `<`, equal ` `. Ex:
+* `@physical.strength.3` -> strength level equal to 3
 * `@science.chemicals.>4` -> chemicals science level greater or equal to 5
 
 ##### API
@@ -329,6 +329,9 @@ vRP.hasGroup(user_id,group)
 
 -- check if the user has a specific permission
 vRP.hasPermission(user_id, perm)
+
+-- check if the user has a specific list of permissions (all of them)
+vRP.hasPermissions(user_id, perms)
 
 -- get user group by group type
 -- return group name or an empty string

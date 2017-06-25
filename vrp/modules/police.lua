@@ -470,41 +470,50 @@ AddEventHandler("vRP:buildMainMenu",function(player)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
     local choices = {}
-    if vRP.hasPermission(user_id,"police.handcuff") then
-      choices[lang.police.menu.handcuff.title()] = choice_handcuff
-    end
 
-    if vRP.hasPermission(user_id,"police.putinveh") then
-      choices[lang.police.menu.putinveh.title()] = choice_putinveh
-    end
+    -- build admin menu
+    choices[lang.police.title()] = {function(player,choice)
+      local menu = {name=lang.police.title(),css={top="75px",header_color="rgba(0,125,255,0.75)"}}
+      menu.onclose = function(player) vRP.openMainMenu(player) end -- nest menu
 
-    if vRP.hasPermission(user_id,"police.getoutveh") then
-      choices[lang.police.menu.getoutveh.title()] = choice_getoutveh
-    end
+      if vRP.hasPermission(user_id,"police.handcuff") then
+        menu[lang.police.menu.handcuff.title()] = choice_handcuff
+      end
 
-    if vRP.hasPermission(user_id,"police.askid") then
-      choices[lang.police.menu.askid.title()] = choice_askid
-    end
+      if vRP.hasPermission(user_id,"police.putinveh") then
+        menu[lang.police.menu.putinveh.title()] = choice_putinveh
+      end
 
-    if vRP.hasPermission(user_id,"police.check") then
-      choices[lang.police.menu.check.title()] = choice_check
-    end
+      if vRP.hasPermission(user_id,"police.getoutveh") then
+        menu[lang.police.menu.getoutveh.title()] = choice_getoutveh
+      end
 
-    if vRP.hasPermission(user_id,"police.seize.weapons") then
-      choices[lang.police.menu.seize.weapons.title()] = choice_seize_weapons
-    end
+      if vRP.hasPermission(user_id,"police.askid") then
+        menu[lang.police.menu.askid.title()] = choice_askid
+      end
 
-    if vRP.hasPermission(user_id,"police.seize.items") then
-      choices[lang.police.menu.seize.items.title()] = choice_seize_items
-    end
+      if vRP.hasPermission(user_id,"police.check") then
+        menu[lang.police.menu.check.title()] = choice_check
+      end
 
-    if vRP.hasPermission(user_id,"police.jail") then
-      choices[lang.police.menu.jail.title()] = choice_jail
-    end
+      if vRP.hasPermission(user_id,"police.seize.weapons") then
+        menu[lang.police.menu.seize.weapons.title()] = choice_seize_weapons
+      end
 
-    if vRP.hasPermission(user_id,"police.fine") then
-      choices[lang.police.menu.fine.title()] = choice_fine
-    end
+      if vRP.hasPermission(user_id,"police.seize.items") then
+        menu[lang.police.menu.seize.items.title()] = choice_seize_items
+      end
+
+      if vRP.hasPermission(user_id,"police.jail") then
+        menu[lang.police.menu.jail.title()] = choice_jail
+      end
+
+      if vRP.hasPermission(user_id,"police.fine") then
+        menu[lang.police.menu.fine.title()] = choice_fine
+      end
+
+      vRP.openMenu(player,menu)
+    end}
 
     vRP.buildMainMenu(player,choices)
   end
