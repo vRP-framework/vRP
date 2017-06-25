@@ -82,8 +82,8 @@ function vRP.generateStringNumber(format) -- (ex: DDDLLL, D => digit, L => lette
 
   local number = ""
   for i=0,#format-1 do
-    if format[i] == "D" then number = number..string.char(zbyte+math.random(0,9)) 
-    elseif format[i] == "L" then number = number..string.char(abyte+math.random(0,25)) 
+    if format[i] == "D" then number = number..string.char(zbyte+math.random(0,9+1)) 
+    elseif format[i] == "L" then number = number..string.char(abyte+math.random(0,25+1)) 
     else number = number..format[i] end
   end
 
@@ -139,9 +139,9 @@ AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
     q_init_user:bind("@user_id",user_id) -- create if not exists player identity
     q_init_user:bind("@registration",vRP.generateRegistrationNumber())
     q_init_user:bind("@phone",vRP.generatePhoneNumber())
-    q_init_user:bind("@firstname",cfg.random_first_names[math.random(1,#cfg.random_first_names)])
-    q_init_user:bind("@name",cfg.random_last_names[math.random(1,#cfg.random_last_names)])
-    q_init_user:bind("@age",math.random(25,40))
+    q_init_user:bind("@firstname",cfg.random_first_names[math.random(1,#cfg.random_first_names+1)])
+    q_init_user:bind("@name",cfg.random_last_names[math.random(1,#cfg.random_last_names+1)])
+    q_init_user:bind("@age",math.random(25,40+1))
     q_init_user:execute()
   end
 end)

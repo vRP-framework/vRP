@@ -133,7 +133,7 @@ local function gametable_create(owner_id, stype, sid, cid, config, x, y, z, play
                 if bet_opened then
                   bet_opened = false
                   -- select winner
-                  local wplayer = bet_players[math.random(1,#bet_players)]
+                  local wplayer = bet_players[math.random(1,#bet_players+1)]
                   local wuser_id = vRP.getUserId(wplayer)
                   if wuser_id ~= nil then
                     vRP.giveMoney(wuser_id, bet_total)
