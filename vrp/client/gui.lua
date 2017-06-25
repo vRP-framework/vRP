@@ -27,7 +27,7 @@ RegisterNUICallback("menu",function(data,cb)
   if data.act == "close" then
     vRPserver.closeMenu({data.id})
   elseif data.act == "valid" then
-    vRPserver.validMenuChoice({data.id,data.choice})
+    vRPserver.validMenuChoice({data.id,data.choice,data.mod})
   end
 end)
 

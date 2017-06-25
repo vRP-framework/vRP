@@ -19,7 +19,7 @@ window.addEventListener("load",function(){
   requestmgr.onResponse = function(id,ok){ $.post("http://vrp/request",JSON.stringify({act: "response", id: id, ok: ok})); }
   wprompt.onClose = function(){ $.post("http://vrp/prompt",JSON.stringify({act: "close", result: wprompt.result})); }
   dynamic_menu.onClose = function(){ $.post("http://vrp/menu",JSON.stringify({act: "close", id: dynamic_menu.id})); }
-  dynamic_menu.onValid = function(choice){ $.post("http://vrp/menu",JSON.stringify({act: "valid", id: dynamic_menu.id, choice: choice})); }
+  dynamic_menu.onValid = function(choice,mod){ $.post("http://vrp/menu",JSON.stringify({act: "valid", id: dynamic_menu.id, choice: choice, mod: mod})); }
 
  //request config
  $.post("http://vrp/cfg",""); 
@@ -140,12 +140,16 @@ window.addEventListener("load",function(){
           current_menu.moveDown();
       }
       else if(data.event == "LEFT"){
+        if(!wprompt.opened)
+          current_menu.valid(-1);
       }
       else if(data.event == "RIGHT"){
+        if(!wprompt.opened)
+          current_menu.valid(1);
       }
       else if(data.event == "SELECT"){
         if(!wprompt.opened)
-          current_menu.valid();
+          current_menu.valid(0);
       }
       else if(data.event == "CANCEL"){
         if(wprompt.opened)

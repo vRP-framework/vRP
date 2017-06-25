@@ -38,37 +38,7 @@ function vRP.openSkinshop(source,parts)
       local drawables = {}
       local textures = {}
 
-      local ondrawable = function(player, choice)
-        local isprop, index = parse_part(parts[choice])
-
-        -- change drawable
-        local drawable = drawables[choice]
-        drawable[1] = drawable[1]+1
-
-        if isprop then
-          if drawable[1] >= drawable[2] then drawable[1] = -1 end -- circular selection (-1 for prop parts)
-        else
-          if drawable[1] >= drawable[2] then drawable[1] = 0 end -- circular selection
-        end
-
-        -- apply change
-        local custom = {}
-        custom[parts[choice]] = {drawable[1],textures[choice][1]}
-        vRPclient.setCustomization(source,{custom})
-
-        -- update max textures number
-        vRPclient.getDrawableTextures(source,{parts[choice],drawable[1]},function(n)
-          textures[choice][2] = n
-
-          if textures[choice][1] >= n then
-            textures[choice][1] = 0 -- reset texture number
-          end
-        end)
-      end
-
       local ontexture = function(player, choice)
-        choice = string.sub(choice,2) -- remove star
-
         -- change texture
         local texture = textures[choice]
         texture[1] = texture[1]+1
@@ -78,6 +48,40 @@ function vRP.openSkinshop(source,parts)
         local custom = {}
         custom[parts[choice]] = {drawables[choice][1],texture[1]}
         vRPclient.setCustomization(source,{custom})
+      end
+
+      local ondrawable = function(player, choice, mod)
+        if mod == 0 then -- tex variation
+          ontexture(player,choice)
+        else
+          local isprop, index = parse_part(parts[choice])
+
+          -- change drawable
+          local drawable = drawables[choice]
+          drawable[1] = drawable[1]+mod
+
+          if isprop then
+            if drawable[1] >= drawable[2] then drawable[1] = -1 -- circular selection (-1 for prop parts)
+            elseif drawable[1] < -1 then drawable[1] = drawable[2]-1 end 
+          else
+            if drawable[1] >= drawable[2] then drawable[1] = 0 -- circular selection
+            elseif drawable[1] < 0 then drawable[1] = drawable[2] end 
+          end
+
+          -- apply change
+          local custom = {}
+          custom[parts[choice]] = {drawable[1],textures[choice][1]}
+          vRPclient.setCustomization(source,{custom})
+
+          -- update max textures number
+          vRPclient.getDrawableTextures(source,{parts[choice],drawable[1]},function(n)
+            textures[choice][2] = n
+
+            if textures[choice][1] >= n then
+              textures[choice][1] = 0 -- reset texture number
+            end
+          end)
+        end
       end
 
       for k,v in pairs(parts) do -- for each part, get number of drawables and build menu
@@ -104,7 +108,6 @@ function vRP.openSkinshop(source,parts)
 
         -- add menu choices
         menudata[k] = {ondrawable}
-        menudata["*"..k] = {ontexture}
       end
 
       menudata.onclose = function(player)

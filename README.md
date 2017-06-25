@@ -722,7 +722,8 @@ menudata.onclose = function(player)
   print("menu closed")
 end
 
-local onchoose = function(player,choice)
+local onchoose = function(player,choice,mod)
+  -- mod will be input modulation -1,0,1 (left,(c)enter,right)
   print("player choose "..choice)
   vRP.closeMenu({source}) -- ({} because proxy call) close the menu after the first choice (an action menu for example)
 end

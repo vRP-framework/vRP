@@ -120,7 +120,7 @@ function tvRP.closeMenu(id)
   end
 end
 
-function tvRP.validMenuChoice(id,choice)
+function tvRP.validMenuChoice(id,choice,mod)
   local menu = client_menus[id]
   if menu and menu.source == source then
     -- call choice callback
@@ -128,7 +128,7 @@ function tvRP.validMenuChoice(id,choice)
     if ch then
       local cb = ch[1]
       if cb then
-        cb(source,choice)
+        cb(source,choice,mod)
       end
     end
   end

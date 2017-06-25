@@ -123,10 +123,10 @@ Menu.prototype.moveDown = function()
     this.setSelected(this.selected+1);
 }
 
-Menu.prototype.valid = function()
+Menu.prototype.valid = function(mod)
 {
   if(this.selected >= 0 && this.selected < this.choices.length){
     if(this.onValid && this.opened)
-      this.onValid(this.choices[this.selected][0])
+      this.onValid(this.choices[this.selected][0], mod)
   }
 }
