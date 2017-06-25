@@ -80,7 +80,7 @@ local function build_client_gunshops(source)
 
         local function gunshop_enter()
           local user_id = vRP.getUserId(source)
-          if user_id ~= nil and (gcfg.permission == nil or vRP.hasPermission(user_id,gcfg.permission)) then
+          if user_id ~= nil and vRP.hasPermissions(user_id,gcfg.permissions or {}) then
             vRP.openMenu(source,menu) 
           end
         end

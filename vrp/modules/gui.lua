@@ -206,7 +206,7 @@ local function build_client_static_menus(source)
       if menu and smenu then
         local function smenu_enter()
           local user_id = vRP.getUserId(source)
-          if user_id ~= nil and (smenu.permission == nil or vRP.hasPermission(user_id,smenu.permission)) then
+          if user_id ~= nil and vRP.hasPermissions(user_id,smenu.permissions or {}) then
             vRP.openMenu(source,menu) 
           end
         end

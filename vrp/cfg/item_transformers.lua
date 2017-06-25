@@ -8,7 +8,7 @@ cfg.item_transformers = {
   -- example of harvest item transformer
   {
     name="Water bottles/tacos tree", -- menu name
-    -- permission = "harvest.water_bottle", -- you can add a permission
+    -- permissions = {"harvest.water_bottle_tacos"}, -- you can add permissions
     r=0,g=125,b=255, -- color
     max_units=20,
     units_per_minute=10,
@@ -48,7 +48,7 @@ cfg.hidden_transformers = {
   ["weed field"] = {
     def = {
       name="Weed field", -- menu name
-      -- permission = "harvest.water_bottle", -- you can add a permission
+      -- permissions = {"harvest.weed"}, -- you can add permissions
       r=0,g=200,b=0, -- color
       max_units=30,
       units_per_minute=1,

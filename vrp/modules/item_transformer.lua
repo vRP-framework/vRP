@@ -174,7 +174,7 @@ function vRP.setItemTransformer(name,itemtr)
   -- build area
   tr.enter = function(player,area)
     local user_id = vRP.getUserId(player)
-    if user_id ~= nil and (itemtr.permission == nil or vRP.hasPermission(user_id,itemtr.permission)) then
+    if user_id ~= nil and vRP.hasPermissions(user_id,itemtr.permissions or {}) then
       vRP.openMenu(player, tr.menu) -- open menu
     end
   end

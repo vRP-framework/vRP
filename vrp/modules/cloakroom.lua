@@ -103,7 +103,7 @@ local function build_client_points(source)
 
       local function cloakroom_enter(source,area)
         local user_id = vRP.getUserId(source)
-        if user_id ~= nil and (gcfg.permission == nil or vRP.hasPermission(user_id,gcfg.permission)) then
+        if user_id ~= nil and vRP.hasPermissions(user_id,gcfg.permissions or {}) then
           if gcfg.not_uniform then -- not a uniform cloakroom
             -- notify player if wearing a uniform
             local data = vRP.getUserDataTable(user_id)
