@@ -7,24 +7,36 @@ local cfg = {}
 cfg.item_transformers = {
   -- example of harvest item transformer
   {
-    name="Water bottles tree", -- menu name
+    name="Water bottles/tacos tree", -- menu name
     -- permission = "harvest.water_bottle", -- you can add a permission
     r=0,g=125,b=255, -- color
-    max_units=10,
-    units_per_minute=5,
+    max_units=20,
+    units_per_minute=10,
     x=1861,y=3680.5,z=33.26, -- pos
     radius=5, height=1.5, -- area
-    action="Harvest", -- action name
-    description="Harvest some water bottles.", -- action description
-    in_money=0, -- money taken per unit
-    out_money=0, -- money earned per unit
-    reagents={}, -- items taken per unit
-    products={ -- items given per unit
-      ["water"] = 1
+    recipes = {
+      ["Harvest water"] = { -- action name
+        description="Harvest some water bottles.", -- action description
+        in_money=0, -- money taken per unit
+        out_money=0, -- money earned per unit
+        reagents={}, -- items taken per unit
+        products={ -- items given per unit
+          ["water"] = 1
+        }
+      },
+      ["Harvest tacos"] = { -- action name
+        description="Harvest some tacos.", -- action description
+        in_money=0, -- money taken per unit
+        out_money=0, -- money earned per unit
+        reagents={}, -- items taken per unit
+        products={ -- items given per unit
+          ["tacos"] = 1
+        }
+      }
     }
-    --, onstart = function(player) end, -- optional start callback
-    -- onstep = function(player) end, -- optional step callback
-    -- onstop = function(player) end -- optional stop callback
+    --, onstart = function(player,recipe) end, -- optional start callback
+    -- onstep = function(player,recipe) end, -- optional step callback
+    -- onstop = function(player,recipe) end -- optional stop callback
   }
 }
 
@@ -39,13 +51,16 @@ cfg.hidden_transformers = {
       units_per_minute=1,
       x=0,y=0,z=0, -- pos
       radius=5, height=1.5, -- area
-      action="Harvest", -- action name
-      description="Harvest some weed.", -- action description
-      in_money=0, -- money taken per unit
-      out_money=0, -- money earned per unit
-      reagents={}, -- items taken per unit
-      products={ -- items given per unit
-        ["weed"] = 1
+      recipes = {
+        ["Harvest"] = { -- action name
+          description="Harvest some weed.", -- action description
+          in_money=0, -- money taken per unit
+          out_money=0, -- money earned per unit
+          reagents={}, -- items taken per unit
+          products={ -- items given per unit
+            ["weed"] = 1
+          }
+        }
       }
     },
     positions = {
