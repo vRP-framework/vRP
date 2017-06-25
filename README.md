@@ -1021,6 +1021,7 @@ end)
 ```lua
 local MySQL = require("resources/vRP/lib/MySQL/MySQL")
 
+-- host can be "host" or "host:port"
 local sql = MySQL.open("127.0.0.1","user","password","database") -- add ,true) to enable debug for the connection
 local q_init = sql:prepare([[
 CREATE IF NOT EXISTS list(

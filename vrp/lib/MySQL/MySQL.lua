@@ -3,6 +3,7 @@
 --local lib = Mono.loadAssembly("resources/vRP/lib/MySQL/MySql.Data.dll").MySql.Data
 
 local Debug = require("resources/vrp/lib/Debug")
+require("resources/vrp/lib/utils") -- utils
 
 -- global assembly loading, can create conflict with different mysql versions loaded
 clr.System.Reflection.Assembly.LoadFrom("resources/vrp/lib/MySQL/MySql.Data.dll")
@@ -206,8 +207,16 @@ end
 -- begin MySQL module
 local MySQL = {}
 
+-- host can be "host" or "host:port"
 function MySQL.open(host,user,password,db,debug)
   local r = setmetatable({},{ __index = Connection })
+
+  -- parse port in host as "ip:port"
+  local host_parts = splitString(host,":")
+  if #host_parts >= 2 then
+    host = host_parts[1]..";port="..host_parts[2]
+  end
+
   r.connection = lib.MySqlClient.MySqlConnection("server="..host..";uid="..user..";pwd="..password..";database="..db..";")
   r.connection.Open()
   r.debug = debug
