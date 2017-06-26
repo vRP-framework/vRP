@@ -47,6 +47,7 @@ vRP.user_sources = {} -- user sources
 
 -- open MySQL connection
 vRP.sql = MySQL.open(config.db.host,config.db.user,config.db.password,config.db.database)
+vRP.sql = MySQL.open(config.db.host,config.db.port,config.db.user,config.db.password,config.db.database)
 
 -- queries
 local q_init = vRP.sql:prepare([[
