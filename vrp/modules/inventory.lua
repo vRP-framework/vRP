@@ -222,7 +222,9 @@ function vRP.tryGetInventoryItem(user_id,idname,amount,notify)
       if notify then
         local player = vRP.getUserSource(user_id)
         if player ~= nil then
-          vRPclient.notify(player,{lang.inventory.missing({vRP.getItemName(idname),amount-entry.amount})})
+          local entry_amount = 0
+          if entry then entry_amount = entry.amount end
+          vRPclient.notify(player,{lang.inventory.missing({vRP.getItemName(idname),amount-entry_amount})})
         end
       end
     end

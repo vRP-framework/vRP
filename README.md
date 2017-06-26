@@ -528,6 +528,17 @@ Parametrics items are identified like other items in the inventory but also have
 
 vRP.defInventoryItem(idname,name,description,choices,weight)
 
+-- return name, description, weight
+vRP.getItemDefinition(idname)
+
+vRP.getItemName(idname)
+
+vRP.getItemDescription(idname)
+
+vRP.getItemChoices(idname)
+
+vRP.getItemWeight(idname)
+
 -- add item to a connected user inventory
 vRP.giveInventoryItem(user_id,idname,amount,notify)
 

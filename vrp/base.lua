@@ -315,7 +315,7 @@ function task_save_datatables()
 end
 task_save_datatables()
 
-local max_pings = math.ceil(config.ping_timeout*60/30)
+local max_pings = math.ceil(config.ping_timeout*60/30)+1
 function task_timeout() -- kick users not sending ping event in 2 minutes
   local users = vRP.getUsers()
   for k,v in pairs(users) do
