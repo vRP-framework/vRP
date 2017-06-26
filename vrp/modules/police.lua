@@ -500,7 +500,6 @@ AddEventHandler("vRP:buildMainMenu",function(player)
     -- build police menu
     choices[lang.police.title()] = {function(player,choice)
       local menu = {name=lang.police.title(),css={top="75px",header_color="rgba(0,125,255,0.75)"}}
-      menu.onclose = function(player) vRP.openMainMenu(player) end -- nest menu
 
       if vRP.hasPermission(user_id,"police.handcuff") then
         menu[lang.police.menu.handcuff.title()] = choice_handcuff

@@ -294,7 +294,7 @@ Permissions can be used with most of the vRP modules, giving the ability to crea
 
 ##### Regular permissions
 
-Regular permissions are plain text permissions, they can be added to groups. You can add a `-` before the permission when adding it to a group, to negate the permission (even if other groups add the permission, it will be discarded).
+Regular permissions are plain text permissions, they can be added to groups. You can add a `-` before the permission to negate (even if other groups add the permission, they will be ignored).
 
 ##### Special item permission
 
