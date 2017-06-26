@@ -52,4 +52,17 @@ function splitString(str, sep)
   return t
 end
 
+function joinStrings(list, sep)
+  if sep == nil then sep = "" end
 
+  local str = ""
+  local count = 0
+  local size = #list
+  for k,v in pairs(list) do
+    count = count+1
+    str = str..v
+    if count < size then str = str..sep end
+  end
+
+  return str
+end

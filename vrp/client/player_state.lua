@@ -87,6 +87,8 @@ end
 function tvRP.getWeapons()
   local player = GetPlayerPed(-1)
 
+  local ammo_types = {} -- remember ammo type to not duplicate ammo amount
+
   local weapons = {}
   for k,v in pairs(weapon_types) do
     local hash = GetHashKey(v)
@@ -94,7 +96,13 @@ function tvRP.getWeapons()
       local weapon = {}
       weapons[v] = weapon
 
-      weapon.ammo = GetAmmoInPedWeapon(player,hash)
+      local atype = Citizen.InvokeNative(0x7FEAD38B326B9F74, player, hash)
+      if ammo_types[atype] == nil then
+        ammo_types[atype] = true
+        weapon.ammo = GetAmmoInPedWeapon(player,hash)
+      else
+        weapon.ammo = 0
+      end
     end
   end
 
