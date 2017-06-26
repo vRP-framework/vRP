@@ -177,11 +177,27 @@ function vRP.hasPermission(user_id, perm)
       end
     end
   else -- regular plain permission
+    -- precheck negative permission
+    local nperm = "-"..perm
     for k,v in pairs(user_groups) do
-      local group = groups[k]
-      if group then
-        for l,w in pairs(group) do -- for each group permission
-          if l ~= "_config" and w == perm then return true end
+      if v then -- prevent issues with deleted entry
+        local group = groups[k]
+        if group then
+          for l,w in pairs(group) do -- for each group permission
+            if l ~= "_config" and w == nperm then return false end
+          end
+        end
+      end
+    end
+
+    -- check if the permission exists
+    for k,v in pairs(user_groups) do
+      if v then -- prevent issues with deleted entry
+        local group = groups[k]
+        if group then
+          for l,w in pairs(group) do -- for each group permission
+            if l ~= "_config" and w == perm then return true end
+          end
         end
       end
     end

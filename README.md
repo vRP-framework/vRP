@@ -20,11 +20,12 @@ See also (and use it as a basis to understand how to develop extensions for vRP)
 
 ## Features
 * basic admin tools (kick,ban,whitelist)
-* groups/permissions
+* groups/permissions 
 * language config file
 * player state auto saved to database (hunger,thirst,weapons,player apparence,position)
 * player identity
 * business system
+* aptitudes (education/exp)
 * homes (experimental, if a visitor leave in any other way than using the green circle, like crashing, flying or disconnecting, it will require an eject all)
 * phone
 * cloakrooms (uniform for jobs)
@@ -32,7 +33,7 @@ See also (and use it as a basis to understand how to develop extensions for vRP)
 * basic emergency (coma, reanimate)
 * emotes
 * money (wallet/bank)
-* inventory (with custom item definition), chests (vehicle trunks)
+* inventory (with custom item definition, parametric items), chests (vehicle trunks)
 * basic implementations: ATM, market, gunshop, skinshop, garage
 * item transformer (harvest, process, produce) (illegal informer)
 * identification system (persistant user id for database storage)
@@ -48,14 +49,10 @@ See also (and use it as a basis to understand how to develop extensions for vRP)
 * vehicle customization
 * static chests
 * drop weapon/save weapon components
-* education (maybe)
 * police pc: add custom police records 
 * admin: tp to marker
 * police research per veh type
 * display some permission/group count
-* advanced parametric items (bag of money, crate of weapons)
-* advanced permissions, parsed aptitude permissions, negative permission ("!police.askid" -> ignore any police.askid permission)
-* itemtransformers home component
 
 ## NOTES
 ### Homes
@@ -297,7 +294,7 @@ Permissions can be used with most of the vRP modules, giving the ability to crea
 
 ##### Regular permissions
 
-Regular permissions are plain text permissions, they can be added to groups.
+Regular permissions are plain text permissions, they can be added to groups. You can add a `-` before the permission when adding it to a group, to negate the permission (even if other groups add the permission, it will be discarded).
 
 ##### Special item permission
 

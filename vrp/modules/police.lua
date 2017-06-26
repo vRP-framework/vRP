@@ -328,7 +328,7 @@ local choice_seize_weapons = {function(player, choice)
   if user_id ~= nil then
     vRPclient.getNearestPlayer(player, {5}, function(nplayer)
       local nuser_id = vRP.getUserId(nplayer)
-      if nuser_id ~= nil then
+      if nuser_id ~= nil and vRP.hasPermission("police.seizable") then
         vRPclient.isHandcuffed(nplayer,{}, function(handcuffed)  -- check handcuffed
           if handcuffed then
             vRPclient.getWeapons(nplayer,{},function(weapons)
@@ -361,7 +361,7 @@ local choice_seize_items = {function(player, choice)
   if user_id ~= nil then
     vRPclient.getNearestPlayer(player, {5}, function(nplayer)
       local nuser_id = vRP.getUserId(nplayer)
-      if nuser_id ~= nil then
+      if nuser_id ~= nil and vRP.hasPermission("police.seizable") then
         vRPclient.isHandcuffed(nplayer,{}, function(handcuffed)  -- check handcuffed
           if handcuffed then
             for k,v in pairs(cfg.seizable_items) do -- transfer seizable items
