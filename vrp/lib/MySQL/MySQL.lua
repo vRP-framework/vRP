@@ -208,7 +208,6 @@ end
 local MySQL = {}
 
 -- host can be "host" or "host:port"
-function MySQL.open(host,user,password,db,debug)
 function MySQL.open(host,port,user,password,db,debug)
   local r = setmetatable({},{ __index = Connection })
 
@@ -218,7 +217,6 @@ function MySQL.open(host,port,user,password,db,debug)
     host = host_parts[1]..";port="..host_parts[2]
   end
 
-  r.connection = lib.MySqlClient.MySqlConnection("server="..host..";uid="..user..";pwd="..password..";database="..db..";")
   r.connection = lib.MySqlClient.MySqlConnection("server="..host..";port="..port..";uid="..user..";pwd="..password..";database="..db..";")
   r.connection.Open()
   r.debug = debug
