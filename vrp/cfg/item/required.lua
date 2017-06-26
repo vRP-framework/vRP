@@ -113,17 +113,17 @@ local wammo_choices = function(args)
       local amount = vRP.getInventoryItemAmount(user_id, fullidname)
       vRP.prompt(player, "Amount to load ? (max "..amount..")", "", function(player,ramount)
         ramount = parseInt(ramount)
-        if vRP.tryGetInventoryItem(user_id, fullidname, ramount, true) then -- give weapon ammo
-          vRPclient.getWeapons(player, {}, function(uweapons)
-            if uweapons[args[2]] ~= nil then
+
+        vRPclient.getWeapons(player, {}, function(uweapons)
+          if uweapons[args[2]] ~= nil then -- check if the weapon is equiped
+            if vRP.tryGetInventoryItem(user_id, fullidname, ramount, true) then -- give weapon ammo
               local weapons = {}
               weapons[args[2]] = {ammo = ramount}
               vRPclient.giveWeapons(player, {weapons,false})
+              vRP.closeMenu(player)
             end
-          end)
-
-          vRP.closeMenu(player)
-        end
+          end
+        end)
       end)
     end
   end}
@@ -132,7 +132,7 @@ local wammo_choices = function(args)
 end
 
 local wammo_weight = function(args)
-  return 0.005
+  return 0.01
 end
 
 items["wammo"] = {wammo_name,wammo_desc,wammo_choices,wammo_weight}

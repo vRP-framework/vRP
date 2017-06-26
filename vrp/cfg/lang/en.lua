@@ -231,6 +231,10 @@ local lang = {
         fined = "~b~Fined ~s~{2} $ for ~b~{1}.",
         notify_fined = "~b~You have been fined ~s~ {2} $ for ~b~{1}.",
         record = "[Fine] {2} $ for {1}"
+      },
+      store_weapons = {
+        title = "Store weapons",
+        description = "Store your weapons in your inventory."
       }
     },
     identity = {

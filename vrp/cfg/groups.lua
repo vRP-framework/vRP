@@ -38,7 +38,8 @@ cfg.groups = {
   ["user"] = {
     "player.phone",
     "player.calladmin",
-    "police.askid"
+    "police.askid",
+    "police.store_weapons"
   },
   ["police"] = {
     _config = { 
