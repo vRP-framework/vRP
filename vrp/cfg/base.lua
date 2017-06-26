@@ -3,6 +3,7 @@ local cfg = {}
 
 cfg.db = {
   host = "127.0.0.1",
+  port = "3306",
   database = "vRP",
   user = "vRP",
   password = "password"
