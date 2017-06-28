@@ -578,17 +578,14 @@ vRPclient = Tunnel.getInterface("vRP","vrp_waterbottle")
 local wb_choices = {}  -- (see gui API for menudata choices structure)
 
 wb_choices["Drink"] = {function(player,choice) -- add drink action
-  vRP.getUserId({player},function(user_id) -- get user_id
-    if user_id ~= nil then
-      vRP.tryGetInventoryItem({user_id,"water_bottle",1},function(ok) -- try to remove one bottle
-        if ok then
-          vRP.varyThirst({user_id,-35}) -- decrease thirst
-          vRPclient.notify(player,{"~b~ Drinking."}) -- notify
-          vRP.closeMenu({player}) -- the water bottle is consumed by the action, close the menu
-        end
-      end)
+  local user_id = vRP.getUserId({player}) -- get user_id
+  if user_id ~= nil then
+    if vRP.tryGetInventoryItem({user_id,"water_bottle",1}) -- try to remove one bottle
+      vRP.varyThirst({user_id,-35}) -- decrease thirst
+      vRPclient.notify(player,{"~b~ Drinking."}) -- notify
+      vRP.closeMenu({player}) -- the water bottle is consumed by the action, close the menu
     end
-  end)
+end
 end,"Do it."}
 
 -- add item definition
@@ -945,12 +942,11 @@ local Proxy = require("resources/vRP/lib/Proxy")
 
 Resource1 = Proxy.getInterface("resource1")
 
-Resource1.test({13,42},function(rvalue1,rvalue2)
-  print("resource2 TEST rvalues = "..rvalue1..","..rvalue2)
-end)
+local rvalue1, rvalue2 = Resource1.test({13,42})
+print("resource2 TEST rvalues = "..rvalue1..","..rvalue2)
 ```
 
-The notation is **Interface.function({arguments},callback_with_return_values_as_parameters)** (the callback is optional).
+The notation is **Interface.function({arguments})**.
 
 #### Tunnel
 

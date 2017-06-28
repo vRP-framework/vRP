@@ -4,7 +4,9 @@ local Debug = require("resources/vrp/lib/Debug")
 
 local Proxy = {}
 
-local function proxy_null_callback()
+local proxy_rdata = {}
+local function proxy_callback(rvalues) -- save returned values, TriggerEvent is synchronous
+  proxy_rdata = rvalues
 end
 
 local function proxy_resolve(itable,key)
@@ -16,11 +18,8 @@ local function proxy_resolve(itable,key)
       args = {}
     end
 
-    if callback == nil then
-      callback = proxy_null_callback
-    end
-    
-    TriggerEvent(iname..":proxy",key,args,callback)
+    TriggerEvent(iname..":proxy",key,args,proxy_callback)
+    return table.unpack(proxy_rdata) -- returns
   end
 
   itable[key] = fcall -- add generated call to table (optimization)
@@ -37,7 +36,7 @@ function Proxy.addInterface(name, itable)
     local f = itable[member]
 
     if type(f) == "function" then
-      callback(f(table.unpack(args))) -- call function with and return values through callback
+      callback({f(table.unpack(args))}) -- call function with and return values through callback
       -- CancelEvent() -- cancel event doesn't seem to cancel the event for the other handlers, but if it does, uncomment this
     else
       print("error: proxy call "..name..":"..member.." not found")
