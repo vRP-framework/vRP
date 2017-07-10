@@ -1,3 +1,4 @@
+`/!\ THIS IS THE FXSERVER VERSION, DO NOT USE UNTIL THIS NOTICE IS REMOVED /!\`
 
 # vRP
 FiveM RP addon/framework
