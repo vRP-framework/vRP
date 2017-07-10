@@ -1,11 +1,11 @@
 
 -- module describing business system (company, money laundering)
 
-local cfg = require("resources/vrp/cfg/business")
-local htmlEntities = require("resources/vrp/lib/htmlEntities")
+local cfg = module("cfg/business")
+local htmlEntities = module("lib/htmlEntities")
 local lang = vRP.lang
 
-local sanitizes = require("resources/vrp/cfg/sanitizes")
+local sanitizes = module("cfg/sanitizes")
 
 -- sql
 local q_init = vRP.sql:prepare([[

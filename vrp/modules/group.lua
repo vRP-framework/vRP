@@ -6,7 +6,7 @@
 
 -- api
 
-local cfg = require("resources/vrp/cfg/groups")
+local cfg = module("cfg/groups")
 local groups = cfg.groups
 local users = cfg.users
 local selectors = cfg.selectors

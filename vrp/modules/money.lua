@@ -23,7 +23,7 @@ local q_set_bank = vRP.sql:prepare("UPDATE vrp_user_moneys SET bank = @bank WHER
 
 
 -- load config
-local cfg = require("resources/vrp/cfg/money")
+local cfg = module("cfg/money")
 q_init_user:bind("@wallet",cfg.open_wallet)
 q_init_user:bind("@bank",cfg.open_bank)
 

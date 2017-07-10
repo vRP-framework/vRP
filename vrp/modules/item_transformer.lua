@@ -4,7 +4,7 @@
 -- units are generated periodically at a specific rate
 -- reagents => products (reagents can be nothing, as for an harvest transformer)
 
-local cfg = require("resources/vrp/cfg/item_transformers")
+local cfg = module("cfg/item_transformers")
 local lang = vRP.lang
 
 -- api

@@ -1,7 +1,7 @@
 
 -- this module define the emotes menu
 
-local cfg = require("resources/vrp/cfg/emotes")
+local cfg = module("cfg/emotes")
 local lang = vRP.lang
 
 local emotes = cfg.emotes

@@ -1,3 +1,18 @@
+local modules = {}
+function module(rsc, path) -- load a LUA resource file as module
+  if path == nil then -- shortcut for vrp, can omit the resource parameter
+    path = rsc
+    rsc = "vrp"
+  end
+
+  if modules[path] then -- cached module
+    return modules[path][1]
+  else
+    local mod = {load(LoadResourceFile(rsc, path..".lua"))()}
+    modules[path] = mod
+    return mod[1]
+  end
+end
 
 function parseInt(v)
   return cast(int,tonumber(v))

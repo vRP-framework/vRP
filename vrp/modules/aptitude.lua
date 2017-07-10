@@ -1,7 +1,7 @@
 
 -- define aptitude system (aka. education, skill system)
 
-local cfg = require("resources/vrp/cfg/aptitudes")
+local cfg = module("cfg/aptitudes")
 local lang = vRP.lang
 
 -- exp notes:

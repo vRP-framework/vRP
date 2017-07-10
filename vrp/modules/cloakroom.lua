@@ -1,7 +1,7 @@
 
 -- cloakroom system
 local lang = vRP.lang
-local cfg = require("resources/vrp/cfg/cloakrooms")
+local cfg = module("cfg/cloakrooms")
 
 -- build cloakroom menus
 

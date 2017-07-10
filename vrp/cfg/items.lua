@@ -11,7 +11,7 @@ cfg.items = {
 
 -- load more items function
 local function load_item_pack(name)
-  local items = require("resources/vrp/cfg/item/"..name)
+  local items = module("cfg/item/"..name)
   if items then
     for k,v in pairs(items) do
       cfg.items[k] = v

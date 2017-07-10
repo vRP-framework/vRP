@@ -1,5 +1,5 @@
 local lang = vRP.lang
-local cfg = require("resources/vrp/cfg/inventory")
+local cfg = module("cfg/inventory")
 
 -- this module define the player inventory (lost after respawn, as wallet)
 

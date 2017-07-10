@@ -2,12 +2,12 @@
 -- basic phone module
 
 local lang = vRP.lang
-local cfg = require("resources/vrp/cfg/phone")
-local htmlEntities = require("resources/vrp/lib/htmlEntities")
+local cfg = module("cfg/phone")
+local htmlEntities = module("lib/htmlEntities")
 local services = cfg.services
 local announces = cfg.announces
 
-local sanitizes = require("resources/vrp/cfg/sanitizes")
+local sanitizes = module("cfg/sanitizes")
 
 -- api
 

@@ -18,8 +18,8 @@ local q_get_vehicle = vRP.sql:prepare("SELECT vehicle FROM vrp_user_vehicles WHE
 
 -- load config
 
-local cfg = require("resources/vrp/cfg/garages")
-local cfg_inventory = require("resources/vrp/cfg/inventory")
+local cfg = module("cfg/garages")
+local cfg_inventory = module("cfg/inventory")
 local vehicle_groups = cfg.garage_types
 local lang = vRP.lang
 

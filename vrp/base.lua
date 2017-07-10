@@ -1,23 +1,14 @@
-local modules = {}
-function module(rsc, path) -- load a LUA resource file as module
-  if modules[path] then -- cached module
-    return modules[path][1]
-  else
-    modules[path] = {load(LoadResourceFile(rsc, path))}
-  end
-end
-
-local MySQL = require("resources/vrp/lib/MySQL/MySQL")
-local Proxy = require("resources/vrp/lib/Proxy")
-local Tunnel = require("resources/vrp/lib/Tunnel")
-local Lang = require("resources/vrp/lib/Lang")
-Debug = require("resources/vrp/lib/Debug")
+local MySQL = module("lib/MySQL/MySQL")
+local Proxy = module("lib/Proxy")
+local Tunnel = module("lib/Tunnel")
+local Lang = module("lib/Lang")
+Debug = module("lib/Debug")
 
 -- load global utils
-require("resources/vrp/lib/utils")
+module("lib/utils")
 
-local config = require("resources/vrp/cfg/base")
-local version = require("resources/vrp/version")
+local config = module("cfg/base")
+local version = module("version")
 Debug.active = config.debug
 
 -- versioning
@@ -41,7 +32,7 @@ tvRP = {}
 Tunnel.bindInterface("vRP",tvRP) -- listening for client tunnel
 
 -- load language 
-local dict = require("resources/vrp/cfg/lang/"..config.lang) or {}
+local dict = module("cfg/lang/"..config.lang) or {}
 vRP.lang = Lang.new(dict)
 
 -- init

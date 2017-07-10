@@ -1,7 +1,7 @@
 
 -- mission system module
 local lang = vRP.lang
-local cfg = require("resources/vrp/cfg/mission")
+local cfg = module("cfg/mission")
 
 -- start a mission for a player
 --- mission_data: 
