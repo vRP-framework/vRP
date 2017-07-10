@@ -1,3 +1,11 @@
+local modules = {}
+function module(rsc, path) -- load a LUA resource file as module
+  if modules[path] then -- cached module
+    return modules[path][1]
+  else
+    modules[path] = {load(LoadResourceFile(rsc, path))}
+  end
+end
 
 local MySQL = require("resources/vrp/lib/MySQL/MySQL")
 local Proxy = require("resources/vrp/lib/Proxy")
