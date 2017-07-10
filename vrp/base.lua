@@ -4,9 +4,6 @@ local Tunnel = module("lib/Tunnel")
 local Lang = module("lib/Lang")
 Debug = module("lib/Debug")
 
--- load global utils
-module("lib/utils")
-
 local config = module("cfg/base")
 local version = module("version")
 Debug.active = config.debug
