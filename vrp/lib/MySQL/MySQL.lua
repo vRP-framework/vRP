@@ -11,9 +11,11 @@ local task_id = -1
 
 AddEventHandler("vRP:MySQL:rtask_id", function(id)
   task_id = id
+  print("[vRP] set task id "..task_id)
 end)
 
 AddEventHandler("vRP:MySQL:result", function(id, rows, affected)
+  print("[vRP] MySQL result id "..id)
   local cb = tasks[id]
   if cb then
     cb(rows, affected)
@@ -23,6 +25,7 @@ end)
 
 -- host can be "host" or "host:port"
 function MySQL.createConnection(name,host,user,password,db,debug)
+  print("[vRP] try to create connection "..name)
   -- parse port in host as "ip:port"
   local host_parts = splitString(host,":")
   if #host_parts >= 2 then
@@ -35,11 +38,13 @@ function MySQL.createConnection(name,host,user,password,db,debug)
 end
 
 function MySQL.createCommand(path, query)
+  print("[vRP] try to create command "..path)
   TriggerEvent("vRP:MySQL:createCommand", path, query)
 end
 
 function MySQL.query(path, args, cb)
   TriggerEvent("vRP:MySQL:query", path, args)
+  print("[vRP] try to query "..path.." id "..task_id)
   tasks[task_id] = cb
 end
 

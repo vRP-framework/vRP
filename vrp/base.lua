@@ -10,6 +10,7 @@ Debug.active = config.debug
 
 -- versioning
 print("[vRP] launch version "..version)
+--[[
 PerformHttpRequest("https://raw.githubusercontent.com/ImagicTheCat/vRP/master/vrp/version.lua",function(err,text,headers)
   if err == 0 then
     text = string.gsub(text,"return ","")
@@ -21,6 +22,7 @@ PerformHttpRequest("https://raw.githubusercontent.com/ImagicTheCat/vRP/master/vr
     print("[vRP] unable to check the remote version")
   end
 end, "GET", "")
+--]]
 
 vRP = {}
 Proxy.addInterface("vRP",vRP)
@@ -112,8 +114,6 @@ MySQL.query("vRP/test2", {id = 1}, function(rows, affected)
     print(v["id"])
   end
 end)
-
-return
 
 -- init tables
 print("[vRP] init base tables")
