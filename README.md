@@ -11,9 +11,12 @@ If you want to try the framework somewhere, here is a list of servers using vRP,
 vRP test server availables:
 * 93.115.96.185 (FR) [(config)](http://93.115.96.185/fivem/servers/FR_cfg.zip) [(discord)](https://discord.gg/ZAdE3eu)
 
-Since vRP is a lot of work, some of you asked for a way to support me and the project, so here it is:
+Support me on Patreon to keep this project alive:
 
-[![Click here to lend your support to: vRP - a FiveM open source RP Framework and make a donation at pledgie.com !](https://pledgie.com/campaigns/34016.png?skin_name=chrome)](https://pledgie.com/campaigns/34016)
+[![Support me and the project on Patreon](http://i.imgur.com/dyePK6Q.png)](https://www.patreon.com/ImagicTheCat)
+
+[(old pledgie, thank you to the donators)](https://pledgie.com/campaigns/34016)
+
 
 See also (and use it as a basis to understand how to develop extensions for vRP) : 
 * https://github.com/ImagicTheCat/vRP-basic-mission (repair/delivery missions extension)
