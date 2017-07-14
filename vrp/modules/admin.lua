@@ -1,5 +1,5 @@
-local htmlEntities = module("vrp/lib/htmlEntities")
-local Tools = module("vrp/lib/Tools")
+local htmlEntities = module("lib/htmlEntities")
+local Tools = module("lib/Tools")
 
 -- this module define some admin menu functions
 
