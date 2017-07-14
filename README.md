@@ -15,7 +15,7 @@ Support me on Patreon to keep this project alive:
 
 [![Support me and the project on Patreon](http://i.imgur.com/dyePK6Q.png)](https://www.patreon.com/ImagicTheCat)
 
-[(old pledgie, thank you to the donators)](https://pledgie.com/campaigns/34016)
+[(old pledgie, thank you to the donors)](https://pledgie.com/campaigns/34016)
 
 
 See also (and use it as a basis to understand how to develop extensions for vRP) : 
