@@ -5,6 +5,7 @@ ui_page "gui/index.html"
 
 -- server scripts
 server_scripts{ 
+  "lib/MySQL/mysql.net.dll",
   "lib/utils.lua",
   "base.lua",
   "modules/group.lua",
