@@ -34,16 +34,7 @@ namespace vRP
       Exports.Add("createConnection", new Action<string,string>(e_createConnection));
       Exports.Add("createCommand", new Action<string,string>(e_createCommand));
       Exports.Add("query", new Func<string,IDictionary<string,object>,int>(e_query));
-      //Exports.Add("checkTask", new Func<int,object>(e_checkTask));
-      Exports.Add("checkTask", new Func<int,object>((id) => {
-        Console.WriteLine("#a");
-        Dictionary<string, object> dict = new Dictionary<string,object>();
-        Console.WriteLine("#b");
-        dict.Add("ok",false);
-        Console.WriteLine("#c");
-
-        return dict;
-      }));
+      Exports.Add("checkTask", new Func<int,object>(e_checkTask));
     }
 
     //return [con,cmd] from "con/cmd"
@@ -110,11 +101,14 @@ namespace vRP
                 results.Add(entry);
               }
 
-              return (object)new{
-                rows = results,
-                affected = reader.RecordsAffected
-              };
+              Dictionary<string, object> dict = new Dictionary<string,object>();
+              dict["rows"] = results;
+              dict["affected"] = reader.RecordsAffected;
+
+              return (object)dict;
             }
+
+            return null;
           }));
 
           task = (int)task_id++;
@@ -128,23 +122,45 @@ namespace vRP
 
     public object e_checkTask(int id)
     {
+      Dictionary<string,object> dict = new Dictionary<string,object>();
+
       Task<object> task = null;
       if(tasks.TryGetValue((uint)id, out task)){
-        if(!task.IsFaulted && task.IsCompleted){
-          Console.WriteLine("[vRP/C#] send back mysql result to "+id);
+        if(!task.IsFaulted){
+          if(task.IsCompleted){
+            Console.WriteLine("[vRP/C#] send back mysql result to "+id);
 
-          var r = (object)new{ 
-            ok = true,
-            data = task.Result
-          };
+            if(task.Result != null){
+              Dictionary<string, object> r = (Dictionary<string,object>)task.Result;
 
+              tasks.Remove((uint)id);
+              dict["status"] = 1;
+              dict["rows"] = r["rows"];
+              dict["affected"] = r["affected"];
+
+              return dict;
+            }
+            else{
+              dict["status"] = -1;
+              tasks.Remove((uint)id);
+              return dict;
+            }
+          }
+          else{
+            dict["status"] = 0;
+            return dict;
+          }
+        }
+        else{
           tasks.Remove((uint)id);
-
-          return r;
+          dict["status"] = -1;
+          return dict;
         }
       }
-
-      return (object)new{ ok = false };
+      else{
+        dict["status"] = -1;
+        return dict;
+      }
     }
   }
 }

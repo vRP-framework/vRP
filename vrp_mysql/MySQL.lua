@@ -6,8 +6,11 @@ local function tick()
   local rmtasks = {}
   for id,cb in pairs(tasks) do
     local r = exports.vrp_mysql:checkTask(id)
-    if r.ok then
-      cb(r.data.rows,r.data.affected) -- rows, affected
+    if r.status == 1 then
+      cb(r.rows,r.affected) -- rows, affected
+      table.insert(rmtasks, id)
+    elseif r.status == -1 then
+      print("[vRP] task "..id.." failed.")
       table.insert(rmtasks, id)
     end
   end
