@@ -143,7 +143,7 @@ namespace vRP
             if(task.Result != null){
               Dictionary<string, object> r = (Dictionary<string,object>)task.Result;
 
-              tasks.Remove((uint)id);
+              //tasks.Remove((uint)id);
               dict["status"] = 1;
               dict["rows"] = r["rows"];
               dict["affected"] = r["affected"];
@@ -152,7 +152,7 @@ namespace vRP
             }
             else{
               dict["status"] = -1;
-              tasks.Remove((uint)id);
+              //tasks.Remove((uint)id);
               Console.WriteLine("[vRP/C#] task "+id+" null result");
               return dict;
             }
@@ -163,7 +163,7 @@ namespace vRP
           }
         }
         else{
-          tasks.Remove((uint)id);
+          //tasks.Remove((uint)id);
           dict["status"] = -1;
           Console.WriteLine("[vRP/C#] task "+id+" faulted: "+task.Exception.ToString());
           return dict;
