@@ -7,7 +7,6 @@ ui_page "gui/index.html"
 
 -- server scripts
 server_scripts{ 
-  "lib/MySQL/mysql.net.dll",
   "lib/utils.lua",
   "base.lua",
   "modules/group.lua",
@@ -37,12 +36,6 @@ server_scripts{
   "modules/basic_items.lua",
   "modules/basic_skinshop.lua",
   "modules/cloakroom.lua"
-}
-
-server_exports{
-  "MySQL_createConnection",
-  "MySQL_createCommand",
-  "MySQL_query"
 }
 
 -- client scripts

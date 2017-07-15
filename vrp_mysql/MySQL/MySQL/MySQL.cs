@@ -52,8 +52,8 @@ namespace vRP
     // createConnection("conid", "host=...")
     public void e_createConnection(string name, string config)
     {
-      var connection = new Connection(new MySqlConnection(config));
       Console.WriteLine("[vRP/C#] create connection "+name);
+      var connection = new Connection(new MySqlConnection(config));
       connections.Add(name, connection);
     }
 
