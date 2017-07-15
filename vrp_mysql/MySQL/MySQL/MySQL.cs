@@ -123,12 +123,15 @@ namespace vRP
       if(tasks.TryGetValue((uint)id, out task)){
         if(!task.IsFaulted && task.IsCompleted){
           Console.WriteLine("[vRP/C#] send back mysql result to "+id);
-          tasks.Remove((uint)id);
 
-          return (object)new{ 
+          var r = (object)new{ 
             ok = true,
             data = task.Result
           };
+
+          tasks.Remove((uint)id);
+
+          return r;
         }
       }
 
