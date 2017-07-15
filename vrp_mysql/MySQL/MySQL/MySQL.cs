@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 
 using System.Data;
 using MySql.Data.MySqlClient;
@@ -18,10 +19,12 @@ namespace vRP
       {
         connection = (MySqlConnection)con;
         commands = new Dictionary<string, MySqlCommand>();
+        mutex = new SemaphoreSlim(1,1);
       }
 
       public MySqlConnection connection;
       public Dictionary<string, MySqlCommand> commands; 
+      public SemaphoreSlim mutex;
     }
 
     private Dictionary<uint, Task<object>> tasks = new Dictionary<uint, Task<object>>();
@@ -81,7 +84,10 @@ namespace vRP
         MySqlCommand command;
         if(connection.commands.TryGetValue(concmd[1], out command)){
           tasks.Add(task_id, Task.Run(async () => {
-            await connection.connection.OpenAsync();
+            //await connection.connection.OpenAsync();
+
+            await connection.mutex.WaitAsync();
+            object r = null;
 
             //set parameters
             foreach(var param in parameters ?? Enumerable.Empty<KeyValuePair<string, object>>())
@@ -104,10 +110,12 @@ namespace vRP
               dict["rows"] = results;
               dict["affected"] = reader.RecordsAffected;
 
-              return (object)dict;
+              r = (object)dict;
             }
 
-            return null;
+            connection.mutex.Release();
+
+            return r;
           }));
 
           task = (int)task_id++;
