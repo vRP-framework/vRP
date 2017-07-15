@@ -63,12 +63,10 @@ namespace vRP
 
       Connection connection;
       if(connections.TryGetValue(concmd[0], out connection)){
-        using (MySqlCommand cmd = (MySqlCommand)connection.connection.CreateCommand())
-        {
-          cmd.CommandText = sql;
-          connection.commands.Add(concmd[1], cmd);
-          Console.WriteLine("[vRP/C#] create command "+path);
-        }
+        MySqlCommand cmd = (MySqlCommand)connection.connection.CreateCommand();
+        cmd.CommandText = sql;
+        connection.commands.Add(concmd[1], cmd);
+        Console.WriteLine("[vRP/C#] create command "+path);
       }
     }
 
