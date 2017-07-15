@@ -1,4 +1,4 @@
-local MySQL = module("lib/MySQL/MySQL")
+local MySQL = module("vrp_mysql", "MySQL")
 local Proxy = module("lib/Proxy")
 local Tunnel = module("lib/Tunnel")
 local Lang = module("lib/Lang")
@@ -7,6 +7,24 @@ Debug = module("lib/Debug")
 local config = module("cfg/base")
 local version = module("version")
 Debug.active = config.debug
+
+-- sql test
+MySQL.createCommand("vRP/test", "SELECT * FROM vrp_users")
+MySQL.createCommand("vRP/test2", "SELECT * FROM vrp_users WHERE id = @user_id")
+
+MySQL.query("vRP/test", {}, function(rows, affected)
+  print("vRP/test result")
+  for k,v in pairs(rows) do
+    print(v["id"])
+  end
+end)
+
+MySQL.query("vRP/test2", {id = 1}, function(rows, affected)
+  print("vRP/test2 result")
+  for k,v in pairs(rows) do
+    print(v["id"])
+  end
+end)
 
 -- versioning
 print("[vRP] launch version "..version)
@@ -96,24 +114,6 @@ local q_set_whitelisted = vRP.sql:prepare("UPDATE vrp_users SET whitelisted = @w
 local q_set_last_login = vRP.sql:prepare("UPDATE vrp_users SET last_login = @last_login WHERE id = @user_id")
 local q_get_last_login = vRP.sql:prepare("SELECT last_login FROM vrp_users WHERE id = @user_id")
 
-
--- sql test
-MySQL.createCommand("vRP/test", "SELECT * FROM vrp_users")
-MySQL.createCommand("vRP/test2", "SELECT * FROM vrp_users WHERE id = @user_id")
-
-MySQL.query("vRP/test", {}, function(rows, affected)
-  print("vRP/test result")
-  for k,v in pairs(rows) do
-    print(v["id"])
-  end
-end)
-
-MySQL.query("vRP/test2", {id = 1}, function(rows, affected)
-  print("vRP/test2 result")
-  for k,v in pairs(rows) do
-    print(v["id"])
-  end
-end)
 
 -- init tables
 print("[vRP] init base tables")

@@ -1,6 +1,8 @@
 
 description "RP module/framework"
 
+dependency "vrp_mysql"
+
 ui_page "gui/index.html"
 
 -- server scripts

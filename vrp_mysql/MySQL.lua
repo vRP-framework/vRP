@@ -1,27 +1,25 @@
-local Debug = module("lib/Debug")
-
--- Result
-
-local Result = {}
-
 -- begin MySQL module
 local MySQL = {}
 local tasks = {}
-local task_id = -1
 
-AddEventHandler("vRP:MySQL:rtask_id", function(id)
-  task_id = id
-  print("[vRP] set task id "..task_id)
-end)
-
-AddEventHandler("vRP:MySQL:result", function(id, rows, affected)
-  print("[vRP] MySQL result id "..id)
-  local cb = tasks[id]
-  if cb then
-    cb(rows, affected)
-    tasks[id] = nil
+local function tick()
+  local rmtasks = {}
+  for id,cb pairs(tasks) do
+    local data = exports.vrp_mysql.checkTask(id)
+    if data[1] then -- ok
+      cb(data[2],data[3]) -- rows, affected
+      table.insert(rmtasks, id)
+    end
   end
-end)
+
+  -- remove done tasks
+  for k,v in pairs(rmtasks) do
+    tasks[v] = nil
+  end
+
+  SetTimeout(10, tick) 
+end
+tick()
 
 -- host can be "host" or "host:port"
 function MySQL.createConnection(name,host,user,password,db,debug)
@@ -35,18 +33,18 @@ function MySQL.createConnection(name,host,user,password,db,debug)
   local config = "server="..host..";uid="..user..";pwd="..password..";database="..db..";"
 
 --  TriggerEvent("vRP:MySQL:createConnection", name, config)
-  exports.vrp.MySQL_createConnection(name, config)
+  exports.vrp_mysql.createConnection(name, config)
 end
 
 function MySQL.createCommand(path, query)
   print("[vRP] try to create command "..path)
 --  TriggerEvent("vRP:MySQL:createCommand", path, query)
-  exports.vrp.MySQL_createCommand(path, query)
+  exports.vrp_mysql.createCommand(path, query)
 end
 
 function MySQL.query(path, args, cb)
   -- TriggerEvent("vRP:MySQL:query", path, args)
-  exports.vrp.MySQL_query(path, args)
+  local task_id = exports.vrp_mysql.query(path, args)
   print("[vRP] try to query "..path.." id "..task_id)
   tasks[task_id] = cb
 end

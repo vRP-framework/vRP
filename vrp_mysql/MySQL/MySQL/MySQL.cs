@@ -31,15 +31,10 @@ namespace vRP
     public MySQL()
     {
       task_id = 0;
-      EventHandlers["vRP:MySQL:createConnection"] += new Action<string,string>(e_createConnection);
-      EventHandlers["vRP:MySQL:createCommand"] += new Action<string,string>(e_createCommand);
-//      EventHandlers["vRP:MySQL:execute"] += new Action<string,Dictionary<string,object>>(e_execute);
-      EventHandlers["vRP:MySQL:query"] += new Action<string,Dictionary<string,object>>(e_query);
-      Tick += e_Tick;
-
-      Exports.Add("MySQL_createConnection", new Action<string,string>(e_createConnection));
-      Exports.Add("MySQL_createCommand", new Action<string,string>(e_createCommand));
-      Exports.Add("MySQL_query", new Action<string,Dictionary<string,object>>(e_query));
+      Exports.Add("createConnection", new Action<string,string>(e_createConnection));
+      Exports.Add("createCommand", new Action<string,string>(e_createCommand));
+      Exports.Add("query", new Func<string,Dictionary<string,object>,int>(e_query));
+      Exports.Add("checkTask", new Func<int,object>(e_checkTask));
     }
 
     //return [con,cmd] from "con/cmd"
@@ -50,28 +45,6 @@ namespace vRP
         return args;
       else
         return new string[]{"none","none"};
-    }
-
-    //check tasks
-    public async Task e_Tick()
-    {
-      var rmlist = new List<uint>();
-
-      foreach(var el in tasks){
-        var id = el.Key;
-        var task = el.Value;
-
-        if(!task.IsFaulted && task.IsCompleted){
-          var r = (object[])task.Result;
-          Console.WriteLine("[vRP/C#] send back mysql result to "+id);
-          TriggerEvent("vRP:MySQL:result", id, r[0], r[1]);
-          rmlist.Add(id);
-        }
-      }
-
-      //remove finished tasks
-      foreach(var id in rmlist)
-        tasks.Remove(id);
     }
 
     // createConnection("conid", "host=...")
@@ -99,7 +72,7 @@ namespace vRP
     }
 
     // query("con/cmd", {...})
-    public void e_query(string path, Dictionary<string,object> parameters)
+    public int e_query(string path, Dictionary<string,object> parameters)
     {
       var concmd = parsePath(path);
       var task = -1;
@@ -138,8 +111,24 @@ namespace vRP
         }
 
         Console.WriteLine("[vRP/C#] query "+path+" id "+task);
-        TriggerEvent("vRP:MySQL:rtask_id", task);
       }
+
+      return task;
+    }
+
+    public object e_checkTask(int id)
+    {
+      Task<object[]> task = null;
+      if(tasks.TryGetValue((uint)id, out task)){
+        if(!task.IsFaulted && task.IsCompleted){
+          var r = (object[])task.Result;
+          Console.WriteLine("[vRP/C#] send back mysql result to "+id);
+          tasks.Remove((uint)id);
+          return new object[]{true, r[0], r[1]};
+        }
+      }
+
+      return new object[]{false};
     }
   }
 }
