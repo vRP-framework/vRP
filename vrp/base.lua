@@ -511,4 +511,4 @@ AddEventHandler("vRPcli:playerSpawned", function()
 end)
 
 RegisterServerEvent("vRP:playerDied")
-
+--]=]
