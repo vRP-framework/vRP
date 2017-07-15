@@ -52,6 +52,7 @@ namespace vRP
     {
       Console.WriteLine("[vRP/C#] create connection "+name);
       var connection = new Connection(new MySqlConnection(config));
+      connection.connection.Open();
       connections.Add(name, connection);
     }
 
@@ -82,7 +83,7 @@ namespace vRP
         MySqlCommand command;
         if(connection.commands.TryGetValue(concmd[1], out command)){
           tasks.Add(task_id, Task.Run(async () => {
-            await connection.connection.OpenAsync();
+            //await connection.connection.OpenAsync();
 
             //set parameters
             foreach(var param in parameters ?? Enumerable.Empty<KeyValuePair<string, object>>())
