@@ -34,7 +34,7 @@ namespace vRP
       Exports.Add("createConnection", new Action<string,string>(e_createConnection));
       Exports.Add("createCommand", new Action<string,string>(e_createCommand));
       Exports.Add("query", new Func<string,IDictionary<string,object>,int>(e_query));
-      Exports.Add("checkTask", new Func<uint,object>(e_checkTask));
+      Exports.Add("checkTask", new Func<int,object>(e_checkTask));
     }
 
     //return [con,cmd] from "con/cmd"
@@ -116,16 +116,16 @@ namespace vRP
       return task;
     }
 
-    public object e_checkTask(uint id)
+    public object e_checkTask(int id)
     {
       Dictionary<string, object> dict = new Dictionary<string,object>();
 
       Task<object[]> task = null;
-      if(tasks.TryGetValue(id, out task)){
+      if(tasks.TryGetValue((uint)id, out task)){
         if(!task.IsFaulted && task.IsCompleted){
           var r = (object[])task.Result;
           Console.WriteLine("[vRP/C#] send back mysql result to "+id);
-          tasks.Remove(id);
+          tasks.Remove((uint)id);
           dict.Add("ok",true);
           dict.Add("rows",r[0]);
           dict.Add("affected",r[1]);
