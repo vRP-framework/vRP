@@ -71,7 +71,7 @@ namespace vRP
     }
 
     // createConnection("conid", "host=...")
-    private void e_createConnection(string name, string config)
+    public void e_createConnection(string name, string config)
     {
       var connection = new Connection(new MySqlConnection(config));
       Console.WriteLine("[vRP/C#] create connection "+name);
@@ -79,7 +79,7 @@ namespace vRP
     }
 
     // createCommand("conid/name", "SELECT...")
-    private void e_createCommand(string path, string sql)
+    public void e_createCommand(string path, string sql)
     {
       var concmd = parsePath(path);
 
@@ -95,7 +95,7 @@ namespace vRP
     }
 
     // query("con/cmd", {...})
-    private void e_query(string path, Dictionary<string,object> parameters)
+    public void e_query(string path, Dictionary<string,object> parameters)
     {
       var concmd = parsePath(path);
       var task = -1;
