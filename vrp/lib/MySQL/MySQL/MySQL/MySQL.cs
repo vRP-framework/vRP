@@ -30,7 +30,6 @@ namespace vRP
 
     public MySQL()
     {
-      Console.WriteLine("start MySQL C# async (vRP)");
       task_id = 0;
       EventHandlers["vRP:MySQL:createConnection"] += new Action<string,string>(e_createConnection);
       EventHandlers["vRP:MySQL:createCommand"] += new Action<string,string>(e_createCommand);
