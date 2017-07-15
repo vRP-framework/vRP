@@ -34,7 +34,8 @@ namespace vRP
       Exports.Add("createConnection", new Action<string,string>(e_createConnection));
       Exports.Add("createCommand", new Action<string,string>(e_createCommand));
       Exports.Add("query", new Func<string,IDictionary<string,object>,int>(e_query));
-      Exports.Add("checkTask", new Func<int,IDictionary<string,object>>(e_checkTask));
+//      Exports.Add("checkTask", new Func<int,IDictionary<string,object>>(e_checkTask));
+      Exports.Add("checkTask", new Action<int>((id) => { Console.WriteLine("OKKKKK "+id); }));
     }
 
     //return [con,cmd] from "con/cmd"
