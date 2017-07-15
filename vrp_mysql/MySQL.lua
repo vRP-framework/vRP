@@ -44,7 +44,6 @@ end
 
 function MySQL.query(path, args, cb)
   -- TriggerEvent("vRP:MySQL:query", path, args)
-  print("[vRP] try to query "..path.." id "..task_id)
   if not (type(args) == "table") then
     args = {}
   end
@@ -53,6 +52,7 @@ function MySQL.query(path, args, cb)
   args._none = " "
 
   local task_id = exports.vrp_mysql:query(path, args)
+  print("[vRP] try to query "..path.." id "..task_id)
   tasks[task_id] = cb
 end
 

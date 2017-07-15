@@ -33,7 +33,7 @@ namespace vRP
       task_id = 0;
       Exports.Add("createConnection", new Action<string,string>(e_createConnection));
       Exports.Add("createCommand", new Action<string,string>(e_createCommand));
-      Exports.Add("query", new Func<string,Dictionary<string,object>,int>(e_query));
+      Exports.Add("query", new Func<string,IDictionary<string,object>,int>(e_query));
       Exports.Add("checkTask", new Func<int,object>(e_checkTask));
     }
 
@@ -72,7 +72,7 @@ namespace vRP
     }
 
     // query("con/cmd", {...})
-    public int e_query(string path, Dictionary<string,object> parameters)
+    public int e_query(string path, IDictionary<string,object> parameters)
     {
       var concmd = parsePath(path);
       var task = -1;
