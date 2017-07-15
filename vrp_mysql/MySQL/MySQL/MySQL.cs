@@ -86,6 +86,7 @@ namespace vRP
           tasks.Add(task_id, Task.Run(async () => {
             //await connection.connection.OpenAsync();
 
+            Console.WriteLine("[vRP/C#] do query "+path);
             await connection.mutex.WaitAsync();
             object r = null;
 
@@ -114,6 +115,7 @@ namespace vRP
             }
 
             connection.mutex.Release();
+            Console.WriteLine("[vRP/C#] end query "+path);
 
             return r;
           }));
@@ -129,13 +131,10 @@ namespace vRP
 
     public object e_checkTask(int id)
     {
-      Console.WriteLine("#a");
       Dictionary<string,object> dict = new Dictionary<string,object>();
-      Console.WriteLine("#b");
 
       Task<object> task = null;
       if(tasks.TryGetValue((uint)id, out task)){
-        Console.WriteLine("#c");
         if(!task.IsFaulted){
           if(task.IsCompleted){
             Console.WriteLine("[vRP/C#] send back mysql result to "+id);
@@ -143,7 +142,7 @@ namespace vRP
             if(task.Result != null){
               Dictionary<string, object> r = (Dictionary<string,object>)task.Result;
 
-              //tasks.Remove((uint)id);
+              tasks.Remove((uint)id);
               dict["status"] = 1;
               dict["rows"] = r["rows"];
               dict["affected"] = r["affected"];
@@ -152,7 +151,7 @@ namespace vRP
             }
             else{
               dict["status"] = -1;
-              //tasks.Remove((uint)id);
+              tasks.Remove((uint)id);
               Console.WriteLine("[vRP/C#] task "+id+" null result");
               return dict;
             }
@@ -163,7 +162,7 @@ namespace vRP
           }
         }
         else{
-          //tasks.Remove((uint)id);
+          tasks.Remove((uint)id);
           dict["status"] = -1;
           Console.WriteLine("[vRP/C#] task "+id+" faulted: "+task.Exception.ToString());
           return dict;
