@@ -36,8 +36,11 @@ namespace vRP
       Exports.Add("query", new Func<string,IDictionary<string,object>,int>(e_query));
       //Exports.Add("checkTask", new Func<int,object>(e_checkTask));
       Exports.Add("checkTask", new Func<int,object>((id) => {
+        Console.WriteLine("#a");
         Dictionary<string, object> dict = new Dictionary<string,object>();
+        Console.WriteLine("#b");
         dict.Add("ok",false);
+        Console.WriteLine("#c");
 
         return dict;
       }));
