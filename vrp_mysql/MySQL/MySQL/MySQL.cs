@@ -34,8 +34,7 @@ namespace vRP
       Exports.Add("createConnection", new Action<string,string>(e_createConnection));
       Exports.Add("createCommand", new Action<string,string>(e_createCommand));
       Exports.Add("query", new Func<string,IDictionary<string,object>,int>(e_query));
-//      Exports.Add("checkTask", new Func<int,IDictionary<string,object>>(e_checkTask));
-      Exports.Add("checkTask", new Action<int>((id) => { Console.WriteLine("OKKKKK "+id); }));
+      Exports.Add("checkTask", new Func<int,object>(e_checkTask));
     }
 
     //return [con,cmd] from "con/cmd"
@@ -117,8 +116,9 @@ namespace vRP
       return task;
     }
 
-    public IDictionary<string,object> e_checkTask(int id)
+    public object e_checkTask(int id)
     {
+      Console.WriteLine("C# check task "+id);
       IDictionary<string, object> dict = new Dictionary<string,object>();
 
       Task<object[]> task = null;
