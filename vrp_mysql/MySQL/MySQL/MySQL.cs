@@ -31,7 +31,9 @@ namespace vRP
     public MySQL()
     {
       task_id = 0;
-      Exports.Add("createConnection", new Action<string,string>(e_createConnection));
+      Exports.Add("createConnection", new Action<string,string>((name, config) => {
+        Console.WriteLine("[vRP/C#] create connection "+name);
+      }));
       Exports.Add("createCommand", new Action<string,string>(e_createCommand));
       Exports.Add("query", new Func<string,Dictionary<string,object>,int>(e_query));
       Exports.Add("checkTask", new Func<int,object>(e_checkTask));

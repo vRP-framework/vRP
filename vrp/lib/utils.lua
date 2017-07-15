@@ -10,15 +10,19 @@ function module(rsc, path) -- load a LUA resource file as module
   if modules[key] then -- cached module
     return table.unpack(modules[key])
   else
-    local f = load(LoadResourceFile(rsc, path..".lua"))
-    local ar = {pcall(f)}
-    if ar[1] then
-      table.remove(ar,1)
-      modules[key] = ar
-      return table.unpack(ar)
+    local f,err = load(LoadResourceFile(rsc, path..".lua"))
+    if f then
+      local ar = {pcall(f)}
+      if ar[1] then
+        table.remove(ar,1)
+        modules[key] = ar
+        return table.unpack(ar)
+      else
+        modules[key] = nil
+        print("[vRP] error loading module "..rsc.."/"..path..":"..ar[2])
+      end
     else
-      modules[key] = nil
-      print(ar[2])
+      print("[vRP] error parsing module "..rsc.."/"..path..":"..err)
     end
   end
 end

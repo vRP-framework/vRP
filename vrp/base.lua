@@ -8,6 +8,9 @@ local config = module("cfg/base")
 local version = module("version")
 Debug.active = config.debug
 
+-- open MySQL connection
+MySQL.createConnection("vRP", config.db.host,config.db.user,config.db.password,config.db.database)
+
 -- sql test
 MySQL.createCommand("vRP/test", "SELECT * FROM vrp_users")
 MySQL.createCommand("vRP/test2", "SELECT * FROM vrp_users WHERE id = @user_id")
@@ -26,6 +29,7 @@ MySQL.query("vRP/test2", {id = 1}, function(rows, affected)
   end
 end)
 
+--[=[
 -- versioning
 print("[vRP] launch version "..version)
 --[[
@@ -60,9 +64,6 @@ vRP.rusers = {} -- store the opposite of users
 vRP.user_tables = {} -- user data tables (logger storage, saved to database)
 vRP.user_tmp_tables = {} -- user tmp data tables (logger storage, not saved)
 vRP.user_sources = {} -- user sources 
-
--- open MySQL connection
-MySQL.createConnection("vRP", config.db.host,config.db.user,config.db.password,config.db.database)
 
 -- queries
 local q_init = vRP.sql:prepare([[
