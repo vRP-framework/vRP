@@ -6,8 +6,8 @@ local function tick()
   local rmtasks = {}
   for id,cb in pairs(tasks) do
     local data = exports.vrp_mysql:checkTask(id)
-    if data[1] then -- ok
-      cb(data[2],data[3]) -- rows, affected
+    if data.ok then
+      cb(data.rows,data.affected) -- rows, affected
       table.insert(rmtasks, id)
     end
   end
