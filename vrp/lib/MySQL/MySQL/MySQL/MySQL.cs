@@ -36,6 +36,10 @@ namespace vRP
 //      EventHandlers["vRP:MySQL:execute"] += new Action<string,Dictionary<string,object>>(e_execute);
       EventHandlers["vRP:MySQL:query"] += new Action<string,Dictionary<string,object>>(e_query);
       Tick += e_Tick;
+
+      Exports.Add("MySQL_createConnection", new Action<string,string>(e_createConnection));
+      Exports.Add("MySQL_createCommand", new Action<string,string>(e_createCommand));
+      Exports.Add("MySQL_query", new Action<string,Dictionary<string,object>>(e_query));
     }
 
     //return [con,cmd] from "con/cmd"

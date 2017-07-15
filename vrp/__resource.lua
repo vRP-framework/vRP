@@ -37,6 +37,12 @@ server_scripts{
   "modules/cloakroom.lua"
 }
 
+server_exports{
+  "MySQL_createConnection",
+  "MySQL_createCommand",
+  "MySQL_query"
+}
+
 -- client scripts
 client_scripts{
   "client/Tunnel.lua",
