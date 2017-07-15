@@ -59,7 +59,7 @@ namespace vRP
 
         if(!task.IsFaulted && task.IsCompleted){
           var r = (object[])task.Result;
-          Console.WriteLine("[vRP/C#] send back mysql result to "+id);
+          TriggerEvent("vRP:MySQL:print","[vRP/C#] send back mysql result to "+id);
           TriggerEvent("vRP:MySQL:result", id, r[0], r[1]);
           rmlist.Add(id);
         }
@@ -74,7 +74,7 @@ namespace vRP
     private void e_createConnection(string name, string config)
     {
       var connection = new Connection(new MySqlConnection(config));
-      Console.WriteLine("[vRP/C#] create connection "+name);
+      TriggerEvent("vRP:MySQL:print","[vRP/C#] create connection "+name);
       connections.Add(name, connection);
     }
 
@@ -89,7 +89,7 @@ namespace vRP
         {
           cmd.CommandText = sql;
           connection.commands.Add(concmd[1], cmd);
-          Console.WriteLine("[vRP/C#] create command "+path);
+          TriggerEvent("vRP:MySQL:print","[vRP/C#] create command "+path);
         }
       }
     }
@@ -133,7 +133,7 @@ namespace vRP
           task = (int)task_id++;
         }
 
-        Console.WriteLine("[vRP/C#] query "+path+" id "+task);
+        TriggerEvent("vRP:MySQL:print","[vRP/C#] query "+path+" id "+task);
         TriggerEvent("vRP:MySQL:rtask_id", task);
       }
     }
