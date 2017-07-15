@@ -86,8 +86,8 @@ namespace vRP
           tasks.Add(task_id, Task.Run(async () => {
             //await connection.connection.OpenAsync();
 
-            Console.WriteLine("[vRP/C#] do query "+path);
             await connection.mutex.WaitAsync();
+            Console.WriteLine("[vRP/C#] do query "+path);
             object r = null;
 
             //set parameters
@@ -114,8 +114,8 @@ namespace vRP
               r = (object)dict;
             }
 
-            connection.mutex.Release();
             Console.WriteLine("[vRP/C#] end query "+path);
+            connection.mutex.Release();
 
             return r;
           }));
