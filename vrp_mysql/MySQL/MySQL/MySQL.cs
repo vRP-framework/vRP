@@ -144,7 +144,7 @@ namespace vRP
             else{
               dict["status"] = -1;
               tasks.Remove((uint)id);
-              Console.WriteLine("[vRP/C#] task null result");
+              Console.WriteLine("[vRP/C#] task "+id+" null result");
               return dict;
             }
           }
@@ -156,12 +156,12 @@ namespace vRP
         else{
           tasks.Remove((uint)id);
           dict["status"] = -1;
-          Console.WriteLine("[vRP/C#] task faulted");
+          Console.WriteLine("[vRP/C#] task "+id+" faulted: "+task.Exception.ToString());
           return dict;
         }
       }
       else{
-        Console.WriteLine("[vRP/C#] task missing");
+        Console.WriteLine("[vRP/C#] task "+id+" missing");
         dict["status"] = -1;
         return dict;
       }
