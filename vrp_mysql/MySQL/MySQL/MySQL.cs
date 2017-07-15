@@ -24,7 +24,7 @@ namespace vRP
       public Dictionary<string, MySqlCommand> commands; 
     }
 
-    private Dictionary<uint, Task<object[]>> tasks = new Dictionary<uint, Task<object[]>>();
+    private Dictionary<uint, Task<object>> tasks = new Dictionary<uint, Task<object>>();
     private Dictionary<string, Connection> connections = new Dictionary<string, Connection>();
     private uint task_id;
 
@@ -101,8 +101,9 @@ namespace vRP
                 results.Add(entry);
               }
 
-              return new object[]{
-                results, reader.RecordsAffected
+              return (object)new{
+                rows = results,
+                affected = reader.RecordsAffected
               };
             }
           }));
@@ -118,25 +119,20 @@ namespace vRP
 
     public object e_checkTask(int id)
     {
-      Console.WriteLine("C# check task "+id);
-      return 1;
-      IDictionary<string, object> dict = new Dictionary<string,object>();
-
-      Task<object[]> task = null;
+      Task<object> task = null;
       if(tasks.TryGetValue((uint)id, out task)){
         if(!task.IsFaulted && task.IsCompleted){
-          var r = (object[])task.Result;
           Console.WriteLine("[vRP/C#] send back mysql result to "+id);
           tasks.Remove((uint)id);
-          dict.Add("ok",true);
-          dict.Add("rows",r[0]);
-          dict.Add("affected",r[1]);
-          return dict;
+
+          return (object)new{ 
+            ok = true,
+            data = task.Result
+          };
         }
       }
 
-      dict.Add("ok",false);
-      return dict;
+      return (object)new{ ok = false };
     }
   }
 }
