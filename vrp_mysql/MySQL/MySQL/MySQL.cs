@@ -130,6 +130,7 @@ namespace vRP
     public object e_checkTask(int id)
     {
       Dictionary<string,object> dict = new Dictionary<string,object>();
+      try{
 
       Task<object> task = null;
       if(tasks.TryGetValue((uint)id, out task)){
@@ -171,6 +172,13 @@ namespace vRP
         dict["status"] = -1;
         return dict;
       }
+
+      }catch(Exception e){
+        Console.WriteLine(e.ToString());
+      }
+
+      dict["status"] = 0;
+      return dict;
     }
   }
 }
