@@ -14,10 +14,6 @@ AddEventHandler("vRP:MySQL:rtask_id", function(id)
   print("[vRP] set task id "..task_id)
 end)
 
-AddEventHandler("vRP:MySQL:print", function(msg)
-  print("[vRP/C#] MySQL: "..msg)
-end)
-
 AddEventHandler("vRP:MySQL:result", function(id, rows, affected)
   print("[vRP] MySQL result id "..id)
   local cb = tasks[id]
