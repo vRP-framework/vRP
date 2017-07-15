@@ -33,19 +33,26 @@ function MySQL.createConnection(name,host,user,password,db,debug)
   local config = "server="..host..";uid="..user..";pwd="..password..";database="..db..";"
 
 --  TriggerEvent("vRP:MySQL:createConnection", name, config)
-  exports.vrp_mysql.createConnection(name, config)
+  exports.vrp_mysql:createConnection(name, config)
 end
 
 function MySQL.createCommand(path, query)
   print("[vRP] try to create command "..path)
 --  TriggerEvent("vRP:MySQL:createCommand", path, query)
-  exports.vrp_mysql.createCommand(path, query)
+  exports.vrp_mysql:createCommand(path, query)
 end
 
 function MySQL.query(path, args, cb)
   -- TriggerEvent("vRP:MySQL:query", path, args)
-  local task_id = exports.vrp_mysql.query(path, args)
   print("[vRP] try to query "..path.." id "..task_id)
+  if not (type(args) == "table") then
+    args = {}
+  end
+
+  -- force args to be a C# dictionary
+  args._none = " "
+
+  local task_id = exports.vrp_mysql:query(path, args)
   tasks[task_id] = cb
 end
 
