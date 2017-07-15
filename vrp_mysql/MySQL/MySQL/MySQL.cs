@@ -119,6 +119,7 @@ namespace vRP
     public object e_checkTask(int id)
     {
       Console.WriteLine("C# check task "+id);
+      return 1;
       IDictionary<string, object> dict = new Dictionary<string,object>();
 
       Task<object[]> task = null;
