@@ -129,11 +129,13 @@ namespace vRP
 
     public object e_checkTask(int id)
     {
+      Console.WriteLine("#a");
       Dictionary<string,object> dict = new Dictionary<string,object>();
-      try{
+      Console.WriteLine("#b");
 
       Task<object> task = null;
       if(tasks.TryGetValue((uint)id, out task)){
+        Console.WriteLine("#c");
         if(!task.IsFaulted){
           if(task.IsCompleted){
             Console.WriteLine("[vRP/C#] send back mysql result to "+id);
@@ -172,13 +174,6 @@ namespace vRP
         dict["status"] = -1;
         return dict;
       }
-
-      }catch(Exception e){
-        Console.WriteLine(e.ToString());
-      }
-
-      dict["status"] = 0;
-      return dict;
     }
   }
 }
