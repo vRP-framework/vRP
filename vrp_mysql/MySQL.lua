@@ -3,24 +3,26 @@ local MySQL = {}
 local tasks = {}
 
 local function tick()
-  local rmtasks = {}
-  for id,cb in pairs(tasks) do
-    local r = exports.vrp_mysql:checkTask(id)
-    if r.status == 1 then
-      cb(r.rows,r.affected) -- rows, affected
-      table.insert(rmtasks, id)
-    elseif r.status == -1 then
-      print("[vRP] task "..id.." failed.")
-      table.insert(rmtasks, id)
+  SetTimeout(1, function()
+    local rmtasks = {}
+    for id,cb in pairs(tasks) do
+      local r = exports.vrp_mysql:checkTask(id)
+      if r.status == 1 then
+        cb(r.rows,r.affected) -- rows, affected
+        table.insert(rmtasks, id)
+      elseif r.status == -1 then
+        print("[vRP] task "..id.." failed.")
+        table.insert(rmtasks, id)
+      end
     end
-  end
 
-  -- remove done tasks
-  for k,v in pairs(rmtasks) do
-    tasks[v] = nil
-  end
+    -- remove done tasks
+    for k,v in pairs(rmtasks) do
+      tasks[v] = nil
+    end
 
-  SetTimeout(10, tick) 
+    SetTimeout(1000, tick) 
+  end)
 end
 tick()
 

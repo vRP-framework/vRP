@@ -19,6 +19,7 @@ MySQL.query("vRP/test", {}, function(rows, affected)
   print("vRP/test result")
   for k,v in pairs(rows) do
     print("id = "..v["id"])
+    break
   end
 end)
 
