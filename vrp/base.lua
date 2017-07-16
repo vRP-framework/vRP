@@ -18,14 +18,14 @@ MySQL.createCommand("vRP/test2", "SELECT * FROM vrp_users WHERE id = @user_id")
 MySQL.query("vRP/test", {}, function(rows, affected)
   print("vRP/test result")
   for k,v in pairs(rows) do
-    print(v["id"])
+    print("id = "..v["id"])
   end
 end)
 
-MySQL.query("vRP/test2", {id = 1}, function(rows, affected)
+MySQL.query("vRP/test2", {user_id = 1}, function(rows, affected)
   print("vRP/test2 result")
   for k,v in pairs(rows) do
-    print(v["id"])
+    print("id = "..v["id"])
   end
 end)
 
