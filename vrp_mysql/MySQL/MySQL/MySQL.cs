@@ -137,10 +137,13 @@ namespace vRP
     public object e_checkTask(int id)
     {
       Dictionary<string,object> dict = new Dictionary<string,object>();
+      Console.WriteLine("[vRP/C#] check task "+id);
 
       Task<object> task = null;
       if(tasks.TryGetValue((uint)id, out task)){
+        Console.WriteLine("[vRP/C#] have task "+id);
         if(!task.IsFaulted){
+          Console.WriteLine("[vRP/C#] task not faulted "+id);
           if(task.IsCompleted){
             Console.WriteLine("[vRP/C#] send back mysql result to "+id);
 
@@ -155,9 +158,9 @@ namespace vRP
               return dict;
             }
             else{
+              Console.WriteLine("[vRP/C#] task "+id+" null result");
               dict["status"] = -1;
               tasks.Remove((uint)id);
-              Console.WriteLine("[vRP/C#] task "+id+" null result");
               return dict;
             }
           }
@@ -167,9 +170,9 @@ namespace vRP
           }
         }
         else{
+          Console.WriteLine("[vRP/C#] task "+id+" faulted: "+task.Exception.ToString());
           tasks.Remove((uint)id);
           dict["status"] = -1;
-          Console.WriteLine("[vRP/C#] task "+id+" faulted: "+task.Exception.ToString());
           return dict;
         }
       }
@@ -178,8 +181,6 @@ namespace vRP
         dict["status"] = -1;
         return dict;
       }
-
-      Exports.Add("checkTask", new Func<int,object>(e_checkTask));
     }
   }
 }
