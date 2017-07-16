@@ -173,6 +173,8 @@ namespace vRP
         dict["status"] = -1;
         return dict;
       }
+
+      Exports.Add("checkTask", new Func<int,object>(e_checkTask));
     }
   }
 }
