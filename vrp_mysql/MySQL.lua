@@ -3,7 +3,9 @@ local MySQL = {}
 local tasks = {}
 
 local function tick()
-  SetTimeout(1, function()
+  SetTimeout(1, function() -- protect errors from breaking the loop
+    SetTimeout(1000, tick) 
+
     local rmtasks = {}
     for id,cb in pairs(tasks) do
       local r = exports.vrp_mysql:checkTask(id)
@@ -20,8 +22,6 @@ local function tick()
     for k,v in pairs(rmtasks) do
       tasks[v] = nil
     end
-
-    SetTimeout(1000, tick) 
   end)
 end
 tick()

@@ -90,16 +90,20 @@ namespace vRP
             Console.WriteLine("[vRP/C#] do query "+path);
             object r = null;
 
+
+            Console.WriteLine("[vRP/C#] add params");
             //set parameters
             foreach(var param in parameters ?? Enumerable.Empty<KeyValuePair<string, object>>())
               command.Parameters.AddWithValue("@"+param.Key, param.Value);
 
+            Console.WriteLine("[vRP/C#] try reader");
             using (var reader = await command.ExecuteReaderAsync())
             {
               var results = new List<Dictionary<string, object>>();
 
               while (await reader.ReadAsync())
               {
+                Console.WriteLine("[vRP/C#] read async");
                 var entry = new Dictionary<string, object>();
                 for (int i = 0; i < reader.FieldCount; i++)
                   entry[reader.GetName(i)] = reader.GetValue(i);
@@ -107,6 +111,7 @@ namespace vRP
                 results.Add(entry);
               }
 
+              Console.WriteLine("[vRP/C#] returns");
               Dictionary<string, object> dict = new Dictionary<string,object>();
               dict["rows"] = results;
               dict["affected"] = reader.RecordsAffected;
