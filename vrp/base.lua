@@ -342,9 +342,6 @@ AddEventHandler("playerConnecting",function(name,setMessage)
                       -- set last login
                       local ep = GetPlayerEP(source)
                       local last_login_stamp = string.sub(ep,1,string.find(ep,":")-1).." "..os.date("%H:%M:%S %d/%m/%Y")
-                      q_set_last_login:bind("@user_id",user_id)
-                      q_set_last_login:bind("@last_login",last_login_stamp)
-                      q_set_last_login:execute()
                       MySQL.query("vRP/set_last_login", {user_id = user_id, last_login = last_login_stamp})
 
                       -- trigger join
