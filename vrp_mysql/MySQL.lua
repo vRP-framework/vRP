@@ -2,6 +2,7 @@
 local MySQL = {}
 local tasks = {}
 
+--[[
 local function tick()
   SetTimeout(1, function() -- protect errors from breaking the loop
     SetTimeout(1000, tick) 
@@ -25,9 +26,20 @@ local function tick()
   end)
 end
 tick()
+--]]
 
-AddEventHandler("vrptestevent", function(x)
-  print("vrptestevent: "..x)
+AddEventHandler("vRP:MySQL_task", function(task_id, data)
+  print("vRP:MySQL_task "..task_id)
+  local cb = tasks[task_id]
+  if cb then
+    if data.status == 1 then
+      cb(data.rows,data.affected) -- rows, affected
+    elseif r.status == -1 then
+      print("[vRP] task "..id.." failed.")
+    end
+
+    tasks[task_id] = nil
+  end
 end)
 
 -- host can be "host" or "host:port"

@@ -38,18 +38,40 @@ namespace vRP
       Exports.Add("createConnection", new Action<string,string>(e_createConnection));
       Exports.Add("createCommand", new Action<string,string>(e_createCommand));
       Exports.Add("query", new Func<string,IDictionary<string,object>,int>(e_query));
-      Exports.Add("checkTask", new Func<int,object>(e_checkTask));
+      //Exports.Add("checkTask", new Func<int,object>(e_checkTask));
 
       Tick += OnTick;
     }
 
     public async Task OnTick()
     {
-      tick++;
+      List<uint> rmtasks = new List<uint>();
 
-      if(tick % 50 == 0 && tasks.Count > 0){
-        e_checkTask((int)tasks.First().Key);
+      foreach(var pair in tasks){
+        var task = pair.Value;
+
+        if(task.IsCompleted){
+          Dictionary<string,object> dict = new Dictionary<string,object>();
+
+          if(!task.IsFaulted){
+            Dictionary<string, object> r = (Dictionary<string,object>)task.Result;
+
+            dict["status"] = 1;
+            dict["rows"] = r["rows"];
+            dict["affected"] = r["affected"];
+          }
+          else{
+            dict["status"] = -1;
+            Console.WriteLine("[vRP/C#] "+task.Exception.ToString());
+          }
+
+          rmtasks.Add(pair.Key);
+          TriggerEvent("vRP:MySQL_task", pair.Key, dict);
+        }
       }
+
+      foreach(var id in rmtasks)
+        tasks.Remove(id);
     }
 
     //return [con,cmd] from "con/cmd"
