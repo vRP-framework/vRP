@@ -27,6 +27,29 @@ function module(rsc, path) -- load a LUA resource file as module
   end
 end
 
+-- generate a task metatable (helper to return delayed values with timeout)
+--- dparams: default params in case of timeout
+--- timeout: milliseconds, default 5000
+function Task(callback, dparams, timeout) 
+  if timeout == nil then timeout = 5000 end
+
+  local r = {}
+  r.done = false
+
+  local finish = function(params) 
+    if not r.done then
+      if params == nil then params = {} end
+      r.done = true
+      callback(table.unpack(params))
+    end
+  end
+
+  setmetatable(r, {__call = function(t,params) finish(params) end })
+  SetTimeout(timeout, function() finish(dparams) end)
+
+  return r
+end
+
 function parseInt(v)
   return cast(int,tonumber(v))
 end
