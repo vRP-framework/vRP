@@ -152,10 +152,10 @@ namespace vRP
             if(task.Result != null){
               Dictionary<string, object> r = (Dictionary<string,object>)task.Result;
 
-              tasks.Remove((uint)id);
               dict["status"] = 1;
               dict["rows"] = r["rows"];
               dict["affected"] = r["affected"];
+              tasks.Remove((uint)id);
 
               return dict;
             }
