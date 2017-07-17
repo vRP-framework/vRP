@@ -39,16 +39,6 @@ namespace vRP
       Exports.Add("createCommand", new Action<string,string>(e_createCommand));
       Exports.Add("query", new Func<string,IDictionary<string,object>,int>(e_query));
       Exports.Add("checkTask", new Func<int,object>(e_checkTask));
-
-      Tick += OnTick;
-    }
-
-    public async Task OnTick()
-    {
-      Exports.Add("createConnection", new Action<string,string>(e_createConnection));
-      Exports.Add("createCommand", new Action<string,string>(e_createCommand));
-      Exports.Add("query", new Func<string,IDictionary<string,object>,int>(e_query));
-      Exports.Add("checkTask", new Func<int,object>(e_checkTask));
     }
 
     //return [con,cmd] from "con/cmd"
@@ -90,16 +80,18 @@ namespace vRP
       var concmd = parsePath(path);
       var task = -1;
 
+      try{
       Connection connection;
       if(connections.TryGetValue(concmd[0], out connection)){
         MySqlCommand command;
         if(connection.commands.TryGetValue(concmd[1], out command)){
           tasks.Add(task_id, Task.Run(async () => {
+            object r = null;
+            try{
             //await connection.connection.OpenAsync();
 
             await connection.mutex.WaitAsync();
             Console.WriteLine("[vRP/C#] do query "+path);
-            object r = null;
 
 
             Console.WriteLine("[vRP/C#] add params");
@@ -134,6 +126,10 @@ namespace vRP
             connection.mutex.Release();
             Console.WriteLine("[vRP/C#] released");
 
+            }catch(Exception e){
+              Console.WriteLine(e.ToString());
+            }
+
             return r;
           }));
 
@@ -143,6 +139,10 @@ namespace vRP
         Console.WriteLine("[vRP/C#] query "+path+" id "+task);
       }
 
+      }catch(Exception e){
+        Console.WriteLine(e.ToString());
+      }
+
       return task;
     }
 
@@ -150,8 +150,6 @@ namespace vRP
     {
       Console.WriteLine("[vRP/C#] check task "+id);
       Dictionary<string,object> dict = new Dictionary<string,object>();
-
-      try{
 
       Task<object> task = null;
       if(tasks.TryGetValue((uint)id, out task)){
@@ -192,13 +190,6 @@ namespace vRP
       }
       else{
         Console.WriteLine("[vRP/C#] task "+id+" missing");
-        dict["status"] = -1;
-        return dict;
-      }
-
-      } catch(Exception e){
-        Debug.WriteLine(e.ToString());
-
         dict["status"] = -1;
         return dict;
       }
