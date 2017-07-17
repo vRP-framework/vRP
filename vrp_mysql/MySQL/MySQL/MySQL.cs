@@ -39,6 +39,16 @@ namespace vRP
       Exports.Add("createCommand", new Action<string,string>(e_createCommand));
       Exports.Add("query", new Func<string,IDictionary<string,object>,int>(e_query));
       Exports.Add("checkTask", new Func<int,object>(e_checkTask));
+
+      Tick += OnTick;
+    }
+
+    public async Task OnTick()
+    {
+      Exports.Add("createConnection", new Action<string,string>(e_createConnection));
+      Exports.Add("createCommand", new Action<string,string>(e_createCommand));
+      Exports.Add("query", new Func<string,IDictionary<string,object>,int>(e_query));
+      Exports.Add("checkTask", new Func<int,object>(e_checkTask));
     }
 
     //return [con,cmd] from "con/cmd"
@@ -141,7 +151,8 @@ namespace vRP
       Console.WriteLine("[vRP/C#] check task "+id);
       Dictionary<string,object> dict = new Dictionary<string,object>();
 
-      /*
+      try{
+
       Task<object> task = null;
       if(tasks.TryGetValue((uint)id, out task)){
         Console.WriteLine("[vRP/C#] have task "+id);
@@ -185,7 +196,12 @@ namespace vRP
         return dict;
       }
 
-      */
+      } catch(Exception e){
+        Debug.WriteLine(e.ToString());
+
+        dict["status"] = -1;
+        return dict;
+      }
 
       dict["status"] = -1;
       return dict;
