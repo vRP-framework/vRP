@@ -162,6 +162,8 @@ namespace vRP
       Console.WriteLine("[vRP/C#] check task "+id);
       Dictionary<string,object> dict = new Dictionary<string,object>();
 
+      TriggerEvent("vrptestevent", 5);
+
       Task<object> task = null;
       if(tasks.TryGetValue((uint)id, out task)){
         Console.WriteLine("[vRP/C#] have task "+id);

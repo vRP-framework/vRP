@@ -26,6 +26,10 @@ local function tick()
 end
 tick()
 
+AddEventHandler("vrptestevent", function(x)
+  print("vrptestevent: "..x)
+end)
+
 -- host can be "host" or "host:port"
 function MySQL.createConnection(name,host,user,password,db,debug)
   print("[vRP] try to create connection "..name)
