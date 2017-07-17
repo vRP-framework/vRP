@@ -158,9 +158,9 @@ namespace vRP
               r = (object)dict;
             }
 
-            Console.WriteLine("[vRP/C#] end query "+path);
+//            Console.WriteLine("[vRP/C#] end query "+path);
             connection.mutex.Release();
-            Console.WriteLine("[vRP/C#] released");
+//            Console.WriteLine("[vRP/C#] released");
 
             return r;
           }));
@@ -170,7 +170,7 @@ namespace vRP
         else
           Console.WriteLine("[vRP/C#] connection/command path "+path+" not found");
 
-        Console.WriteLine("[vRP/C#] query "+path+" id "+task);
+//        Console.WriteLine("[vRP/C#] query "+path+" id "+task);
       }
       else
         Console.WriteLine("[vRP/C#] connection/command path "+path+" not found");
