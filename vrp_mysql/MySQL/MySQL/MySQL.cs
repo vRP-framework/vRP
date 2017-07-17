@@ -47,22 +47,24 @@ namespace vRP
     {
       List<uint> rmtasks = new List<uint>();
 
+      //check each task
       foreach(var pair in tasks){
         var task = pair.Value;
 
+        //completed
         if(task.IsCompleted){
           Dictionary<string,object> dict = new Dictionary<string,object>();
 
-          if(!task.IsFaulted){
+          if(!task.IsFaulted){ //ok
             Dictionary<string, object> r = (Dictionary<string,object>)task.Result;
 
             dict["status"] = 1;
             dict["rows"] = r["rows"];
             dict["affected"] = r["affected"];
           }
-          else{
+          else{ //faulted
             dict["status"] = -1;
-            Console.WriteLine("[vRP/C#] "+task.Exception.ToString());
+            Console.WriteLine("[vRP/C#] exception: "+task.Exception.ToString());
           }
 
           rmtasks.Add(pair.Key);
@@ -70,6 +72,7 @@ namespace vRP
         }
       }
 
+      //remove completed tasks
       foreach(var id in rmtasks)
         tasks.Remove(id);
     }
@@ -87,7 +90,7 @@ namespace vRP
     // createConnection("conid", "host=...")
     public void e_createConnection(string name, string config)
     {
-      Console.WriteLine("[vRP/C#] create connection "+name);
+//      Console.WriteLine("[vRP/C#] create connection "+name);
       var connection = new Connection(new MySqlConnection(config));
       connection.connection.Open();
       connections.Add(name, connection);
@@ -103,8 +106,10 @@ namespace vRP
         MySqlCommand cmd = (MySqlCommand)connection.connection.CreateCommand();
         cmd.CommandText = sql;
         connection.commands.Add(concmd[1], cmd);
-        Console.WriteLine("[vRP/C#] create command "+path);
+//        Console.WriteLine("[vRP/C#] create command "+path);
       }
+      else
+        Console.WriteLine("[vRP/C#] connection "+concmd[0]+" not found");
     }
 
     // query("con/cmd", {...})
@@ -113,33 +118,31 @@ namespace vRP
       var concmd = parsePath(path);
       var task = -1;
 
-      try{
       Connection connection;
       if(connections.TryGetValue(concmd[0], out connection)){
         MySqlCommand command;
         if(connection.commands.TryGetValue(concmd[1], out command)){
           tasks.Add(task_id, Task.Run(async () => {
             object r = null;
-            try{
             //await connection.connection.OpenAsync();
 
             await connection.mutex.WaitAsync();
-            Console.WriteLine("[vRP/C#] do query "+path);
+//            Console.WriteLine("[vRP/C#] do query "+path);
 
 
-            Console.WriteLine("[vRP/C#] add params");
+//            Console.WriteLine("[vRP/C#] add params");
             //set parameters
             foreach(var param in parameters ?? Enumerable.Empty<KeyValuePair<string, object>>())
               command.Parameters.AddWithValue("@"+param.Key, param.Value);
 
-            Console.WriteLine("[vRP/C#] try reader");
+//            Console.WriteLine("[vRP/C#] try reader");
             using (var reader = await command.ExecuteReaderAsync())
             {
               var results = new List<Dictionary<string, object>>();
 
               while (await reader.ReadAsync())
               {
-                Console.WriteLine("[vRP/C#] read async");
+//                Console.WriteLine("[vRP/C#] read async");
                 var entry = new Dictionary<string, object>();
                 for (int i = 0; i < reader.FieldCount; i++)
                   entry[reader.GetName(i)] = reader.GetValue(i);
@@ -147,7 +150,7 @@ namespace vRP
                 results.Add(entry);
               }
 
-              Console.WriteLine("[vRP/C#] returns");
+//              Console.WriteLine("[vRP/C#] returns");
               Dictionary<string, object> dict = new Dictionary<string,object>();
               dict["rows"] = results;
               dict["affected"] = reader.RecordsAffected;
@@ -159,26 +162,23 @@ namespace vRP
             connection.mutex.Release();
             Console.WriteLine("[vRP/C#] released");
 
-            }catch(Exception e){
-              Console.WriteLine(e.ToString());
-            }
-
             return r;
           }));
 
           task = (int)task_id++;
         }
+        else
+          Console.WriteLine("[vRP/C#] connection/command path "+path+" not found");
 
         Console.WriteLine("[vRP/C#] query "+path+" id "+task);
       }
-
-      }catch(Exception e){
-        Console.WriteLine(e.ToString());
-      }
+      else
+        Console.WriteLine("[vRP/C#] connection/command path "+path+" not found");
 
       return task;
     }
 
+    /*
     public object e_checkTask(int id)
     {
       Console.WriteLine("[vRP/C#] check task "+id);
@@ -232,5 +232,6 @@ namespace vRP
       dict["status"] = -1;
       return dict;
     }
+    */
   }
 }
