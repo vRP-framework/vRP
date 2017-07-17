@@ -30,6 +30,7 @@ namespace vRP
     private Dictionary<uint, Task<object>> tasks = new Dictionary<uint, Task<object>>();
     private Dictionary<string, Connection> connections = new Dictionary<string, Connection>();
     private uint task_id;
+    private uint tick;
 
     public MySQL()
     {
@@ -38,6 +39,14 @@ namespace vRP
       Exports.Add("createCommand", new Action<string,string>(e_createCommand));
       Exports.Add("query", new Func<string,IDictionary<string,object>,int>(e_query));
       Exports.Add("checkTask", new Func<int,object>(e_checkTask));
+      Tick += OnTick;
+    }
+
+    public async Task OnTick()
+    {
+      tick++;
+      if(tick % 150 == 0)
+        Console.WriteLine("[vRP/C#] tick "+tick);
     }
 
     //return [con,cmd] from "con/cmd"
@@ -121,6 +130,7 @@ namespace vRP
 
             Console.WriteLine("[vRP/C#] end query "+path);
             connection.mutex.Release();
+            Console.WriteLine("[vRP/C#] released");
 
             return r;
           }));
