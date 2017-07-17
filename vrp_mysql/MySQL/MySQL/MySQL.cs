@@ -42,7 +42,7 @@ namespace vRP
     }
 
     //return [con,cmd] from "con/cmd"
-    private string[] parsePath(string path)
+    public string[] parsePath(string path)
     {
       var args = path.Split('/');
       if(args.Length >= 2)
