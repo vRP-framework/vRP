@@ -138,9 +138,10 @@ namespace vRP
 
     public object e_checkTask(int id)
     {
-      Dictionary<string,object> dict = new Dictionary<string,object>();
       Console.WriteLine("[vRP/C#] check task "+id);
+      Dictionary<string,object> dict = new Dictionary<string,object>();
 
+      /*
       Task<object> task = null;
       if(tasks.TryGetValue((uint)id, out task)){
         Console.WriteLine("[vRP/C#] have task "+id);
@@ -183,6 +184,11 @@ namespace vRP
         dict["status"] = -1;
         return dict;
       }
+
+      */
+
+      dict["status"] = -1;
+      return dict;
     }
   }
 }
