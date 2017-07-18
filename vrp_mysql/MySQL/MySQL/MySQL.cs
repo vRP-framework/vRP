@@ -75,11 +75,16 @@ namespace vRP
             rmtasks.Add(pair.Key);
             TriggerEvent("vRP:MySQL_task", pair.Key, dict);
           }
+          Console.WriteLine("end look tick "+pair.Key);
         }
 
+        Console.WriteLine("begin remove");
         //remove completed tasks
-        foreach(var id in rmtasks)
+        foreach(var id in rmtasks){
+          Console.WriteLine("remove "+id);
           tasks.Remove(id);
+        }
+        Console.WriteLine("end remove");
 
         Console.WriteLine("end tick");
       }
