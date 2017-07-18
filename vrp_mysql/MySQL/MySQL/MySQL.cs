@@ -2,7 +2,6 @@
 using CitizenFX.Core.Native;
 using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,7 +27,7 @@ namespace vRP
       public SemaphoreSlim mutex;
     }
 
-    private IDictionary<uint, Task<object>> tasks = new ConcurrentDictionary<uint, Task<object>>();
+    private Dictionary<uint, Task<object>> tasks = new Dictionary<uint, Task<object>>();
     private Dictionary<string, Connection> connections = new Dictionary<string, Connection>();
     private uint task_id;
     private uint tick;
@@ -40,12 +39,11 @@ namespace vRP
       Exports.Add("createCommand", new Action<string,string>(e_createCommand));
       Exports.Add("query", new Action<string,IDictionary<string,object>>(e_query));
       EventHandlers["vRP:MySQL_query"] += new Action<string,IDictionary<string,object>>(e_query);
+      EventHandlers["vRP:MySQL_tick"] += new Action(e_tick);
       //Exports.Add("checkTask", new Func<int,object>(e_checkTask));
-
-      Tick += OnTick;
     }
 
-    public async Task OnTick()
+    public void e_tick()
     {
       List<uint> rmtasks = new List<uint>();
 

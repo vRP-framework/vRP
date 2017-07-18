@@ -4,6 +4,7 @@ description "vRP MySQL async"
 -- server scripts
 server_scripts{ 
   "@vrp/lib/utils.lua",
+  "init.lua",
   "mysql.net.dll"
 }
 

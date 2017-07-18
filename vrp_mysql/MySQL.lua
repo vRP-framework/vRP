@@ -48,8 +48,6 @@ AddEventHandler("vRP:MySQL_taskid", function(_task_id)
   task_id = _task_id
 end)
 
-
-
 -- host can be "host" or "host:port"
 function MySQL.createConnection(name,host,user,password,db,debug)
 --  print("[vRP] try to create connection "..name)
