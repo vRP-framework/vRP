@@ -28,7 +28,7 @@ function module(rsc, path) -- load a LUA resource file as module
 end
 
 -- generate a task metatable (helper to return delayed values with timeout)
---- dparams: default params in case of timeout
+--- dparams: default params in case of timeout or empty cbr()
 --- timeout: milliseconds, default 5000
 function Task(callback, dparams, timeout) 
   if timeout == nil then timeout = 5000 end
@@ -38,7 +38,7 @@ function Task(callback, dparams, timeout)
 
   local finish = function(params) 
     if not r.done then
-      if params == nil then params = {} end
+      if params == nil then params = dparams or {} end
       r.done = true
       callback(table.unpack(params))
     end

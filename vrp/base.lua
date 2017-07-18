@@ -139,10 +139,14 @@ end
 
 --- sql
 function vRP.isBanned(user_id, cbr)
-  local task = Task(cbr)
+  local task = Task(cbr, {false})
 
   MySQL.query("vRP/get_banned", {user_id = user_id}, function(rows, affected)
-    task({#rows > 0})
+    if #rows then
+      task({rows[1].banned})
+    else
+      task()
+    end
   end)
 end
 
@@ -153,9 +157,14 @@ end
 
 --- sql
 function vRP.isWhitelisted(user_id, cbr)
-  local task = Task(cbr)
+  local task = Task(cbr, {false})
+
   MySQL.query("vRP/get_whitelisted", {user_id = user_id}, function(rows, affected)
-    task({#rows > 0})
+    if #rows then
+      task({rows[1].whitelisted})
+    else
+      task()
+    end
   end)
 end
 
@@ -166,12 +175,12 @@ end
 
 --- sql
 function vRP.getLastLogin(user_id, cbr)
-  local task = Task(cbr)
+  local task = Task(cbr,{""})
   MySQL.query("vRP/get_last_login", {user_id = user_id}, function(rows, affected)
     if #rows then
       task({rows[1].last_login})
     else
-      task({""})
+      task()
     end
   end)
 end
@@ -187,7 +196,7 @@ function vRP.getUData(user_id,key,cbr)
     if #rows then
       task({rows[1].dvalue})
     else
-      task({""})
+      task()
     end
   end)
 end
@@ -203,7 +212,7 @@ function vRP.getSData(key, cbr)
     if #rows then
       task({rows[1].dvalue})
     else
-      task({""})
+      task()
     end
   end)
 end
@@ -308,6 +317,7 @@ end
 -- handlers
 
 AddEventHandler("playerConnecting",function(name,setMessage)
+  local source = source
   Debug.pbegin("playerConnecting")
   local ids = GetPlayerIdentifiers(source)
 
