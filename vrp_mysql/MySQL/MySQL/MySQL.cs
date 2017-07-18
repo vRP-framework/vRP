@@ -53,6 +53,7 @@ namespace vRP
 
         //check each task
         foreach(var pair in tasks){
+          Console.WriteLine("look tick "+pair.Key);
           var task = pair.Value;
 
           //completed
