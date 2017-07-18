@@ -90,15 +90,18 @@ namespace vRP
     // createConnection("conid", "host=...")
     public void e_createConnection(string name, string config)
     {
+      try{
 //      Console.WriteLine("[vRP/C#] create connection "+name);
       var connection = new Connection(new MySqlConnection(config));
       connection.connection.Open();
       connections.Add(name, connection);
+      }catch(Exception e){ Console.WriteLine(e.ToString()); }
     }
 
     // createCommand("conid/name", "SELECT...")
     public void e_createCommand(string path, string sql)
     {
+      try{
       var concmd = parsePath(path);
 
       Connection connection;
@@ -110,11 +113,13 @@ namespace vRP
       }
       else
         Console.WriteLine("[vRP/C#] connection "+concmd[0]+" not found");
+      }catch(Exception e){ Console.WriteLine(e.ToString()); }
     }
 
     // query("con/cmd", {...})
     public void e_query(string path, IDictionary<string,object> parameters)
     {
+      try{
       var concmd = parsePath(path);
       var task = -1;
 
@@ -176,6 +181,7 @@ namespace vRP
         Console.WriteLine("[vRP/C#] connection/command path "+path+" not found");
 
       TriggerEvent("vRP:MySQL_taskid", task);
+      }catch(Exception e){ Console.WriteLine(e.ToString()); }
     }
 
     /*
