@@ -273,35 +273,37 @@ local function gen_random_position(positions)
 end
 
 local function hidden_placement_tick()
-  local hidden_trs = json.decode(vRP.getSData("vRP:hidden_trs")) or {}
+  vRP.getSData("vRP:hidden_trs", function(data)
+    local hidden_trs = json.decode(data) or {}
 
-  for k,v in pairs(cfg.hidden_transformers) do
-    -- init entry
-    local htr = hidden_trs[k]
-    if htr == nil then
-      hidden_trs[k] = {timestamp=cast(int,os.time()), position=gen_random_position(v.positions)}
-      htr = hidden_trs[k]
+    for k,v in pairs(cfg.hidden_transformers) do
+      -- init entry
+      local htr = hidden_trs[k]
+      if htr == nil then
+        hidden_trs[k] = {timestamp=cast(int,os.time()), position=gen_random_position(v.positions)}
+        htr = hidden_trs[k]
+      end
+
+      -- remove hidden transformer if needs respawn
+      if tonumber(os.time())-htr.timestamp >= cfg.hidden_transformer_duration*60 then
+        htr.timestamp = cast(int,os.time())
+        vRP.removeItemTransformer("cfg:"..k)
+        -- generate new position
+        htr.position = gen_random_position(v.positions)
+      end
+
+      -- spawn if unspawned 
+      if transformers["cfg:"..k] == nil then
+        v.def.x = htr.position[1]
+        v.def.y = htr.position[2]
+        v.def.z = htr.position[3]
+
+        vRP.setItemTransformer("cfg:"..k, v.def)
+      end
     end
 
-    -- remove hidden transformer if needs respawn
-    if tonumber(os.time())-htr.timestamp >= cfg.hidden_transformer_duration*60 then
-      htr.timestamp = cast(int,os.time())
-      vRP.removeItemTransformer("cfg:"..k)
-      -- generate new position
-      htr.position = gen_random_position(v.positions)
-    end
-
-    -- spawn if unspawned 
-    if transformers["cfg:"..k] == nil then
-      v.def.x = htr.position[1]
-      v.def.y = htr.position[2]
-      v.def.z = htr.position[3]
-
-      vRP.setItemTransformer("cfg:"..k, v.def)
-    end
-  end
-
-  vRP.setSData("vRP:hidden_trs",json.encode(hidden_trs)) -- save hidden transformers
+    vRP.setSData("vRP:hidden_trs",json.encode(hidden_trs)) -- save hidden transformers
+  end)
 
   SetTimeout(300000, hidden_placement_tick)
 end

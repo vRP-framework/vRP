@@ -9,8 +9,10 @@ local cfg = module("cfg/police")
 --- line: text for one line (can be html)
 function vRP.insertPoliceRecord(user_id, line)
   if user_id ~= nil then
-    local records = vRP.getUData(user_id, "vRP:police_records")..line.."<br />"
-    vRP.setUData(user_id, "vRP:police_records", records)
+    vRP.getUData(user_id, "vRP:police_records", function(data)
+      local records = data..line.."<br />"
+      vRP.setUData(user_id, "vRP:police_records", records)
+    end)
   end
 end
 
@@ -64,8 +66,9 @@ local function ch_show_police_records(player,choice)
   vRP.prompt(player,lang.police.pc.searchreg.prompt(),"",function(player, reg)
     local user_id = vRP.getUserByRegistration(reg)
     if user_id ~= nil then
-      local content = vRP.getUData(user_id, "vRP:police_records")
-      vRPclient.setDiv(player,{"police_pc",".div_police_pc{ background-color: rgba(0,0,0,0.75); color: white; font-weight: bold; width: 500px; padding: 10px; margin: auto; margin-top: 150px; }",content})
+      vRP.getUData(user_id, "vRP:police_records", function(content)
+        vRPclient.setDiv(player,{"police_pc",".div_police_pc{ background-color: rgba(0,0,0,0.75); color: white; font-weight: bold; width: 500px; padding: 10px; margin: auto; margin-top: 150px; }",content})
+      end)
     else
       vRPclient.notify(player,{lang.common.not_found()})
     end

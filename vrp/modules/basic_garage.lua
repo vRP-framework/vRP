@@ -1,7 +1,7 @@
 -- a basic garage implementation
 
 -- vehicle db
-local q_init = vRP.sql:prepare([[
+MySQL.createCommand("vRP/vehicles_table", [[
 CREATE TABLE IF NOT EXISTS vrp_user_vehicles(
   user_id INTEGER,
   vehicle VARCHAR(255),
@@ -9,12 +9,14 @@ CREATE TABLE IF NOT EXISTS vrp_user_vehicles(
   CONSTRAINT fk_user_vehicles_users FOREIGN KEY(user_id) REFERENCES vrp_users(id) ON DELETE CASCADE
 );
 ]])
-q_init:execute()
 
-local q_add_vehicle = vRP.sql:prepare("INSERT IGNORE INTO vrp_user_vehicles(user_id,vehicle) VALUES(@user_id,@vehicle)")
-local q_remove_vehicle = vRP.sql:prepare("DELETE FROM vrp_user_vehicles WHERE user_id = @user_id AND vehicle = @vehicle")
-local q_get_vehicles = vRP.sql:prepare("SELECT vehicle FROM vrp_user_vehicles WHERE user_id = @user_id")
-local q_get_vehicle = vRP.sql:prepare("SELECT vehicle FROM vrp_user_vehicles WHERE user_id = @user_id AND vehicle = @vehicle")
+MySQL.createCommand("vRP/add_vehicle","INSERT IGNORE INTO vrp_user_vehicles(user_id,vehicle) VALUES(@user_id,@vehicle)")
+MySQL.createCommand("vRP/remove_vehicle","DELETE FROM vrp_user_vehicles WHERE user_id = @user_id AND vehicle = @vehicle")
+MySQL.createCommand("vRP/get_vehicles","SELECT vehicle FROM vrp_user_vehicles WHERE user_id = @user_id")
+MySQL.createCommand("vRP/get_vehicle","SELECT vehicle FROM vrp_user_vehicles WHERE user_id = @user_id AND vehicle = @vehicle")
+
+-- init
+MySQL.query("vRP/vehicles_table")
 
 -- load config
 
@@ -68,25 +70,24 @@ for group,vehicles in pairs(vehicle_groups) do
       end
       
       -- get player owned vehicles
-      q_get_vehicles:bind("@user_id",user_id)
-      local pvehicles = q_get_vehicles:query():toTable()
-
-      -- add rents to whitelist
-      for k,v in pairs(tmpdata.rent_vehicles) do
-        if v then -- check true, prevent future neolua issues
-          table.insert(pvehicles,{vehicle = k})
+      MySQL.query("vRP/get_vehicles", {user_id = user_id}, function(pvehicles, affected)
+        -- add rents to whitelist
+        for k,v in pairs(tmpdata.rent_vehicles) do
+          if v then -- check true, prevent future neolua issues
+            table.insert(pvehicles,{vehicle = k})
+          end
         end
-      end
 
-      for k,v in pairs(pvehicles) do
-        local vehicle = vehicles[v.vehicle]
-        if vehicle then
-          submenu[vehicle[1]] = {choose,vehicle[3]}
-          kitems[vehicle[1]] = v.vehicle
+        for k,v in pairs(pvehicles) do
+          local vehicle = vehicles[v.vehicle]
+          if vehicle then
+            submenu[vehicle[1]] = {choose,vehicle[3]}
+            kitems[vehicle[1]] = v.vehicle
+          end
         end
-      end
 
-      vRP.openMenu(player,submenu)
+        vRP.openMenu(player,submenu)
+      end)
     end
   end,lang.garage.owned.description()}
 
@@ -107,9 +108,7 @@ for group,vehicles in pairs(vehicle_groups) do
           -- buy vehicle
           local vehicle = vehicles[vname]
           if vehicle and vRP.tryPayment(user_id,vehicle[2]) then
-            q_add_vehicle:bind("@user_id",user_id)
-            q_add_vehicle:bind("@vehicle",vname)
-            q_add_vehicle:execute()
+            MySQL.query("vRP/add_vehicle", {user_id = user_id, vehicle = vname})
 
             vRPclient.notify(player,{lang.money.paid({vehicle[2]})})
             vRP.closeMenu(player)
@@ -120,22 +119,22 @@ for group,vehicles in pairs(vehicle_groups) do
       end
       
       -- get player owned vehicles (indexed by vehicle type name in lower case)
-      q_get_vehicles:bind("@user_id",user_id)
-      local _pvehicles = q_get_vehicles:query():toTable()
-      local pvehicles = {}
-      for k,v in pairs(_pvehicles) do
-        pvehicles[string.lower(v.vehicle)] = true
-      end
-
-      -- for each existing vehicle in the garage group
-      for k,v in pairs(vehicles) do
-        if k ~= "_config" and pvehicles[string.lower(k)] == nil then -- not already owned
-          submenu[v[1]] = {choose,lang.garage.buy.info({v[2],v[3]})}
-          kitems[v[1]] = k
+      MySQL.query("vRP/get_vehicles", {user_id = user_id}, function(_pvehicles, affected)
+        local pvehicles = {}
+        for k,v in pairs(_pvehicles) do
+          pvehicles[string.lower(v.vehicle)] = true
         end
-      end
 
-      vRP.openMenu(player,submenu)
+        -- for each existing vehicle in the garage group
+        for k,v in pairs(vehicles) do
+          if k ~= "_config" and pvehicles[string.lower(k)] == nil then -- not already owned
+            submenu[v[1]] = {choose,lang.garage.buy.info({v[2],v[3]})}
+            kitems[v[1]] = k
+          end
+        end
+
+        vRP.openMenu(player,submenu)
+      end)
     end
   end,lang.garage.buy.description()}
 
@@ -158,45 +157,40 @@ for group,vehicles in pairs(vehicle_groups) do
           if vehicle then
             local price = math.ceil(vehicle[2]*cfg.sell_factor)
 
-            q_get_vehicle:bind("@user_id",user_id)
-            q_get_vehicle:bind("@vehicle",vname)
-            local result = q_get_vehicle:query():toTable()
-            local has_vehicle = #vehicle > 0
+            MySQL.query("vRP/get_vehicle", {user_id = user_id, vehicle = vname}, function(rows, affected)
+              if #rows > 0 then -- has vehicle
+                vRP.giveMoney(user_id,price)
+                MySQL.query("vRP/remove_vehicle", {user_id = user_id, vehicle = vname})
 
-            if has_vehicle then
-              vRP.giveMoney(user_id,price)
-              q_remove_vehicle:bind("@user_id",user_id)
-              q_remove_vehicle:bind("@vehicle",vname)
-              q_remove_vehicle:execute()
-
-              vRPclient.notify(player,{lang.money.received({price})})
-              vRP.closeMenu(player)
-            else
-              vRPclient.notify(player,{lang.common.not_found()})
-            end
+                vRPclient.notify(player,{lang.money.received({price})})
+                vRP.closeMenu(player)
+              else
+                vRPclient.notify(player,{lang.common.not_found()})
+              end
+            end)
           end
         end
       end
       
       -- get player owned vehicles (indexed by vehicle type name in lower case)
-      q_get_vehicles:bind("@user_id",user_id)
-      local _pvehicles = q_get_vehicles:query():toTable()
-      local pvehicles = {}
-      for k,v in pairs(_pvehicles) do
-        pvehicles[string.lower(v.vehicle)] = true
-      end
-
-      -- for each existing vehicle in the garage group
-      for k,v in pairs(pvehicles) do
-        local vehicle = vehicles[k]
-        if vehicle then -- not already owned
-          local price = math.ceil(vehicle[2]*cfg.sell_factor)
-          submenu[vehicle[1]] = {choose,lang.garage.buy.info({price,vehicle[3]})}
-          kitems[vehicle[1]] = k
+      MySQL.query("vRP/get_vehicles", {user_id = user_id}, function(_pvehicles, affected)
+        local pvehicles = {}
+        for k,v in pairs(_pvehicles) do
+          pvehicles[string.lower(v.vehicle)] = true
         end
-      end
 
-      vRP.openMenu(player,submenu)
+        -- for each existing vehicle in the garage group
+        for k,v in pairs(pvehicles) do
+          local vehicle = vehicles[k]
+          if vehicle then -- not already owned
+            local price = math.ceil(vehicle[2]*cfg.sell_factor)
+            submenu[vehicle[1]] = {choose,lang.garage.buy.info({price,vehicle[3]})}
+            kitems[vehicle[1]] = k
+          end
+        end
+
+        vRP.openMenu(player,submenu)
+      end)
     end
   end,lang.garage.sell.description()}
 
@@ -237,28 +231,28 @@ for group,vehicles in pairs(vehicle_groups) do
       end
       
       -- get player owned vehicles (indexed by vehicle type name in lower case)
-      q_get_vehicles:bind("@user_id",user_id)
-      local _pvehicles = q_get_vehicles:query():toTable()
-      local pvehicles = {}
-      for k,v in pairs(_pvehicles) do
-        pvehicles[string.lower(v.vehicle)] = true
-      end
-
-      -- add rents to blacklist
-      for k,v in pairs(tmpdata.rent_vehicles) do
-        pvehicles[string.lower(k)] = true
-      end
-
-      -- for each existing vehicle in the garage group
-      for k,v in pairs(vehicles) do
-        if k ~= "_config" and pvehicles[string.lower(k)] == nil then -- not already owned
-          local price = math.ceil(v[2]*cfg.rent_factor)
-          submenu[v[1]] = {choose,lang.garage.buy.info({price,v[3]})}
-          kitems[v[1]] = k
+      MySQL.query("vRP/get_vehicles", {user_id = user_id}, function(_pvehicles, affected)
+        local pvehicles = {}
+        for k,v in pairs(_pvehicles) do
+          pvehicles[string.lower(v.vehicle)] = true
         end
-      end
 
-      vRP.openMenu(player,submenu)
+        -- add rents to blacklist
+        for k,v in pairs(tmpdata.rent_vehicles) do
+          pvehicles[string.lower(k)] = true
+        end
+
+        -- for each existing vehicle in the garage group
+        for k,v in pairs(vehicles) do
+          if k ~= "_config" and pvehicles[string.lower(k)] == nil then -- not already owned
+            local price = math.ceil(v[2]*cfg.rent_factor)
+            submenu[v[1]] = {choose,lang.garage.buy.info({price,v[3]})}
+            kitems[v[1]] = k
+          end
+        end
+
+        vRP.openMenu(player,submenu)
+      end)
     end
   end,lang.garage.rent.description()}
 
