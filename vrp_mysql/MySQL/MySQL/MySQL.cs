@@ -28,7 +28,7 @@ namespace vRP
     }
 
     private Dictionary<uint, Task<object>> tasks = new Dictionary<uint, Task<object>>();
-    private static object locker = new object();
+    private static readonly object locker = new object();
     private Dictionary<string, Connection> connections = new Dictionary<string, Connection>();
     private uint task_id;
     private uint tick;
