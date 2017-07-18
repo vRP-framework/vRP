@@ -46,12 +46,10 @@ namespace vRP
 
     public void e_tick()
     {
-      Console.WriteLine("begin tick");
       Dictionary<uint, object> rmtasks = new Dictionary<uint, object>();
 
       //check each task
       foreach(var pair in tasks){
-        Console.WriteLine("look tick "+pair.Key);
         var task = pair.Value;
 
         //completed
@@ -72,22 +70,17 @@ namespace vRP
 
           rmtasks.Add(pair.Key, dict);
         }
-        Console.WriteLine("end look tick "+pair.Key);
       }
 
-      Console.WriteLine("begin remove");
       //remove completed tasks
       foreach(var pair in rmtasks){
         tasks.Remove(pair.Key);
       }
-      Console.WriteLine("end remove");
 
       //trigger completed tasks
       foreach(var pair in rmtasks){
         TriggerEvent("vRP:MySQL_task", pair.Key, pair.Value);
       }
-
-      Console.WriteLine("end tick");
     }
 
     //return [con,cmd] from "con/cmd"
@@ -132,7 +125,6 @@ namespace vRP
     // query("con/cmd", {...})
     public void e_query(string path, IDictionary<string,object> parameters)
     {
-      Console.WriteLine("begin query");
       try{
       var concmd = parsePath(path);
       var task = -1;
@@ -141,9 +133,7 @@ namespace vRP
       if(connections.TryGetValue(concmd[0], out connection)){
         MySqlCommand command;
         if(connection.commands.TryGetValue(concmd[1], out command)){
-          Console.WriteLine("run task");
           tasks.Add(task_id, Task.Run(async () => {
-            Console.WriteLine("in task");
             object r = null;
             //await connection.connection.OpenAsync();
 
@@ -183,7 +173,6 @@ namespace vRP
             connection.mutex.Release();
 //            Console.WriteLine("[vRP/C#] released");
 
-            Console.WriteLine("out task");
             return r;
           }));
 
@@ -199,8 +188,6 @@ namespace vRP
 
       TriggerEvent("vRP:MySQL_taskid", task);
       }catch(Exception e){ Console.WriteLine(e.ToString()); }
-
-      Console.WriteLine("end query");
     }
 
     /*
