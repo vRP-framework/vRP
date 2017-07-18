@@ -38,7 +38,7 @@ MySQL.query("vRP/identity_tables")
 function vRP.getUserIdentity(user_id, cbr)
   local task = Task(cbr)
 
-  MySQL.query("vRP/identity_get_user", {user_id = user_id}, function(rows, affected)
+  MySQL.query("vRP/get_user_identity", {user_id = user_id}, function(rows, affected)
     task({rows[1]})
   end)
 end
@@ -47,7 +47,7 @@ end
 function vRP.getUserByRegistration(registration, cbr)
   local task = Task(cbr)
 
-  MySQL.query("vRP/get_userbyreg", {registration = registration}, function(rows, affected)
+  MySQL.query("vRP/get_userbyreg", {registration = registration or ""}, function(rows, affected)
     if #rows then
       task({rows[1].user_id})
     else
@@ -60,7 +60,7 @@ end
 function vRP.getUserByPhone(phone, cbr)
   local task = Task(cbr)
 
-  MySQL.query("vRP/get_userbyphone", {phone = phone}, function(rows, affected)
+  MySQL.query("vRP/get_userbyphone", {phone = phone or ""}, function(rows, affected)
     if #rows then
       task({rows[1].user_id})
     else
