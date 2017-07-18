@@ -45,6 +45,7 @@ namespace vRP
 
     public void e_tick()
     {
+      Console.WriteLine("begin tick");
       List<uint> rmtasks = new List<uint>();
 
       //check each task
@@ -75,6 +76,8 @@ namespace vRP
       //remove completed tasks
       foreach(var id in rmtasks)
         tasks.Remove(id);
+
+      Console.WriteLine("end tick");
     }
 
     //return [con,cmd] from "con/cmd"
@@ -119,6 +122,7 @@ namespace vRP
     // query("con/cmd", {...})
     public void e_query(string path, IDictionary<string,object> parameters)
     {
+      Console.WriteLine("begin query");
       try{
       var concmd = parsePath(path);
       var task = -1;
@@ -182,6 +186,8 @@ namespace vRP
 
       TriggerEvent("vRP:MySQL_taskid", task);
       }catch(Exception e){ Console.WriteLine(e.ToString()); }
+
+      Console.WriteLine("end query");
     }
 
     /*
