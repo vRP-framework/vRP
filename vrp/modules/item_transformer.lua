@@ -280,13 +280,13 @@ local function hidden_placement_tick()
       -- init entry
       local htr = hidden_trs[k]
       if htr == nil then
-        hidden_trs[k] = {timestamp=cast(int,os.time()), position=gen_random_position(v.positions)}
+        hidden_trs[k] = {timestamp=parseInt(os.time()), position=gen_random_position(v.positions)}
         htr = hidden_trs[k]
       end
 
       -- remove hidden transformer if needs respawn
       if tonumber(os.time())-htr.timestamp >= cfg.hidden_transformer_duration*60 then
-        htr.timestamp = cast(int,os.time())
+        htr.timestamp = parseInt(os.time())
         vRP.removeItemTransformer("cfg:"..k)
         -- generate new position
         htr.position = gen_random_position(v.positions)

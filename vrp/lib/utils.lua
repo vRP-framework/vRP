@@ -51,11 +51,13 @@ function Task(callback, dparams, timeout)
 end
 
 function parseInt(v)
-  return cast(int,tonumber(v))
+--  return cast(int,tonumber(v))
+  return math.floor(tonumber(v))
 end
 
 function parseDouble(v)
-  return cast(double,tonumber(v))
+--  return cast(double,tonumber(v))
+  return tonumber(v)
 end
 
 -- will remove chars not allowed/disabled by strchars

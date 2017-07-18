@@ -185,7 +185,7 @@ function vRP.getUData(user_id,key,cbr)
 
   MySQL.query("vRP/get_userdata", {user_id = user_id, key = key}, function(rows, affected)
     if #rows then
-      task({#rows[1].dvalue})
+      task({rows[1].dvalue})
     else
       task({""})
     end
@@ -201,7 +201,7 @@ function vRP.getSData(key, cbr)
 
   MySQL.query("vRP/get_srvdata", {key = key}, function(rows, affected)
     if #rows then
-      task({#rows[1].dvalue})
+      task({rows[1].dvalue})
     else
       task({""})
     end
