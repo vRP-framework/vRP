@@ -8,7 +8,7 @@ local sanitizes = module("cfg/sanitizes")
 -- this module describe the identity system
 
 -- init sql
-local q_init = vRP.sql:prepare([[
+MySQL.createCommand("vRP/identity_tables", [[
 CREATE TABLE IF NOT EXISTS vrp_user_identities(
   user_id INTEGER,
   registration VARCHAR(20),
@@ -23,57 +23,50 @@ CREATE TABLE IF NOT EXISTS vrp_user_identities(
 );
 ]])
 
-q_init:execute()
+MySQL.createCommand("vRP/get_user_identity","SELECT * FROM vrp_user_identities WHERE user_id = @user_id")
+MySQL.createCommand("vRP/init_user_identity","INSERT IGNORE INTO vrp_user_identities(user_id,registration,phone,firstname,name,age) VALUES(@user_id,@registration,@phone,@firstname,@name,@age)")
+MySQL.createCommand("vRP/update_user_identity","UPDATE vrp_user_identities SET firstname = @firstname, name = @name, age = @age, registration = @registration, phone = @phone WHERE user_id = @user_id")
+MySQL.createCommand("vRP/get_userbyreg","SELECT user_id FROM vrp_user_identities WHERE registration = @registration")
+MySQL.createCommand("vRP/get_userbyphone","SELECT user_id FROM vrp_user_identities WHERE phone = @phone")
 
-local q_get_user = vRP.sql:prepare("SELECT * FROM vrp_user_identities WHERE user_id = @user_id")
-local q_init_user = vRP.sql:prepare("INSERT IGNORE INTO vrp_user_identities(user_id,registration,phone,firstname,name,age) VALUES(@user_id,@registration,@phone,@firstname,@name,@age)")
-local q_update_user = vRP.sql:prepare("UPDATE vrp_user_identities SET firstname = @firstname, name = @name, age = @age, registration = @registration, phone = @phone WHERE user_id = @user_id")
-local q_get_userbyreg = vRP.sql:prepare("SELECT user_id FROM vrp_user_identities WHERE registration = @registration")
-local q_get_userbyphone = vRP.sql:prepare("SELECT user_id FROM vrp_user_identities WHERE phone = @phone")
+-- init
+MySQL.query("vRP/identity_tables")
 
 -- api
 
--- get user identity
-function vRP.getUserIdentity(user_id)
-  local identity = nil
+-- cbreturn user identity
+function vRP.getUserIdentity(user_id, cbr)
+  local task = Task(cbr)
 
-  q_get_user:bind("@user_id",user_id)
-  local r = q_get_user:query()
-  if r:fetch() then
-    identity = r:getRow()
-  end
-
-  r:close()
-
-  return identity
+  MySQL.query("vRP/identity_get_user", {user_id = user_id}, function(rows, affected)
+    task(rows[1])
+  end)
 end
 
--- return user_id by registration or nil
-function vRP.getUserByRegistration(registration)
-  local user_id = nil
+-- cbreturn user_id by registration or nil
+function vRP.getUserByRegistration(registration, cbr)
+  local task = Task(cbr)
 
-  q_get_userbyreg:bind("@registration",registration)
-  local r = q_get_userbyreg:query()
-  if r:fetch() then
-    user_id = r:getValue(0)
-  end
-  r:close()
-
-  return user_id
+  MySQL.query("vRP/get_userbyreg", {registration = registration}, function(rows, affected)
+    if #rows then
+      task(rows[1].user_id)
+    else
+      task()
+    end
+  end)
 end
 
--- return user_id by phone or nil
-function vRP.getUserByPhone(phone)
-  local user_id = nil
+-- cbreturn user_id by phone or nil
+function vRP.getUserByPhone(phone, cbr)
+  local task = Task(cbr)
 
-  q_get_userbyphone:bind("@phone",phone)
-  local r = q_get_userbyphone:query()
-  if r:fetch() then
-    user_id = r:getValue(0)
-  end
-  r:close()
-
-  return user_id
+  MySQL.query("vRP/get_userbyphone", {phone = phone}, function(rows, affected)
+    if #rows then
+      task(rows[1].user_id)
+    else
+      task()
+    end
+  end)
 end
 
 function vRP.generateStringNumber(format) -- (ex: DDDLLL, D => digit, L => letter)
@@ -90,60 +83,58 @@ function vRP.generateStringNumber(format) -- (ex: DDDLLL, D => digit, L => lette
   return number
 end
 
--- generate a unique registration number
-function vRP.generateRegistrationNumber()
-  local exists = true
-  local registration = nil 
+-- cbreturn a unique registration number
+function vRP.generateRegistrationNumber(cbr)
+  local task = Task(cbr)
 
-  while exists do
+  local search = function()
     -- generate registration number
-    registration = vRP.generateStringNumber("DDDLLL")
-
-    q_get_userbyreg:bind("@registration",registration)
-    exists = false
-    local r = q_get_userbyreg:query()
-    if r:fetch() then
-      exists = true
-    end
-    r:close()
+    local registration = vRP.generateStringNumber("DDDLLL")
+    vRP.getUserByRegistration(registration, function(user_id)
+      if user_id ~= nil then
+        search() -- continue generation
+      else
+        task(registration)
+      end
+    end)
   end
-
-  return registration
 end
 
--- generate a unique phone number (0DDDDD, D => digit)
-function vRP.generatePhoneNumber()
-  local exists = true
-  local phone = nil 
+-- cbreturn a unique phone number (0DDDDD, D => digit)
+function vRP.generatePhoneNumber(cbr)
+  local task = Task(cbr)
 
-  while exists do
-    -- generate registration number
-    phone = vRP.generateStringNumber(cfg.phone_format)
-
-    q_get_userbyphone:bind("@phone",phone)
-    exists = false
-    local r = q_get_userbyphone:query()
-    if r:fetch() then
-      exists = true
-    end
-    r:close()
+  local search = function()
+    -- generate phone number
+    local phone = vRP.generateStringNumber(cfg.phone_format)
+    vRP.getUserByPhone(phone, function(user_id)
+      if user_id ~= nil then
+        search() -- continue generation
+      else
+        task(phone)
+      end
+    end)
   end
-
-  return phone
 end
 
 -- events, init user identity at connection
 AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
-  local identity = vRP.getUserIdentity(user_id)
-  if identity == nil then
-    q_init_user:bind("@user_id",user_id) -- create if not exists player identity
-    q_init_user:bind("@registration",vRP.generateRegistrationNumber())
-    q_init_user:bind("@phone",vRP.generatePhoneNumber())
-    q_init_user:bind("@firstname",cfg.random_first_names[math.random(1,#cfg.random_first_names+1)])
-    q_init_user:bind("@name",cfg.random_last_names[math.random(1,#cfg.random_last_names+1)])
-    q_init_user:bind("@age",math.random(25,40+1))
-    q_init_user:execute()
-  end
+  vRP.getUserIdentity(user_id, function(identity)
+    if identity == nil then
+      vRP.generateRegistrationNumber(function(registration)
+        vRP.generatePhoneNumber(function(phone)
+          MySQL.query("vRP/init_user_identity", { 
+            user_id = user_id, 
+            registration = registration,
+            phone = phone,
+            firstname = cfg.random_first_names[math.random(1,#cfg.random_first_names+1)],
+            name = cfg.random_last_names[math.random(1,#cfg.random_last_names+1)],
+            age = math.random(25,40+1)
+          })
+        end)
+      end)
+    end
+  end)
 end)
 
 -- city hall menu
@@ -163,21 +154,23 @@ local function ch_identity(player,choice)
               age = tonumber(age)
               if age >= 16 and age <= 150 then
                 if vRP.tryPayment(user_id,cfg.new_identity_cost) then
-                  local registration = vRP.generateRegistrationNumber()
-                  local phone = vRP.generatePhoneNumber()
+                  vRP.generateRegistrationNumber(function(registration)
+                    vRP.generatePhoneNumber(function(phone)
 
-                  q_update_user:bind("@user_id",user_id)
-                  q_update_user:bind("@firstname",firstname)
-                  q_update_user:bind("@name",name)
-                  q_update_user:bind("@age",age)
-                  q_update_user:bind("@registration",registration)
-                  q_update_user:bind("@phone",phone)
-                  q_update_user:execute()
+                      MySQL.query("vRP/update_user_identity", {
+                        user_id = user_id,
+                        firstname = firstname,
+                        name = name,
+                        age = age,
+                        registration = registration,
+                        phone = phone
+                      })
 
-                  -- update client registration
-                  vRPclient.setRegistrationNumber(player,{registration})
-
-                  vRPclient.notify(player,{lang.money.paid({cfg.new_identity_cost})})
+                      -- update client registration
+                      vRPclient.setRegistrationNumber(player,{registration})
+                      vRPclient.notify(player,{lang.money.paid({cfg.new_identity_cost})})
+                    end)
+                  end)
                 else
                   vRPclient.notify(player,{lang.money.not_enough()})
                 end
@@ -223,10 +216,11 @@ end
 
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
   -- send registration number to client at spawn
-  local identity = vRP.getUserIdentity(user_id)
-  if identity then
-    vRPclient.setRegistrationNumber(source,{identity.registration or "000AAA"})
-  end
+  vRP.getUserIdentity(user_id, function(identity)
+    if identity then
+      vRPclient.setRegistrationNumber(source,{identity.registration or "000AAA"})
+    end
+  end)
 
   -- first spawn, build city hall
   if first_spawn then
@@ -240,24 +234,25 @@ end)
 AddEventHandler("vRP:buildMainMenu",function(player) 
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
-    local identity = vRP.getUserIdentity(user_id)
+    vRP.getUserIdentity(user_id, function(identity)
 
-    if identity then
-      -- generate identity content
-      -- get address
-      local address = vRP.getUserAddress(user_id)
-      local home = ""
-      local number = ""
-      if address then
-        home = address.home
-        number = address.number
+      if identity then
+        -- generate identity content
+        -- get address
+        local address = vRP.getUserAddress(user_id)
+        local home = ""
+        local number = ""
+        if address then
+          home = address.home
+          number = address.number
+        end
+
+        local content = lang.cityhall.menu.info({htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.age,identity.registration,identity.phone,home,number})
+        local choices = {}
+        choices[lang.cityhall.menu.title()] = {function()end, content}
+
+        vRP.buildMainMenu(player,choices)
       end
-
-      local content = lang.cityhall.menu.info({htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.age,identity.registration,identity.phone,home,number})
-      local choices = {}
-      choices[lang.cityhall.menu.title()] = {function()end, content}
-
-      vRP.buildMainMenu(player,choices)
-    end
+    end)
   end
 end)
