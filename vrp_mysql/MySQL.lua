@@ -80,7 +80,8 @@ function MySQL.query(path, args, cb)
   -- force args to be a C# dictionary
   args._none = " "
 
-  exports.vrp_mysql:query(path, args)
+--  exports.vrp_mysql:query(path, args)
+  TriggerEvent("vRP:MySQL_query", path, args)
 --  print("[vRP] try to query "..path.." id "..task_id)
   tasks[task_id] = cb
 end

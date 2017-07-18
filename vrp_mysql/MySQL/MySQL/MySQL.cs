@@ -38,6 +38,7 @@ namespace vRP
       Exports.Add("createConnection", new Action<string,string>(e_createConnection));
       Exports.Add("createCommand", new Action<string,string>(e_createCommand));
       Exports.Add("query", new Action<string,IDictionary<string,object>>(e_query));
+      EventHandlers["vRP:MySQL_query"] += new Action<string,IDictionary<string,object>>(e_query);
       //Exports.Add("checkTask", new Func<int,object>(e_checkTask));
 
       Tick += OnTick;
