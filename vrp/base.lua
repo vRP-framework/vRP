@@ -316,10 +316,17 @@ end
 
 -- handlers
 
+local rejects = {}
+
 AddEventHandler("playerConnecting",function(name,setMessage)
   local source = source
   Debug.pbegin("playerConnecting")
   local ids = GetPlayerIdentifiers(source)
+
+  -- reject someone
+  local function reject(reason)
+    rejects[source] = reason
+  end
 
   if ids ~= nil and #ids > 0 then
     vRP.getUserIdByIdentifiers(ids, function(user_id)
@@ -372,20 +379,17 @@ AddEventHandler("playerConnecting",function(name,setMessage)
                 Debug.pend()
               else
                 print("[vRP] "..name.." ("..GetPlayerEP(source)..") rejected: not whitelisted (user_id = "..user_id..")")
-                setMessage("[vRP] Not whitelisted (user_id = "..user_id..").")
-                CancelEvent()
+                reject("[vRP] Not whitelisted (user_id = "..user_id..").")
               end
             end)
           else
             print("[vRP] "..name.." ("..GetPlayerEP(source)..") rejected: banned (user_id = "..user_id..")")
-            setMessage("[vRP] Banned (user_id = "..user_id..").")
-            CancelEvent()
+            reject("[vRP] Banned (user_id = "..user_id..").")
           end
         end)
       else
         print("[vRP] "..name.." ("..GetPlayerEP(source)..") rejected: identification error")
-        setMessage("[vRP] Identification error.")
-        CancelEvent()
+        reject("[vRP] Identification error.")
       end
     end)
   else
@@ -398,10 +402,13 @@ end)
 
 AddEventHandler("playerDropped",function(reason)
   Debug.pbegin("playerDropped")
-  local user_id = vRP.getUserId(source)
 
+  rejects[source] = nil
   -- remove player from connected clients
   vRPclient.removePlayer(-1,{source})
+
+
+  local user_id = vRP.getUserId(source)
 
   if user_id ~= nil then
     TriggerEvent("vRP:playerLeave", user_id, source)
@@ -456,6 +463,13 @@ AddEventHandler("vRPcli:playerSpawned", function()
       end)
     end)
   end
+
+  -- reject
+  if rejects[player] then
+    vRP.kick(player, rejects[player])
+    rejects[player] = nil
+  end
+
   Debug.pend()
 end)
 
