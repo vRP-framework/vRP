@@ -2,6 +2,7 @@
 using CitizenFX.Core.Native;
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,9 +28,8 @@ namespace vRP
       public SemaphoreSlim mutex;
     }
 
-    private Dictionary<uint, Task<object>> tasks = new Dictionary<uint, Task<object>>();
+    private IDictionary<uint, Task<object>> tasks = new ConcurrentDictionary<uint, Task<object>>();
     private Dictionary<string, Connection> connections = new Dictionary<string, Connection>();
-    private SemaphoreSlim mutex = new SemaphoreSlim(1,1);
     private uint task_id;
     private uint tick;
 
@@ -47,7 +47,6 @@ namespace vRP
 
     public async Task OnTick()
     {
-      mutex.WaitAsync();
       List<uint> rmtasks = new List<uint>();
 
       //check each task
@@ -78,7 +77,6 @@ namespace vRP
       //remove completed tasks
       foreach(var id in rmtasks)
         tasks.Remove(id);
-      mutex.Release();
     }
 
     //return [con,cmd] from "con/cmd"
@@ -131,8 +129,6 @@ namespace vRP
       if(connections.TryGetValue(concmd[0], out connection)){
         MySqlCommand command;
         if(connection.commands.TryGetValue(concmd[1], out command)){
-          mutex.WaitAsync();
-
           tasks.Add(task_id, Task.Run(async () => {
             object r = null;
             //await connection.connection.OpenAsync();
@@ -175,8 +171,6 @@ namespace vRP
 
             return r;
           }));
-
-          mutex.Release();
 
           task = (int)task_id++;
         }
