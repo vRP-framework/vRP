@@ -29,6 +29,7 @@ namespace vRP
 
     private Dictionary<uint, Task<object>> tasks = new Dictionary<uint, Task<object>>();
     private Dictionary<string, Connection> connections = new Dictionary<string, Connection>();
+    private SemaphoreSlim mutex = new SemaphoreSlim(1,1);
     private uint task_id;
     private uint tick;
 
@@ -46,38 +47,38 @@ namespace vRP
 
     public async Task OnTick()
     {
-      lock(tasks){
-        List<uint> rmtasks = new List<uint>();
+      mutex.WaitAsync();
+      List<uint> rmtasks = new List<uint>();
 
-        //check each task
-        foreach(var pair in tasks){
-          var task = pair.Value;
+      //check each task
+      foreach(var pair in tasks){
+        var task = pair.Value;
 
-          //completed
-          if(task.IsCompleted){
-            Dictionary<string,object> dict = new Dictionary<string,object>();
+        //completed
+        if(task.IsCompleted){
+          Dictionary<string,object> dict = new Dictionary<string,object>();
 
-            if(!task.IsFaulted){ //ok
-              Dictionary<string, object> r = (Dictionary<string,object>)task.Result;
+          if(!task.IsFaulted){ //ok
+            Dictionary<string, object> r = (Dictionary<string,object>)task.Result;
 
-              dict["status"] = 1;
-              dict["rows"] = r["rows"];
-              dict["affected"] = r["affected"];
-            }
-            else{ //faulted
-              dict["status"] = -1;
-              Console.WriteLine("[vRP/C#] exception: "+task.Exception.ToString());
-            }
-
-            rmtasks.Add(pair.Key);
-            TriggerEvent("vRP:MySQL_task", pair.Key, dict);
+            dict["status"] = 1;
+            dict["rows"] = r["rows"];
+            dict["affected"] = r["affected"];
           }
-        }
+          else{ //faulted
+            dict["status"] = -1;
+            Console.WriteLine("[vRP/C#] exception: "+task.Exception.ToString());
+          }
 
-        //remove completed tasks
-        foreach(var id in rmtasks)
-          tasks.Remove(id);
+          rmtasks.Add(pair.Key);
+          TriggerEvent("vRP:MySQL_task", pair.Key, dict);
+        }
       }
+
+      //remove completed tasks
+      foreach(var id in rmtasks)
+        tasks.Remove(id);
+      mutex.Release();
     }
 
     //return [con,cmd] from "con/cmd"
@@ -130,50 +131,52 @@ namespace vRP
       if(connections.TryGetValue(concmd[0], out connection)){
         MySqlCommand command;
         if(connection.commands.TryGetValue(concmd[1], out command)){
-          lock(tasks){
-            tasks.Add(task_id, Task.Run(async () => {
-              object r = null;
-              //await connection.connection.OpenAsync();
+          mutex.WaitAsync();
 
-              await connection.mutex.WaitAsync();
-  //            Console.WriteLine("[vRP/C#] do query "+path);
+          tasks.Add(task_id, Task.Run(async () => {
+            object r = null;
+            //await connection.connection.OpenAsync();
+
+            await connection.mutex.WaitAsync();
+//            Console.WriteLine("[vRP/C#] do query "+path);
 
 
-  //            Console.WriteLine("[vRP/C#] add params");
-              //set parameters
-              foreach(var param in parameters ?? Enumerable.Empty<KeyValuePair<string, object>>())
-                command.Parameters.AddWithValue("@"+param.Key, param.Value);
+//            Console.WriteLine("[vRP/C#] add params");
+            //set parameters
+            foreach(var param in parameters ?? Enumerable.Empty<KeyValuePair<string, object>>())
+              command.Parameters.AddWithValue("@"+param.Key, param.Value);
 
-  //            Console.WriteLine("[vRP/C#] try reader");
-              using (var reader = await command.ExecuteReaderAsync())
+//            Console.WriteLine("[vRP/C#] try reader");
+            using (var reader = await command.ExecuteReaderAsync())
+            {
+              var results = new List<Dictionary<string, object>>();
+
+              while (await reader.ReadAsync())
               {
-                var results = new List<Dictionary<string, object>>();
+//                Console.WriteLine("[vRP/C#] read async");
+                var entry = new Dictionary<string, object>();
+                for (int i = 0; i < reader.FieldCount; i++)
+                  entry[reader.GetName(i)] = reader.GetValue(i);
 
-                while (await reader.ReadAsync())
-                {
-  //                Console.WriteLine("[vRP/C#] read async");
-                  var entry = new Dictionary<string, object>();
-                  for (int i = 0; i < reader.FieldCount; i++)
-                    entry[reader.GetName(i)] = reader.GetValue(i);
-
-                  results.Add(entry);
-                }
-
-  //              Console.WriteLine("[vRP/C#] returns");
-                Dictionary<string, object> dict = new Dictionary<string,object>();
-                dict["rows"] = results;
-                dict["affected"] = reader.RecordsAffected;
-
-                r = (object)dict;
+                results.Add(entry);
               }
 
-  //            Console.WriteLine("[vRP/C#] end query "+path);
-              connection.mutex.Release();
-  //            Console.WriteLine("[vRP/C#] released");
+//              Console.WriteLine("[vRP/C#] returns");
+              Dictionary<string, object> dict = new Dictionary<string,object>();
+              dict["rows"] = results;
+              dict["affected"] = reader.RecordsAffected;
 
-              return r;
-            }));
-          }
+              r = (object)dict;
+            }
+
+//            Console.WriteLine("[vRP/C#] end query "+path);
+            connection.mutex.Release();
+//            Console.WriteLine("[vRP/C#] released");
+
+            return r;
+          }));
+
+          mutex.Release();
 
           task = (int)task_id++;
         }
