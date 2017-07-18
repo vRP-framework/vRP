@@ -37,7 +37,7 @@ namespace vRP
       task_id = 0;
       Exports.Add("createConnection", new Action<string,string>(e_createConnection));
       Exports.Add("createCommand", new Action<string,string>(e_createCommand));
-      Exports.Add("query", new Func<string,IDictionary<string,object>,int>(e_query));
+      Exports.Add("query", new Action<string,IDictionary<string,object>>(e_query));
       //Exports.Add("checkTask", new Func<int,object>(e_checkTask));
 
       Tick += OnTick;
@@ -113,7 +113,7 @@ namespace vRP
     }
 
     // query("con/cmd", {...})
-    public int e_query(string path, IDictionary<string,object> parameters)
+    public void e_query(string path, IDictionary<string,object> parameters)
     {
       var concmd = parsePath(path);
       var task = -1;
@@ -175,7 +175,7 @@ namespace vRP
       else
         Console.WriteLine("[vRP/C#] connection/command path "+path+" not found");
 
-      return task;
+      TriggerEvent("vRP:MySQL_taskid", task);
     }
 
     /*

@@ -1,4 +1,5 @@
-local MySQL = module("vrp_mysql", "MySQL")
+MySQL = module("vrp_mysql", "MySQL")
+
 local Proxy = module("lib/Proxy")
 local Tunnel = module("lib/Tunnel")
 local Lang = module("lib/Lang")
@@ -180,7 +181,7 @@ function vRP.setUData(user_id,key,value)
 end
 
 function vRP.getUData(user_id,key,cbr)
-  local task = Task(cbr)
+  local task = Task(cbr,{""})
 
   MySQL.query("vRP/get_userdata", {user_id = user_id, key = key}, function(rows, affected)
     if #rows then
@@ -196,7 +197,7 @@ function vRP.setSData(key,value)
 end
 
 function vRP.getSData(key, cbr)
-  local task = Task(cbr)
+  local task = Task(cbr,{""})
 
   MySQL.query("vRP/get_srvdata", {key = key}, function(rows, affected)
     if #rows then

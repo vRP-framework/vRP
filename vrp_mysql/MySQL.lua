@@ -42,6 +42,14 @@ AddEventHandler("vRP:MySQL_task", function(task_id, data)
   end
 end)
 
+local task_id = -1
+AddEventHandler("vRP:MySQL_taskid", function(_task_id)
+--  print("vRP:MySQL_task "..task_id)
+  task_id = _task_id
+end)
+
+
+
 -- host can be "host" or "host:port"
 function MySQL.createConnection(name,host,user,password,db,debug)
 --  print("[vRP] try to create connection "..name)
@@ -72,7 +80,7 @@ function MySQL.query(path, args, cb)
   -- force args to be a C# dictionary
   args._none = " "
 
-  local task_id = exports.vrp_mysql:query(path, args)
+  exports.vrp_mysql:query(path, args)
 --  print("[vRP] try to query "..path.." id "..task_id)
   tasks[task_id] = cb
 end
