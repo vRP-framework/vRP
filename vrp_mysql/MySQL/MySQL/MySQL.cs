@@ -28,6 +28,7 @@ namespace vRP
     }
 
     private Dictionary<uint, Task<object>> tasks = new Dictionary<uint, Task<object>>();
+    private static object locker = new object();
     private Dictionary<string, Connection> connections = new Dictionary<string, Connection>();
     private uint task_id;
     private uint tick;
@@ -46,7 +47,7 @@ namespace vRP
 
     public void e_tick()
     {
-      lock(tasks){
+      lock(locker){
         Console.WriteLine("begin tick");
         List<uint> rmtasks = new List<uint>();
 
@@ -125,7 +126,7 @@ namespace vRP
     // query("con/cmd", {...})
     public void e_query(string path, IDictionary<string,object> parameters)
     {
-      lock(tasks){
+      lock(locker){
         Console.WriteLine("begin query");
         try{
         var concmd = parsePath(path);
