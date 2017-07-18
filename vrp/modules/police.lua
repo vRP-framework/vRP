@@ -23,68 +23,74 @@ local menu_pc = {name=lang.police.pc.title(),css={top="75px",header_color="rgba(
 -- search identity by registration
 local function ch_searchreg(player,choice)
   vRP.prompt(player,lang.police.pc.searchreg.prompt(),"",function(player, reg)
-    local user_id = vRP.getUserByRegistration(reg)
-    if user_id ~= nil then
-      local identity = vRP.getUserIdentity(user_id)
-      if identity then
-        -- display identity and business
-        local name = identity.name
-        local firstname = identity.firstname
-        local age = identity.age
-        local phone = identity.phone
-        local registration = identity.registration
-        local bname = ""
-        local bcapital = 0
-        local home = ""
-        local number = ""
+    vRP.getUserByRegistration(reg, function(user_id)
+      if user_id ~= nil then
+        vRP.getUserIdentity(user_id, function(identity)
+          if identity then
+            -- display identity and business
+            local name = identity.name
+            local firstname = identity.firstname
+            local age = identity.age
+            local phone = identity.phone
+            local registration = identity.registration
+            local bname = ""
+            local bcapital = 0
+            local home = ""
+            local number = ""
 
-        local business = vRP.getUserBusiness(user_id)
-        if business then 
-          bname = business.name
-          bcapital = business.capital
-        end
+            vRP.getUserBusiness(user_id, function(business)
+              if business then
+                bname = business.name
+                bcapital = business.capital
+              end
 
-        local address = vRP.getUserAddress(user_id)
-        if address then
-          home = address.home
-          number = address.number
-        end
+              vRP.getUserAddress(user_id, function(address)
+                if address then
+                  home = address.home
+                  number = address.number
+                end
 
-        local content = lang.police.identity.info({name,firstname,age,registration,phone,bname,bcapital,home,number})
-        vRPclient.setDiv(player,{"police_pc",".div_police_pc{ background-color: rgba(0,0,0,0.75); color: white; font-weight: bold; width: 500px; padding: 10px; margin: auto; margin-top: 150px; }",content})
+                local content = lang.police.identity.info({name,firstname,age,registration,phone,bname,bcapital,home,number})
+                vRPclient.setDiv(player,{"police_pc",".div_police_pc{ background-color: rgba(0,0,0,0.75); color: white; font-weight: bold; width: 500px; padding: 10px; margin: auto; margin-top: 150px; }",content})
+              end)
+            end)
+          else
+            vRPclient.notify(player,{lang.common.not_found()})
+          end
+        end)
       else
         vRPclient.notify(player,{lang.common.not_found()})
       end
-    else
-      vRPclient.notify(player,{lang.common.not_found()})
-    end
+    end)
   end)
 end
 
 -- show police records by registration
 local function ch_show_police_records(player,choice)
   vRP.prompt(player,lang.police.pc.searchreg.prompt(),"",function(player, reg)
-    local user_id = vRP.getUserByRegistration(reg)
-    if user_id ~= nil then
-      vRP.getUData(user_id, "vRP:police_records", function(content)
-        vRPclient.setDiv(player,{"police_pc",".div_police_pc{ background-color: rgba(0,0,0,0.75); color: white; font-weight: bold; width: 500px; padding: 10px; margin: auto; margin-top: 150px; }",content})
-      end)
-    else
-      vRPclient.notify(player,{lang.common.not_found()})
-    end
+    vRP.getUserByRegistration(reg, function(user_id)
+      if user_id ~= nil then
+        vRP.getUData(user_id, "vRP:police_records", function(content)
+          vRPclient.setDiv(player,{"police_pc",".div_police_pc{ background-color: rgba(0,0,0,0.75); color: white; font-weight: bold; width: 500px; padding: 10px; margin: auto; margin-top: 150px; }",content})
+        end)
+      else
+        vRPclient.notify(player,{lang.common.not_found()})
+      end
+    end)
   end)
 end
 
 -- delete police records by registration
 local function ch_delete_police_records(player,choice)
   vRP.prompt(player,lang.police.pc.searchreg.prompt(),"",function(player, reg)
-    local user_id = vRP.getUserByRegistration(reg)
-    if user_id ~= nil then
-      vRP.setUData(user_id, "vRP:police_records", "")
-      vRPclient.notify(player,{lang.police.pc.records.delete.deleted()})
-    else
-      vRPclient.notify(player,{lang.common.not_found()})
-    end
+    vRP.getUserByRegistration(reg, function(user_id)
+      if user_id ~= nil then
+        vRP.setUData(user_id, "vRP:police_records", "")
+        vRPclient.notify(player,{lang.police.pc.records.delete.deleted()})
+      else
+        vRPclient.notify(player,{lang.common.not_found()})
+      end
+    end)
   end)
 end
 
@@ -93,18 +99,20 @@ local function ch_closebusiness(player,choice)
   vRPclient.getNearestPlayer(player,{5},function(nplayer)
     local nuser_id = vRP.getUserId(nplayer)
     if nuser_id ~= nil then
-      local identity = vRP.getUserIdentity(nuser_id)
-      local business = vRP.getUserBusiness(nuser_id)
-      if identity and business then
-        vRP.request(player,lang.police.pc.closebusiness.request({identity.name,identity.firstname,business.name}),15,function(player,ok)
-          if ok then
-            vRP.closeBusiness(nuser_id)
-            vRPclient.notify(player,{lang.police.pc.closebusiness.closed()})
+      vRP.getUserIdentity(nuser_id, function(identity)
+        vRP.getUserBusiness(nuser_id, function(business)
+          if identity and business then
+            vRP.request(player,lang.police.pc.closebusiness.request({identity.name,identity.firstname,business.name}),15,function(player,ok)
+              if ok then
+                vRP.closeBusiness(nuser_id)
+                vRPclient.notify(player,{lang.police.pc.closebusiness.closed()})
+              end
+            end)
+          else
+            vRPclient.notify(player,{lang.common.no_player_near()})
           end
         end)
-      else
-        vRPclient.notify(player,{lang.common.no_player_near()})
-      end
+      end)
     else
       vRPclient.notify(player,{lang.common.no_player_near()})
     end
@@ -114,30 +122,31 @@ end
 -- track vehicle
 local function ch_trackveh(player,choice)
   vRP.prompt(player,lang.police.pc.trackveh.prompt_reg(),"",function(player, reg) -- ask reg
-    local user_id = vRP.getUserByRegistration(reg)
-    if user_id ~= nil then
-      vRP.prompt(player,lang.police.pc.trackveh.prompt_note(),"",function(player, note) -- ask note
-        -- begin veh tracking
-        vRPclient.notify(player,{lang.police.pc.trackveh.tracking()})
-        local seconds = math.random(cfg.trackveh.min_time,cfg.trackveh.max_time+1)
-        SetTimeout(seconds*1000,function()
-          local tplayer = vRP.getUserSource(user_id)
-          if tplayer ~= nil then
-            vRPclient.getAnyOwnedVehiclePosition(tplayer,{},function(ok,x,y,z)
-              if ok then -- track success
-                vRP.sendServiceAlert(nil, cfg.trackveh.service,x,y,z,lang.police.pc.trackveh.tracked({reg,note}))
-              else
-                vRPclient.notify(player,{lang.police.pc.trackveh.track_failed({reg,note})}) -- failed
-              end
-            end)
-          else
-            vRPclient.notify(player,{lang.police.pc.trackveh.track_failed({reg,note})}) -- failed
-          end
+    vRP.getUserByRegistration(reg, function(user_id)
+      if user_id ~= nil then
+        vRP.prompt(player,lang.police.pc.trackveh.prompt_note(),"",function(player, note) -- ask note
+          -- begin veh tracking
+          vRPclient.notify(player,{lang.police.pc.trackveh.tracking()})
+          local seconds = math.random(cfg.trackveh.min_time,cfg.trackveh.max_time+1)
+          SetTimeout(seconds*1000,function()
+            local tplayer = vRP.getUserSource(user_id)
+            if tplayer ~= nil then
+              vRPclient.getAnyOwnedVehiclePosition(tplayer,{},function(ok,x,y,z)
+                if ok then -- track success
+                  vRP.sendServiceAlert(nil, cfg.trackveh.service,x,y,z,lang.police.pc.trackveh.tracked({reg,note}))
+                else
+                  vRPclient.notify(player,{lang.police.pc.trackveh.track_failed({reg,note})}) -- failed
+                end
+              end)
+            else
+              vRPclient.notify(player,{lang.police.pc.trackveh.track_failed({reg,note})}) -- failed
+            end
+          end)
         end)
-      end)
-    else
-      vRPclient.notify(player,{lang.common.not_found()})
-    end
+      else
+        vRPclient.notify(player,{lang.common.not_found()})
+      end
+    end)
   end)
 end
 
@@ -247,38 +256,41 @@ local choice_askid = {function(player,choice)
       vRPclient.notify(player,{lang.police.menu.askid.asked()})
       vRP.request(nplayer,lang.police.menu.askid.request(),15,function(nplayer,ok)
         if ok then
-          local identity = vRP.getUserIdentity(nuser_id)
-          if identity then
-            -- display identity and business
-            local name = identity.name
-            local firstname = identity.firstname
-            local age = identity.age
-            local phone = identity.phone
-            local registration = identity.registration
-            local bname = ""
-            local bcapital = 0
-            local home = ""
-            local number = ""
+          vRP.getUserIdentity(nuser_id, function(identity)
+            if identity then
+              -- display identity and business
+              local name = identity.name
+              local firstname = identity.firstname
+              local age = identity.age
+              local phone = identity.phone
+              local registration = identity.registration
+              local bname = ""
+              local bcapital = 0
+              local home = ""
+              local number = ""
 
-            local business = vRP.getUserBusiness(nuser_id)
-            if business then 
-              bname = business.name
-              bcapital = business.capital
+              vRP.getUserBusiness(nuser_id, function(business)
+                if business then
+                  bname = business.name
+                  bcapital = business.capital
+                end
+
+                vRP.getUserAddress(nuser_id, function(address)
+                  if address then
+                    home = address.home
+                    number = address.number
+                  end
+
+                  local content = lang.police.identity.info({name,firstname,age,registration,phone,bname,bcapital,home,number})
+                  vRPclient.setDiv(player,{"police_identity",".div_police_identity{ background-color: rgba(0,0,0,0.75); color: white; font-weight: bold; width: 500px; padding: 10px; margin: auto; margin-top: 150px; }",content})
+                  -- request to hide div
+                  vRP.request(player, lang.police.menu.askid.request_hide(), 1000, function(player,ok)
+                    vRPclient.removeDiv(player,{"police_identity"})
+                  end)
+                end)
+              end)
             end
-
-            local address = vRP.getUserAddress(nuser_id)
-            if address then
-              home = address.home
-              number = address.number
-            end
-
-            local content = lang.police.identity.info({name,firstname,age,registration,phone,bname,bcapital,home,number})
-            vRPclient.setDiv(player,{"police_identity",".div_police_identity{ background-color: rgba(0,0,0,0.75); color: white; font-weight: bold; width: 500px; padding: 10px; margin: auto; margin-top: 150px; }",content})
-            -- request to hide div
-            vRP.request(player, lang.police.menu.askid.request_hide(), 1000, function(player,ok)
-              vRPclient.removeDiv(player,{"police_identity"})
-            end)
-          end
+          end)
         else
           vRPclient.notify(player,{lang.common.request_refused()})
         end
@@ -301,7 +313,7 @@ local choice_check = {function(player,choice)
         local items = ""
         local data = vRP.getUserDataTable(nuser_id)
         if data and data.inventory then
-          for k,v in pairs(data.inventory) do 
+          for k,v in pairs(data.inventory) do
             local item = vRP.items[k]
             if item then
               items = items.."<br />"..item.name.." ("..v.amount..")"
@@ -495,7 +507,7 @@ local choice_store_weapons = {function(player, choice)
 end, lang.police.menu.store_weapons.description()}
 
 -- add choices to the menu
-AddEventHandler("vRP:buildMainMenu",function(player) 
+AddEventHandler("vRP:buildMainMenu",function(player)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
     local choices = {}

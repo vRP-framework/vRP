@@ -39,7 +39,7 @@ function vRP.getUserIdentity(user_id, cbr)
   local task = Task(cbr)
 
   MySQL.query("vRP/identity_get_user", {user_id = user_id}, function(rows, affected)
-    task(rows[1])
+    task({rows[1]})
   end)
 end
 
@@ -49,7 +49,7 @@ function vRP.getUserByRegistration(registration, cbr)
 
   MySQL.query("vRP/get_userbyreg", {registration = registration}, function(rows, affected)
     if #rows then
-      task(rows[1].user_id)
+      task({rows[1].user_id})
     else
       task()
     end
@@ -62,7 +62,7 @@ function vRP.getUserByPhone(phone, cbr)
 
   MySQL.query("vRP/get_userbyphone", {phone = phone}, function(rows, affected)
     if #rows then
-      task(rows[1].user_id)
+      task({rows[1].user_id})
     else
       task()
     end
@@ -94,7 +94,7 @@ function vRP.generateRegistrationNumber(cbr)
       if user_id ~= nil then
         search() -- continue generation
       else
-        task(registration)
+        task({registration})
       end
     end)
   end
@@ -111,7 +111,7 @@ function vRP.generatePhoneNumber(cbr)
       if user_id ~= nil then
         search() -- continue generation
       else
-        task(phone)
+        task({phone})
       end
     end)
   end
@@ -239,19 +239,20 @@ AddEventHandler("vRP:buildMainMenu",function(player)
       if identity then
         -- generate identity content
         -- get address
-        local address = vRP.getUserAddress(user_id)
-        local home = ""
-        local number = ""
-        if address then
-          home = address.home
-          number = address.number
-        end
+        vRP.getUserAddress(user_id, function(address)
+          local home = ""
+          local number = ""
+          if address then
+            home = address.home
+            number = address.number
+          end
 
-        local content = lang.cityhall.menu.info({htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.age,identity.registration,identity.phone,home,number})
-        local choices = {}
-        choices[lang.cityhall.menu.title()] = {function()end, content}
+          local content = lang.cityhall.menu.info({htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.age,identity.registration,identity.phone,home,number})
+          local choices = {}
+          choices[lang.cityhall.menu.title()] = {function()end, content}
 
-        vRP.buildMainMenu(player,choices)
+          vRP.buildMainMenu(player,choices)
+        end)
       end
     end)
   end

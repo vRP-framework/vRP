@@ -13,7 +13,9 @@ local function ch_list(player,choice)
       vRPclient.removeDiv(player,{"user_list"})
     else -- show
       local content = ""
+      local count = 0
       for k,v in pairs(vRP.rusers) do
+        count = count+1
         local source = vRP.getUserSource(k)
         vRP.getUserIdentity(k, function(identity)
           if source ~= nil then
@@ -22,11 +24,15 @@ local function ch_list(player,choice)
               content = content.." "..htmlEntities.encode(identity.firstname).." "..htmlEntities.encode(identity.name).." "..identity.registration
             end
           end
+
+          -- check end
+          count = count-1
+          if count == 0 then
+            player_lists[player] = true
+            vRPclient.setDiv(player,{"user_list",".div_user_list{ margin: auto; padding: 8px; width: 500px; margin-top: 80px; background: black; color: white; font-weight: bold; ", content})
+          end
         end)
       end
-
-      player_lists[player] = true
-      vRPclient.setDiv(player,{"user_list",".div_user_list{ margin: auto; padding: 8px; width: 500px; margin-top: 80px; background: black; color: white; font-weight: bold; ", content})
     end
   end
 end
