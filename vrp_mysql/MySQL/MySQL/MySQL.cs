@@ -34,6 +34,7 @@ namespace vRP
 
     public MySQL()
     {
+      Console.WriteLine("[vRP/C#] Load MySQL app.");
       task_id = 0;
       Exports.Add("createConnection", new Action<string,string>(e_createConnection));
       Exports.Add("createCommand", new Action<string,string>(e_createCommand));
