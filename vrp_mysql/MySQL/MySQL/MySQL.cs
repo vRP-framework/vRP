@@ -136,7 +136,9 @@ namespace vRP
         if(connections.TryGetValue(concmd[0], out connection)){
           MySqlCommand command;
           if(connection.commands.TryGetValue(concmd[1], out command)){
+            Console.WriteLine("run task");
             tasks.Add(task_id, Task.Run(async () => {
+              Console.WriteLine("in task");
               object r = null;
               //await connection.connection.OpenAsync();
 
@@ -176,6 +178,7 @@ namespace vRP
               connection.mutex.Release();
   //            Console.WriteLine("[vRP/C#] released");
 
+              Console.WriteLine("out task");
               return r;
             }));
 
