@@ -266,7 +266,7 @@ end)
 local function gen_random_position(positions)
   local n = #positions
   if n > 0 then
-    return positions[math.random(1,n+1)]
+    return positions[math.random(1,n)]
   else 
     return {0,0,0}
   end

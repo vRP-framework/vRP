@@ -75,8 +75,8 @@ function vRP.generateStringNumber(format) -- (ex: DDDLLL, D => digit, L => lette
 
   local number = ""
   for i=0,#format-1 do
-    if format[i] == "D" then number = number..string.char(zbyte+math.random(0,9+1)) 
-    elseif format[i] == "L" then number = number..string.char(abyte+math.random(0,25+1)) 
+    if format[i] == "D" then number = number..string.char(zbyte+math.random(0,9))
+    elseif format[i] == "L" then number = number..string.char(abyte+math.random(0,25))
     else number = number..format[i] end
   end
 
@@ -123,13 +123,13 @@ AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
     if identity == nil then
       vRP.generateRegistrationNumber(function(registration)
         vRP.generatePhoneNumber(function(phone)
-          MySQL.query("vRP/init_user_identity", { 
-            user_id = user_id, 
+          MySQL.query("vRP/init_user_identity", {
+            user_id = user_id,
             registration = registration,
             phone = phone,
-            firstname = cfg.random_first_names[math.random(1,#cfg.random_first_names+1)],
-            name = cfg.random_last_names[math.random(1,#cfg.random_last_names+1)],
-            age = math.random(25,40+1)
+            firstname = cfg.random_first_names[math.random(1,#cfg.random_first_names)],
+            name = cfg.random_last_names[math.random(1,#cfg.random_last_names)],
+            age = math.random(25,40)
           })
         end)
       end)
@@ -194,7 +194,7 @@ cityhall_menu[lang.cityhall.identity.title()] = {ch_identity,lang.cityhall.ident
 local function cityhall_enter()
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
-    vRP.openMenu(source,cityhall_menu) 
+    vRP.openMenu(source,cityhall_menu)
   end
 end
 
@@ -231,7 +231,7 @@ end)
 -- player identity menu
 
 -- add identity to main menu
-AddEventHandler("vRP:buildMainMenu",function(player) 
+AddEventHandler("vRP:buildMainMenu",function(player)
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
     vRP.getUserIdentity(user_id, function(identity)
