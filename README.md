@@ -1,6 +1,6 @@
 `/!\ THIS IS THE FXSERVER VERSION /!\`
 ```
-Lot of things change in this version, moving to FXServer and to MySQL full async requests.
+Lot of things change in this version, moving to FXServer and MySQL full async requests.
 Many functions based on MySQL queries are now async too.
 A lot of those changes are not yet documented.
 ```
