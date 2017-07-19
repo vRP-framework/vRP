@@ -1,5 +1,9 @@
 -- begin MySQL module
 local MySQL = {}
+
+MySQL.debug = false
+local dpaths = {}
+
 local tasks = {}
 
 --[[
@@ -36,6 +40,11 @@ AddEventHandler("vRP:MySQL_task", function(task_id, data)
       cb(data.rows or {},data.affected or 0) -- rows, affected
     elseif r.status == -1 then
       print("[vRP] task "..id.." failed.")
+    end
+
+    if MySQL.debug then
+      print("[vRP] MySQL end query "..dpaths[task_id].." ("..task_id..")")
+      dpaths[task_id] = nil
     end
 
     tasks[task_id] = nil
@@ -81,6 +90,11 @@ function MySQL.query(path, args, cb)
 --  exports.vrp_mysql:query(path, args)
   TriggerEvent("vRP:MySQL_query", path, args)
 --  print("[vRP] try to query "..path.." id "..task_id)
+  if MySQL.debug then
+    print("[vRP] MySQL begin query "..path.." ("..task_id..")")
+    dpaths[task_id] = path
+  end
+
   tasks[task_id] = cb
 end
 

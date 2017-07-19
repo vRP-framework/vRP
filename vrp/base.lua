@@ -8,6 +8,7 @@ Debug = module("lib/Debug")
 local config = module("cfg/base")
 local version = module("version")
 Debug.active = config.debug
+MySQL.debug = config.debug
 
 -- open MySQL connection
 MySQL.createConnection("vRP", config.db.host,config.db.user,config.db.password,config.db.database)
