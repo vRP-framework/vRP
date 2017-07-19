@@ -42,12 +42,12 @@ AddEventHandler("vRP:MySQL_task", function(task_id, data)
       print("[vRP] task "..id.." failed.")
     end
 
-    if MySQL.debug then
-      print("[vRP] MySQL end query "..dpaths[task_id].." ("..task_id..")")
-      dpaths[task_id] = nil
-    end
-
     tasks[task_id] = nil
+  end
+
+  if MySQL.debug and dpaths[task_id] then
+    print("[vRP] MySQL end query "..dpaths[task_id].." ("..task_id..")")
+    dpaths[task_id] = nil
   end
 end)
 
