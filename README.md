@@ -110,7 +110,7 @@ vRP has been tested under Windows and GNU/Linux with Mono 4.8.
 First, make sure you don't have other resources loaded (especially resources using MySQL, add them later and see if they break vRP).
 vRP use a new version of MySql.Data.dll, the 4.5, since only one version can be loaded at a time, if another resource load an older version, things will get crazy.
 
-Then clone the repository or download the master [archive](https://github.com/ImagicTheCat/vRP/archive/master.zip) and copy the `vrp/` directory to your resource folder. Add "vrp" to the loading resource list (first after the basic FiveM resources is better).
+Then clone the repository or download the master [archive](https://github.com/ImagicTheCat/vRP/archive/master.zip) and copy the `vrp/` directory to your resource folder. Add `vrp_mysql` then `vrp` to the loading resource list (first after the basic FiveM resources is better).
 
 #### Configuration
 
