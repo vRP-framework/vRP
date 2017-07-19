@@ -96,6 +96,8 @@ local function open_business_directory(player,page) -- open business directory w
 end
 
 local function business_enter()
+  local source = source
+
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
     -- build business menu
