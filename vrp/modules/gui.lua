@@ -22,6 +22,11 @@ function vRP.openMenu(source,menudef)
       table.insert(menudata.choices,{k,v[2]})
     end
   end
+
+  -- sort choices per entry name
+  table.sort(menudata.choices, function(a,b)
+    return string.upper(a[1]) < string.upper(b[1])
+  end)
   
   -- name
   menudata.name = menudef.name or "Menu"
