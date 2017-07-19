@@ -109,11 +109,9 @@ function vRP.buildMenu(name, data, cbr)
 
   local mbuilders = menu_builders[name]
   if mbuilders then
-    local count = 0
+    local count = #mbuilders
 
     for k,v in pairs(mbuilders) do -- trigger builders
-      count = count+1
-
       -- get back the built choices
       local done = false
       local function add_choices(bchoices)
