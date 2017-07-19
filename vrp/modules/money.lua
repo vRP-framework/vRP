@@ -141,7 +141,7 @@ AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
     local tmp = vRP.getUserTmpTable(user_id)
     if tmp then
       MySQL.query("vRP/get_money", {user_id = user_id}, function(rows, affected)
-        if #rows then
+        if #rows > 0 then
           tmp.bank = rows[1].bank
           tmp.wallet = rows[1].wallet
         end

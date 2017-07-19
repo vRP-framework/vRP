@@ -53,7 +53,7 @@ function vRP.getUserByAddress(home,number,cbr)
   local task = Task(cbr)
 
   MySQL.query("vRP/get_home_owner", {home = home, number = number}, function(rows, affected)
-    if #rows then
+    if #rows > 0 then
       task({rows[1].user_id})
     else
       task()

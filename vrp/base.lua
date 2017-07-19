@@ -111,12 +111,12 @@ function vRP.getUserIdByIdentifiers(ids, cbr)
   if ids ~= nil and #ids then
     for k,v in pairs(ids) do
       MySQL.query("vRP/userid_byidentifier", {identifier = v}, function(rows, affected)
-        if #rows then  -- found
+        if #rows > 0 then  -- found
           task({rows[1].user_id}) 
         else -- not found, create user
           if not task.done then
             MySQL.query("vRP/create_user", {}, function(rows, affected)
-              if #rows then
+              if #rows > 0 then
                 local user_id = rows[1].id
                 -- add identifiers
                 for k,v in pairs(ids) do
@@ -142,7 +142,7 @@ function vRP.isBanned(user_id, cbr)
   local task = Task(cbr, {false})
 
   MySQL.query("vRP/get_banned", {user_id = user_id}, function(rows, affected)
-    if #rows then
+    if #rows > 0 then
       task({rows[1].banned})
     else
       task()
@@ -160,7 +160,7 @@ function vRP.isWhitelisted(user_id, cbr)
   local task = Task(cbr, {false})
 
   MySQL.query("vRP/get_whitelisted", {user_id = user_id}, function(rows, affected)
-    if #rows then
+    if #rows > 0 then
       task({rows[1].whitelisted})
     else
       task()
@@ -177,7 +177,7 @@ end
 function vRP.getLastLogin(user_id, cbr)
   local task = Task(cbr,{""})
   MySQL.query("vRP/get_last_login", {user_id = user_id}, function(rows, affected)
-    if #rows then
+    if #rows > 0 then
       task({rows[1].last_login})
     else
       task()
@@ -193,7 +193,7 @@ function vRP.getUData(user_id,key,cbr)
   local task = Task(cbr,{""})
 
   MySQL.query("vRP/get_userdata", {user_id = user_id, key = key}, function(rows, affected)
-    if #rows then
+    if #rows > 0 then
       task({rows[1].dvalue})
     else
       task()
@@ -209,7 +209,7 @@ function vRP.getSData(key, cbr)
   local task = Task(cbr,{""})
 
   MySQL.query("vRP/get_srvdata", {key = key}, function(rows, affected)
-    if #rows then
+    if #rows > 0 then
       task({rows[1].dvalue})
     else
       task()

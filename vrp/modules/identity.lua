@@ -48,7 +48,7 @@ function vRP.getUserByRegistration(registration, cbr)
   local task = Task(cbr)
 
   MySQL.query("vRP/get_userbyreg", {registration = registration or ""}, function(rows, affected)
-    if #rows then
+    if #rows > 0 then
       task({rows[1].user_id})
     else
       task()
@@ -61,7 +61,7 @@ function vRP.getUserByPhone(phone, cbr)
   local task = Task(cbr)
 
   MySQL.query("vRP/get_userbyphone", {phone = phone or ""}, function(rows, affected)
-    if #rows then
+    if #rows > 0 then
       task({rows[1].user_id})
     else
       task()
