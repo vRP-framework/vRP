@@ -80,16 +80,16 @@ local function open_business_directory(player,page) -- open business directory w
           if identity then
             menu[htmlEntities.encode(row.name)] = {function()end, lang.business.directory.info({row.capital,htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.registration,identity.phone})}
           end
+
+          -- check end, open menu
+          count = count-1
+          if count == 0 then
+            menu[lang.business.directory.dnext()] = {function() open_business_directory(player,page+1) end}
+            menu[lang.business.directory.dprev()] = {function() open_business_directory(player,page-1) end}
+
+            vRP.openMenu(player,menu)
+          end
         end)
-      end
-
-      -- check end, open menu
-      count = count-1
-      if count == 0 then
-        menu[lang.business.directory.dnext()] = {function() open_business_directory(player,page+1) end}
-        menu[lang.business.directory.dprev()] = {function() open_business_directory(player,page-1) end}
-
-        vRP.openMenu(player,menu)
       end
     end
   end)
