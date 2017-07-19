@@ -60,8 +60,11 @@ namespace vRP
             Dictionary<string, object> r = (Dictionary<string,object>)task.Result;
 
             dict["status"] = 1;
-            dict["rows"] = r["rows"];
-            dict["affected"] = r["affected"];
+
+            if(r != null){
+              dict["rows"] = r["rows"];
+              dict["affected"] = r["affected"];
+            }
           }
           else{ //faulted
             dict["status"] = -1;
