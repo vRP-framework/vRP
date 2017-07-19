@@ -231,7 +231,9 @@ end)
 -- player identity menu
 
 -- add identity to main menu
-AddEventHandler("vRP:buildMainMenu",function(player)
+vRP.registerMenuBuilder("main", function(add, data)
+  local player = data.player
+
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
     vRP.getUserIdentity(user_id, function(identity)
@@ -251,7 +253,7 @@ AddEventHandler("vRP:buildMainMenu",function(player)
           local choices = {}
           choices[lang.cityhall.menu.title()] = {function()end, content}
 
-          vRP.buildMainMenu(player,choices)
+          add(choices)
         end)
       end
     end)

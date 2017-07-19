@@ -9,9 +9,9 @@ ui_page "gui/index.html"
 server_scripts{ 
   "lib/utils.lua",
   "base.lua",
+  "modules/gui.lua",
   "modules/group.lua",
   "modules/admin.lua",
-  "modules/gui.lua",
   "modules/survival.lua",
   "modules/player_state.lua",
   "modules/map.lua",

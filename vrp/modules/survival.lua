@@ -205,14 +205,14 @@ local choice_revive = {function(player,choice)
 end,lang.emergency.menu.revive.description()}
 
 -- add choices to the main menu (emergency)
-AddEventHandler("vRP:buildMainMenu",function(player) 
-  local user_id = vRP.getUserId(player)
+vRP.registerMenuBuilder("main", function(add, data)
+  local user_id = vRP.getUserId(data.player)
   if user_id ~= nil then
     local choices = {}
     if vRP.hasPermission(user_id,"emergency.revive") then
       choices[lang.emergency.menu.revive.title()] = choice_revive
     end
 
-    vRP.buildMainMenu(player,choices)
+    add(choices)
   end
 end)

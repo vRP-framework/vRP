@@ -287,8 +287,9 @@ local function ch_noclip(player, choice)
   vRPclient.toggleNoclip(player, {})
 end
 
-AddEventHandler("vRP:buildMainMenu",function(player)
-  local user_id = vRP.getUserId(player)
+
+vRP.registerMenuBuilder("main", function(add, data)
+  local user_id = vRP.getUserId(data.player)
   if user_id ~= nil then
     local choices = {}
 
@@ -359,6 +360,6 @@ AddEventHandler("vRP:buildMainMenu",function(player)
       vRP.openMenu(player,menu)
     end}
 
-    vRP.buildMainMenu(player,choices)
+    add(choices)
   end
 end)

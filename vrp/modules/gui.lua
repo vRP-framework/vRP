@@ -79,28 +79,76 @@ function vRP.request(source,text,time,cb_ok)
   end)
 end
 
--- MAIN MENU
 
-local main_menu_builds = {}
+-- GENERIC MENU BUILDER
+
+local menu_builders = {}
+
+-- register a menu builder function
+--- name: menu type name
+--- builder(add_choices, data) (callback, with custom data table)
+---- add_choices(choices) (callback to call once to add the built choices to the menu)
+function vRP.registerMenuBuilder(name, builder)
+  local mbuilders = menu_builders[name]
+  if not mbuilders then
+    mbuilders = {}
+    menu_builders[name] = mbuilders
+  end
+
+  table.insert(mbuilders, builder)
+end
+
+-- build a menu
+--- name: menu name type
+--- data: custom data table
+-- cbreturn built choices
+function vRP.buildMenu(name, data, cbr)
+  -- the task will return the built choices even if they aren't complete
+  local choices = {}
+  local task = Task(cbr, {choices})
+
+  local mbuilders = menu_builders[name]
+  if mbuilders then
+    local count = 0
+
+    for k,v in pairs(mbuilders) do -- trigger builders
+      count = count+1
+
+      -- get back the built choices
+      local done = false
+      local function add_choices(bchoices)
+        if not done then -- prevent a builder to add things more than once
+          done = true
+
+          if bchoices then
+            for k,v in pairs(bchoices) do
+              choices[k] = v
+            end
+          end
+
+          count = count-1
+          if count == 0 then -- end of build
+            task({choices})
+          end
+        end
+      end
+
+      v(add_choices, data) -- trigger
+    end
+  else
+    task()
+  end
+end
+
+-- MAIN MENU
 
 -- open the player main menu
 function vRP.openMainMenu(source)
-  local menudata = {name="Main menu",css={top="75px",header_color="rgba(0,125,255,0.75)"}}
-  main_menu_builds[source] = menudata
-
-  TriggerEvent("vRP:buildMainMenu",source) -- all resources can add choices to the menu using vRP.buildMainMenu(player,choices)
-
-  vRP.openMenu(source,menudata) -- open the generated menu
-end
-
--- called inside a vRP:buildMainMenu event to build the player main menu (to add choices)
-function vRP.buildMainMenu(source,choices)
-  local menudata = main_menu_builds[source]
-  if menudata ~= nil then
-    for k,v in pairs(choices) do
-      menudata[k] = v
-    end
-  end
+  vRP.buildMenu("main", {player = source}, function(menudata)
+    menudata.name = "Main menu"
+    menudata.css = {top="75px",header_color="rgba(0,125,255,0.75)"}
+    vRP.openMenu(source,menudata) -- open the generated menu
+  end)
 end
 
 -- SERVER TUNNEL API

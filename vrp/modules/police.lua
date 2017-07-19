@@ -507,7 +507,9 @@ local choice_store_weapons = {function(player, choice)
 end, lang.police.menu.store_weapons.description()}
 
 -- add choices to the menu
-AddEventHandler("vRP:buildMainMenu",function(player)
+vRP.registerMenuBuilder("main", function(add, data)
+  local player = data.player
+
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
     local choices = {}
@@ -559,8 +561,7 @@ AddEventHandler("vRP:buildMainMenu",function(player)
       vRP.openMenu(player,menu)
     end}
 
-
-    vRP.buildMainMenu(player,choices)
+    add(choices)
   end
 end)
 

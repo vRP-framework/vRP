@@ -203,13 +203,13 @@ local function ch_aptitude(player,choice)
 end
 
 -- add choices to the menu
-AddEventHandler("vRP:buildMainMenu",function(player) 
-  local user_id = vRP.getUserId(player)
+vRP.registerMenuBuilder("main", function(add, data)
+  local user_id = vRP.getUserId(data.player)
   if user_id ~= nil then
     local choices = {}
     choices[lang.aptitude.title()] = {ch_aptitude,lang.aptitude.description()}
 
-    vRP.buildMainMenu(player,choices)
+    add(choices)
   end
 end)
 

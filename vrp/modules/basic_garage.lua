@@ -427,8 +427,8 @@ local function ch_replace(player,choice)
   vRPclient.replaceNearestVehicle(player,{7})
 end
 
-AddEventHandler("vRP:buildMainMenu",function(player)
-  local user_id = vRP.getUserId(player)
+vRP.registerMenuBuilder("main", function(add, data)
+  local user_id = vRP.getUserId(data.player)
   if user_id ~= nil then
     -- add vehicle entry
     local choices = {}
@@ -446,6 +446,6 @@ AddEventHandler("vRP:buildMainMenu",function(player)
       choices[lang.vehicle.replace.title()] = {ch_replace, lang.vehicle.replace.description()}
     end
 
-    vRP.buildMainMenu(player,choices)
+    add(choices)
   end
 end)

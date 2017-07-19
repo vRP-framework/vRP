@@ -204,12 +204,12 @@ local function ch_give(player,choice)
 end
 
 -- add player give money to main menu
-AddEventHandler("vRP:buildMainMenu",function(player) 
-  local user_id = vRP.getUserId(player)
+vRP.registerMenuBuilder("main", function(add, data)
+  local user_id = vRP.getUserId(data.player)
   if user_id ~= nil then
     local choices = {}
     choices[lang.money.give.title()] = {ch_give, lang.money.give.description()}
 
-    vRP.buildMainMenu(player,choices)
+    add(choices)
   end
 end)

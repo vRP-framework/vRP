@@ -236,9 +236,11 @@ function vRP.isFirstSpawn(user_id)
 end
 
 function vRP.getUserId(source)
-  local ids = GetPlayerIdentifiers(source)
-  if ids ~= nil and #ids > 0 then
-    return vRP.users[ids[1]]
+  if source ~= nil then
+    local ids = GetPlayerIdentifiers(source)
+    if ids ~= nil and #ids > 0 then
+      return vRP.users[ids[1]]
+    end
   end
 
   return nil
@@ -401,6 +403,7 @@ AddEventHandler("playerConnecting",function(name,setMessage)
 end)
 
 AddEventHandler("playerDropped",function(reason)
+  local source = source
   Debug.pbegin("playerDropped")
 
   rejects[source] = nil

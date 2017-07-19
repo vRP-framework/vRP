@@ -334,7 +334,9 @@ end)
 local choices = {}
 choices[lang.inventory.title()] = {function(player, choice) vRP.openInventory(player) end, lang.inventory.description()}
 
-AddEventHandler("vRP:buildMainMenu", function(player) vRP.buildMainMenu(player,choices) end)
+vRP.registerMenuBuilder("main", function(add, data)
+  add(choices)
+end)
 
 -- CHEST SYSTEM
 

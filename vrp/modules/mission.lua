@@ -92,7 +92,8 @@ function vRP.hasMission(player)
 end
 
 -- MAIN MENU
-AddEventHandler("vRP:buildMainMenu",function(player)
+vRP.registerMenuBuilder("main", function(add, data)
+  local player = data.player
   local user_id = vRP.getUserId(player)
   if user_id ~= nil then
     local choices = {}
@@ -102,6 +103,6 @@ AddEventHandler("vRP:buildMainMenu",function(player)
       vRP.stopMission(player)
     end}
 
-    vRP.buildMainMenu(player,choices)
+    add(choices)
   end
 end)
