@@ -87,7 +87,7 @@ end
 function vRP.generateRegistrationNumber(cbr)
   local task = Task(cbr)
 
-  local search = function()
+  local function search()
     -- generate registration number
     local registration = vRP.generateStringNumber("DDDLLL")
     vRP.getUserByRegistration(registration, function(user_id)
@@ -106,7 +106,7 @@ end
 function vRP.generatePhoneNumber(cbr)
   local task = Task(cbr)
 
-  local search = function()
+  local function search()
     -- generate phone number
     local phone = vRP.generateStringNumber(cfg.phone_format)
     vRP.getUserByPhone(phone, function(user_id)

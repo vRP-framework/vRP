@@ -67,7 +67,7 @@ function vRP.findFreeNumber(home,max,cbr)
   local task = Task(cbr)
 
   local i = 1
-  local search = function()
+  local function search()
     vRP.getUserByAddress(home,i,function(user_id)
       if user_id == nil then -- found
         task({i})
