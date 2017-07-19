@@ -24,39 +24,6 @@ function vRP.defInventoryItem(idname,name,description,choices,weight)
 
   -- build give action
   item.ch_give = function(player,choice)
-    local user_id = vRP.getUserId(player)
-    if user_id ~= nil then
-      -- get nearest player
-      vRPclient.getNearestPlayer(player,{10},function(nplayer)
-        if nplayer ~= nil then
-          local nuser_id = vRP.getUserId(nplayer)
-          if nuser_id ~= nil then
-            -- prompt number
-            vRP.prompt(player,lang.inventory.give.prompt({vRP.getInventoryItemAmount(user_id,idname)}),"",function(player,amount)
-              local amount = parseInt(amount)
-              -- weight check
-              local new_weight = vRP.getInventoryWeight(nuser_id)+vRP.getItemWeight(idname)*amount
-              if new_weight <= vRP.getInventoryMaxWeight(nuser_id) then
-                if vRP.tryGetInventoryItem(user_id,idname,amount,true) then
-                  vRP.giveInventoryItem(nuser_id,idname,amount,true)
-
-                  vRPclient.playAnim(player,{true,{{"mp_common","givetake1_a",1}},false})
-                  vRPclient.playAnim(nplayer,{true,{{"mp_common","givetake2_a",1}},false})
-                else
-                  vRPclient.notify(player,{lang.common.invalid_value()})
-                end
-              else
-                vRPclient.notify(player,{lang.inventory.full()})
-              end
-            end)
-          else
-            vRPclient.notify(player,{lang.common.no_player_near()})
-          end
-        else
-          vRPclient.notify(player,{lang.common.no_player_near()})
-        end
-      end)
-    end
   end
 
   -- build trash action
@@ -74,6 +41,60 @@ function vRP.defInventoryItem(idname,name,description,choices,weight)
         end
       end)
     end
+  end
+end
+
+-- give action
+function ch_give(idname, player, choice)
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil then
+    -- get nearest player
+    vRPclient.getNearestPlayer(player,{10},function(nplayer)
+      if nplayer ~= nil then
+        local nuser_id = vRP.getUserId(nplayer)
+        if nuser_id ~= nil then
+          -- prompt number
+          vRP.prompt(player,lang.inventory.give.prompt({vRP.getInventoryItemAmount(user_id,idname)}),"",function(player,amount)
+            local amount = parseInt(amount)
+            -- weight check
+            local new_weight = vRP.getInventoryWeight(nuser_id)+vRP.getItemWeight(idname)*amount
+            if new_weight <= vRP.getInventoryMaxWeight(nuser_id) then
+              if vRP.tryGetInventoryItem(user_id,idname,amount,true) then
+                vRP.giveInventoryItem(nuser_id,idname,amount,true)
+
+                vRPclient.playAnim(player,{true,{{"mp_common","givetake1_a",1}},false})
+                vRPclient.playAnim(nplayer,{true,{{"mp_common","givetake2_a",1}},false})
+              else
+                vRPclient.notify(player,{lang.common.invalid_value()})
+              end
+            else
+              vRPclient.notify(player,{lang.inventory.full()})
+            end
+          end)
+        else
+          vRPclient.notify(player,{lang.common.no_player_near()})
+        end
+      else
+        vRPclient.notify(player,{lang.common.no_player_near()})
+      end
+    end)
+  end
+end
+
+-- trash action
+function ch_trash(idname, player, choice)
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil then
+    -- prompt number
+    vRP.prompt(player,lang.inventory.trash.prompt({vRP.getInventoryItemAmount(user_id,idname)}),"",function(player,amount)
+      local amount = parseInt(amount)
+      if vRP.tryGetInventoryItem(user_id,idname,amount,false) then
+        vRPclient.notify(player,{lang.inventory.trash.done({vRP.getItemName(idname),amount})})
+        vRPclient.playAnim(player,{true,{{"pickup_object","pickup_low",1}},false})
+      else
+        vRPclient.notify(player,{lang.common.invalid_value()})
+      end
+    end)
   end
 end
 
@@ -144,8 +165,8 @@ function vRP.getItemChoices(idname)
     end
 
     -- add give/trash choices
-    choices[lang.inventory.give.title()] = {item.ch_give,lang.inventory.give.description()}
-    choices[lang.inventory.trash.title()] = {item.ch_trash,lang.inventory.trash.description()}
+    choices[lang.inventory.give.title()] = {function(player,choice) ch_give(idname, player, choice) end, lang.inventory.give.description()}
+    choices[lang.inventory.trash.title()] = {function(player, choice) ch_trash(idname, player, choice) end, lang.inventory.trash.description()}
   end
 
   return choices
