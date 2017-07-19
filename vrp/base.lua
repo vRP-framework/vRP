@@ -110,33 +110,42 @@ function vRP.getUserIdByIdentifiers(ids, cbr)
   local task = Task(cbr)
 
   if ids ~= nil and #ids then
-    for k,v in pairs(ids) do
-      MySQL.query("vRP/userid_byidentifier", {identifier = v}, function(rows, affected)
-        if #rows > 0 then  -- found
-          task({rows[1].user_id}) 
-        else -- not found, create user
-          if not task.done then
-            MySQL.query("vRP/create_user", {}, function(rows, affected)
-              if #rows > 0 then
-                local user_id = rows[1].id
-                -- add identifiers
-                for k,v in pairs(ids) do
-                  MySQL.query("vRP/add_identifier", {user_id = user_id, identifier = v})
-                end
+    local i = 0
 
-                task({user_id})
-              else
-                task()
-              end
-            end)
+    -- search identifiers
+    local function search()
+      i = i+1
+      if i <= #ids then
+        MySQL.query("vRP/userid_byidentifier", {identifier = ids[i]}, function(rows, affected)
+          if #rows > 0 then  -- found
+            task({rows[1].user_id})
+          else -- not found
+            search()
           end
-        end
-      end)
+        end)
+      else -- no ids found, create user
+        MySQL.query("vRP/create_user", {}, function(rows, affected)
+          if #rows > 0 then
+            local user_id = rows[1].id
+            -- add identifiers
+            for l,w in pairs(ids) do
+              MySQL.query("vRP/add_identifier", {user_id = user_id, identifier = w})
+            end
+
+            task({user_id})
+          else
+            task()
+          end
+        end)
+      end
     end
+
+    search()
   else
     task()
   end
 end
+
 
 --- sql
 function vRP.isBanned(user_id, cbr)
