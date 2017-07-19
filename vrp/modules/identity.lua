@@ -75,7 +75,7 @@ function vRP.generateStringNumber(format) -- (ex: DDDLLL, D => digit, L => lette
 
   local number = ""
   for i=1,#format do
-    local char = format.sub(i,i)
+    local char = string.sub(format, i,i)
     if char == "D" then number = number..string.char(zbyte+math.random(0,9))
     elseif char == "L" then number = number..string.char(abyte+math.random(0,25))
     else number = number..char end
