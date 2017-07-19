@@ -40,9 +40,9 @@ server_scripts{
 
 -- client scripts
 client_scripts{
+  "lib/utils.lua",
   "client/Tunnel.lua",
   "client/Proxy.lua",
-  "cfg/client.lua",
   "client/iplloader.lua",
   "client/base.lua",
   "client/gui.lua",

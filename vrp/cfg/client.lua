@@ -1,6 +1,6 @@
 -- client-side vRP configuration
 
-cfg = {}
+local cfg = {}
 
 cfg.iplload = true
 
@@ -52,3 +52,4 @@ cfg.coma_effect = "DeathFailMPIn"
 -- if true, vehicles can be controlled by others, but this might corrupts the vehicles id and prevent players from interacting with their vehicles
 cfg.vehicle_migration = false
 
+return cfg

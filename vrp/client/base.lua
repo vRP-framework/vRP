@@ -1,3 +1,5 @@
+cfg = module("cfg/client")
+
 tvRP = {}
 local players = {} -- keep track of connected players (server id)
 
