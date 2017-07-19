@@ -43,8 +43,8 @@ client_scripts{
   "lib/utils.lua",
   "client/Tunnel.lua",
   "client/Proxy.lua",
-  "client/iplloader.lua",
   "client/base.lua",
+  "client/iplloader.lua",
   "client/gui.lua",
   "client/player_state.lua",
   "client/survival.lua",
@@ -57,6 +57,7 @@ client_scripts{
 
 -- client files
 files{
+  "cfg/client.lua",
   "gui/index.html",
   "gui/design.css",
   "gui/main.js",
