@@ -81,6 +81,8 @@ function vRP.findFreeNumber(home,max,cbr)
       end
     end)
   end
+
+  search()
 end
 
 -- define home component

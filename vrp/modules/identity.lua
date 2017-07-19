@@ -98,6 +98,8 @@ function vRP.generateRegistrationNumber(cbr)
       end
     end)
   end
+
+  search()
 end
 
 -- cbreturn a unique phone number (0DDDDD, D => digit)
@@ -115,6 +117,8 @@ function vRP.generatePhoneNumber(cbr)
       end
     end)
   end
+
+  search()
 end
 
 -- events, init user identity at connection
