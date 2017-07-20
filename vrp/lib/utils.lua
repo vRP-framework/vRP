@@ -60,6 +60,10 @@ function parseDouble(v)
   return tonumber(v)
 end
 
+function parseFloat(v)
+  return parseDouble(v)
+end
+
 -- will remove chars not allowed/disabled by strchars
 -- if allow_policy is true, will allow all strchars, if false, will allow everything except the strchars
 local sanitize_tmp = {}
