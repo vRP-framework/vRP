@@ -52,12 +52,19 @@ end
 
 function parseInt(v)
 --  return cast(int,tonumber(v))
-  return math.floor(tonumber(v))
+  local n = tonumber(v)
+  if n == nil then 
+    return 0
+  else
+    return math.floor(n)
+  end
 end
 
 function parseDouble(v)
 --  return cast(double,tonumber(v))
-  return tonumber(v)
+  local n = tonumber(v)
+  if n == nil then n = 0 end
+  return n
 end
 
 function parseFloat(v)

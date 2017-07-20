@@ -29,7 +29,7 @@ for gtype,weapons in pairs(gunshop_types) do
       vRPclient.getWeapons(player,{},function(weapons)
         -- prompt amount
         vRP.prompt(player,lang.gunshop.prompt_ammo({choice}),"",function(player,amount)
-          local amount = tonumber(amount)
+          local amount = parseInt(amount)
           if amount >= 0 then
             local user_id = vRP.getUserId(player)
             local total = math.ceil(parseFloat(price_ammo)*parseFloat(amount))

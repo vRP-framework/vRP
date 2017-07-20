@@ -156,7 +156,7 @@ local function ch_identity(player,choice)
           if string.len(name) >= 2 and string.len(name) < 50 then
             name = sanitizeString(name, sanitizes.name[1], sanitizes.name[2])
             vRP.prompt(player,lang.cityhall.identity.prompt_age(),"",function(player,age)
-              age = tonumber(age)
+              age = parseInt(age)
               if age >= 16 and age <= 150 then
                 if vRP.tryPayment(user_id,cfg.new_identity_cost) then
                   vRP.generateRegistrationNumber(function(registration)

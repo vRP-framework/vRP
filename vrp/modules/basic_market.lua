@@ -30,7 +30,7 @@ local function build_market_menus()
         local user_id = vRP.getUserId(player)
         if user_id ~= nil then
           vRP.prompt(player,lang.market.prompt({item.name}),"",function(player,amount)
-            local amount = tonumber(amount)
+            local amount = parseInt(amount)
             if amount > 0 then
               -- weight check
               local new_weight = vRP.getInventoryWeight(user_id)+item.weight*amount

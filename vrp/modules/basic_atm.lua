@@ -19,7 +19,7 @@ local function atm_choice_deposit(player,choice)
   vRP.prompt(source,lang.atm.deposit.prompt(),"",function(player,v)
     play_atm_exit(player)
 
-    v = tonumber(v)
+    v = parseInt(v)
 
     if v > 0 then
       local user_id = vRP.getUserId(source)
@@ -42,7 +42,7 @@ local function atm_choice_withdraw(player,choice)
   vRP.prompt(source,lang.atm.withdraw.prompt(),"",function(player,v)
     play_atm_exit(player) --anim
 
-    v = tonumber(v)
+    v = parseInt(v)
 
     if v > 0 then
       local user_id = vRP.getUserId(source)

@@ -112,7 +112,7 @@ local function business_enter()
         -- add capital
         menu[lang.business.addcapital.title()] = {function(player,choice)
           vRP.prompt(player,lang.business.addcapital.prompt(),"",function(player,amount)
-            amount = tonumber(amount)
+            amount = parseInt(amount)
             if amount > 0 then
               if vRP.tryPayment(user_id,amount) then
                 MySQL.query("vRP/add_capital", {user_id = user_id, capital = amount})
@@ -131,7 +131,7 @@ local function business_enter()
           vRP.getUserBusiness(user_id, function(business) -- update business data
             local launder_left = math.min(business.capital-business.laundered,vRP.getInventoryItemAmount(user_id,"dirty_money")) -- compute launder capacity
             vRP.prompt(player,lang.business.launder.prompt({launder_left}),""..launder_left,function(player,amount)
-              amount = tonumber(amount)
+              amount = parseInt(amount)
               if amount > 0 and amount <= launder_left then
                 if vRP.tryGetInventoryItem(user_id,"dirty_money",amount,false) then
                   -- add laundered amount
@@ -154,7 +154,7 @@ local function business_enter()
             if string.len(name) >= 2 and string.len(name) <= 30 then
               name = sanitizeString(name, sanitizes.business_name[1], sanitizes.business_name[2])
               vRP.prompt(player,lang.business.open.prompt_capital({cfg.minimum_capital}),""..cfg.minimum_capital,function(player,capital)
-                capital = tonumber(capital)
+                capital = parseInt(capital)
                 if capital >= cfg.minimum_capital then
                   if vRP.tryPayment(user_id,capital) then
                     MySQL.query("vRP/create_business", {
