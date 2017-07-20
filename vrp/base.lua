@@ -146,6 +146,16 @@ function vRP.getUserIdByIdentifiers(ids, cbr)
   end
 end
 
+-- return identification string for the source (used for non vRP identifications, for rejected players)
+function vRP.getSourceIdKey(source)
+  local ids = GetPlayerIdentitifiers(source)
+  local idk = "idk_"
+  for k,v in pairs(ids) do
+    idk = idk..v
+  end
+
+  return idk
+end
 
 --- sql
 function vRP.isBanned(user_id, cbr)
@@ -335,9 +345,10 @@ AddEventHandler("playerConnecting",function(name,setMessage)
   Debug.pbegin("playerConnecting")
   local ids = GetPlayerIdentifiers(source)
 
+  local idk = vRP.getSourceIdKey(source)
   -- reject someone
   local function reject(reason)
-    rejects[source] = reason
+    rejects[idk] = reason
   end
 
   if ids ~= nil and #ids > 0 then
@@ -478,9 +489,11 @@ AddEventHandler("vRPcli:playerSpawned", function()
   end
 
   -- reject
-  if rejects[player] then
-    vRP.kick(player, rejects[player])
-    rejects[player] = nil
+  local idk = vRP.getSourceIdKey(player)
+  local reason = rejects[idk]
+  if reason then
+    vRP.kick(player, reason)
+    rejects[idk] = nil
   end
 
   Debug.pend()
