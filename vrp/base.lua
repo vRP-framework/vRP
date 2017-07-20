@@ -148,7 +148,7 @@ end
 
 -- return identification string for the source (used for non vRP identifications, for rejected players)
 function vRP.getSourceIdKey(source)
-  local ids = GetPlayerIdentitifiers(source)
+  local ids = GetPlayerIdentifiers(source)
   local idk = "idk_"
   for k,v in pairs(ids) do
     idk = idk..v
