@@ -404,8 +404,8 @@ function vRP.openChest(source, name, max_weight, cb_close, cb_in, cb_out)
         -- load chest
         local chest = {max_weight = max_weight}
         chests[name] = chest 
-        vRP.getSData("chest:"..name, function(data)
-          chest.items = json.decode(data) or {} -- load items
+        vRP.getSData("chest:"..name, function(cdata)
+          chest.items = json.decode(cdata) or {} -- load items
 
           -- open menu
           local menu = {name=lang.inventory.chest.title(), css={top="75px",header_color="rgba(0,255,125,0.75)"}}

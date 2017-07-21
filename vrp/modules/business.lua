@@ -204,7 +204,7 @@ local function build_client_business(source) -- build the city hall area/marker/
       vRPclient.addBlip(source,{x,y,z,cfg.blip[1],cfg.blip[2],lang.business.title()})
       vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,255,125,125,150})
 
-      vRP.setArea(source,"vRP:business",x,y,z,1,1.5,business_enter,business_leave)
+      vRP.setArea(source,"vRP:business"..k,x,y,z,1,1.5,business_enter,business_leave)
     end
   end
 end
