@@ -48,8 +48,9 @@ function vRP.addUserGroup(user_id,group)
 
       -- add group
       user_groups[group] = true
-      if ngroup._config and ngroup._config.onjoin then
-        ngroup._config.onjoin(source) -- call join callback
+      local player = vRP.getUserSource(user_id)
+      if ngroup._config and ngroup._config.onjoin and player ~= nil then
+        ngroup._config.onjoin(player) -- call join callback
       end
 
       -- trigger join event
