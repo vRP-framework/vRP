@@ -96,6 +96,8 @@ end
 -- send an smspos from an user to a phone number
 -- cbreturn true on success
 function vRP.sendSMSPos(user_id, phone, x,y,z, cbr)
+  local task = Task(cbr)
+
   vRP.getUserIdentity(user_id, function(identity)
     vRP.getUserByPhone(phone, function(dest_id)
       if identity and dest_id then
