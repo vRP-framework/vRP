@@ -853,25 +853,29 @@ vRP.announce(background,content)
 
 ```
 
-##### Registering choices to the main menu
+##### Extending menus
 
-The main menu is generated using an event, this is useful to add special choices if needed.
+Some menus can be built/extended by any resources with menu builders.
+
+List of known menu names you can extend:
+* `main`: main menu
+* `police`: police menu
+* `admin`: admin menu
 
 ```lua
--- in another resource using the proxy interface
+-- PROXY API
 
-AddEventHandler("vRP:buildMainMenu",function(player) 
-  local choices = {}
-  
-  local fchoice = function(player,choice)
-    print("player "..player.." choose "..choice)
-  end
+-- register a menu builder function
+--- name: menu type name
+--- builder(add_choices, data) (callback, with custom data table)
+---- add_choices(choices) (callback to call once to add the built choices to the menu)
+vRP.registerMenuBuilder(name, builder)
 
-  choices["My Choice"] = {fchoice,"My choice description."}
-  choices["My Choice 2"] = {fchoice,"My choice 2 description."}
-
-  vRP.buildMainMenu({player,choices}) -- add choices to the player main menu
-end)
+-- build a menu
+--- name: menu name type
+--- data: custom data table
+-- cbreturn built choices
+vRP.buildMenu(name, data, cbr)
 ```
 
 #### Map
