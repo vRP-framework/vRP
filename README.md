@@ -857,10 +857,10 @@ vRP.announce(background,content)
 
 Some menus can be built/extended by any resources with menu builders.
 
-List of known menu names you can extend:
-* `main`: main menu
-* `police`: police menu
-* `admin`: admin menu
+List of known menu names you can extend, each line is `name`: description (data properties):
+* `main`: main menu (player)
+* `police`: police menu (player)
+* `admin`: admin menu (player)
 
 ```lua
 -- PROXY API
