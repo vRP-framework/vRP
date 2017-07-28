@@ -2356,19 +2356,24 @@ function htmlEntities.decode (input)
 end
 
 function htmlEntities.encode (input)
-	if not input then
-		if error_msg_htmlEntities then error('htmlEntities[encode] >> ERROR: input is value nil') end
-		return false
-	end
-	input = htmlEntities.decode(input)
-	local output = ''
-	for k = 1, string.len(input) do
-		local input = string.sub(input,k,k)
-		output = output .. '&#'.. input:byte() ..';'
-	end
+  if not input then
+    if error_msg_htmlEntities then error('htmlEntities[encode] >> ERROR: input is value nil') end
+    return false
+  end
+  input = htmlEntities.decode(input)
+  local output = ''
+  for k = 1, string.len(input) do
+    local input = string.sub(input,k,k)
+    -- MODIFIED TO PREVENT UTF8 ISSUES
+    if input == "<" or input == ">" then
+      output = output .. '&#'.. input:byte() ..';'
+    else
+      output = output..input
+    end
+  end
 
-	if debug_htmlEntities then print('>>'..output) end
-	return output
+  if debug_htmlEntities then print('>>'..output) end
+  return output
 end
 
 --[[
