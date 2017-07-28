@@ -24,12 +24,12 @@ Support me on Patreon to keep this project alive:
 [(old pledgie, thank you to the donors)](https://pledgie.com/campaigns/34016)
 
 
-See also (and use it as a basis to understand how to develop extensions for vRP) : 
+See also (and use it as a basis to understand how to develop extensions for vRP) :
 * https://github.com/ImagicTheCat/vRP-basic-mission (repair/delivery missions extension)
 
 ## Features
 * basic admin tools (kick,ban,whitelist)
-* groups/permissions 
+* groups/permissions
 * language config file
 * player state auto saved to database (hunger,thirst,weapons,player apparence,position)
 * player identity
@@ -58,7 +58,7 @@ See also (and use it as a basis to understand how to develop extensions for vRP)
 * vehicle customization
 * static chests
 * drop weapon/save weapon components
-* police pc: add custom police records 
+* police pc: add custom police records
 * admin: tp to marker
 * police research per veh type
 * display some permission/group count
@@ -70,7 +70,7 @@ The home system is experimental, don't expect too much from it at this point. Bu
 
 #### How it works
 
-Homes are closed interiors allocated to players when they want to go inside their home, it means that if no slots are availables, you can't enter to your home. Slots are freed when everyone moves out, however if a player dies, crashes or disconnects inside, the slot will not close itself, only "eject all" will close the slot. So it's possible that all slots are locked after a while, restarting the server will fix the issue. 
+Homes are closed interiors allocated to players when they want to go inside their home, it means that if no slots are availables, you can't enter to your home. Slots are freed when everyone moves out, however if a player dies, crashes or disconnects inside, the slot will not close itself, only "eject all" will close the slot. So it's possible that all slots are locked after a while, restarting the server will fix the issue.
 
 Also, player addresses are bound to the home cluster name, it means that if you change the cluster configuration name, players will not be able to enter/sell their home anymore. So choose the name well and don't change it, if you don't want to deal with this.
 
@@ -121,7 +121,7 @@ Only the files in the `cfg/` directory should be modified. Modifying the vRP cor
 
 There is only one required file to configure before launching the server, `cfg/base.lua`, to setup the MySQL database credentials.
 
-There is a lot to configure in vRP, nothing comes preconfigured so everyone can make his unique server. 
+There is a lot to configure in vRP, nothing comes preconfigured so everyone can make his unique server.
 Everything you need to know is in the configuration files, but if you have troubles configuring, look at the configuration of the vRP LaTest servers above.
 
 #### Update
@@ -139,7 +139,7 @@ A way to update:
 The issue section is only for bug reports and feature requests. I will close (and ban) issues not related to the core of vRP, to keep the github clean.
 Don't submit issues about your own modifications, I will close them without warning.
 
-When submitting an issue, add any information you can find, with all details. Saying that something doesn't work is useless and will not solve the issue. 
+When submitting an issue, add any information you can find, with all details. Saying that something doesn't work is useless and will not solve the issue.
 If you have errors in your console BEFORE the issue happen, everything could be corrupted, so the issue is irrelevant, you should solve all unrelated errors before submitting issues.
 
 For questions, help, discussions around the project, please go instead on the vRP thread of the FiveM forum here: https://forum.fivem.net/t/release-vrp-framework/22894
@@ -149,7 +149,7 @@ For questions, help, discussions around the project, please go instead on the vR
 
 ```lua
 
--- (server) called after identification 
+-- (server) called after identification
 AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login) end)
 
 -- (server) called when the player join again without triggering the vRP:playerLeave event before
@@ -240,7 +240,7 @@ vRP.teleport(x,y,z)
 vRP.getPosition()
 
 -- get the player speed
--- return speed 
+-- return speed
 vRP.getSpeed()
 
 -- return false if in exterior, true if inside a building
@@ -284,7 +284,7 @@ vRP.playAnim(upper, seq, looping)
 vRP.stopAnim(upper)
 
 -- SOUND
--- some lists: 
+-- some lists:
 -- pastebin.com/A8Ny8AHZ
 -- https://wiki.gtanet.work/index.php?title=FrontEndSoundlist
 
@@ -452,7 +452,7 @@ vRP.getCustomization()
 vRP.setCustomization(customization_data)
 ```
 
-#### Identity 
+#### Identity
 
 The identity module add identity cards with a car registration number (one per identity, all vehicles will have the same registration number).
 
@@ -583,7 +583,7 @@ local Tunnel = require("resources/vRP/lib/Tunnel")
 vRP = Proxy.getInterface("vRP")
 vRPclient = Tunnel.getInterface("vRP","vrp_waterbottle")
 
--- create Water bottle item (the callback hell begins) 
+-- create Water bottle item (the callback hell begins)
 local wb_choices = {}  -- (see gui API for menudata choices structure)
 
 wb_choices["Drink"] = {function(player,choice) -- add drink action
@@ -608,7 +608,7 @@ vRP.giveInventoryItem({user_id,"water_bottle",2})
 #### Item transformer
 
 The item transformer is a very generic way to create harvest and processing areas.
-The concept is simple: 
+The concept is simple:
 * you can use the action of the item transformer when entering the area
 * the item transformer has a number of work units, regenerated at a specific rate
 * the item transformer takes reagents (money, items or none) to produce products (money or items) and it consumes a work unit
@@ -720,7 +720,7 @@ Set the config as any item transformer structure configuration.
 -- PROXY API
 
 -- start a mission for a player
---- mission_data: 
+--- mission_data:
 ---- name: Mission name
 ---- steps: ordered list of
 ----- text
@@ -736,7 +736,7 @@ vRP.nextMissionStep(player)
 -- stop the player mission
 vRP.stopMission(player)
 
--- check if the player has a mission 
+-- check if the player has a mission
 vRP.hasMission(player)
 ```
 
@@ -802,7 +802,7 @@ vRP.addStaticMenuChoices(name, choices)
 -- progress bar
 
 
--- create/update a progress bar 
+-- create/update a progress bar
 -- anchor: the anchor string type (multiple progress bars can be set for the same anchor)
 ---- "minimap" => above minimap (will divide that horizontal space)
 ---- "center" => center of the screen, at the bottom
@@ -835,7 +835,7 @@ vRP.setDivCss(name,css)
 -- set the div content
 vRP.setDivContent(name,content)
 
--- execute js for the div in a simple sandbox 
+-- execute js for the div in a simple sandbox
 -- you can attach objects or functions to the div element for later calls
 -- use div.querySelector to find the div children elements
 -- js context: div (the div element)
@@ -887,7 +887,7 @@ vRP.buildMenu(name, data, cbr)
 -- cb_enter, cb_leave: function(player,area_name)
 vRP.setArea(source,name,x,y,z,radius,height,cb_enter,cb_leave)
 
--- remove a player area 
+-- remove a player area
 vRP.removeArea(source,name)
 
 -- TUNNEL SERVER API
@@ -995,7 +995,7 @@ clientdef = {} -- you can add function to clientdef later in other client script
 Tunnel.bindInterface("myrsc",clientdef)
 
 function clientdef.teleport(x,y,z)
-  SetEntityCoords(GetPlayerPed(-1), x, y, z, 1,0,0,0) 
+  SetEntityCoords(GetPlayerPed(-1), x, y, z, 1,0,0,0)
 end
 
 -- sometimes, you would want to return the tunnel call asynchronously
@@ -1045,43 +1045,68 @@ end)
 
 #### MySQL
 
+MySQL queries are managed by the resource `vrp_mysql`, acting like a server for all other resources using it. So connections, commands and queries are globals and should use namespaces if you want to create your own queries to prevent collisions.
+
+By default, the `vRP` connection is created, using credentials in `cfg/base.lua`, so you can add new commands to it if you are creating a vRP extension.
+
 ```lua
-local MySQL = require("resources/vRP/lib/MySQL/MySQL")
+-- API
 
--- host can be "host" or "host:port"
-local sql = MySQL.open("127.0.0.1","user","password","database") -- add ,true) to enable debug for the connection
-local q_init = sql:prepare([[
-CREATE IF NOT EXISTS list(
-  name VARCHAR(255),
-  value INTEGER,
-  CONSTRAINT pk_list PRIMARY KEY(name)
-);
-]])
-q_init:execute()
+-- create a connection
+-- host can also be written "host:port"
+MySQL.createConnection(name, host, user, password, database)
 
-local q_insert = sql:prepare("INSERT INTO list(name,value) VALUES(@name,@value)")
+-- create a command for a specific connection
+--- path: "conname/cmdname"
+MySQL.createCommand(path)
 
-for i=0,100 do
-  q_insert:bind("@name","entry"..i)
-  q_insert:bind("@value",i*5)
-  q_insert:execute()
-  
-  print("inserted id = "..q_insert:last_insert_id())
-end
-
-local q_select = sql:prepare("SELECT * FROM list")
-local r = q_select:query() 
-print("NAME VALUE")
-while r:fetch() do
-  print(r:getValue("name").." "..r:getValue("value"))
-  -- or print(r:getValue(0).." "..r:getValue(1))
-  -- or local row = r:getRow()
-end
-
-r:close() -- don't forget to close the result
-
--- or
-local r = q_select:query() 
-local list = r:toTable() -- result is autoclosed
+-- do query
+--- path: "conname/cmdname"
+--- (optional) params: associative table of SQL params ("@something" => something)
+--- (optional) callback(rows, affected): rows as list, with associative table for columns
+MySQL.query(path, params, callback)
 ```
 
+Here is an example of how to use the MySQL module in other resources :
+* add the dependencies `vrp` and `vrp_mysql` to your resource
+* load `@vrp/lib/utils.lua` in your resource (first)
+* then load/use the MySQL module:
+
+```lua
+-- load the MySQL module
+local MySQL = module("vrp_mysql", "MySQL")
+
+-- create a new connection
+MySQL.createConnection("con_name", host, user, password, database)
+
+-- create a command for this connection
+MySQL.createCommand("con_name/command_name", [[
+CREATE TABLE things(
+  id INTEGER PRIMARY AUTO_INCREMENT,
+  thing TEXT
+);
+]])
+
+-- execute the command to init tables
+MySQL.query("con_name/command_name")
+
+-- you can also add commands to a created connection
+-- adding a command to the vRP connection to get all banned or not banned users
+MySQL.createCommand("vRP/myrsc_getbans", "SELECT id FROM vrp_users WHERE banned = @banned")
+
+-- execute the command after a while, get all banned users
+MySQL.query("vRP/myrsc_getbans", {banned = true}, function(rows, affected)
+  -- rows: rows as a list
+  -- affected: number of rows affected (when updating things, etc)
+
+  -- display banned users
+end)
+
+-- execute the command after a while, get all non banned users
+MySQL.query("vRP/myrsc_getbans", {banned = false}, function(rows, affected)
+  -- rows: rows as a list
+  -- affected: number of rows affected (when updating things, etc)
+
+  -- display banned users
+end)
+```
