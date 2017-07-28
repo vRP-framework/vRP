@@ -102,6 +102,7 @@ Also, player addresses are bound to the home cluster name, it means that if you 
   * [Proxy](#proxy)
   * [Tunnel](#tunnel)
   * [MySQL](#mysql)
+  * [Asynchronous Hell](#asynchronous-hell)
 
 [(gh-md-toc)](https://github.com/ekalinin/github-markdown-toc)
 
@@ -1058,7 +1059,7 @@ MySQL.createConnection(name, host, user, password, database)
 
 -- create a command for a specific connection
 --- path: "conname/cmdname"
-MySQL.createCommand(path)
+MySQL.createCommand(path, sql)
 
 -- do query
 --- path: "conname/cmdname"
@@ -1109,4 +1110,38 @@ MySQL.query("vRP/myrsc_getbans", {banned = false}, function(rows, affected)
 
   -- display banned users
 end)
+```
+
+#### Asynchronous Hell
+
+As you can see, this new version of vRP rely on asynchronous MySQL queries, so many API functions are now asynchronous. The current way of handling async calls is to pass a callback which will act as the trigger to get the return values when done.
+
+If you need to create your own API function in an async way, a little helper exists in `lib/utils.lua`.
+
+```lua
+local MySQL = module("vrp_mysql", "MySQL")
+local rsc = {}
+
+-- async api call, following the previous example
+
+-- list banned (or not) users
+-- cbreturns list of users
+function rsc.getBannedUsers(banned, cbr)
+  -- this case is simple, but sometimes you would want to have conditional returns, and a default return value
+  -- create the task
+  --- callback, default return values as a table (default nil), timeout in milliseconds (optional, default 5000)
+  local task = Task(cbr, {{}}, 5000)
+
+  -- this ensure that if the mysql query fails, the task will return the empty list of users "{}" after 5 seconds
+
+  MySQL.query("vRP/myrsc_getbans", {banned = banned}, function(rows, affected)
+    local list = {}
+
+    for k,v in pairs(rows) do
+      table.insert(list, v.id)
+    end
+
+    task({list}) -- trigger end of the task, return list of values
+  end)
+end
 ```
