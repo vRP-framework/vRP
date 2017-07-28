@@ -28,6 +28,7 @@ namespace vRP
     }
 
     private Dictionary<uint, Task<object>> tasks = new Dictionary<uint, Task<object>>();
+    private Dictionary<uint, string> task_paths = new Dictionary<uint, string>();
     private Dictionary<string, Connection> connections = new Dictionary<string, Connection>();
     private uint task_id;
     private uint tick;
@@ -46,11 +47,14 @@ namespace vRP
 
     public void e_tick()
     {
+      try{
       Dictionary<uint, object> rmtasks = new Dictionary<uint, object>();
 
       //check each task
       foreach(var pair in tasks){
         var task = pair.Value;
+        var path = "unknown";
+        task_paths.TryGetValue(pair.Key, out path);
 
         //completed
         if(task.IsCompleted){
@@ -68,7 +72,7 @@ namespace vRP
           }
           else{ //faulted
             dict["status"] = -1;
-            Console.WriteLine("[vRP/C#] exception: "+task.Exception.ToString());
+            Console.WriteLine("[vRP/C#] query exception "+path+" : "+task.Exception.ToString());
           }
 
           rmtasks.Add(pair.Key, dict);
@@ -78,12 +82,15 @@ namespace vRP
       //remove completed tasks
       foreach(var pair in rmtasks){
         tasks.Remove(pair.Key);
+        task_paths.Remove(pair.Key);
       }
 
       //trigger completed tasks
       foreach(var pair in rmtasks){
         TriggerEvent("vRP:MySQL_task", pair.Key, pair.Value);
       }
+
+      }catch(Exception e){ Console.WriteLine(e.ToString()); }
     }
 
     //return [con,cmd] from "con/cmd"
@@ -136,6 +143,7 @@ namespace vRP
       if(connections.TryGetValue(concmd[0], out connection)){
         MySqlCommand command;
         if(connection.commands.TryGetValue(concmd[1], out command)){
+          task_paths.Add(task_id, path);
           tasks.Add(task_id, Task.Run(async () => {
             object r = null;
             //await connection.connection.OpenAsync();
