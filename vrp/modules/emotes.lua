@@ -6,12 +6,6 @@ local lang = vRP.lang
 
 local emotes = cfg.emotes
 
--- clear current emotes
-menu[lang.emotes.clear.title()] = {function(player,choice)
-  vRPclient.stopAnim(player,{true}) -- upper
-  vRPclient.stopAnim(player,{false}) -- full
-end, lang.emotes.clear.description()}
-
 local function ch_emote(player,choice)
   local emote = emotes[choice]
   if emote then
@@ -36,6 +30,12 @@ vRP.registerMenuBuilder("main", function(add, data)
         end
       end
     end
+
+    -- clear current emotes
+    menu[lang.emotes.clear.title()] = {function(player,choice)
+      vRPclient.stopAnim(player,{true}) -- upper
+      vRPclient.stopAnim(player,{false}) -- full
+    end, lang.emotes.clear.description()}
 
     vRP.openMenu(data.player,menu)
   end}
