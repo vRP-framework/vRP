@@ -171,6 +171,8 @@ AddEventHandler("vRP:playerJoinGroup", function(user_id, group, gtype) end)
 -- gtype can be nil
 AddEventHandler("vRP:playerLeaveGroup", function(user_id, group, gtype) end)
 
+-- (client) called when the menu pause state change
+AddEventHandler("vRP:pauseChange", function(paused) end)
 ```
 
 ### API
@@ -799,6 +801,8 @@ vRP.addStaticMenuChoices(name, choices)
 
 -- TUNNEL CLIENT API
 
+-- return menu paused state
+vRP.isPaused()
 
 -- progress bar
 

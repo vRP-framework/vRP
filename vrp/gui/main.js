@@ -43,6 +43,12 @@ window.addEventListener("load",function(){
     if(data.act == "cfg"){
       cfg = data.cfg
     }
+    else if(data.act == "pause_change"){
+      if(data.paused)
+        $(document.body).hide();
+      else
+        $(document.body).show();
+    }
     else if(data.act == "open_menu"){ //OPEN DYNAMIC MENU
       current_menu.close();
       dynamic_menu.open(data.menudata.name,data.menudata.choices);

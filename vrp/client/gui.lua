@@ -1,3 +1,9 @@
+
+-- pause
+AddEventHandler("vRP:pauseChange", function(paused)
+  SendNUIMessage({act="pause_change", paused=paused})
+end)
+
 -- MENU
 
 function tvRP.openMenuData(menudata)
@@ -125,7 +131,13 @@ function tvRP.removeDiv(name)
   SendNUIMessage({act="remove_div", name = name})
 end
 
--- CONTROLS
+-- CONTROLS/GUI
+
+local paused = false
+
+function tvRP.isPaused()
+  return paused
+end
 
 -- gui controls (from cellphone)
 Citizen.CreateThread(function()
@@ -146,6 +158,15 @@ Citizen.CreateThread(function()
     if IsControlJustPressed(table.unpack(cfg.controls.request.yes)) then SendNUIMessage({act="event",event="F5"}) end
     if IsControlJustPressed(table.unpack(cfg.controls.request.no)) then SendNUIMessage({act="event",event="F6"}) end
 
+    -- pause events
+    local pause_menu = IsPauseMenuActive()
+    if pause_menu and not paused then
+      paused = true
+      TriggerEvent("vRP:pauseChange", paused)
+    elseif not pause_menu and paused then
+      paused = false
+      TriggerEvent("vRP:pauseChange", paused)
+    end
   end
 end)
 
