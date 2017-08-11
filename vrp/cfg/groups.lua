@@ -34,6 +34,9 @@ cfg.groups = {
     "player.tptome",
     "player.tpto"
   },
+  ["god"] = {
+    "admin.god" -- reset survivals/health periodically
+  },
   -- the group user is auto added to all logged players
   ["user"] = {
     "player.phone",

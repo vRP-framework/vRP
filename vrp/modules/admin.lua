@@ -365,3 +365,20 @@ vRP.registerMenuBuilder("main", function(add, data)
     add(choices)
   end
 end)
+
+-- admin god mode
+function task_god()
+  SetTimeout(10000, task_god)
+
+  for k,v in pairs(vRP.getUsersByPermission("admin.god")) do
+    vRP.setHunger(v, 0)
+    vRP.setThirst(v, 0)
+
+    local player = vRP.getUserSource(v)
+    if player ~= nil then
+      vRPclient.setHealth(player, {200})
+    end
+  end
+end
+
+task_god()
