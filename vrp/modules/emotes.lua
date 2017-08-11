@@ -17,7 +17,7 @@ end
 
 vRP.registerMenuBuilder("main", function(add, data)
   local choices = {}
-  choices[lang.emotes.title()] = {function()
+  choices[lang.emotes.title()] = {function(player, choice)
     -- build emotes menu
     local menu = {name=lang.emotes.title(),css={top="75px",header_color="rgba(0,125,255,0.75)"}}
     local user_id = vRP.getUserId(player)
@@ -37,7 +37,7 @@ vRP.registerMenuBuilder("main", function(add, data)
       vRPclient.stopAnim(player,{false}) -- full
     end, lang.emotes.clear.description()}
 
-    vRP.openMenu(data.player,menu)
+    vRP.openMenu(player,menu)
   end}
   add(choices)
 end)
