@@ -5,7 +5,7 @@
 
 local cfg = {}
 
--- map of emote_name => {upper,seq,looping}
+-- map of emote_name => {upper,seq,looping} and an optional permissions property
 -- seq can also be a task definition, check the examples below
 cfg.emotes = {
   ["Handsup"] = { -- handsup state, use clear to lower hands
@@ -14,6 +14,7 @@ cfg.emotes = {
       {"random@mugging3", "handsup_standing_base", 1}
     },
     true
+    -- ,permissions = {"player.emote.handsup"}  -- you can add a permissions check
   },
   ["No"] = {
     true, {{"gestures@f@standing@casual","gesture_head_no",1}}, false
