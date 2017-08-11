@@ -12,6 +12,9 @@ local lang = {
     wearing_uniform = "~r~Be careful, you are wearing a uniform.",
     not_allowed = "~r~Not allowed."
   },
+  weapon = {
+    pistol = "Pistol"
+  },
   survival = {
     starving = "starving",
     thirsty = "thirsty"

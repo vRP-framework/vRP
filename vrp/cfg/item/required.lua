@@ -56,7 +56,8 @@ end,0}
 local get_wname = function(weapon_id)
   local name = string.gsub(weapon_id,"WEAPON_","")
   name = string.upper(string.sub(name,1,1))..string.lower(string.sub(name,2))
-  return name
+  -- lang translation support, ex: weapon.pistol = "Pistol", by default use the native name
+  return vRP.lang.weapon[string.lower(name)]({}, name)
 end
 
 --- weapon body

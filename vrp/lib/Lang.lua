@@ -45,6 +45,7 @@ return Lang
 -- lang.foo.foo => "a"
 -- lang.foo.bar => "b"
 -- lang.something.a() => "something.a"
+-- lang.something.a({}, "default") => "default"
 -- lang.bar({"arg1"}) => "a arg1"
 
 -- to prevent tostring() not being called sometimes, always use the call form lang.foo.bar.something()
