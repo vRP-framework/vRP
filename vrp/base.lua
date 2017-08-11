@@ -116,13 +116,17 @@ function vRP.getUserIdByIdentifiers(ids, cbr)
     local function search()
       i = i+1
       if i <= #ids then
-        MySQL.query("vRP/userid_byidentifier", {identifier = ids[i]}, function(rows, affected)
-          if #rows > 0 then  -- found
-            task({rows[1].user_id})
-          else -- not found
-            search()
-          end
-        end)
+        if not config.ignore_ip_identifier or (string.find(ids[i], "ip:") == nil) then  -- ignore ip identifier
+          MySQL.query("vRP/userid_byidentifier", {identifier = ids[i]}, function(rows, affected)
+            if #rows > 0 then  -- found
+              task({rows[1].user_id})
+            else -- not found
+              search()
+            end
+          end)
+        else
+          search()
+        end
       else -- no ids found, create user
         MySQL.query("vRP/create_user", {}, function(rows, affected)
           if #rows > 0 then
