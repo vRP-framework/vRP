@@ -52,6 +52,7 @@ cfg.groups = {
       onspawn = function(player) vRPclient.setCop(player,{true}) end,
       onleave = function(player) vRPclient.setCop(player,{false}) end
     },
+    "police.menu",
     "police.cloakroom",
     "police.pc",
     "police.handcuff",
