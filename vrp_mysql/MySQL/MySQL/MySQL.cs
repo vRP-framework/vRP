@@ -133,8 +133,10 @@ namespace vRP
     }
 
     // query("con/cmd", {...})
-    public void e_query(string path, IDictionary<string,object> parameters)
+    public void e_query(string path, IDictionary<string,object> _parameters)
     {
+      IDictionary<string,object> parameters = new Dictionary<string,object>(_parameters);
+
       try{
       var concmd = parsePath(path);
       var task = -1;
