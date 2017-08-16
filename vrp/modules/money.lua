@@ -154,15 +154,17 @@ end)
 AddEventHandler("vRP:playerLeave",function(user_id,source)
   -- (wallet,bank)
   local tmp = vRP.getUserTmpTable(user_id)
-  if tmp then
-    MySQL.query("vRP/set_money", {user_id = user_id, wallet = tmp.wallet or 0, bank = tmp.bank or 0})
+  if tmp and tmp.wallet ~= nil and tmp.bank ~= nil then
+    MySQL.query("vRP/set_money", {user_id = user_id, wallet = tmp.wallet, bank = tmp.bank})
   end
 end)
 
 -- save money (at same time that save datatables)
 AddEventHandler("vRP:save", function()
   for k,v in pairs(vRP.user_tmp_tables) do
-    MySQL.query("vRP/set_money", {user_id = k, wallet = v.wallet or 0, bank = v.bank or 0})
+    if v.wallet ~= nil and v.bank ~= nil then
+      MySQL.query("vRP/set_money", {user_id = k, wallet = v.wallet, bank = v.bank})
+    end
   end
 end)
 
