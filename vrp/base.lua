@@ -133,7 +133,9 @@ function vRP.getUserIdByIdentifiers(ids, cbr)
             local user_id = rows[1].id
             -- add identifiers
             for l,w in pairs(ids) do
-              MySQL.query("vRP/add_identifier", {user_id = user_id, identifier = w})
+              if not config.ignore_ip_identifier or (string.find(w, "ip:") == nil) then  -- ignore ip identifier
+                MySQL.query("vRP/add_identifier", {user_id = user_id, identifier = w})
+              end
             end
 
             task({user_id})
