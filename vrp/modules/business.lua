@@ -57,7 +57,7 @@ end
 
 -- close the business of an user
 function vRP.closeBusiness(user_id)
-  MySQL.query("vRP/close_business", {user_id = user_id})
+  MySQL.query("vRP/delete_business", {user_id = user_id})
 end
 
 -- business interaction
