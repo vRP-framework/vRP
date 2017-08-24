@@ -19,7 +19,7 @@ MySQL.createCommand("vRP/get_money","SELECT wallet,bank FROM vrp_user_moneys WHE
 MySQL.createCommand("vRP/set_money","UPDATE vrp_user_moneys SET wallet = @wallet, bank = @bank WHERE user_id = @user_id")
 
 -- init tables
-MySQL.query("vRP/money_tables")
+MySQL.execute("vRP/money_tables")
 
 -- load config
 local cfg = module("cfg/money")
@@ -136,7 +136,7 @@ end
 
 -- events, init user account if doesn't exist at connection
 AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
-  MySQL.query("vRP/money_init_user", {user_id = user_id, wallet = cfg.open_wallet, bank = cfg.open_bank}, function(rows, affected)
+  MySQL.execute("vRP/money_init_user", {user_id = user_id, wallet = cfg.open_wallet, bank = cfg.open_bank}, function(affected)
     -- load money (wallet,bank)
     local tmp = vRP.getUserTmpTable(user_id)
     if tmp then
@@ -155,7 +155,7 @@ AddEventHandler("vRP:playerLeave",function(user_id,source)
   -- (wallet,bank)
   local tmp = vRP.getUserTmpTable(user_id)
   if tmp and tmp.wallet ~= nil and tmp.bank ~= nil then
-    MySQL.query("vRP/set_money", {user_id = user_id, wallet = tmp.wallet, bank = tmp.bank})
+    MySQL.execute("vRP/set_money", {user_id = user_id, wallet = tmp.wallet, bank = tmp.bank})
   end
 end)
 
@@ -163,7 +163,7 @@ end)
 AddEventHandler("vRP:save", function()
   for k,v in pairs(vRP.user_tmp_tables) do
     if v.wallet ~= nil and v.bank ~= nil then
-      MySQL.query("vRP/set_money", {user_id = k, wallet = v.wallet, bank = v.bank})
+      MySQL.execute("vRP/set_money", {user_id = k, wallet = v.wallet, bank = v.bank})
     end
   end
 end)

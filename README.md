@@ -1070,6 +1070,14 @@ MySQL.createCommand(path, sql)
 --- (optional) params: associative table of SQL params ("@something" => something)
 --- (optional) callback(rows, affected): rows as list, with associative table for columns
 MySQL.query(path, params, callback)
+
+-- do a scalar query (one row, one column)
+--- (optional) callback(scalar)
+MySQL.scalar(path, params, callback)
+
+-- do a execute query (no results)
+--- (optional) callback(affected)
+MySQL.execute(path, params, callback)
 ```
 
 Here is an example of how to use the MySQL module in other resources :
@@ -1093,7 +1101,7 @@ CREATE TABLE things(
 ]])
 
 -- execute the command to init tables
-MySQL.query("con_name/command_name")
+MySQL.execute("con_name/command_name")
 
 -- you can also add commands to a created connection
 -- adding a command to the vRP connection to get all banned or not banned users

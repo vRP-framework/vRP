@@ -23,7 +23,7 @@ MySQL.createCommand("vRP/rm_address","DELETE FROM vrp_user_homes WHERE user_id =
 MySQL.createCommand("vRP/set_address","REPLACE INTO vrp_user_homes(user_id,home,number) VALUES(@user_id,@home,@number)")
 
 -- init
-MySQL.query("vRP/home_tables")
+MySQL.execute("vRP/home_tables")
 
 -- api
 
@@ -40,12 +40,12 @@ end
 
 -- set user address
 function vRP.setUserAddress(user_id,home,number)
-  MySQL.query("vRP/set_address", {user_id = user_id, home = home, number = number})
+  MySQL.execute("vRP/set_address", {user_id = user_id, home = home, number = number})
 end
 
 -- remove user address
 function vRP.removeUserAddress(user_id)
-  MySQL.query("vRP/rm_address", {user_id = user_id})
+  MySQL.execute("vRP/rm_address", {user_id = user_id})
 end
 
 -- cbreturn user_id or nil

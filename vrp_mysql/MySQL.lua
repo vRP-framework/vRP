@@ -35,15 +35,21 @@ tick()
 AddEventHandler("vRP:MySQL_task", function(task_id, data)
 --  print("vRP:MySQL_task "..task_id)
   local cb = tasks[task_id]
-  if cb then
-    if data.status == 1 then
-      cb(data.rows or {},data.affected or 0) -- rows, affected
-    elseif r.status == -1 then
-      print("[vRP] task "..id.." failed.")
+  if data.status == 1 then
+    if cb then
+      if data.mode == 0 then
+        cb(data.affected or 0)
+      elseif data.mode == 1 then
+        cb(data.scalar or 0)
+      elseif data.mode == 2 then
+        cb(data.rows or {}, data.affected or 0) -- rows, affected
+      end
     end
-
-    tasks[task_id] = nil
+  elseif r.status == -1 then
+    print("[vRP] task "..id.." failed.")
   end
+
+  tasks[task_id] = nil
 
   if MySQL.debug and dpaths[task_id] then
     print("[vRP] MySQL end query "..dpaths[task_id].." ("..task_id..")")
@@ -53,7 +59,7 @@ end)
 
 local task_id = -1
 AddEventHandler("vRP:MySQL_taskid", function(_task_id)
---  print("vRP:MySQL_task "..task_id)
+--  print("vRP:MySQL_taskid ".._task_id)
   task_id = _task_id
 end)
 
@@ -78,7 +84,8 @@ function MySQL.createCommand(path, query)
   exports.vrp_mysql:createCommand(path, query)
 end
 
-function MySQL.query(path, args, cb)
+-- generic query
+function MySQL._query(path, args, mode, cb)
   -- TriggerEvent("vRP:MySQL:query", path, args)
   if not (type(args) == "table") then
     args = {}
@@ -88,14 +95,32 @@ function MySQL.query(path, args, cb)
   args._none = " "
 
 --  exports.vrp_mysql:query(path, args)
-  TriggerEvent("vRP:MySQL_query", path, args)
 --  print("[vRP] try to query "..path.." id "..task_id)
+  TriggerEvent("vRP:MySQL_query", path, args, mode)
   if MySQL.debug then
-    print("[vRP] MySQL begin query "..path.." ("..task_id..")")
+    print("[vRP] MySQL begin query (m"..mode..") "..path.." ("..task_id..")")
     dpaths[task_id] = path
   end
 
   tasks[task_id] = cb
+end
+
+-- do a query (multiple rows)
+--- cb(rows, affected)
+function MySQL.query(path, args, cb)
+  MySQL._query(path, args, 2, cb)
+end
+
+-- do a scalar query (one row, one column)
+--- cb(scalar)
+function MySQL.scalar(path, args, cb)
+  MySQL._query(path, args, 1, cb)
+end
+
+-- do a execute query (no results)
+--- cb(affected)
+function MySQL.execute(path, args, cb)
+  MySQL._query(path, args, 0, cb)
 end
 
 -- return module

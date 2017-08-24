@@ -16,7 +16,7 @@ MySQL.createCommand("vRP/get_vehicles","SELECT vehicle FROM vrp_user_vehicles WH
 MySQL.createCommand("vRP/get_vehicle","SELECT vehicle FROM vrp_user_vehicles WHERE user_id = @user_id AND vehicle = @vehicle")
 
 -- init
-MySQL.query("vRP/vehicles_table")
+MySQL.execute("vRP/vehicles_table")
 
 -- load config
 
@@ -108,7 +108,7 @@ for group,vehicles in pairs(vehicle_groups) do
           -- buy vehicle
           local vehicle = vehicles[vname]
           if vehicle and vRP.tryPayment(user_id,vehicle[2]) then
-            MySQL.query("vRP/add_vehicle", {user_id = user_id, vehicle = vname})
+            MySQL.execute("vRP/add_vehicle", {user_id = user_id, vehicle = vname})
 
             vRPclient.notify(player,{lang.money.paid({vehicle[2]})})
             vRP.closeMenu(player)
@@ -160,7 +160,7 @@ for group,vehicles in pairs(vehicle_groups) do
             MySQL.query("vRP/get_vehicle", {user_id = user_id, vehicle = vname}, function(rows, affected)
               if #rows > 0 then -- has vehicle
                 vRP.giveMoney(user_id,price)
-                MySQL.query("vRP/remove_vehicle", {user_id = user_id, vehicle = vname})
+                MySQL.execute("vRP/remove_vehicle", {user_id = user_id, vehicle = vname})
 
                 vRPclient.notify(player,{lang.money.received({price})})
                 vRP.closeMenu(player)

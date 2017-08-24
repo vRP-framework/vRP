@@ -30,7 +30,7 @@ MySQL.createCommand("vRP/get_business_page","SELECT user_id,name,description,cap
 MySQL.createCommand("vRP/reset_transfer","UPDATE vrp_user_business SET laundered = 0, reset_timestamp = @time WHERE user_id = @user_id")
 
 -- init
-MySQL.query("vRP/business_tables")
+MySQL.execute("vRP/business_tables")
 
 -- api
 
@@ -44,7 +44,7 @@ function vRP.getUserBusiness(user_id, cbr)
 
       -- when a business is fetched from the database, check for update of the laundered capital transfer capacity
       if business and os.time() >= business.reset_timestamp+cfg.transfer_reset_interval*60 then
-        MySQL.query("vRP/reset_transfer", {user_id = user_id, time = os.time()})
+        MySQL.execute("vRP/reset_transfer", {user_id = user_id, time = os.time()})
         business.laundered = 0
       end
 
@@ -57,7 +57,7 @@ end
 
 -- close the business of an user
 function vRP.closeBusiness(user_id)
-  MySQL.query("vRP/delete_business", {user_id = user_id})
+  MySQL.execute("vRP/delete_business", {user_id = user_id})
 end
 
 -- business interaction
@@ -115,7 +115,7 @@ local function business_enter()
             amount = parseInt(amount)
             if amount > 0 then
               if vRP.tryPayment(user_id,amount) then
-                MySQL.query("vRP/add_capital", {user_id = user_id, capital = amount})
+                MySQL.execute("vRP/add_capital", {user_id = user_id, capital = amount})
                 vRPclient.notify(player,{lang.business.addcapital.added({amount})})
               else
                 vRPclient.notify(player,{lang.money.not_enough()})
@@ -135,7 +135,7 @@ local function business_enter()
               if amount > 0 and amount <= launder_left then
                 if vRP.tryGetInventoryItem(user_id,"dirty_money",amount,false) then
                   -- add laundered amount
-                  MySQL.query("vRP/add_laundered", {user_id = user_id, laundered = amount})
+                  MySQL.execute("vRP/add_laundered", {user_id = user_id, laundered = amount})
                   -- give laundered money
                   vRP.giveMoney(user_id,amount)
                   vRPclient.notify(player,{lang.business.launder.laundered({amount})})
@@ -157,7 +157,7 @@ local function business_enter()
                 capital = parseInt(capital)
                 if capital >= cfg.minimum_capital then
                   if vRP.tryPayment(user_id,capital) then
-                    MySQL.query("vRP/create_business", {
+                    MySQL.execute("vRP/create_business", {
                       user_id = user_id,
                       name = name,
                       capital = capital,

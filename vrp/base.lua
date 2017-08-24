@@ -97,10 +97,9 @@ MySQL.createCommand("vRP/set_whitelisted","UPDATE vrp_users SET whitelisted = @w
 MySQL.createCommand("vRP/set_last_login","UPDATE vrp_users SET last_login = @last_login WHERE id = @user_id")
 MySQL.createCommand("vRP/get_last_login","SELECT last_login FROM vrp_users WHERE id = @user_id")
 
-
 -- init tables
 print("[vRP] init base tables")
-MySQL.query("vRP/base_tables")
+MySQL.execute("vRP/base_tables")
 
 -- identification system
 
@@ -134,7 +133,7 @@ function vRP.getUserIdByIdentifiers(ids, cbr)
             -- add identifiers
             for l,w in pairs(ids) do
               if not config.ignore_ip_identifier or (string.find(w, "ip:") == nil) then  -- ignore ip identifier
-                MySQL.query("vRP/add_identifier", {user_id = user_id, identifier = w})
+                MySQL.execute("vRP/add_identifier", {user_id = user_id, identifier = w})
               end
             end
 
@@ -178,7 +177,7 @@ end
 
 --- sql
 function vRP.setBanned(user_id,banned)
-  MySQL.query("vRP/set_banned", {user_id = user_id, banned = banned})
+  MySQL.execute("vRP/set_banned", {user_id = user_id, banned = banned})
 end
 
 --- sql
@@ -196,7 +195,7 @@ end
 
 --- sql
 function vRP.setWhitelisted(user_id,whitelisted)
-  MySQL.query("vRP/set_whitelisted", {user_id = user_id, whitelisted = whitelisted})
+  MySQL.execute("vRP/set_whitelisted", {user_id = user_id, whitelisted = whitelisted})
 end
 
 --- sql
@@ -212,7 +211,7 @@ function vRP.getLastLogin(user_id, cbr)
 end
 
 function vRP.setUData(user_id,key,value)
-  MySQL.query("vRP/set_userdata", {user_id = user_id, key = key, value = value})
+  MySQL.execute("vRP/set_userdata", {user_id = user_id, key = key, value = value})
 end
 
 function vRP.getUData(user_id,key,cbr)
@@ -228,7 +227,7 @@ function vRP.getUData(user_id,key,cbr)
 end
 
 function vRP.setSData(key,value)
-  MySQL.query("vRP/set_srvdata", {key = key, value = value})
+  MySQL.execute("vRP/set_srvdata", {key = key, value = value})
 end
 
 function vRP.getSData(key, cbr)
@@ -389,7 +388,7 @@ AddEventHandler("playerConnecting",function(name,setMessage)
                       -- set last login
                       local ep = GetPlayerEP(source)
                       local last_login_stamp = ep.." "..os.date("%H:%M:%S %d/%m/%Y")
-                      MySQL.query("vRP/set_last_login", {user_id = user_id, last_login = last_login_stamp})
+                      MySQL.execute("vRP/set_last_login", {user_id = user_id, last_login = last_login_stamp})
 
                       -- trigger join
                       print("[vRP] "..name.." ("..GetPlayerEP(source)..") joined (user_id = "..user_id..")")

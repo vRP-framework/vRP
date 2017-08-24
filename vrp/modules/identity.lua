@@ -30,7 +30,7 @@ MySQL.createCommand("vRP/get_userbyreg","SELECT user_id FROM vrp_user_identities
 MySQL.createCommand("vRP/get_userbyphone","SELECT user_id FROM vrp_user_identities WHERE phone = @phone")
 
 -- init
-MySQL.query("vRP/identity_tables")
+MySQL.execute("vRP/identity_tables")
 
 -- api
 
@@ -128,7 +128,7 @@ AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
     if identity == nil then
       vRP.generateRegistrationNumber(function(registration)
         vRP.generatePhoneNumber(function(phone)
-          MySQL.query("vRP/init_user_identity", {
+          MySQL.execute("vRP/init_user_identity", {
             user_id = user_id,
             registration = registration,
             phone = phone,
@@ -162,7 +162,7 @@ local function ch_identity(player,choice)
                   vRP.generateRegistrationNumber(function(registration)
                     vRP.generatePhoneNumber(function(phone)
 
-                      MySQL.query("vRP/update_user_identity", {
+                      MySQL.execute("vRP/update_user_identity", {
                         user_id = user_id,
                         firstname = firstname,
                         name = name,

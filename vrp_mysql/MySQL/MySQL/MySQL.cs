@@ -39,8 +39,8 @@ namespace vRP
       task_id = 0;
       Exports.Add("createConnection", new Action<string,string>(e_createConnection));
       Exports.Add("createCommand", new Action<string,string>(e_createCommand));
-      Exports.Add("query", new Action<string,IDictionary<string,object>>(e_query));
-      EventHandlers["vRP:MySQL_query"] += new Action<string,IDictionary<string,object>>(e_query);
+      Exports.Add("query", new Action<string,IDictionary<string,object>, int>(e_query));
+      EventHandlers["vRP:MySQL_query"] += new Action<string,IDictionary<string,object>, int>(e_query);
       EventHandlers["vRP:MySQL_tick"] += new Action(e_tick);
       //Exports.Add("checkTask", new Func<int,object>(e_checkTask));
     }
@@ -63,12 +63,13 @@ namespace vRP
           if(!task.IsFaulted){ //ok
             Dictionary<string, object> r = (Dictionary<string,object>)task.Result;
 
-            dict["status"] = 1;
-
             if(r != null){
-              dict["rows"] = r["rows"];
-              dict["affected"] = r["affected"];
+              dict["status"] = 1;
+              foreach(var rpair in r)
+                dict[rpair.Key] = rpair.Value;
             }
+            else
+              dict["status"] = -1;
           }
           else{ //faulted
             dict["status"] = -1;
@@ -77,6 +78,8 @@ namespace vRP
 
           rmtasks.Add(pair.Key, dict);
         }
+        else;
+          //Console.WriteLine(pair.Key+" not completed");
       }
 
       //remove completed tasks
@@ -133,7 +136,7 @@ namespace vRP
     }
 
     // query("con/cmd", {...})
-    public void e_query(string path, IDictionary<string,object> _parameters)
+    public void e_query(string path, IDictionary<string,object> _parameters, int mode)
     {
       IDictionary<string,object> parameters = new Dictionary<string,object>(_parameters);
 
@@ -153,33 +156,53 @@ namespace vRP
             await connection.mutex.WaitAsync();
 //            Console.WriteLine("[vRP/C#] do query "+path);
 
-
 //            Console.WriteLine("[vRP/C#] add params");
             //set parameters
             foreach(var param in parameters ?? Enumerable.Empty<KeyValuePair<string, object>>())
               command.Parameters.AddWithValue("@"+param.Key, param.Value);
 
-//            Console.WriteLine("[vRP/C#] try reader");
-            using (var reader = await command.ExecuteReaderAsync())
-            {
-              var results = new List<Dictionary<string, object>>();
+            Dictionary<string, object> dict = new Dictionary<string,object>();
+            dict["mode"] = mode;
 
-              while (await reader.ReadAsync())
-              {
-//                Console.WriteLine("[vRP/C#] read async");
-                var entry = new Dictionary<string, object>();
-                for (int i = 0; i < reader.FieldCount; i++)
-                  entry[reader.GetName(i)] = reader.GetValue(i);
-
-                results.Add(entry);
-              }
-
+            if(mode == 0){ //NonQuery
+//              Console.WriteLine("[vRP/C#] try non query");
+              int affected = await command.ExecuteNonQueryAsync();
 //              Console.WriteLine("[vRP/C#] returns");
-              Dictionary<string, object> dict = new Dictionary<string,object>();
-              dict["rows"] = results;
-              dict["affected"] = reader.RecordsAffected;
+              dict["affected"] = affected;
 
               r = (object)dict;
+            }
+            else if(mode == 1){ //Scalar
+//              Console.WriteLine("[vRP/C#] try scalar");
+              object scalar = await command.ExecuteScalarAsync();
+//              Console.WriteLine("[vRP/C#] returns");
+              dict["scalar"] = scalar;
+
+              r = (object)dict;
+            }
+            else if(mode == 2){ //Reader
+//              Console.WriteLine("[vRP/C#] try reader");
+              using (var reader = await command.ExecuteReaderAsync())
+              {
+                var results = new List<Dictionary<string, object>>();
+
+//                Console.WriteLine("[vRP/C#] in reader");
+                while (await reader.ReadAsync())
+                {
+//                  Console.WriteLine("[vRP/C#] read async");
+                  var entry = new Dictionary<string, object>();
+                  for (int i = 0; i < reader.FieldCount; i++)
+                    entry[reader.GetName(i)] = reader.GetValue(i);
+
+                  results.Add(entry);
+                }
+
+//                Console.WriteLine("[vRP/C#] returns");
+                dict["rows"] = results;
+                dict["affected"] = reader.RecordsAffected;
+
+                r = (object)dict;
+              }
             }
 
 //            Console.WriteLine("[vRP/C#] end query "+path);
