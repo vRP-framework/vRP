@@ -252,6 +252,10 @@ vRP.isInside()
 -- notify the player
 vRP.notify(message)
 
+-- notify the player with picture
+vRP.notifyPicture(picture, icon_type, title, int, message)
+-- see https://wiki.gtanet.work/index.php?title=Notification_Pictures to view notification pictures aviable.
+
 -- play a screen effect
 -- name, see https://wiki.fivem.net/wiki/Screen_Effects
 -- duration: in seconds, if -1, will play until stopScreenEffect is called
