@@ -19,9 +19,9 @@ local function ch_list(player,choice)
         local source = vRP.getUserSource(k)
         vRP.getUserIdentity(k, function(identity)
           if source ~= nil then
-            content = content.."<br />["..k.."] => "..GetPlayerName(source)
+            content = content.."<br />"..k.." => <span class=\"pseudo\">"..vRP.getPlayerName(source).."</span> <span class=\"endpoint\">"..vRP.getPlayerEndpoint(source).."</span>"
             if identity then
-              content = content.." "..htmlEntities.encode(identity.firstname).." "..htmlEntities.encode(identity.name).." "..identity.registration
+              content = content.." <span class=\"name\">"..htmlEntities.encode(identity.firstname).." "..htmlEntities.encode(identity.name).."</span> <span class=\"reg\">"..identity.registration.."</span>"
             end
           end
 
@@ -29,7 +29,35 @@ local function ch_list(player,choice)
           count = count-1
           if count == 0 then
             player_lists[player] = true
-            vRPclient.setDiv(player,{"user_list",".div_user_list{ margin: auto; padding: 8px; width: 500px; margin-top: 80px; background: black; color: white; font-weight: bold; ", content})
+            local css = [[
+.div_user_list{ 
+  margin: auto; 
+  padding: 8px; 
+  width: 650px; 
+  margin-top: 80px; 
+  background: black; 
+  color: white; 
+  font-weight: bold; 
+  font-size: 1.1em;
+} 
+
+.div_user_list .pseudo{ 
+  color: rgb(0,255,125);
+}
+
+.div_user_list .endpoint{ 
+  color: rgb(255,0,0);
+}
+
+.div_user_list .name{ 
+  color: #309eff;
+}
+
+.div_user_list .reg{ 
+  color: rgb(0,125,255);
+}
+            ]]
+            vRPclient.setDiv(player,{"user_list", css, content})
           end
         end)
       end
