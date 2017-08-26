@@ -21,7 +21,7 @@ local function ch_list(player,choice)
           if source ~= nil then
             content = content.."<br />"..k.." => <span class=\"pseudo\">"..vRP.getPlayerName(source).."</span> <span class=\"endpoint\">"..vRP.getPlayerEndpoint(source).."</span>"
             if identity then
-              content = content.." <span class=\"name\">"..htmlEntities.encode(identity.firstname).." "..htmlEntities.encode(identity.name).."</span> <span class=\"reg\">"..identity.registration.."</span>"
+              content = content.." <span class=\"name\">"..htmlEntities.encode(identity.firstname).." "..htmlEntities.encode(identity.name).."</span> <span class=\"reg\">"..identity.registration.."</span> <span class=\"phone\">"..identity.phone.."</span>"
             end
           end
 
@@ -55,6 +55,10 @@ local function ch_list(player,choice)
 
 .div_user_list .reg{ 
   color: rgb(0,125,255);
+}
+              
+.div_user_list .phone{ 
+  color: rgb(211, 0, 255);
 }
             ]]
             vRPclient.setDiv(player,{"user_list", css, content})
