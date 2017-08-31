@@ -351,25 +351,22 @@ end
 
 -- handlers
 
-local rejects = {}
+AddEventHandler("playerConnecting",function(name,setMessage, deferrals)
+  deferrals.defer()
 
-AddEventHandler("playerConnecting",function(name,setMessage)
   local source = source
   Debug.pbegin("playerConnecting")
   local ids = GetPlayerIdentifiers(source)
 
-  local idk = vRP.getSourceIdKey(source)
-  -- reject someone
-  local function reject(reason)
-    rejects[idk] = reason
-  end
-
   if ids ~= nil and #ids > 0 then
+    deferrals.update("[vRP] Checking identifiers...")
     vRP.getUserIdByIdentifiers(ids, function(user_id)
       -- if user_id ~= nil and vRP.rusers[user_id] == nil then -- check user validity and if not already connected (old way, disabled until playerDropped is sure to be called)
       if user_id ~= nil then -- check user validity 
+        deferrals.update("[vRP] Checking banned...")
         vRP.isBanned(user_id, function(banned)
           if not banned then
+            deferrals.update("[vRP] Checking whitelisted...")
             vRP.isWhitelisted(user_id, function(whitelisted)
               if not config.whitelist or whitelisted then
                 Debug.pbegin("playerConnecting_delayed")
@@ -382,6 +379,7 @@ AddEventHandler("playerConnecting",function(name,setMessage)
                   vRP.user_sources[user_id] = source
 
                   -- load user data table
+                  deferrals.update("[vRP] Loading datatable...")
                   vRP.getUData(user_id, "vRP:datatable", function(sdata)
                     local data = json.decode(sdata)
                     if type(data) == "table" then vRP.user_tables[user_id] = data end
@@ -389,6 +387,7 @@ AddEventHandler("playerConnecting",function(name,setMessage)
                     -- init user tmp table
                     local tmpdata = vRP.getUserTmpTable(user_id)
 
+                    deferrals.update("[vRP] Getting last login...")
                     vRP.getLastLogin(user_id, function(last_login)
                       tmpdata.last_login = last_login or ""
                       tmpdata.spawns = 0
@@ -401,11 +400,13 @@ AddEventHandler("playerConnecting",function(name,setMessage)
                       -- trigger join
                       print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") joined (user_id = "..user_id..")")
                       TriggerEvent("vRP:playerJoin", user_id, source, name, tmpdata.last_login)
+                      deferrals.done()
                     end)
                   end)
                 else -- already connected
                   print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") re-joined (user_id = "..user_id..")")
                   TriggerEvent("vRP:playerRejoin", user_id, source, name)
+                  deferrals.done()
 
                   -- reset first spawn
                   local tmpdata = vRP.getUserTmpTable(user_id)
@@ -415,23 +416,22 @@ AddEventHandler("playerConnecting",function(name,setMessage)
                 Debug.pend()
               else
                 print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: not whitelisted (user_id = "..user_id..")")
-                reject("[vRP] Not whitelisted (user_id = "..user_id..").")
+                deferrals.done("[vRP] Not whitelisted (user_id = "..user_id..").")
               end
             end)
           else
             print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: banned (user_id = "..user_id..")")
-            reject("[vRP] Banned (user_id = "..user_id..").")
+            deferrals.done("[vRP] Banned (user_id = "..user_id..").")
           end
         end)
       else
         print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: identification error")
-        reject("[vRP] Identification error.")
+        deferrals.done("[vRP] Identification error.")
       end
     end)
   else
     print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: missing identifiers")
-    setMessage("[vRP] Missing identifiers.")
-    CancelEvent()
+    deferrals.done("[vRP] Missing identifiers.")
   end
   Debug.pend()
 end)
@@ -440,7 +440,6 @@ AddEventHandler("playerDropped",function(reason)
   local source = source
   Debug.pbegin("playerDropped")
 
-  rejects[source] = nil
   -- remove player from connected clients
   vRPclient.removePlayer(-1,{source})
 
@@ -499,14 +498,6 @@ AddEventHandler("vRPcli:playerSpawned", function()
         vRPclient.removeProgressBar(player,{"vRP:loading"})
       end)
     end)
-  end
-
-  -- reject
-  local idk = vRP.getSourceIdKey(player)
-  local reason = rejects[idk]
-  if reason then
-    vRP.kick(player, reason)
-    rejects[idk] = nil
   end
 
   Debug.pend()
