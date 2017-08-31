@@ -54,7 +54,7 @@ html, body {
   display: none; 
 }
 
-.choices div{
+.choices > div{
   padding: 6px;
   font-size: 1.3em;
 }
@@ -74,6 +74,33 @@ html, body {
 
 .progressbar .label{
   position: absolute;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 2px 2px black;
+}
+
+/* dynamic class progress bar */
+.dprogressbar{
+  position: relative;
+  padding: 0;
+  margin: 0;
+}
+
+.dprogressbar .inner{
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.dprogressbar .label{
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  width: 100%;
+  vertical-align: middle;
+  top: 0;
+  left: 0;
   color: white;
   font-weight: bold;
   text-align: center;

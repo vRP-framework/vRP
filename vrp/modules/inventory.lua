@@ -302,7 +302,10 @@ function vRP.openInventory(source)
       -- build inventory menu
       local menudata = {name=lang.inventory.title(),css={top="75px",header_color="rgba(0,125,255,0.75)"}}
       -- add inventory info
-      menudata["@ "..lang.inventory.info_weight({string.format("%.2f",vRP.getInventoryWeight(user_id)), vRP.getInventoryMaxWeight(user_id)})] = {function()end}
+      local weight = vRP.getInventoryWeight(user_id)
+      local max_weight = vRP.getInventoryMaxWeight(user_id)
+      local hue = math.floor(math.max(125*(1-weight/max_weight), 0))
+      menudata["<div class=\"dprogressbar\" data-value=\""..string.format("%.2f",weight/max_weight).."\" data-color=\"hsl("..hue..",100%,50%)\" data-bgcolor=\"hsl("..hue..",100%,25%)\" style=\"height: 12px; border: 3px solid black;\"></div>"] = {function()end, lang.inventory.info_weight({string.format("%.2f",weight),max_weight})}
       local kitems = {}
 
       -- choose callback, nested menu, create the item menu
@@ -443,7 +446,10 @@ function vRP.openChest(source, name, max_weight, cb_close, cb_in, cb_out)
           local ch_take = function(player, choice)
             local submenu = build_itemlist_menu(lang.inventory.chest.take.title(), chest.items, cb_take)
             -- add weight info
-            submenu["@ "..lang.inventory.info_weight({string.format("%.2f", vRP.computeItemsWeight(chest.items)),max_weight})] = {function() end}
+            local weight = vRP.computeItemsWeight(chest.items)
+            local hue = math.floor(math.max(125*(1-weight/max_weight), 0))
+            submenu["<div class=\"dprogressbar\" data-value=\""..string.format("%.2f",weight/max_weight).."\" data-color=\"hsl("..hue..",100%,50%)\" data-bgcolor=\"hsl("..hue..",100%,25%)\" style=\"height: 12px; border: 3px solid black;\"></div>"] = {function()end, lang.inventory.info_weight({string.format("%.2f",weight),max_weight})}
+
 
             submenu.onclose = function()
               close_count = close_count-1
@@ -486,7 +492,10 @@ function vRP.openChest(source, name, max_weight, cb_close, cb_in, cb_out)
           local ch_put = function(player, choice)
             local submenu = build_itemlist_menu(lang.inventory.chest.put.title(), data.inventory, cb_put)
             -- add weight info
-            submenu["@ "..lang.inventory.info_weight({string.format("%.2f",vRP.computeItemsWeight(data.inventory)),vRP.getInventoryMaxWeight(user_id)})] = {function() end}
+            local weight = vRP.computeItemsWeight(data.inventory)
+            local max_weight = vRP.getInventoryMaxWeight(user_id)
+            local hue = math.floor(math.max(125*(1-weight/max_weight), 0))
+            submenu["<div class=\"dprogressbar\" data-value=\""..string.format("%.2f",weight/max_weight).."\" data-color=\"hsl("..hue..",100%,50%)\" data-bgcolor=\"hsl("..hue..",100%,25%)\" style=\"height: 12px; border: 3px solid black;\"></div>"] = {function()end, lang.inventory.info_weight({string.format("%.2f",weight),max_weight})}
 
             submenu.onclose = function() 
               close_count = close_count-1

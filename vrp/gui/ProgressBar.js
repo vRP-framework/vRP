@@ -27,7 +27,6 @@ function ProgressBar(data)
 
   this.div.style.backgroundColor = "rgba("+data.r+","+data.g+","+data.b+",0.3)";
   this.div_inner.style.backgroundColor = "rgba("+data.r+","+data.g+","+data.b+",0.7)";
-
 }
 
 ProgressBar.prototype.setValue = function(val)
@@ -121,3 +120,30 @@ ProgressBar.prototype.removeDom = function()
       anchor.splice(i,1);
   }
 }
+
+// PROGRESS BAR DYNAMIC CLASS
+
+defineDynamicClass("dprogressbar", function(el){
+  var value = parseFloat(el.dataset.value); //value: 0 -> 1
+  var color = el.dataset.color; //color: css color
+  var bgcolor = el.dataset.bgcolor; //bgcolor: css color
+  var content = el.innerHTML;
+  el.innerHTML = "";
+
+  var inner = document.createElement("div");
+  inner.classList.add("inner");
+  el.appendChild(inner);
+
+  var label = document.createElement("div");
+  label.classList.add("label");
+  label.innerHTML = content;
+  el.appendChild(label);
+
+  el.style.backgroundColor = bgcolor;
+  inner.style.backgroundColor = color;
+
+  //set label font size
+  label.style.fontSize = "1em";
+
+  inner.style.width = Math.round(value*100)+"%";
+});

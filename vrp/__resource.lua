@@ -66,5 +66,6 @@ files{
   "gui/WPrompt.js",
   "gui/RequestManager.js",
   "gui/AnnounceManager.js",
-  "gui/Div.js"
+  "gui/Div.js",
+  "gui/dynamic_classes.js"
 }

@@ -464,7 +464,7 @@ local lang = {
     level_up = "Compétence ~b~{1}/{2} ~g~monte en niveau ({3}).",
     display = {
       group = "{1}: ",
-      aptitude = "--- {1} | exp {2} | niv. {3} | progression {4}%"
+      aptitude = "{1} NIV {3} EXP {2}"
     }
   }
 }

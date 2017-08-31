@@ -1,4 +1,3 @@
-
 window.addEventListener("load",function(){
   errdiv = document.createElement("div");
   if(true){ //debug
@@ -8,6 +7,11 @@ window.addEventListener("load",function(){
         errdiv.innerHTML += '<br />Error: ' + errorMsg + ' Script: ' + url + ' Line: ' + lineNumber
                 + ' Column: ' + column + ' StackTrace: ' +  errorObj;
     }
+  }
+
+  log = function(txt)
+  {
+    errdiv.innerHTML += "<br />log: "+txt;
   }
 
   //init dynamic menu
