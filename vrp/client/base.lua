@@ -160,6 +160,8 @@ local anim_ids = Tools.newIDGenerator()
 -- seq: list of animations as {dict,anim_name,loops} (loops is the number of loops, default 1) or a task def (properties: task, play_exit)
 -- looping: if true, will infinitely loop the first element of the sequence until stopAnim is called
 function tvRP.playAnim(upper, seq, looping)
+  local pedTemp = GetPlayerPed(-1)
+  if not IsPedSittingInAnyVehicle(pedTemp) then
   if seq.task ~= nil then -- is a task (cf https://github.com/ImagicTheCat/vRP/pull/118)
     tvRP.stopAnim(true)
 
@@ -224,6 +226,7 @@ function tvRP.playAnim(upper, seq, looping)
       anims[id] = nil
     end)
   end
+ end
 end
 
 -- stop animation (new version)
