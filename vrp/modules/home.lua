@@ -159,6 +159,13 @@ local function leave_slot(user_id,player,stype,sid) -- called when a player leav
   local slot = uslots[stype][sid]
   local home = cfg.homes[slot.home_name]
 
+  -- record if inside a home slot
+  local tmp = vRP.getUserTmpTable(user_id)
+  if tmp then
+    tmp.home_stype = nil
+    tmp.home_sid = nil
+  end
+
   -- teleport to home entry point (outside)
   vRPclient.teleport(player, home.entry_point) -- already an array of params (x,y,z)
 
@@ -184,6 +191,7 @@ local function leave_slot(user_id,player,stype,sid) -- called when a player leav
   end
 
   if is_empty(slot.players) then -- free the slot
+    print("free slot "..stype.." "..sid)
     freeSlot(stype,sid)
   end
 end
@@ -193,6 +201,13 @@ local function enter_slot(user_id,player,stype,sid) -- called when a player ente
   print(user_id.." enter slot "..stype.." "..sid)
   local slot = uslots[stype][sid]
   local home = cfg.homes[slot.home_name]
+
+  -- record inside a home slot
+  local tmp = vRP.getUserTmpTable(user_id)
+  if tmp then
+    tmp.home_stype = stype
+    tmp.home_sid = sid
+  end
 
   -- count
   slot.players[user_id] = player
@@ -393,5 +408,21 @@ end
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
   if first_spawn then -- first spawn, build homes
     build_client_homes(source)
+  else -- death, leave home if inside one
+    -- leave slot if inside one
+    local tmp = vRP.getUserTmpTable(user_id)
+    if tmp and tmp.home_stype then
+      leave_slot(user_id, source, tmp.home_stype, tmp.home_sid)
+    end
   end
 end)
+
+AddEventHandler("vRP:playerLeave",function(user_id, player) 
+  -- leave slot if inside one
+  local tmp = vRP.getUserTmpTable(user_id)
+  if tmp and tmp.home_stype then
+    leave_slot(user_id, player, tmp.home_stype, tmp.home_sid)
+  end
+end)
+
+

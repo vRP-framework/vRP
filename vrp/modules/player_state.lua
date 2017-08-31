@@ -86,26 +86,14 @@ AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
   Debug.pend()
 end)
 
--- death, clear position and weapons
-AddEventHandler("vRP:playerDied",function()
-  print("player die")
-  local user_id = vRP.getUserId(source)
-  if user_id ~= nil then
-    local data = vRP.getUserDataTable(user_id)
-    if data ~= nil then
-      data.position = nil
-      data.weapons = nil 
-    end
-  end
-end)
-
 -- updates
 
 function tvRP.updatePos(x,y,z)
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
     local data = vRP.getUserDataTable(user_id)
-    if data ~= nil then
+    local tmp = vRP.getUserTmpTable(user_id)
+    if data ~= nil and (tmp == nil or tmp.home_stype == nil) then -- don't save position if inside home slot
       data.position = {x = tonumber(x), y = tonumber(y), z = tonumber(z)}
     end
   end
