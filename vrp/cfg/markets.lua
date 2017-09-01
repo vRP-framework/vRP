@@ -37,6 +37,14 @@ cfg.market_types = {
   ["tools"] = {
     _config = {blipid=51, blipcolor=47},
     ["repairkit"] = 50
+  },
+  ["TCG"] = { -- need vRP-TCG extension
+    _config = {blipid=408, blipcolor=2},
+    ["tcgbooster|0|5"] = 10,
+    ["tcgbooster|1|5"] = 100,
+    ["tcgbooster|2|5"] = 1000,
+    ["tcgbooster|3|5"] = 10000,
+    ["tcgbooster|4|5"] = 100000
   }
 }
 
