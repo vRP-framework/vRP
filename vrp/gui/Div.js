@@ -10,20 +10,6 @@ function Div(data)
 
   this.setCss(data.css);
   this.setContent(data.content);
-
-  //build js sandbox
-  var params = {"self":{},"window":{}}
-  for(var k in window) //overload all window (global) keys
-    params[k] = {};
-
-  //whitelist
-  params.div = this.div;
-
-  //build proto/params
-  this.proto_params = [];
-  for(var k in params)
-    this.proto_params.push(params[k]);
-  this.proto = Object.keys(params).join(",");
 }
 
 Div.prototype.setCss = function(css)
@@ -38,7 +24,7 @@ Div.prototype.setContent = function(content)
 
 Div.prototype.executeJS = function(js)
 {
-  (new Function(this.proto,js)).apply(null,this.proto_params);
+  (new Function("",js)).apply(this.div, []);
 }
 
 Div.prototype.addDom = function()

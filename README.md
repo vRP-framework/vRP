@@ -842,10 +842,8 @@ vRP.setDivCss(name,css)
 -- set the div content
 vRP.setDivContent(name,content)
 
--- execute js for the div in a simple sandbox
--- you can attach objects or functions to the div element for later calls
--- use div.querySelector to find the div children elements
--- js context: div (the div element)
+-- execute js for the div
+-- js variables: this is the div
 vRP.divExecuteJS(name,js)
 
 -- remove the div

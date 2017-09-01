@@ -119,9 +119,8 @@ function tvRP.setDivContent(name,content)
   SendNUIMessage({act="set_div_content", name = name, content = content})
 end
 
--- execute js for the div in a simple sandbox (useful to optimize data change using functions)
--- you can attach objects or functions to the div element for later calls
--- js variables: div (the div element), document (the document)
+-- execute js for the div
+-- js variables: this is the div
 function tvRP.divExecuteJS(name,js)
   SendNUIMessage({act="div_execjs", name = name, js = js})
 end
