@@ -124,6 +124,13 @@ function tvRP.notify(msg)
   DrawNotification(true, false)
 end
 
+function tvRP.notifyPicture(icon, type, sender, title, text)
+    SetNotificationTextEntry("STRING")
+    AddTextComponentString(text)
+    SetNotificationMessage(icon, icon, true, type, sender, title, text)
+    DrawNotification(false, true)
+end
+
 -- SCREEN
 
 -- play a screen effect
