@@ -255,6 +255,11 @@ vRP.isInside()
 -- notify the player
 vRP.notify(message)
 
+-- notify the player with picture
+vRP.notifyPicture(picture, icon_type, title, int, message)
+-- notification pictures, see https://wiki.gtanet.work/index.php?title=Notification_Pictures
+-- icon_type => 1 = message received, 3 = notification, 4 = no icon, 7 = message sended
+
 -- play a screen effect
 -- name, see https://wiki.fivem.net/wiki/Screen_Effects
 -- duration: in seconds, if -1, will play until stopScreenEffect is called
@@ -611,6 +616,11 @@ vRP.giveInventoryItem({user_id,"water_bottle",2})
 
 ```
 
+Example of utilisation of notification picture
+```lua
+vRPclient.notifyPicture(player,{"CHAR_LESTER", 1, "Unknown", false, "I have a job for you!"})
+```
+ 
 #### Item transformer
 
 The item transformer is a very generic way to create harvest and processing areas.
