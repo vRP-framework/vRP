@@ -367,10 +367,11 @@ phone_menu[lang.phone.announce.title()] = {ch_announce,lang.phone.announce.descr
 vRP.registerMenuBuilder("main", function(add, data)
   local player = data.player
   local choices = {}
-  choices[lang.phone.title()] = {function() vRP.openMenu(player,phone_menu) end}
-
+  
   local user_id = vRP.getUserId(player)
   if user_id ~= nil and vRP.hasPermission(user_id, "player.phone") then
-    add(choices)
+      choices[lang.phone.title()] = {function() vRP.openMenu(player,phone_menu) end}
   end
+  
+  add(choices)
 end)
