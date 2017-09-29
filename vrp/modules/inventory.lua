@@ -254,6 +254,11 @@ function vRP.tryGetInventoryItem(user_id,idname,amount,notify)
   return false
 end
 
+function vRP.hasInventoryItem(user_id, idname)
+  local count = vRP.getInventoryItemAmount(user_id, idname)
+  return count > 0
+end
+
 -- get user inventory amount of item
 function vRP.getInventoryItemAmount(user_id,idname)
   local data = vRP.getUserDataTable(user_id)
