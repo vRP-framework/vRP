@@ -877,6 +877,8 @@ List of known menu names you can extend, each line is `name`: description (data 
 * `main`: main menu (player)
 * `police`: police menu (player)
 * `admin`: admin menu (player)
+* `vehicle`: vehicle menu (user_id, player, vtype, vname)
+* `phone`: phone menu, no properties, builders are called one time after server launch
 
 ```lua
 -- PROXY API

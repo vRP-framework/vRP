@@ -362,6 +362,15 @@ phone_menu[lang.phone.sms.title()] = {ch_sms,lang.phone.sms.description()}
 phone_menu[lang.phone.service.title()] = {ch_service,lang.phone.service.description()}
 phone_menu[lang.phone.announce.title()] = {ch_announce,lang.phone.announce.description()}
 
+-- phone menu static builder after 10 seconds
+SetTimeout(10000, function()
+  vRP.buildMenu("phone", {}, function(menu)
+    for k,v in pairs(menu) do
+      phone_menu[k] = v
+    end
+  end)
+end)
+
 -- add phone menu to main menu
 
 vRP.registerMenuBuilder("main", function(add, data)
