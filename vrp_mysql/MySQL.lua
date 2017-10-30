@@ -45,8 +45,8 @@ AddEventHandler("vRP:MySQL_task", function(task_id, data)
         cb(data.rows or {}, data.affected or 0) -- rows, affected
       end
     end
-  elseif r.status == -1 then
-    print("[vRP] task "..id.." failed.")
+  elseif data.status == -1 then
+    print("[vRP] task "..task_id.." failed.")
   end
 
   tasks[task_id] = nil
