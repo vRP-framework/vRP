@@ -85,7 +85,9 @@ function MySQL.createCommand(path, query)
 end
 
 -- generic query
-function MySQL._query(path, args, mode, cb)
+function MySQL._query(path, args, mode)
+  local r = async()
+
   -- TriggerEvent("vRP:MySQL:query", path, args)
   if not (type(args) == "table") then
     args = {}
@@ -102,25 +104,27 @@ function MySQL._query(path, args, mode, cb)
     dpaths[task_id] = path
   end
 
-  tasks[task_id] = cb
+  tasks[task_id] = r
+
+  return r:wait()
 end
 
 -- do a query (multiple rows)
---- cb(rows, affected)
-function MySQL.query(path, args, cb)
-  MySQL._query(path, args, 2, cb)
+--- return rows, affected
+function MySQL.query(path, args)
+  return MySQL._query(path, args, 2)
 end
 
 -- do a scalar query (one row, one column)
---- cb(scalar)
-function MySQL.scalar(path, args, cb)
-  MySQL._query(path, args, 1, cb)
+--- return scalar
+function MySQL.scalar(path, args)
+  return MySQL._query(path, args, 1)
 end
 
 -- do a execute query (no results)
---- cb(affected)
-function MySQL.execute(path, args, cb)
-  MySQL._query(path, args, 0, cb)
+--- return affected
+function MySQL.execute(path, args)
+  return MySQL._query(path, args, 0)
 end
 
 -- return module
