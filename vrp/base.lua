@@ -2,7 +2,7 @@ MySQL = module("vrp_mysql", "MySQL")
 
 local Proxy = module("lib/Proxy")
 local Tunnel = module("lib/Tunnel")
-local Lang = module("lib/Lang")
+local Luang = module("lib/Luang")
 Debug = module("lib/Debug")
 
 local config = module("cfg/base")
@@ -36,8 +36,9 @@ tvRP = {}
 Tunnel.bindInterface("vRP",tvRP) -- listening for client tunnel
 
 -- load language 
-local dict = module("cfg/lang/"..config.lang) or {}
-vRP.lang = Lang.new(dict)
+local Lang = Luang()
+Lang:loadLocale(config.lang, module("cfg/lang/"..config.lang) or {})
+vRP.lang = Lang.lang
 
 -- init
 vRPclient = Tunnel.getInterface("vRP","vRP") -- server -> client tunnel
