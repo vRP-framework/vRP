@@ -159,17 +159,19 @@ end)
 
 -- add survival progress bars on spawn
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
-  local data = vRP.getUserDataTable(user_id)
+  async(function()
+    local data = vRP.getUserDataTable(user_id)
 
-  -- disable police
-  vRPclient.setPolice(source,cfg.police)
-  -- set friendly fire
-  vRPclient.setFriendlyFire(source,cfg.pvp)
+    -- disable police
+    vRPclient.setPolice(source,cfg.police)
+    -- set friendly fire
+    vRPclient.setFriendlyFire(source,cfg.pvp)
 
-  vRPclient.setProgressBar(source,"vRP:hunger","minimap",htxt,255,153,0,0)
-  vRPclient.setProgressBar(source,"vRP:thirst","minimap",ttxt,0,125,255,0)
-  vRP.setHunger(user_id, data.hunger)
-  vRP.setThirst(user_id, data.thirst)
+    vRPclient.setProgressBar(source,"vRP:hunger","minimap",htxt,255,153,0,0)
+    vRPclient.setProgressBar(source,"vRP:thirst","minimap",ttxt,0,125,255,0)
+    vRP.setHunger(user_id, data.hunger)
+    vRP.setThirst(user_id, data.thirst)
+  end, true)
 end)
 
 -- EMERGENCY

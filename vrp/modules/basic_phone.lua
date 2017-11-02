@@ -340,7 +340,7 @@ SetTimeout(10000, function()
     for k,v in pairs(menu) do
       phone_menu[k] = v
     end
-  end)
+  end,true)
 end)
 
 -- add phone menu to main menu

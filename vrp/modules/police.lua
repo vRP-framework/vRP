@@ -534,9 +534,11 @@ end
 
 -- build police points
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
-  if first_spawn then
-    build_client_points(source)
-  end
+  async(function()
+    if first_spawn then
+      build_client_points(source)
+    end
+  end, true)
 end)
 
 -- WANTED SYNC
@@ -570,8 +572,10 @@ end
 
 -- delete wanted entry on leave
 AddEventHandler("vRP:playerLeave", function(user_id, player)
-  wantedlvl_players[user_id] = nil
-  vRPclient.removeNamedBlip(-1, "vRP:wanted:"..user_id)  -- remove wanted blip (all to prevent phantom blip)
+  async(function()
+    wantedlvl_players[user_id] = nil
+    vRPclient.removeNamedBlip(-1, "vRP:wanted:"..user_id)  -- remove wanted blip (all to prevent phantom blip)
+  end, true)
 end)
 
 -- display wanted positions

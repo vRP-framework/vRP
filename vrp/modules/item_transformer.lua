@@ -245,11 +245,13 @@ transformers_regen()
 
 -- add transformers areas on player first spawn
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
-  if first_spawn then
-    for k,tr in pairs(transformers) do
-      bind_tr_area(source,tr)
+  async(function()
+    if first_spawn then
+      for k,tr in pairs(transformers) do
+        bind_tr_area(source,tr)
+      end
     end
-  end
+  end, true)
 end)
 
 -- STATIC TRANSFORMERS

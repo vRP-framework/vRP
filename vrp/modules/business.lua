@@ -202,10 +202,12 @@ end
 
 
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
-  -- first spawn, build business
-  if first_spawn then
-    build_client_business(source)
-  end
+  async(function()
+    -- first spawn, build business
+    if first_spawn then
+      build_client_business(source)
+    end
+  end, true)
 end)
 
 

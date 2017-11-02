@@ -293,9 +293,11 @@ local function build_client_garages(source)
 end
 
 AddEventHandler("vRP:playerSpawn",function(user_id,source,first_spawn)
-  if first_spawn then
-    build_client_garages(source)
-  end
+  async(function()
+    if first_spawn then
+      build_client_garages(source)
+    end
+  end, true)
 end)
 
 -- VEHICLE MENU

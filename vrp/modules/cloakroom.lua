@@ -131,7 +131,9 @@ end
 
 -- add points on first spawn
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
-  if first_spawn then
-    build_client_points(source)
-  end
+  async(function()
+    if first_spawn then
+      build_client_points(source)
+    end
+  end, true)
 end)

@@ -150,6 +150,8 @@ function vRP.buildMenu(name, data, cbr)
 
     return r:wait()
   end
+
+  return {}
 end
 
 -- MAIN MENU
@@ -285,29 +287,33 @@ end
 
 -- events
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
-  if first_spawn then
-    -- load additional css using the div api
-    vRPclient.setDiv(source,"additional_css",".div_additional_css{ display: none; }\n\n"..cfg.css,"")
+  async(function()
+    if first_spawn then
+      -- load additional css using the div api
+      vRPclient.setDiv(source,"additional_css",".div_additional_css{ display: none; }\n\n"..cfg.css,"")
 
-    -- load static menus
-    build_client_static_menus(source)
-  end
+      -- load static menus
+      build_client_static_menus(source)
+    end
+  end, true)
 end)
 
 AddEventHandler("vRP:playerLeave", function(user_id, source)
-  -- force close opened menu on leave
-  local id = rclient_menus[source]
-  if id then
-    local menu = client_menus[id]
-    if menu and menu.source == source then
-      -- call callback
-      if menu.def.onclose then
-        menu.def.onclose(source)
-      end
+  async(function()
+    -- force close opened menu on leave
+    local id = rclient_menus[source]
+    if id then
+      local menu = client_menus[id]
+      if menu and menu.source == source then
+        -- call callback
+        if menu.def.onclose then
+          menu.def.onclose(source)
+        end
 
-      menu_ids:free(id)
-      client_menus[id] = nil
-      rclient_menus[source] = nil
+        menu_ids:free(id)
+        client_menus[id] = nil
+        rclient_menus[source] = nil
+      end
     end
-  end
+  end, true)
 end)

@@ -215,7 +215,7 @@ end
 function vRP.getSData(key, cbr)
   local rows = MySQL.query("vRP/get_srvdata", {key = key})
   if #rows > 0 then
-    task({rows[1].dvalue})
+    return rows[1].dvalue
   else
     return ""
   end
