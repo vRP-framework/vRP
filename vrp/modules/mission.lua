@@ -14,14 +14,14 @@ local cfg = module("cfg/mission")
 ----- blipid, blipcolor (optional)
 function vRP.startMission(player, mission_data)
   local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
+  if user_id then
     local tmpdata = vRP.getUserTmpTable(user_id)
     
     vRP.stopMission(player)
     if #mission_data.steps > 0 then
       tmpdata.mission_step = 0
       tmpdata.mission_data = mission_data
-      vRPclient.setDiv(player,{"mission",cfg.display_css,""})
+      vRPclient.setDiv(player,"mission",cfg.display_css,"")
       vRP.nextMissionStep(player) -- do first step
     end
   end
@@ -30,9 +30,9 @@ end
 -- end the current player mission step
 function vRP.nextMissionStep(player)
   local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
+  if user_id then
     local tmpdata = vRP.getUserTmpTable(user_id)
-    if tmpdata.mission_step ~= nil then -- if in a mission
+    if tmpdata.mission_step then -- if in a mission
       -- increase step
       tmpdata.mission_step = tmpdata.mission_step+1
       if tmpdata.mission_step > #tmpdata.mission_data.steps then -- check mission end
@@ -48,15 +48,14 @@ function vRP.nextMissionStep(player)
         if step.onleave then onleave = step.onleave end
 
         -- display
-        vRPclient.setDivContent(player,{"mission",lang.mission.display({tmpdata.mission_data.name,tmpdata.mission_step-1,#tmpdata.mission_data.steps,step.text})})
+        vRPclient.setDivContent(player,"mission",lang.mission.display({tmpdata.mission_data.name,tmpdata.mission_step-1,#tmpdata.mission_data.steps,step.text}))
 
         -- blip/route
-        vRPclient.setNamedBlip(player, {"vRP:mission", x,y,z, blipid, blipcolor, lang.mission.blip({tmpdata.mission_data.name,tmpdata.mission_step,#tmpdata.mission_data.steps})},function(id)
-          vRPclient.setBlipRoute(player,{id})
-        end) 
+        local id = vRPclient.setNamedBlip(player, "vRP:mission", x,y,z, blipid, blipcolor, lang.mission.blip({tmpdata.mission_data.name,tmpdata.mission_step,#tmpdata.mission_data.steps}))
+        vRPclient.setBlipRoute(player,id)
 
         -- map trigger
-        vRPclient.setNamedMarker(player,{"vRP:mission", x,y,z-1,0.7,0.7,0.5,255,226,0,125,150})
+        vRPclient.setNamedMarker(player,"vRP:mission", x,y,z-1,0.7,0.7,0.5,255,226,0,125,150)
         vRP.setArea(player,"vRP:mission",x,y,z,1,1.5,step.onenter,step.onleave)
       end
     end
@@ -66,14 +65,14 @@ end
 -- stop the player mission
 function vRP.stopMission(player)
   local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
+  if user_id then
     local tmpdata = vRP.getUserTmpTable(user_id)
     tmpdata.mission_step = nil
     tmpdata.mission_data = nil
 
-    vRPclient.removeNamedBlip(player,{"vRP:mission"})
-    vRPclient.removeNamedMarker(player,{"vRP:mission"})
-    vRPclient.removeDiv(player,{"mission"})
+    vRPclient.removeNamedBlip(player,"vRP:mission")
+    vRPclient.removeNamedMarker(player,"vRP:mission")
+    vRPclient.removeDiv(player,"mission")
     vRP.removeArea(player,"vRP:mission")
   end
 end
@@ -81,9 +80,9 @@ end
 -- check if the player has a mission
 function vRP.hasMission(player)
   local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
+  if user_id then
     local tmpdata = vRP.getUserTmpTable(user_id)
-    if tmpdata.mission_step ~= nil then
+    if tmpdata.mission_step then
       return true
     end
   end
@@ -95,7 +94,7 @@ end
 vRP.registerMenuBuilder("main", function(add, data)
   local player = data.player
   local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
+  if user_id then
     local choices = {}
 
     -- build admin menu

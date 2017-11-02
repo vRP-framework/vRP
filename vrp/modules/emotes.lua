@@ -9,7 +9,7 @@ local emotes = cfg.emotes
 local function ch_emote(player,choice)
   local emote = emotes[choice]
   if emote then
-    vRPclient.playAnim(player,{emote[1],emote[2],emote[3]})
+    vRPclient.playAnim(player,emote[1],emote[2],emote[3])
   end
 end
 
@@ -22,7 +22,7 @@ vRP.registerMenuBuilder("main", function(add, data)
     local menu = {name=lang.emotes.title(),css={top="75px",header_color="rgba(0,125,255,0.75)"}}
     local user_id = vRP.getUserId(player)
 
-    if user_id ~= nil then
+    if user_id then
       -- add emotes to the emote menu
       for k,v in pairs(emotes) do
         if vRP.hasPermissions(user_id, v.permissions or {}) then
@@ -33,8 +33,8 @@ vRP.registerMenuBuilder("main", function(add, data)
 
     -- clear current emotes
     menu[lang.emotes.clear.title()] = {function(player,choice)
-      vRPclient.stopAnim(player,{true}) -- upper
-      vRPclient.stopAnim(player,{false}) -- full
+      vRPclient.stopAnim(player,true) -- upper
+      vRPclient.stopAnim(player,false) -- full
     end, lang.emotes.clear.description()}
 
     vRP.openMenu(player,menu)

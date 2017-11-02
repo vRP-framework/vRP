@@ -107,7 +107,7 @@ function vRP.removeUserGroup(user_id,group)
   local groupdef = groups[group]
   if groupdef and groupdef._config and groupdef._config.onleave then
     local source = vRP.getUserSource(user_id)
-    if source ~= nil then
+    if source then
       groupdef._config.onleave(source) -- call leave callback
     end
   end
@@ -223,7 +223,7 @@ end
 
 local function ch_select(player,choice)
   local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
+  if user_id then
     vRP.addUserGroup(user_id, choice)
     vRP.closeMenu(player)
   end
@@ -244,7 +244,7 @@ end
 
 local function build_client_selectors(source)
   local user_id = vRP.getUserId(source)
-  if user_id ~= nil then
+  if user_id then
     for k,v in pairs(selectors) do
       local gcfg = v._config
       local menu = selector_menus[k]
@@ -265,8 +265,8 @@ local function build_client_selectors(source)
           vRP.closeMenu(source)
         end
 
-        vRPclient.addBlip(source,{x,y,z,gcfg.blipid,gcfg.blipcolor,k})
-        vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,255,154,24,125,150})
+        vRPclient.addBlip(source,x,y,z,gcfg.blipid,gcfg.blipcolor,k)
+        vRPclient.addMarker(source,x,y,z-1,0.7,0.7,0.5,255,154,24,125,150)
 
         vRP.setArea(source,"vRP:gselector:"..k,x,y,z,1,1.5,selector_enter,selector_leave)
       end
@@ -285,7 +285,7 @@ AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
 
     -- add groups on user join 
     local user = users[user_id]
-    if user ~= nil then
+    if user then
       for k,v in pairs(user) do
         vRP.addUserGroup(user_id,v)
       end

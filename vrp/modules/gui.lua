@@ -256,7 +256,7 @@ end)
 
 local function build_client_static_menus(source)
   local user_id = vRP.getUserId(source)
-  if user_id ~= nil then
+  if user_id then
     for k,v in pairs(cfg.static_menus) do
       local mtype,x,y,z = table.unpack(v)
       local menu = static_menus[mtype]
@@ -287,7 +287,7 @@ end
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
   if first_spawn then
     -- load additional css using the div api
-    vRPclient.setDiv(source,{"additional_css",".div_additional_css{ display: none; }\n\n"..cfg.css,""})
+    vRPclient.setDiv(source,"additional_css",".div_additional_css{ display: none; }\n\n"..cfg.css,"")
 
     -- load static menus
     build_client_static_menus(source)
@@ -297,7 +297,7 @@ end)
 AddEventHandler("vRP:playerLeave", function(user_id, source)
   -- force close opened menu on leave
   local id = rclient_menus[source]
-  if id ~= nil then
+  if id then
     local menu = client_menus[id]
     if menu and menu.source == source then
       -- call callback
