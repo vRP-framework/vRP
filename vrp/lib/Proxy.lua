@@ -13,13 +13,13 @@ local function proxy_resolve(itable,key)
   local iname = getmetatable(itable).name
 
   -- generate access function
-  local fcall = function(args,callback)
+  local fcall = function(...)
     if args == nil then
       args = {}
     end
 
-    TriggerEvent(iname..":proxy",key,args,proxy_callback)
-    return table.unpack(proxy_rdata) -- returns
+    TriggerEvent(iname..":proxy",key,{...},proxy_callback)
+    return table.unpack(proxy_rdata, 1, table.maxn(proxy_rdata)) -- returns
   end
 
   itable[key] = fcall -- add generated call to table (optimization)
@@ -28,7 +28,7 @@ end
 
 --- Add event handler to call interface functions (can be called multiple times for the same interface name with different tables)
 function Proxy.addInterface(name, itable)
-  AddEventHandler(name..":proxy",function(member,args,callback)
+  AddEventHandler(name..":proxy", function(member,args,callback)
     if Debug.active then
       Debug.pbegin("proxy_"..name..":"..member.." "..json.encode(Debug.safeTableCopy(args)))
     end
@@ -36,7 +36,7 @@ function Proxy.addInterface(name, itable)
     local f = itable[member]
 
     if type(f) == "function" then
-      callback({f(table.unpack(args))}) -- call function with and return values through callback
+      callback({f(table.unpack(args, 1, table.maxn(args)))}) -- call function with and return values through callback
       -- CancelEvent() -- cancel event doesn't seem to cancel the event for the other handlers, but if it does, uncomment this
     else
       print("error: proxy call "..name..":"..member.." not found")

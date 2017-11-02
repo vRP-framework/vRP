@@ -22,10 +22,10 @@ local function tunnel_resolve(itable,key)
   local identifier = mtable.identifier
 
   -- generate access function
-  local fcall = function(dest,args,callback)
-    if args == nil then
-      args = {}
-    end
+  local fcall = function(dest, ...)
+    local r = async()
+
+    local args = {...} 
 
     -- get delay data
     local delay_data = Tunnel.delays[dest]
@@ -43,24 +43,18 @@ local function tunnel_resolve(itable,key)
         delay_data[2] = delay_data[2]-add_delay
 
         -- send request
-        if type(callback) == "function" then -- ref callback if exists (become a request)
-          local rid = ids:gen()
-          callbacks[rid] = callback
-          TriggerClientEvent(iname..":tunnel_req",dest,key,args,identifier,rid)
-        else -- regular trigger
-          TriggerClientEvent(iname..":tunnel_req",dest,key,args,"",-1)
-        end
+        local rid = ids:gen()
+        callbacks[rid] = r
+        TriggerClientEvent(iname..":tunnel_req",dest,key,args,identifier,rid)
       end)
     else -- no delay
       -- send request
-      if type(callback) == "function" then -- ref callback if exists (become a request)
-        local rid = ids:gen()
-        callbacks[rid] = callback
-        TriggerClientEvent(iname..":tunnel_req",dest,key,args,identifier,rid)
-      else -- regular trigger
-        TriggerClientEvent(iname..":tunnel_req",dest,key,args,"",-1)
-      end
+      local rid = ids:gen()
+      callbacks[rid] = r
+      TriggerClientEvent(iname..":tunnel_req",dest,key,args,identifier,rid)
     end
+
+    return r:wait()
   end
 
   itable[key] = fcall -- add generated call to table (optimization)
@@ -88,8 +82,8 @@ function Tunnel.bindInterface(name,interface)
       -- bind the global function to delay the return values using the returned function with args
       TUNNEL_DELAYED = function()
         delayed = true
-        return function(rets)
-          rets = rets or {}
+        return function(...)
+          rets = {...}
 
           if rid >= 0 then
             TriggerClientEvent(name..":"..identifier..":tunnel_res",source,rid,rets)
@@ -97,7 +91,7 @@ function Tunnel.bindInterface(name,interface)
         end
       end
 
-      rets = {f(table.unpack(args))} -- call function 
+      rets = {f(table.unpack(args, 1, table.maxn(args)))} -- call function 
       -- CancelEvent() -- cancel event doesn't seem to cancel the event for the other handlers, but if it does, uncomment this
     end
 
@@ -136,7 +130,7 @@ function Tunnel.getInterface(name,identifier)
       callbacks[rid] = nil
 
       -- call
-      callback(table.unpack(args))
+      callback(table.unpack(args, 1, table.maxn(args)))
     end
 
     Debug.pend()

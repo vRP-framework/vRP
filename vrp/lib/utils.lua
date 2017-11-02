@@ -1,3 +1,13 @@
+function table.maxn(t)
+  local max = 0
+  for k,v in pairs(t) do
+    local n = tonumber(k)
+    if n and n > max then max = n end
+  end
+
+  return max
+end
+
 local modules = {}
 function module(rsc, path) -- load a LUA resource file as module
   if path == nil then -- shortcut for vrp, can omit the resource parameter
@@ -7,48 +17,26 @@ function module(rsc, path) -- load a LUA resource file as module
 
   local key = rsc..path
 
-  if modules[key] then -- cached module
-    return table.unpack(modules[key])
+  local module = modules[key]
+  if module then -- cached module
+    return module
   else
     local f,err = load(LoadResourceFile(rsc, path..".lua"))
     if f then
-      local ar = {pcall(f)}
-      if ar[1] then
-        table.remove(ar,1)
-        modules[key] = ar
-        return table.unpack(ar)
+      local ok, res = xpcall(f, debug.traceback)
+      if ok then
+        modules[key] = res
+        return res
       else
-        modules[key] = nil
-        print("[vRP] error loading module "..rsc.."/"..path..":"..ar[2])
+        error("error loading module "..rsc.."/"..path..":"..res)
       end
     else
-      print("[vRP] error parsing module "..rsc.."/"..path..":"..err)
+      error("error parsing module "..rsc.."/"..path..":"..debug.traceback(err))
     end
   end
 end
 
--- generate a task metatable (helper to return delayed values with timeout)
---- dparams: default params in case of timeout or empty cbr()
---- timeout: milliseconds, default 5000
-function Task(callback, dparams, timeout) 
-  if timeout == nil then timeout = 5000 end
-
-  local r = {}
-  r.done = false
-
-  local finish = function(params) 
-    if not r.done then
-      if params == nil then params = dparams or {} end
-      r.done = true
-      callback(table.unpack(params))
-    end
-  end
-
-  setmetatable(r, {__call = function(t,params) finish(params) end })
-  SetTimeout(timeout, function() finish(dparams) end)
-
-  return r
-end
+async = module("vrp", "lib/Luaseq").async
 
 function parseInt(v)
 --  return cast(int,tonumber(v))
@@ -130,3 +118,4 @@ function joinStrings(list, sep)
 
   return str
 end
+
