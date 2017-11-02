@@ -2,6 +2,20 @@
 local Luaseq = {}
 
 local unpack = table.unpack or unpack
+local maxn = table.maxn
+
+if not maxn then
+  maxn = function(t)
+    local max = 0
+    for k,v in pairs(t) do
+      local n = tonumber(k)
+      if n and n > max then max = n end
+    end
+
+    return max
+  end
+end
+
 local running = coroutine.running
 local yield = coroutine.yield
 local create = coroutine.create
@@ -10,7 +24,7 @@ local resume = coroutine.resume
 local function wait(self)
   local r = self.r
   if r then
-    return unpack(r) -- indirect immediate return
+    return unpack(r, 1, maxn(r)) -- indirect immediate return
   else
     self.waiting = true
     return yield() -- indirect coroutine return
