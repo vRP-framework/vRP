@@ -102,20 +102,18 @@ end
 
 -- events, init user identity at connection
 AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
-  async(function()
-    if not vRP.getUserIdentity(user_id) then
-      local registration vRP.generateRegistrationNumber()
-      local phone = vRP.generatePhoneNumber()
-      MySQL.execute("vRP/init_user_identity", {
-        user_id = user_id,
-        registration = registration,
-        phone = phone,
-        firstname = cfg.random_first_names[math.random(1,#cfg.random_first_names)],
-        name = cfg.random_last_names[math.random(1,#cfg.random_last_names)],
-        age = math.random(25,40)
-      })
-    end
-  end, true)
+  if not vRP.getUserIdentity(user_id) then
+    local registration vRP.generateRegistrationNumber()
+    local phone = vRP.generatePhoneNumber()
+    MySQL.execute("vRP/init_user_identity", {
+      user_id = user_id,
+      registration = registration,
+      phone = phone,
+      firstname = cfg.random_first_names[math.random(1,#cfg.random_first_names)],
+      name = cfg.random_last_names[math.random(1,#cfg.random_last_names)],
+      age = math.random(25,40)
+    })
+  end
 end)
 
 -- city hall menu
@@ -123,39 +121,35 @@ end)
 local cityhall_menu = {name=lang.cityhall.title(),css={top="75px", header_color="rgba(0,125,255,0.75)"}}
 
 local function ch_identity(player,choice)
-  async(function()
-    local user_id = vRP.getUserId(player)
-    if user_id ~= nil then
-      local firstname = vRP.prompt(player,lang.cityhall.identity.prompt_firstname(),"")
-      if string.len(firstname) >= 2 and string.len(firstname) < 50 then
-        firstname = sanitizeString(firstname, sanitizes.name[1], sanitizes.name[2])
-        local name = vRP.prompt(player,lang.cityhall.identity.prompt_name(),"")
-        if string.len(name) >= 2 and string.len(name) < 50 then
-          name = sanitizeString(name, sanitizes.name[1], sanitizes.name[2])
-          local age = vRP.prompt(player,lang.cityhall.identity.prompt_age(),"")
-          age = parseInt(age)
-          if age >= 16 and age <= 150 then
-            if vRP.tryPayment(user_id,cfg.new_identity_cost) then
-              local registration = vRP.generateRegistrationNumber()
-              local phone = vRP.generatePhoneNumber()
+  local user_id = vRP.getUserId(player)
+  if user_id ~= nil then
+    local firstname = vRP.prompt(player,lang.cityhall.identity.prompt_firstname(),"")
+    if string.len(firstname) >= 2 and string.len(firstname) < 50 then
+      firstname = sanitizeString(firstname, sanitizes.name[1], sanitizes.name[2])
+      local name = vRP.prompt(player,lang.cityhall.identity.prompt_name(),"")
+      if string.len(name) >= 2 and string.len(name) < 50 then
+        name = sanitizeString(name, sanitizes.name[1], sanitizes.name[2])
+        local age = vRP.prompt(player,lang.cityhall.identity.prompt_age(),"")
+        age = parseInt(age)
+        if age >= 16 and age <= 150 then
+          if vRP.tryPayment(user_id,cfg.new_identity_cost) then
+            local registration = vRP.generateRegistrationNumber()
+            local phone = vRP.generatePhoneNumber()
 
-              MySQL.execute("vRP/update_user_identity", {
-                user_id = user_id,
-                firstname = firstname,
-                name = name,
-                age = age,
-                registration = registration,
-                phone = phone
-              })
+            MySQL.execute("vRP/update_user_identity", {
+              user_id = user_id,
+              firstname = firstname,
+              name = name,
+              age = age,
+              registration = registration,
+              phone = phone
+            })
 
-              -- update client registration
-              vRPclient.setRegistrationNumber(player,registration)
-              vRPclient.notify(player,lang.money.paid({cfg.new_identity_cost}))
-            else
-              vRPclient.notify(player,{lang.money.not_enough()})
-            end
+            -- update client registration
+            vRPclient.setRegistrationNumber(player,registration)
+            vRPclient.notify(player,lang.money.paid({cfg.new_identity_cost}))
           else
-            vRPclient.notify(player,{lang.common.invalid_value()})
+            vRPclient.notify(player,{lang.money.not_enough()})
           end
         else
           vRPclient.notify(player,{lang.common.invalid_value()})
@@ -163,8 +157,10 @@ local function ch_identity(player,choice)
       else
         vRPclient.notify(player,{lang.common.invalid_value()})
       end
+    else
+      vRPclient.notify(player,{lang.common.invalid_value()})
     end
-  end, true)
+  end
 end
 
 cityhall_menu[lang.cityhall.identity.title()] = {ch_identity,lang.cityhall.identity.description({cfg.new_identity_cost})}
@@ -193,13 +189,11 @@ local function build_client_cityhall(source) -- build the city hall area/marker/
 end
 
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
-  async(function()
-    -- send registration number to client at spawn
-    local identity = vRP.getUserIdentity(user_id)
-    if identity then
-      vRPclient.setRegistrationNumber(source,{identity.registration or "000AAA"})
-    end
-  end, true)
+  -- send registration number to client at spawn
+  local identity = vRP.getUserIdentity(user_id)
+  if identity then
+    vRPclient.setRegistrationNumber(source,{identity.registration or "000AAA"})
+  end
 
   -- first spawn, build city hall
   if first_spawn then
@@ -211,30 +205,28 @@ end)
 
 -- add identity to main menu
 vRP.registerMenuBuilder("main", function(add, data)
-  async(function()
-    local player = data.player
+  local player = data.player
 
-    local user_id = vRP.getUserId(player)
-    if user_id then
-      local identity = vRP.getUserIdentity(user_id)
+  local user_id = vRP.getUserId(player)
+  if user_id then
+    local identity = vRP.getUserIdentity(user_id)
 
-      if identity then
-        -- generate identity content
-        -- get address
-        local address = vRP.getUserAddress(user_id)
-        local home = ""
-        local number = ""
-        if address then
-          home = address.home
-          number = address.number
-        end
-
-        local content = lang.cityhall.menu.info({htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.age,identity.registration,identity.phone,home,number})
-        local choices = {}
-        choices[lang.cityhall.menu.title()] = {function()end, content}
-
-        add(choices)
+    if identity then
+      -- generate identity content
+      -- get address
+      local address = vRP.getUserAddress(user_id)
+      local home = ""
+      local number = ""
+      if address then
+        home = address.home
+        number = address.number
       end
+
+      local content = lang.cityhall.menu.info({htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.age,identity.registration,identity.phone,home,number})
+      local choices = {}
+      choices[lang.cityhall.menu.title()] = {function()end, content}
+
+      add(choices)
     end
-  end, true)
+  end
 end)

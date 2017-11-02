@@ -95,17 +95,17 @@ function vRP.varyExp(user_id, group, aptitude, amount)
 
       --- exp
       if amount < 0 then
-        vRPclient.notify(player,{lang.aptitude.lose_exp({group_title,aptitude_title,-1*amount})})
+        vRPclient.notify(player,lang.aptitude.lose_exp({group_title,aptitude_title,-1*amount}))
       elseif amount > 0 then
-        vRPclient.notify(player,{lang.aptitude.earn_exp({group_title,aptitude_title,amount})})
+        vRPclient.notify(player,lang.aptitude.earn_exp({group_title,aptitude_title,amount}))
       end
       --- level up/down
       local new_level = math.floor(vRP.expToLevel(exp))
       local diff = new_level-level
       if diff < 0 then
-        vRPclient.notify(player,{lang.aptitude.level_down({group_title,aptitude_title,new_level})})
+        vRPclient.notify(player,lang.aptitude.level_down({group_title,aptitude_title,new_level}))
       elseif diff > 0 then
-        vRPclient.notify(player,{lang.aptitude.level_up({group_title,aptitude_title,new_level})})
+        vRPclient.notify(player,lang.aptitude.level_up({group_title,aptitude_title,new_level}))
       end
     end
   end
@@ -173,10 +173,10 @@ local player_apts = {}
 local function ch_aptitude(player,choice)
   -- display aptitudes
   local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
+  if user_id then
     if player_apts[player] then -- hide
       player_apts[player] = nil
-      vRPclient.removeDiv(player,{"user_aptitudes"})
+      vRPclient.removeDiv(player,"user_aptitudes")
     else -- show
       local content = ""
       local uaptitudes = vRP.getUserAptitudes(user_id)
@@ -215,7 +215,7 @@ local function ch_aptitude(player,choice)
 }
       ]]
 
-      vRPclient.setDiv(player,{"user_aptitudes",css, content})
+      vRPclient.setDiv(player,"user_aptitudes",css, content)
     end
   end
 end
@@ -223,7 +223,7 @@ end
 -- add choices to the menu
 vRP.registerMenuBuilder("main", function(add, data)
   local user_id = vRP.getUserId(data.player)
-  if user_id ~= nil then
+  if user_id then
     local choices = {}
     choices[lang.aptitude.title()] = {ch_aptitude,lang.aptitude.description()}
 

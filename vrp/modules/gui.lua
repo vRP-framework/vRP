@@ -219,9 +219,7 @@ end
 
 -- open the general player menu
 function tvRP.openMainMenu()
-  async(function()
-    vRP.openMainMenu(source)
-  end, true)
+  vRP.openMainMenu(source)
 end
 
 
