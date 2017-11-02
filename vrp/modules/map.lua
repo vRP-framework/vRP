@@ -12,13 +12,13 @@ function vRP.setArea(source,name,x,y,z,radius,height,cb_enter,cb_leave)
   client_areas[source] = areas
 
   areas[name] = {enter=cb_enter,leave=cb_leave}
-  vRPclient.setArea(source,{name,x,y,z,radius,height})
+  vRPclient.setArea(source,name,x,y,z,radius,height)
 end
 
 -- delete a player area
 function vRP.removeArea(source,name)
   -- delete remote area
-  vRPclient.removeArea(source,{name})
+  vRPclient.removeArea(source,name)
 
   -- delete local area
   local areas = client_areas[source]
@@ -57,11 +57,11 @@ local cfg = module("cfg/blips_markers")
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
   if first_spawn then
     for k,v in pairs(cfg.blips) do
-      vRPclient.addBlip(source,{v[1],v[2],v[3],v[4],v[5],v[6]})
+      vRPclient.addBlip(source,v[1],v[2],v[3],v[4],v[5],v[6])
     end
 
     for k,v in pairs(cfg.markers) do
-      vRPclient.addMarker(source,{v[1],v[2],v[3],v[4],v[5],v[6],v[7],v[8],v[9],v[10],v[11]})
+      vRPclient.addMarker(source,v[1],v[2],v[3],v[4],v[5],v[6],v[7],v[8],v[9],v[10],v[11])
     end
   end
 end)

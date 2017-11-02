@@ -40,12 +40,12 @@ function vRP.openMenu(source,menudef)
   rclient_menus[source] = menudata.id
 
   -- openmenu
-  vRPclient.openMenuData(source,{menudata})
+  vRPclient.openMenuData(source, menudata)
 end
 
 -- force close player menu
 function vRP.closeMenu(source)
-  vRPclient.closeMenu(source,{})
+  vRPclient.closeMenu(source)
 end
 
 -- PROMPT
@@ -53,10 +53,14 @@ end
 local prompts = {}
 
 -- prompt textual (and multiline) information from player
-function vRP.prompt(source,title,default_text,cb_result)
-  prompts[source] = cb_result
+-- return entered text
+function vRP.prompt(source,title,default_text)
+  local r = async()
+  prompts[source] = r
 
-  vRPclient.prompt(source,{title,default_text})
+  vRPclient.prompt(source, title,default_text)
+
+  return r:wait()
 end
 
 -- REQUEST
@@ -66,22 +70,26 @@ local requests = {}
 
 -- ask something to a player with a limited amount of time to answer (yes|no request)
 -- time: request duration in seconds
--- cb_ok: function(player,ok)
-function vRP.request(source,text,time,cb_ok)
+-- return true (yes) or false (no)
+function vRP.request(source,text,time)
+  local r = async()
+
   local id = request_ids:gen()
-  local request = {source = source, cb_ok = cb_ok, done = false}
+  local request = {source = source, cb_ok = r, done = false}
   requests[id] = request
 
-  vRPclient.request(source,{id,text,time}) -- send request to client
+  vRPclient.request(source,id,text,time) -- send request to client
 
   -- end request with a timeout if not already ended
   SetTimeout(time*1000,function()
     if not request.done then
-      request.cb_ok(source,false) -- negative response
+      request.cb_ok(false) -- negative response
       request_ids:free(id)
       requests[id] = nil
     end
   end)
+
+  return r:wait()
 end
 
 
@@ -106,11 +114,12 @@ end
 -- build a menu
 --- name: menu name type
 --- data: custom data table
--- cbreturn built choices
+-- return built choices
 function vRP.buildMenu(name, data, cbr)
+  local r = async()
+
   -- the task will return the built choices even if they aren't complete
   local choices = {}
-  local task = Task(cbr, {choices})
 
   local mbuilders = menu_builders[name]
   if mbuilders then
@@ -131,15 +140,15 @@ function vRP.buildMenu(name, data, cbr)
 
           count = count-1
           if count == 0 then -- end of build
-            task({choices})
+            r(choices)
           end
         end
       end
 
       v(add_choices, data) -- trigger
     end
-  else
-    task()
+
+    return r:wait()
   end
 end
 
@@ -147,11 +156,10 @@ end
 
 -- open the player main menu
 function vRP.openMainMenu(source)
-  vRP.buildMenu("main", {player = source}, function(menudata)
-    menudata.name = "Main menu"
-    menudata.css = {top="75px",header_color="rgba(0,125,255,0.75)"}
-    vRP.openMenu(source,menudata) -- open the generated menu
-  end)
+  local menudata = vRP.buildMenu("main", {player = source})
+  menudata.name = "Main menu"
+  menudata.css = {top="75px",header_color="rgba(0,125,255,0.75)"}
+  vRP.openMenu(source,menudata) -- open the generated menu
 end
 
 -- SERVER TUNNEL API
@@ -194,7 +202,7 @@ function tvRP.promptResult(text)
   local prompt = prompts[source]
   if prompt ~= nil then
     prompts[source] = nil
-    prompt(source,text)
+    prompt(text)
   end
 end
 
@@ -203,7 +211,7 @@ function tvRP.requestResult(id,ok)
   local request = requests[id]
   if request and request.source == source then -- end request
     request.done = true -- set done, the timeout will not call the callback a second time
-    request.cb_ok(source,not not ok) -- callback
+    request.cb_ok(not not ok) -- callback
     request_ids:free(id)
     requests[id] = nil
   end
@@ -211,7 +219,9 @@ end
 
 -- open the general player menu
 function tvRP.openMainMenu()
-  vRP.openMainMenu(source)
+  async(function()
+    vRP.openMainMenu(source)
+  end, true)
 end
 
 
@@ -266,8 +276,8 @@ local function build_client_static_menus(source)
           vRP.closeMenu(source)
         end
 
-        vRPclient.addBlip(source,{x,y,z,smenu.blipid,smenu.blipcolor,smenu.title})
-        vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,255,226,0,125,150})
+        vRPclient.addBlip(source,x,y,z,smenu.blipid,smenu.blipcolor,smenu.title)
+        vRPclient.addMarker(source,x,y,z-1,0.7,0.7,0.5,255,226,0,125,150)
 
         vRP.setArea(source,"vRP:static_menu:"..k,x,y,z,1,1.5,smenu_enter,smenu_leave)
       end
