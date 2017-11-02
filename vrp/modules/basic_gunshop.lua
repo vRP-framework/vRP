@@ -26,33 +26,31 @@ for gtype,weapons in pairs(gunshop_types) do
 
     if weapon then
       -- get player weapons to not rebuy the body
-      vRPclient.getWeapons(player,{},function(weapons)
-        -- prompt amount
-        vRP.prompt(player,lang.gunshop.prompt_ammo({choice}),"",function(player,amount)
-          local amount = parseInt(amount)
-          if amount >= 0 then
-            local user_id = vRP.getUserId(player)
-            local total = math.ceil(parseFloat(price_ammo)*parseFloat(amount))
-            
-            if weapons[string.upper(weapon)] == nil then -- add body price if not already owned
-              total = total+price
-            end
+      local weapons = vRPclient.getWeapons(player)
+      -- prompt amount
+      local amount = vRP.prompt(player,lang.gunshop.prompt_ammo({choice}),"")
+      local amount = parseInt(amount)
+      if amount >= 0 then
+        local user_id = vRP.getUserId(player)
+        local total = math.ceil(parseFloat(price_ammo)*parseFloat(amount))
 
-            -- payment
-            if user_id ~= nil and vRP.tryPayment(user_id,total) then
-              vRPclient.giveWeapons(player,{{
-                [weapon] = {ammo=amount}
-              }})
+        if weapons[string.upper(weapon)] == nil then -- add body price if not already owned
+          total = total+price
+        end
 
-              vRPclient.notify(player,{lang.money.paid({total})})
-            else
-              vRPclient.notify(player,{lang.money.not_enough()})
-            end
-          else
-            vRPclient.notify(player,{lang.common.invalid_value()})
-          end
-        end)
-      end)
+        -- payment
+        if user_id and vRP.tryPayment(user_id,total) then
+          vRPclient.giveWeapons(player,{
+            [weapon] = {ammo=amount}
+          })
+
+          vRPclient.notify(player,lang.money.paid({total}))
+        else
+          vRPclient.notify(player,lang.money.not_enough())
+        end
+      else
+        vRPclient.notify(player,lang.common.invalid_value())
+      end
     end
   end
 
@@ -69,7 +67,7 @@ end
 
 local function build_client_gunshops(source)
   local user_id = vRP.getUserId(source)
-  if user_id ~= nil then
+  if user_id then
     for k,v in pairs(gunshops) do
       local gtype,x,y,z = table.unpack(v)
       local group = gunshop_types[gtype]
@@ -80,7 +78,7 @@ local function build_client_gunshops(source)
 
         local function gunshop_enter()
           local user_id = vRP.getUserId(source)
-          if user_id ~= nil and vRP.hasPermissions(user_id,gcfg.permissions or {}) then
+          if user_id and vRP.hasPermissions(user_id,gcfg.permissions or {}) then
             vRP.openMenu(source,menu) 
           end
         end
@@ -89,8 +87,8 @@ local function build_client_gunshops(source)
           vRP.closeMenu(source)
         end
 
-        vRPclient.addBlip(source,{x,y,z,gcfg.blipid,gcfg.blipcolor,lang.gunshop.title({gtype})})
-        vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,255,125,125,150})
+        vRPclient.addBlip(source,x,y,z,gcfg.blipid,gcfg.blipcolor,lang.gunshop.title({gtype}))
+        vRPclient.addMarker(source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
 
         vRP.setArea(source,"vRP:gunshop"..k,x,y,z,1,1.5,gunshop_enter,gunshop_leave)
       end
