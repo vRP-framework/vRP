@@ -2,6 +2,17 @@
 local Tools = module("lib/Tools")
 local Debug = module("lib/Debug")
 
+-- API used in function of the side
+local TriggerRemoteEvent = nil
+local RegisterLocalEvent = nil
+if SERVER then
+  TriggerRemoteEvent = TriggerClientEvent
+  RegisterLocalEvent = RegisterServerEvent
+else
+  TriggerRemoteEvent = TriggerServerEvent
+  RegisterLocalEvent = RegisterNetEvent
+end
+
 -- this file describe a two way proxy between the server and the clients (request system)
 
 local Tunnel = {}
@@ -22,10 +33,15 @@ local function tunnel_resolve(itable,key)
   local identifier = mtable.identifier
 
   -- generate access function
-  local fcall = function(dest, ...)
+  local fcall = function(...)
     local r = async()
 
     local args = {...} 
+    local dest = nil
+    if SERVER then
+      dest = args[1]
+      args = {table.unpack(args, 2, table.maxn(args))}
+    end
 
     -- get delay data
     local delay_data = Tunnel.delays[dest]
@@ -45,13 +61,21 @@ local function tunnel_resolve(itable,key)
         -- send request
         local rid = ids:gen()
         callbacks[rid] = r
-        TriggerClientEvent(iname..":tunnel_req",dest,key,args,identifier,rid)
+        if SERVER then
+          TriggerRemoteEvent(iname..":tunnel_req",dest,key,args,identifier,rid)
+        else
+          TriggerRemoteEvent(iname..":tunnel_req",key,args,identifier,rid)
+        end
       end)
     else -- no delay
       -- send request
       local rid = ids:gen()
       callbacks[rid] = r
-      TriggerClientEvent(iname..":tunnel_req",dest,key,args,identifier,rid)
+      if SERVER then
+        TriggerRemoteEvent(iname..":tunnel_req",dest,key,args,identifier,rid)
+      else
+        TriggerRemoteEvent(iname..":tunnel_req",key,args,identifier,rid)
+      end
     end
 
     return r:wait()
@@ -66,7 +90,7 @@ end
 -- interface: table containing functions
 function Tunnel.bindInterface(name,interface)
   -- receive request
-  RegisterServerEvent(name..":tunnel_req")
+  RegisterLocalEvent(name..":tunnel_req")
   AddEventHandler(name..":tunnel_req",function(member,args,identifier,rid)
     async(function()
       local source = source
@@ -86,7 +110,11 @@ function Tunnel.bindInterface(name,interface)
 
       -- send response (even if the function doesn't exist)
       if rid >= 0 then
-        TriggerClientEvent(name..":"..identifier..":tunnel_res",source,rid,rets)
+        if SERVER then
+          TriggerRemoteEvent(name..":"..identifier..":tunnel_res",source,rid,rets)
+        else
+          TriggerRemoteEvent(name..":"..identifier..":tunnel_res",rid,rets)
+        end
       end
 
       if Debug.active then
@@ -107,7 +135,7 @@ function Tunnel.getInterface(name,identifier)
   local r = setmetatable({},{ __index = tunnel_resolve, name = name, tunnel_ids = ids, tunnel_callbacks = callbacks, identifier = identifier })
 
   -- receive response
-  RegisterServerEvent(name..":"..identifier..":tunnel_res")
+  RegisterLocalEvent(name..":"..identifier..":tunnel_res")
   AddEventHandler(name..":"..identifier..":tunnel_res",function(rid,args)
     if Debug.active then
       Debug.pbegin("tunnelres#"..rid.."_"..name.." "..json.encode(Debug.safeTableCopy(args)))

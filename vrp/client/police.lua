@@ -184,7 +184,9 @@ Citizen.CreateThread(function()
     local nwanted_level = GetPlayerWantedLevel(PlayerId())
     if nwanted_level ~= wanted_level then
       wanted_level = nwanted_level
-      vRPserver.updateWantedLevel({wanted_level})
+      async(function()
+        vRPserver.updateWantedLevel(wanted_level)
+      end, true)
     end
   end
 end)

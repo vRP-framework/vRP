@@ -18,11 +18,14 @@ Citizen.CreateThread(function()
 
     if IsPlayerPlaying(PlayerId()) and state_ready then
       local x,y,z = table.unpack(GetEntityCoords(GetPlayerPed(-1),true))
-      vRPserver.ping({})
-      vRPserver.updatePos({x,y,z})
-      vRPserver.updateHealth({tvRP.getHealth()})
-      vRPserver.updateWeapons({tvRP.getWeapons()})
-      vRPserver.updateCustomization({tvRP.getCustomization()})
+
+      async(function()
+        vRPserver.ping()
+        vRPserver.updatePos(x,y,z)
+        vRPserver.updateHealth(tvRP.getHealth())
+        vRPserver.updateWeapons(tvRP.getWeapons())
+        vRPserver.updateCustomization(tvRP.getCustomization())
+      end, true)
     end
   end
 end)
@@ -184,7 +187,7 @@ end
 
 -- partial customization (only what is set is changed)
 function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] components or props (p0...) plus .modelhash or .model
-  local exit = TUNNEL_DELAYED() -- delay the return values
+  local r = async()
 
   Citizen.CreateThread(function() -- new thread
     if custom then
@@ -192,13 +195,13 @@ function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] com
       local mhash = nil
 
       -- model
-      if custom.modelhash ~= nil then
+      if custom.modelhash then
         mhash = custom.modelhash
-      elseif custom.model ~= nil then
+      elseif custom.model then
         mhash = GetHashKey(custom.model)
       end
 
-      if mhash ~= nil then
+      if mhash then
         local i = 0
         while not HasModelLoaded(mhash) and i < 10000 do
           RequestModel(mhash)
@@ -233,8 +236,10 @@ function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] com
       end
     end
 
-    exit({})
+    r()
   end)
+
+  return r:wait()
 end
 
 -- fix invisible players by resetting customization every minutes

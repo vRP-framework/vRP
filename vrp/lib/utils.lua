@@ -1,3 +1,10 @@
+-- this file define global tools required by vRP and vRP extensions
+-- it will create SERVER, CLIENT, async...
+
+-- side detection
+SERVER = not IsVehicleEngineStarting
+CLIENT = not SERVER
+
 function table.maxn(t)
   local max = 0
   for k,v in pairs(t) do
@@ -21,7 +28,7 @@ function module(rsc, path) -- load a LUA resource file as module
   if module then -- cached module
     return module
   else
-    local f,err = load(LoadResourceFile(rsc, path..".lua"))
+    local f,err = load(LoadResourceFile(rsc, path..".lua"), path..".lua")
     if f then
       local ok, res = xpcall(f, debug.traceback)
       if ok then

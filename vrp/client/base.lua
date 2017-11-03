@@ -1,10 +1,14 @@
 cfg = module("cfg/client")
 
+local Tunnel = module("vrp", "lib/Tunnel")
+local Proxy = module("vrp", "lib/Proxy")
+local Tools = module("vrp", "lib/Tools")
+
 tvRP = {}
 local players = {} -- keep track of connected players (server id)
 
 -- bind client tunnel interface
-Tunnel.bindInterface("vRP",tvRP)
+Tunnel.bindInterface("vRP", tvRP)
 
 -- get server interface
 vRPserver = Tunnel.getInterface("vRP","vRP")
@@ -18,7 +22,7 @@ Proxy.addInterface("vRP",tvRP)
 function tvRP.teleport(x,y,z)
   tvRP.unjail() -- force unjail before a teleportation
   SetEntityCoords(GetPlayerPed(-1), x+0.0001, y+0.0001, z+0.0001, 1,0,0,1)
-  vRPserver.updatePos({x,y,z})
+  vRPserver.updatePos(x,y,z)
 end
 
 -- return x,y,z
@@ -167,7 +171,7 @@ local anim_ids = Tools.newIDGenerator()
 -- seq: list of animations as {dict,anim_name,loops} (loops is the number of loops, default 1) or a task def (properties: task, play_exit)
 -- looping: if true, will infinitely loop the first element of the sequence until stopAnim is called
 function tvRP.playAnim(upper, seq, looping)
-  if seq.task ~= nil then -- is a task (cf https://github.com/ImagicTheCat/vRP/pull/118)
+  if seq.task then -- is a task (cf https://github.com/ImagicTheCat/vRP/pull/118)
     tvRP.stopAnim(true)
 
     local ped = GetPlayerPed(-1)

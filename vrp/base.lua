@@ -38,7 +38,7 @@ Tunnel.bindInterface("vRP",tvRP) -- listening for client tunnel
 -- load language 
 local Lang = Luang()
 Lang:loadLocale(config.lang, module("cfg/lang/"..config.lang) or {})
-vRP.lang = Lang.lang
+vRP.lang = Lang.lang[config.lang]
 
 -- init
 vRPclient = Tunnel.getInterface("vRP","vRP") -- server -> client tunnel

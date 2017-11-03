@@ -30,11 +30,13 @@ end
 
 -- gui menu events
 RegisterNUICallback("menu",function(data,cb)
-  if data.act == "close" then
-    vRPserver.closeMenu({data.id})
-  elseif data.act == "valid" then
-    vRPserver.validMenuChoice({data.id,data.choice,data.mod})
-  end
+  async(function()
+    if data.act == "close" then
+      vRPserver.closeMenu(data.id)
+    elseif data.act == "valid" then
+      vRPserver.validMenuChoice(data.id,data.choice,data.mod)
+    end
+  end, true)
 end)
 
 -- gui prompt event
@@ -42,14 +44,18 @@ RegisterNUICallback("prompt",function(data,cb)
   if data.act == "close" then
     SetNuiFocus(false)
     SetNuiFocus(false)
-    vRPserver.promptResult({data.result})
+    async(function()
+      vRPserver.promptResult(data.result)
+    end, true)
   end
 end)
 
 -- gui request event
 RegisterNUICallback("request",function(data,cb)
   if data.act == "response" then
-    vRPserver.requestResult({data.id,data.ok})
+    async(function()
+      vRPserver.requestResult(data.id,data.ok)
+    end, true)
   end
 end)
 
@@ -151,7 +157,7 @@ Citizen.CreateThread(function()
     if IsControlJustPressed(table.unpack(cfg.controls.phone.cancel)) then SendNUIMessage({act="event",event="CANCEL"}) end
 
     -- open general menu
-    if IsControlJustPressed(table.unpack(cfg.controls.phone.open)) and (not tvRP.isInComa() or not cfg.coma_disable_menu) and (not tvRP.isHandcuffed() or not cfg.handcuff_disable_menu) then vRPserver.openMainMenu({}) end
+    if IsControlJustPressed(table.unpack(cfg.controls.phone.open)) and (not tvRP.isInComa() or not cfg.coma_disable_menu) and (not tvRP.isHandcuffed() or not cfg.handcuff_disable_menu) then async(function() vRPserver.openMainMenu() end, true) end
 
     -- F5,F6 (default: control michael, control franklin)
     if IsControlJustPressed(table.unpack(cfg.controls.request.yes)) then SendNUIMessage({act="event",event="F5"}) end

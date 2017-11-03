@@ -123,7 +123,7 @@ local function build_client_points(source)
       end
 
       -- cloakroom
-      vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,125,255,125,150})
+      vRPclient.addMarker(source,x,y,z-1,0.7,0.7,0.5,0,125,255,125,150)
       vRP.setArea(source,"vRP:cfg:cloakroom"..k,x,y,z,1,1.5,cloakroom_enter,cloakroom_leave)
     end
   end

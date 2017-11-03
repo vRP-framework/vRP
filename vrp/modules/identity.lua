@@ -52,7 +52,7 @@ end
 
 -- return user_id by phone or nil
 function vRP.getUserByPhone(phone, cbr)
-  MySQL.query("vRP/get_userbyphone", {phone = phone or ""})
+  local rows = MySQL.query("vRP/get_userbyphone", {phone = phone or ""})
   if #rows > 0 then
     return rows[1].user_id
   end

@@ -41,8 +41,6 @@ server_scripts{
 -- client scripts
 client_scripts{
   "lib/utils.lua",
-  "client/Tunnel.lua",
-  "client/Proxy.lua",
   "client/base.lua",
   "client/iplloader.lua",
   "client/gui.lua",
@@ -57,6 +55,11 @@ client_scripts{
 
 -- client files
 files{
+  "lib/Tunnel.lua",
+  "lib/Proxy.lua",
+  "lib/Debug.lua",
+  "lib/Luaseq.lua",
+  "lib/Tools.lua",
   "cfg/client.lua",
   "gui/index.html",
   "gui/design.css",
