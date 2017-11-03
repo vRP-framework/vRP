@@ -82,25 +82,36 @@ Home components allow developers to create things to be added inside homes using
 * [API](#api)
   * [Base](#base-1)
   * [Group/permission](#grouppermission)
+     * [Regular permissions](#regular-permissions)
+     * [Special item permission](#special-item-permission)
+     * [Special aptitude permission](#special-aptitude-permission)
+     * [API](#api-1)
   * [Survival](#survival)
   * [Police](#police)
   * [Player state](#player-state)
   * [Identity](#identity)
   * [Money](#money)
   * [Inventory](#inventory)
+     * [Items](#items)
   * [Item transformer](#item-transformer)
   * [Home](#home)
+     * [Basic components](#basic-components)
+        * [Chest](#chest)
+        * [Wardrobe](#wardrobe)
+        * [Game table](#game-table)
+        * [Item transformer](#item-transformer-1)
   * [Mission](#mission)
   * [GUI](#gui)
-     * [Registering choices to the main menu](#registering-choices-to-the-main-menu)
+     * [Extending menus](#extending-menus)
   * [Map](#map)
 * [Libs](#libs)
+  * [utils](#utils)
+     * [Where or when should async be used ?](#where-or-when-should-async-be-used-)
   * [Proxy](#proxy)
   * [Tunnel](#tunnel)
   * [MySQL](#mysql)
-  * [Asynchronous Hell](#asynchronous-hell)
 
-[(gh-md-toc)](https://github.com/ekalinin/github-markdown-toc)
+[gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
 ### Deployment
 #### Installation
@@ -971,6 +982,7 @@ Like the callback hell, if one of the async returned function never returns (Tun
 #### Proxy
 
 The proxy lib is used to call other resources functions through a proxy event.
+The proxy doesn't support async functions.
 
 Ex:
 
