@@ -183,7 +183,7 @@ function vRP.giveInventoryItem(user_id,idname,amount,notify)
     -- notify
     if notify then
       local player = vRP.getUserSource(user_id)
-      if player ~= nil then
+      if player then
         vRPclient.notify(player,lang.inventory.give.received({vRP.getItemName(idname),amount}))
       end
     end
