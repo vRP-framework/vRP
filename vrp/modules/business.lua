@@ -38,8 +38,6 @@ end, true)
 
 -- return user business data or nil
 function vRP.getUserBusiness(user_id, cbr)
-  local task = Task(cbr)
-
   if user_id then
     local rows = MySQL.query("vRP/get_business", {user_id = user_id})
     local business = rows[1]
@@ -139,7 +137,7 @@ local function business_enter()
             vRPclient.notify(player,lang.business.launder.not_enough())
           end
         else
-          vRPclient.notify(player,{lang.common.invalid_value()})
+          vRPclient.notify(player,lang.common.invalid_value())
         end
       end,lang.business.launder.description()}
     else -- doesn't have a business

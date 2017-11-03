@@ -151,16 +151,16 @@ local function ch_identity(player,choice)
             vRPclient.setRegistrationNumber(player,registration)
             vRPclient.notify(player,lang.money.paid({cfg.new_identity_cost}))
           else
-            vRPclient.notify(player,{lang.money.not_enough()})
+            vRPclient.notify(player,lang.money.not_enough())
           end
         else
-          vRPclient.notify(player,{lang.common.invalid_value()})
+          vRPclient.notify(player,lang.common.invalid_value())
         end
       else
-        vRPclient.notify(player,{lang.common.invalid_value()})
+        vRPclient.notify(player,lang.common.invalid_value())
       end
     else
-      vRPclient.notify(player,{lang.common.invalid_value()})
+      vRPclient.notify(player,lang.common.invalid_value())
     end
   end
 end
@@ -195,7 +195,7 @@ AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
     -- send registration number to client at spawn
     local identity = vRP.getUserIdentity(user_id)
     if identity then
-      vRPclient.setRegistrationNumber(source,{identity.registration or "000AAA"})
+      vRPclient.setRegistrationNumber(source,identity.registration or "000AAA")
     end
 
     -- first spawn, build city hall

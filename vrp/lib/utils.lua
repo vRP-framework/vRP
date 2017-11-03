@@ -28,17 +28,22 @@ function module(rsc, path) -- load a LUA resource file as module
   if module then -- cached module
     return module
   else
-    local f,err = load(LoadResourceFile(rsc, path..".lua"), path..".lua")
-    if f then
-      local ok, res = xpcall(f, debug.traceback)
-      if ok then
-        modules[key] = res
-        return res
+    local code = LoadResourceFile(rsc, path..".lua")
+    if code then
+      local f,err = load(code, path..".lua")
+      if f then
+        local ok, res = xpcall(f, debug.traceback)
+        if ok then
+          modules[key] = res
+          return res
+        else
+          error("error loading module "..rsc.."/"..path..":"..res)
+        end
       else
-        error("error loading module "..rsc.."/"..path..":"..res)
+        error("error parsing module "..rsc.."/"..path..":"..debug.traceback(err))
       end
     else
-      error("error parsing module "..rsc.."/"..path..":"..debug.traceback(err))
+      error("resource file "..rsc.."/"..path..".lua not found")
     end
   end
 end

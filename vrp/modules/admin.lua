@@ -284,7 +284,7 @@ vRP.registerMenuBuilder("main", function(add, data)
 
     -- build admin menu
     choices["Admin"] = {function(player,choice)
-      local menu vRP.buildMenu("admin", {player = player})
+      local menu  = vRP.buildMenu("admin", {player = player})
       menu.name = "Admin"
       menu.css={top="75px",header_color="rgba(200,0,0,0.75)"}
       menu.onclose = function(player) vRP.openMainMenu(player) end -- nest menu

@@ -48,45 +48,44 @@ local function wardrobe_create(owner_id, stype, sid, cid, config, x, y, z, playe
       local menu = {name=lang.home.wardrobe.title(),css={top = "75px", header_color="rgba(0,255,125,0.75)"}}
 
       -- load sets
-      vRP.getUData(user_id, "vRP:home:wardrobe", function(data)
-        local sets = json.decode(data)
-        if sets == nil then
-          sets = {}
+      local data = vRP.getUData(user_id, "vRP:home:wardrobe")
+      local sets = json.decode(data)
+      if sets == nil then
+        sets = {}
+      end
+
+      -- save
+      menu[lang.home.wardrobe.save.title()] = {function(player, choice)
+        local setname = vRP.prompt(player, lang.home.wardrobe.save.prompt(), "")
+        setname = sanitizeString(setname, sanitizes.text[1], sanitizes.text[2])
+        if string.len(setname) > 0 then
+          -- save custom
+          local custom =vRPclient.getCustomization(player)
+          sets[setname] = custom
+          -- save to db
+          vRP.setUData(user_id,"vRP:home:wardrobe",json.encode(sets))
+
+          -- actualize menu
+          wardrobe_enter(player, area)
+        else
+          vRPclient.notify(player,lang.common.invalid_value())
         end
+      end}
 
-        -- save
-        menu[lang.home.wardrobe.save.title()] = {function(player, choice)
-          local setname = vRP.prompt(player, lang.home.wardrobe.save.prompt(), "")
-          setname = sanitizeString(setname, sanitizes.text[1], sanitizes.text[2])
-          if string.len(setname) > 0 then
-            -- save custom
-            local custom =vRPclient.getCustomization(player)
-            sets[setname] = custom
-            -- save to db
-            vRP.setUData(user_id,"vRP:home:wardrobe",json.encode(sets))
-
-            -- actualize menu
-            wardrobe_enter(player, area)
-          else
-            vRPclient.notify(player,lang.common.invalid_value())
-          end
-        end}
-
-        local choose_set = function(player,choice)
-          local custom = sets[choice]
-          if custom then
-            vRPclient.setCustomization(player,custom)
-          end
+      local choose_set = function(player,choice)
+        local custom = sets[choice]
+        if custom then
+          vRPclient.setCustomization(player,custom)
         end
+      end
 
-        -- sets
-        for k,v in pairs(sets) do
-          menu[k] = {choose_set}
-        end
+      -- sets
+      for k,v in pairs(sets) do
+        menu[k] = {choose_set}
+      end
 
-        -- open the menu
-        vRP.openMenu(player,menu)
-      end)
+      -- open the menu
+      vRP.openMenu(player,menu)
     end
   end
 

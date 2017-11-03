@@ -43,7 +43,7 @@ local function ch_searchreg(player,choice)
         bcapital = business.capital
       end
 
-      local address vRP.getUserAddress(user_id)
+      local address = vRP.getUserAddress(user_id)
       if address then
         home = address.home
         number = address.number
@@ -128,7 +128,7 @@ local function ch_trackveh(player,choice)
       end, true)
     end)
   else
-    vRPclient.notify(player,{lang.common.not_found()})
+    vRPclient.notify(player,lang.common.not_found())
   end
 end
 
@@ -183,15 +183,15 @@ local choice_putinveh = {function(player,choice)
                 vRPclient.putInVehiclePositionAsPassenger(nplayer,{x,y,z}) -- put player in vehicle
               end)
             else
-              vRPclient.notify(player,{lang.vehicle.no_owned_near()})
+              vRPclient.notify(player,lang.vehicle.no_owned_near())
             end
           end)
         else
-          vRPclient.notify(player,{lang.police.not_handcuffed()})
+          vRPclient.notify(player,lang.police.not_handcuffed())
         end
       end)
     else
-      vRPclient.notify(player,{lang.common.no_player_near()})
+      vRPclient.notify(player,lang.common.no_player_near())
     end
   end)
 end,lang.police.menu.putinveh.description()}
@@ -301,7 +301,7 @@ local choice_check = {function(player,choice)
     vRP.request(player, lang.police.menu.check.request_hide(), 1000)
     vRPclient.removeDiv(player,"police_check")
   else
-    vRPclient.notify(player,{lang.common.no_player_near()})
+    vRPclient.notify(player,lang.common.no_player_near())
   end
 end, lang.police.menu.check.description()}
 
@@ -314,7 +314,7 @@ local choice_seize_weapons = {function(player, choice)
       if vRPclient.isHandcuffed(nplayer) then  -- check handcuffed
         local weapons = vRPclient.getWeapons(nplayer)
         for k,v in pairs(weapons) do -- display seized weapons
-          -- vRPclient.notify(player,{lang.police.menu.seize.seized({k,v.ammo})})
+          -- vRPclient.notify(player,lang.police.menu.seize.seized({k,v.ammo}))
           -- convert weapons to parametric weapon items
           vRP.giveInventoryItem(user_id, "wbody|"..k, 1, true)
           if v.ammo > 0 then

@@ -21,26 +21,6 @@ function vRP.defInventoryItem(idname,name,description,choices,weight)
 
   local item = {name=name,description=description,choices=choices,weight=weight}
   vRP.items[idname] = item
-
-  -- build give action
-  item.ch_give = function(player,choice)
-  end
-
-  -- build trash action
-  item.ch_trash = function(player,choice)
-    local user_id = vRP.getUserId(player)
-    if user_id then
-      -- prompt number
-      local amount = vRP.prompt(player,lang.inventory.trash.prompt({vRP.getInventoryItemAmount(user_id,idname)}),"")
-      local amount = parseInt(amount)
-      if vRP.tryGetInventoryItem(user_id,idname,amount,false) then
-        vRPclient.notify(player,lang.inventory.trash.done({vRP.getItemName(idname),amount}))
-        vRPclient.playAnim(player,true,{{"pickup_object","pickup_low",1}},false)
-      else
-        vRPclient.notify(player,lang.common.invalid_value())
-      end
-    end
-  end
 end
 
 -- give action
@@ -48,7 +28,7 @@ function ch_give(idname, player, choice)
   local user_id = vRP.getUserId(player)
   if user_id then
     -- get nearest player
-    local nplayer = vRPclient.getNearestPlayer(player,{10})
+    local nplayer = vRPclient.getNearestPlayer(player,10)
     if nplayer then
       local nuser_id = vRP.getUserId(nplayer)
       if nuser_id then
@@ -429,7 +409,7 @@ function vRP.openChest(source, name, max_weight, cb_close, cb_in, cb_out)
               if cb_out then cb_out(idname,amount) end
 
               -- actualize by closing
-              vRP.closeMenu(player)
+              vRP.closeMenu(source)
             else
               vRPclient.notify(source,lang.inventory.full())
             end
@@ -476,7 +456,7 @@ function vRP.openChest(source, name, max_weight, cb_close, cb_in, cb_out)
               if cb_in then cb_in(idname,amount) end
 
               -- actualize by closing
-              vRP.closeMenu(player)
+              vRP.closeMenu(source)
             end
           else
             vRPclient.notify(source,lang.inventory.chest.full())

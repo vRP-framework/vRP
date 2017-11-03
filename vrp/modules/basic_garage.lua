@@ -350,16 +350,15 @@ local function ch_vehicle(player,choice)
     local ok,vtype,name = vRPclient.getNearestOwnedVehicle(player,7)
     if ok then
       -- build vehicle menu
-      vRP.buildMenu("vehicle", {user_id = user_id, player = player, vtype = vtype, vname = name}, function(menu)
-        menu.name=lang.vehicle.title()
-        menu.css={top="75px",header_color="rgba(255,125,0,0.75)"}
+      local menu = vRP.buildMenu("vehicle", {user_id = user_id, player = player, vtype = vtype, vname = name})
+      menu.name=lang.vehicle.title()
+      menu.css={top="75px",header_color="rgba(255,125,0,0.75)"}
 
-        for k,v in pairs(veh_actions) do
-          menu[k] = {function(player,choice) v[1](user_id,player,vtype,name) end, v[2]}
-        end
+      for k,v in pairs(veh_actions) do
+        menu[k] = {function(player,choice) v[1](user_id,player,vtype,name) end, v[2]}
+      end
 
-        vRP.openMenu(player,menu)
-      end)
+      vRP.openMenu(player,menu)
     else
       vRPclient.notify(player,lang.vehicle.no_owned_near())
     end
