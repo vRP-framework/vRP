@@ -1,10 +1,3 @@
-`/!\ THIS IS THE FXSERVER VERSION /!\`
-```
-Lot of things change in this version, moving to FXServer and MySQL full async requests.
-Many functions based on MySQL queries are now async too.
-A lot of those changes are not yet documented.
-```
-
 # vRP
 FiveM RP addon/framework
 
@@ -114,10 +107,7 @@ Home components allow developers to create things to be added inside homes using
 
 vRP has been tested under Windows and GNU/Linux with Mono 4.8.
 
-First, make sure you don't have other resources loaded (especially resources using MySQL, add them later and see if they break vRP).
-vRP use a new version of MySql.Data.dll, the 4.5, since only one version can be loaded at a time, if another resource load an older version, things will get crazy.
-
-Then clone the repository or download the master [archive](https://github.com/ImagicTheCat/vRP/archive/master.zip) and copy the `vrp/` directory to your resource folder. Add `vrp_mysql` then `vrp` to the loading resource list (first after the basic FiveM resources is better).
+Clone the repository or download the fxserver [archive](https://github.com/ImagicTheCat/vRP/archive/fxserver.zip) and copy the `vrp` and `vrp_mysql` directories to your resource folder. Add `vrp_mysql` then `vrp` to the loading resource list (first after the basic FiveM resources is better).
 
 #### Configuration
 
@@ -152,7 +142,6 @@ For questions, help, discussions around the project, please go instead on the vR
 #### Base
 
 ```lua
-
 -- (server) called after identification
 AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login) end)
 
@@ -183,28 +172,26 @@ AddEventHandler("vRP:pauseChange", function(paused) end)
 To call the server-side API functions, get the vRP interface.
 
 ```lua
-local Proxy = require("resources/vRP/lib/Proxy")
+local Proxy = module("vrp", "lib/Proxy")
 
 vRP = Proxy.getInterface("vRP")
 
 -- ex:
-vRP.getUserId({source},function(user_id)
-  print("user_id = "..user_id)
-end)
+local user_id = vRP.getUserId(source)
 ```
 
-You can also do it client-side, the API is the same as the TUNNEL CLIENT APIs (copy and add the `vrp/client/Proxy.lua` to your resources, first).
+You can also do it client-side, the API is the same as the TUNNEL CLIENT APIs.
 
 ```lua
 vRP = Proxy.getInterface("vRP")
 
 -- ex:
-vRP.notify({"A notification."}) -- notify the player
+vRP.notify("A notification.") -- notify the player
 ```
 
 For the client/server tunnel API, the interface is also "vRP", see the Tunnel library below.
 
-In the config files callbacks, you can use directly vRP and vRPclient (the tunnel to the clients).
+In the config file callbacks, you can use directly the globals `vRP` (Proxy) and `vRPclient` (the tunnel to the clients).
 
 #### Base
 
@@ -588,39 +575,33 @@ Full example of a resource defining a water bottle item.
 Once defined, items can be used by any resources (ex: they can be added to shops).
 
 ```lua
-local Proxy = require("resources/vRP/lib/Proxy")
-local Tunnel = require("resources/vRP/lib/Tunnel")
+local Proxy = module("vrp", "lib/Proxy")
+local Tunnel = require("vrp", "lib/Tunnel")
 
 vRP = Proxy.getInterface("vRP")
 vRPclient = Tunnel.getInterface("vRP","vrp_waterbottle")
 
--- create Water bottle item (the callback hell begins)
+-- create Water bottle item 
 local wb_choices = {}  -- (see gui API for menudata choices structure)
 
 wb_choices["Drink"] = {function(player,choice) -- add drink action
-  local user_id = vRP.getUserId({player}) -- get user_id
-  if user_id ~= nil then
-    if vRP.tryGetInventoryItem({user_id,"water_bottle",1}) -- try to remove one bottle
-      vRP.varyThirst({user_id,-35}) -- decrease thirst
-      vRPclient.notify(player,{"~b~ Drinking."}) -- notify
-      vRP.closeMenu({player}) -- the water bottle is consumed by the action, close the menu
+  local user_id = vRP.getUserId(player) -- get user_id
+  if user_id then
+    if vRP.tryGetInventoryItem(user_id,"water_bottle",1) then -- try to remove one bottle
+      vRP.varyThirst(user_id,-35) -- decrease thirst
+      vRPclient.notify(player,"~b~ Drinking.") -- notify
+      vRP.closeMenu(player) -- the water bottle is consumed by the action, close the menu
     end
 end
 end,"Do it."}
 
 -- add item definition
-vRP.defInventoryItem({"water_bottle","Water bottle","Drink this my friend.",function() return wb_choices end,0.5})
+vRP.defInventoryItem("water_bottle","Water bottle","Drink this my friend.",function() return wb_choices end,0.5)
 
 -- (at any time later) give 2 water bottles to a connected user
-vRP.giveInventoryItem({user_id,"water_bottle",2})
-
+vRP.giveInventoryItem(user_id,"water_bottle",2)
 ```
 
-Example of utilisation of notification picture
-```lua
-vRPclient.notifyPicture(player,{"CHAR_LESTER", 1, "Unknown", false, "I have a job for you!"})
-```
- 
 #### Item transformer
 
 The item transformer is a very generic way to create harvest and processing areas.
@@ -680,7 +661,7 @@ local itemtr = {
   }
 }
 
-vRP.setItemTransformer({"my_unique_transformer",itemtr})
+vRP.setItemTransformer("my_unique_transformer",itemtr)
 ```
 
 For static areas, configure the file `cfg/item_transformers.lua`, the transformers will be automatically added.
@@ -892,7 +873,7 @@ vRP.registerMenuBuilder(name, builder)
 -- build a menu
 --- name: menu name type
 --- data: custom data table
--- cbreturn built choices
+-- return built choices
 vRP.buildMenu(name, data, cbr)
 ```
 
@@ -949,6 +930,44 @@ vRP.removeNamedMarker(name)
 
 ### Libs
 
+#### utils
+
+`lib/utils` define global tools required by vRP and vRP extensions.
+
+```lua
+-- load a lua resource file as module
+-- rsc: resource name
+-- path: lua file path without extension
+module(rsc, path)
+
+-- CLIENT and SERVER globals
+-- booleans to known the side of the script
+
+-- create an async context to execute async code in a sequential way
+-- see https://github.com/ImagicTheCat/Luaseq for more informations
+async(func, force)
+```
+
+##### Where or when should async be used ?
+
+With FiveM, `async` should always be called with the force parameter to true, it will ensure that the code will be executed in a new coroutine.
+
+`async` should be used when not already inside an async block and where functions that use an async returner are called. For example, a MySQL query, or something calling a MySQL query. 
+The Tunnel will always create an async context, so you don't need one inside a registered API function.
+
+Here is a list of cases where you should create an async context:
+* registered callbacks in other resources (items, menu choices, ...)
+* inside an event handler callback
+* inside a SetTimeout callback
+* anywhere not already in an async context (initialization of MySQL tables at startup, ...)
+
+If a Tunnel call behave strangely, it's probably that you missed the async context or forgot the `true` parameter.
+Only one async context is needed, so place them at the "root", then sub calls will be synchronous-like (but they're not). 
+
+If you want an async call to be non-blocking, make a new async context (force = true) and call it inside.
+
+Like the callback hell, if one of the async returned function never returns (Tunnel call to disconnected player, failed query ...), the rest will not be executed. This is intuitive, but it can be an issue for special use cases (where you will need to create new async contexts to be sure to execute the current code).
+
 #### Proxy
 
 The proxy lib is used to call other resources functions through a proxy event.
@@ -957,7 +976,7 @@ Ex:
 
 resource1.lua
 ```lua
-local Proxy = require("resources/vRP/lib/Proxy")
+local Proxy = module("vrp", "lib/Proxy")
 
 Resource1 = {}
 Proxy.addInterface("resource1",Resource1) -- add functions to resource1 interface (can be called multiple times if multiple files declare different functions for the same interface)
@@ -969,15 +988,15 @@ end
 ```
 resource2.lua
 ```lua
-local Proxy = require("resources/vRP/lib/Proxy")
+local Proxy = module("vrp", "lib/Proxy")
 
 Resource1 = Proxy.getInterface("resource1")
 
-local rvalue1, rvalue2 = Resource1.test({13,42})
+local rvalue1, rvalue2 = Resource1.test(13,42)
 print("resource2 TEST rvalues = "..rvalue1..","..rvalue2)
 ```
 
-The notation is **Interface.function({arguments})**.
+The notation is **Interface.function(...)**.
 
 #### Tunnel
 
@@ -985,9 +1004,9 @@ The idea behind tunnels is to easily access any declared server function from an
 
 Example of two-way resource communication:
 
-Server-side myrsc
+Server-side myrsc:
 ```lua
-local Tunnel = require("resources/vRP/lib/Tunnel")
+local Tunnel = module("vrp", "lib/Tunnel")
 
 -- build the server-side interface
 serverdef = {} -- you can add function to serverdef later in other server scripts
@@ -1002,10 +1021,10 @@ end
 clientaccess = Tunnel.getInterface("myrsc","myrsc") -- the second argument is a unique id for this tunnel access, the current resource name is a good choice
 
 -- (later, in a player spawn event) teleport the player to 0,0,0
-clientaccess.teleport(source,{0,0,0})
+clientaccess.teleport(source,0,0,0)
 ```
 
-Client-side myrsc (copy the resources/vRP/client/Tunnel.lua and add it first to the client scripts of your resource)
+Client-side myrsc: 
 ```lua
 
 -- build the client-side interface
@@ -1016,50 +1035,42 @@ function clientdef.teleport(x,y,z)
   SetEntityCoords(GetPlayerPed(-1), x, y, z, 1,0,0,0)
 end
 
--- sometimes, you would want to return the tunnel call asynchronously
+-- sometimes, you would want to return the tunnel call with asynchronous data
 -- ex:
 function clientdef.setModel(hash)
-  local exit = TUNNEL_DELAYED() -- get the delayed return function
+  local r = async()
 
   Citizen.CreateThread(function()
     -- do the asynchronous model loading
     Citizen.Wait(1000)
 
-    exit({true}) -- return a boolean to confirm loading (calling exit will not really exit the function, but just send back the array as the tunnel call return values, so call it wisely)
+    r(true)  -- return true 
   end)
+
+  return r:wait() -- wait for the async returned value
 end
 
 -- get the server-side access
 serveraccess = Tunnel.getInterface("myrsc","myrsc") -- the second argument is a unique id for this tunnel access, the current resource name is a good choice
 
--- call test on server and print the returned value
-serveraccess.test({"my client message"},function(r)
-  print(r)
-end)
-
+-- call test on server and print the returned value (in an async context)
+local r = serveraccess.test("my client message")
+print(r) -- true
 ```
 
 Now if we want to use the same teleport function in another resource:
 
 ```lua
-local Tunnel = require("resources/vRP/lib/Tunnel")
+local Tunnel = module("lib/Tunnel")
 
 -- get the client-side access of myrsc
 myrsc_access = Tunnel.getInterface("myrsc","myotherrsc")
 
 -- (later, in a player spawn event) teleport the player to 0,0,0
-myrsc_access.teleport(source,{0,0,0})
+myrsc_access.teleport(source,0,0,0)
 ```
 
 This way resources can easily use other resources client/server API.
-
-A magic trick with the tunnel system (which is based on the TriggerEvent), imagine we want to teleport all players to the same position:
-
-```lua
-clientaccess.teleport(-1,{0,0,0},function()
-  print("player "..source.." teleported") -- will be displayed for each teleported player
-end)
-```
 
 #### MySQL
 
@@ -1081,15 +1092,15 @@ MySQL.createCommand(path, sql)
 -- do query
 --- path: "conname/cmdname"
 --- (optional) params: associative table of SQL params ("@something" => something)
---- (optional) callback(rows, affected): rows as list, with associative table for columns
+-- return rows, affected: rows as list, with associative table for columns
 MySQL.query(path, params, callback)
 
 -- do a scalar query (one row, one column)
---- (optional) callback(scalar)
+-- return scalar
 MySQL.scalar(path, params, callback)
 
 -- do a execute query (no results)
---- (optional) callback(affected)
+-- return affected
 MySQL.execute(path, params, callback)
 ```
 
@@ -1121,52 +1132,14 @@ MySQL.execute("con_name/command_name")
 MySQL.createCommand("vRP/myrsc_getbans", "SELECT id FROM vrp_users WHERE banned = @banned")
 
 -- execute the command after a while, get all banned users
-MySQL.query("vRP/myrsc_getbans", {banned = true}, function(rows, affected)
-  -- rows: rows as a list
-  -- affected: number of rows affected (when updating things, etc)
-
-  -- display banned users
-end)
+local rows, affected = MySQL.query("vRP/myrsc_getbans", {banned = true}) -- in async context
+-- rows: rows as a list
+-- affected: number of rows affected (when updating things, etc)
+-- display banned users
 
 -- execute the command after a while, get all non banned users
-MySQL.query("vRP/myrsc_getbans", {banned = false}, function(rows, affected)
-  -- rows: rows as a list
-  -- affected: number of rows affected (when updating things, etc)
-
-  -- display banned users
-end)
-```
-
-#### Asynchronous Hell
-
-As you can see, this new version of vRP rely on asynchronous MySQL queries, so many API functions are now asynchronous. The current way of handling async calls is to pass a callback which will act as the trigger to get the return values when done.
-
-If you need to create your own API function in an async way, a little helper exists in `lib/utils.lua`.
-
-```lua
-local MySQL = module("vrp_mysql", "MySQL")
-local rsc = {}
-
--- async api call, following the previous example
-
--- list banned (or not) users
--- cbreturns list of users
-function rsc.getBannedUsers(banned, cbr)
-  -- this case is simple, but sometimes you would want to have conditional returns, and a default return value
-  -- create the task
-  --- callback, default return values as a table (default nil), timeout in milliseconds (optional, default 5000)
-  local task = Task(cbr, {{}}, 5000)
-
-  -- this ensure that if the mysql query fails, the task will return the empty list of users "{}" after 5 seconds
-
-  MySQL.query("vRP/myrsc_getbans", {banned = banned}, function(rows, affected)
-    local list = {}
-
-    for k,v in pairs(rows) do
-      table.insert(list, v.id)
-    end
-
-    task({list}) -- trigger end of the task, return list of values
-  end)
-end
+local rows, affected = MySQL.query("vRP/myrsc_getbans", {banned = false}) -- in async context
+-- rows: rows as a list
+-- affected: number of rows affected (when updating things, etc)
+-- display banned users
 ```
