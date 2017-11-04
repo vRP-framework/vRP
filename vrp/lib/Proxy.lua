@@ -16,12 +16,22 @@ local function encapsulate_sent_functions(t)
     elseif type(v) == "function" then
       t[k] = function(cbr, ...) 
         local args = {...}
+        local rets
+        local sync = true
         async(function() 
-          local rets = {v(table.unpack(args, 1, table.maxn(args)))} -- send returned values using cbr
-          SetTimeout(0, function()
-            cbr(table.unpack(rets, 1, table.maxn(rets)))
-          end)
+          rets = {v(table.unpack(args, 1, table.maxn(args)))} -- send returned values using cbr
+          if not sync then
+            SetTimeout(0, function()
+              cbr(table.unpack(rets, 1, table.maxn(rets)))
+            end)
+          end
         end, true) 
+        
+        if rets then
+          cbr(table.unpack(rets, 1, table.maxn(rets)))
+        end
+
+        sync = false
       end
     end
   end
