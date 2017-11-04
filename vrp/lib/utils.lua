@@ -53,6 +53,21 @@ end
 
 async = module("vrp", "lib/Luaseq").async
 
+function SetTimeoutAsync(time, callback)
+  SetTimeout(time, function()
+    async(callback, true)
+  end)
+end
+
+function AddEventHandlerAsync(name, callback)
+  AddEventHandler(name, function(...)
+    local args = {...}
+    async(function()
+      callback(table.unpack(args, 1, table.maxn(args)))
+    end, true)
+  end)
+end
+
 function parseInt(v)
 --  return cast(int,tonumber(v))
   local n = tonumber(v)

@@ -5,9 +5,59 @@ local Tools = module("lib/Tools")
 
 local Proxy = {}
 
-local proxy_rdata = {}
-local function proxy_callback(rvalues) -- save returned values, TriggerEvent is synchronous
-  proxy_rdata = rvalues
+local callbacks = setmetatable({}, { __mode = "v" })
+local rscname = GetCurrentResourceName()
+
+-- encapsulate all functions of a table (deep) in async contexts
+local function encapsulate_sent_functions(t)
+  for k,v in pairs(t) do
+    if type(v) == "table" then
+      encapsulate_sent_functions(v)
+    elseif type(v) == "function" then
+      t[k] = function(cbr, ...) 
+        local args = {...}
+        async(function() 
+          local rets = {v(table.unpack(args, 1, table.maxn(args)))} -- send returned values using cbr
+          SetTimeout(0, function()
+            cbr(table.unpack(rets, 1, table.maxn(rets)))
+          end)
+        end, true) 
+      end
+    end
+  end
+end
+
+-- encapsulate received FiveM table functions
+local function encapsulate_recv_functions(t)
+  for k,v in pairs(t) do
+    if type(v) == "table" then
+      local cfx = false
+      for l,w in pairs(v) do
+        if string.find(l, "__cfx") then
+          cfx = true
+          break
+        end
+      end
+
+      if cfx then
+        t[k] = function(...)
+          local r = async()
+
+          local args = {...}
+          -- call remote function with created cbr
+          SetTimeout(0, function()
+            v(function(...)
+              r(...)
+            end, table.unpack(args, 1, table.maxn(args)))
+          end)
+
+          return r:wait()
+        end
+      else
+        encapsulate_recv_functions(v)
+      end
+    end
+  end
 end
 
 local function proxy_resolve(itable,key)
@@ -25,8 +75,10 @@ local function proxy_resolve(itable,key)
     callbacks[rid] = r
 
     local args = {...}
+    encapsulate_sent_functions(args)
+
     SetTimeout(0, function() -- FiveM fix
-      TriggerEvent(iname..":proxy",key,args, identifier, rid)
+      TriggerEvent(iname..":proxy",key, args, identifier, rid)
     end)
     
     return r:wait()
@@ -49,6 +101,8 @@ function Proxy.addInterface(name, itable)
 
       local rets = {}
       if type(f) == "function" then
+        encapsulate_recv_functions(args)
+
         rets = {f(table.unpack(args, 1, table.maxn(args)))}
         -- CancelEvent() -- cancel event doesn't seem to cancel the event for the other handlers, but if it does, uncomment this
       else

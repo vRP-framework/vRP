@@ -282,19 +282,20 @@ end
 -- tasks
 
 function task_save_datatables()
-  async(function()
-    TriggerEvent("vRP:save")
+  TriggerEvent("vRP:save")
 
-    Debug.pbegin("vRP save datatables")
-    for k,v in pairs(vRP.user_tables) do
-      vRP.setUData(k,"vRP:datatable",json.encode(v))
-    end
+  Debug.pbegin("vRP save datatables")
+  for k,v in pairs(vRP.user_tables) do
+    vRP.setUData(k,"vRP:datatable",json.encode(v))
+  end
 
-    Debug.pend()
-    SetTimeout(config.save_interval*1000, task_save_datatables)
-  end, true)
+  Debug.pend()
+  SetTimeoutAsync(config.save_interval*1000, task_save_datatables)
 end
-task_save_datatables()
+
+async(function()
+  task_save_datatables()
+end, true)
 
 local max_pings = math.ceil(config.ping_timeout*60/30)+1
 function task_timeout() -- kick users not sending ping event in 2 minutes
@@ -326,9 +327,9 @@ end
 -- handlers
 
 AddEventHandler("playerConnecting",function(name,setMessage, deferrals)
-  async(function()
-    deferrals.defer()
+  deferrals.defer()
 
+  async(function()
     local source = source
     Debug.pbegin("playerConnecting")
     local ids = GetPlayerIdentifiers(source)
@@ -405,40 +406,38 @@ AddEventHandler("playerConnecting",function(name,setMessage, deferrals)
   end, true)
 end)
 
-AddEventHandler("playerDropped",function(reason)
-  async(function()
-    local source = source
-    Debug.pbegin("playerDropped")
+AddEventHandlerAsync("playerDropped",function(reason)
+  local source = source
+  Debug.pbegin("playerDropped")
 
-    -- remove player from connected clients
-    vRPclient.removePlayer(-1, source)
+  -- remove player from connected clients
+  vRPclient.removePlayer(-1, source)
 
-    local user_id = vRP.getUserId(source)
+  local user_id = vRP.getUserId(source)
 
-    if user_id ~= nil then
-      TriggerEvent("vRP:playerLeave", user_id, source)
+  if user_id then
+    TriggerEvent("vRP:playerLeave", user_id, source)
 
-      -- save user data table
-      vRP.setUData(user_id,"vRP:datatable",json.encode(vRP.getUserDataTable(user_id)))
+    -- save user data table
+    vRP.setUData(user_id,"vRP:datatable",json.encode(vRP.getUserDataTable(user_id)))
 
-      print("[vRP] "..vRP.getPlayerEndpoint(source).." disconnected (user_id = "..user_id..")")
-      vRP.users[vRP.rusers[user_id]] = nil
-      vRP.rusers[user_id] = nil
-      vRP.user_tables[user_id] = nil
-      vRP.user_tmp_tables[user_id] = nil
-      vRP.user_sources[user_id] = nil
-    end
-    Debug.pend()
-  end, true)
+    print("[vRP] "..vRP.getPlayerEndpoint(source).." disconnected (user_id = "..user_id..")")
+    vRP.users[vRP.rusers[user_id]] = nil
+    vRP.rusers[user_id] = nil
+    vRP.user_tables[user_id] = nil
+    vRP.user_tmp_tables[user_id] = nil
+    vRP.user_sources[user_id] = nil
+  end
+  Debug.pend()
 end)
 
 RegisterServerEvent("vRPcli:playerSpawned")
-AddEventHandler("vRPcli:playerSpawned", function()
+AddEventHandlerAsync("vRPcli:playerSpawned", function()
   Debug.pbegin("playerSpawned")
   -- register user sources and then set first spawn to false
   local user_id = vRP.getUserId(source)
   local player = source
-  if user_id ~= nil then
+  if user_id then
     vRP.user_sources[user_id] = source
     local tmp = vRP.getUserTmpTable(user_id)
     tmp.spawns = tmp.spawns+1
@@ -460,12 +459,10 @@ AddEventHandler("vRPcli:playerSpawned", function()
     -- show loading
     vRPclient.setProgressBar(player, "vRP:loading", "botright", "Loading...", 0,0,0, 100)
 
-    SetTimeout(2000, function() -- trigger spawn event
-      async(function()
+    SetTimeoutAsync(2000, function() -- trigger spawn event
         TriggerEvent("vRP:playerSpawn",user_id,player,first_spawn)
-      end, true)
 
-      SetTimeout(config.load_duration*1000, function() -- set client delay to normal delay
+      SetTimeoutAsync(config.load_duration*1000, function() -- set client delay to normal delay
         Tunnel.setDestDelay(player, config.global_delay)
         vRPclient.removeProgressBar(player,"vRP:loading")
       end)

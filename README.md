@@ -951,12 +951,14 @@ vRP.removeNamedMarker(name)
 -- path: lua file path without extension
 module(rsc, path)
 
--- CLIENT and SERVER globals
--- booleans to known the side of the script
-
 -- create an async context to execute async code in a sequential way
 -- see https://github.com/ImagicTheCat/Luaseq for more informations
 async(func, force)
+
+
+
+-- CLIENT and SERVER globals
+-- booleans to known the side of the script
 ```
 
 ##### Where or when should async be used ?

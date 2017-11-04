@@ -292,12 +292,10 @@ local function build_client_garages(source)
   end
 end
 
-AddEventHandler("vRP:playerSpawn",function(user_id,source,first_spawn)
-  async(function()
-    if first_spawn then
-      build_client_garages(source)
-    end
-  end, true)
+AddEventHandlerAsync("vRP:playerSpawn",function(user_id,source,first_spawn)
+  if first_spawn then
+    build_client_garages(source)
+  end
 end)
 
 -- VEHICLE MENU
@@ -409,11 +407,9 @@ local function ch_repair(player,choice)
     -- anim and repair
     if vRP.tryGetInventoryItem(user_id,"repairkit",1,true) then
       vRPclient.playAnim(player,false,{task="WORLD_HUMAN_WELDING"},false)
-      SetTimeout(15000, function()
-        async(function()
-          vRPclient.fixeNearestVehicle(player,7)
-          vRPclient.stopAnim(player,false)
-        end, true)
+      SetTimeoutAsync(15000, function()
+        vRPclient.fixeNearestVehicle(player,7)
+        vRPclient.stopAnim(player,false)
       end)
     end
   end
