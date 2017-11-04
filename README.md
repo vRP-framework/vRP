@@ -963,8 +963,14 @@ async(func, force)
 
 With FiveM, `async` should always be called with the force parameter to true, it will ensure that the code will be executed in a new coroutine.
 
-`async` should be used when not already inside an async block and where functions that use an async returner are called. For example, a MySQL query, or something calling a MySQL query. 
-The Tunnel will always create an async context, so you don't need one inside a registered API function.
+`async` should be used when not already inside an async block and where functions that use an async returner are called. 
+Here is an non-exhaustive list:
+* a MySQL query
+* a Tunnel call
+* a Proxy call
+* something calling one of the previous elements
+
+Tunnel and Proxy registered functions will always have an async context when executed remotely, you don't need to create one.
 
 Here is a list of cases where you should create an async context:
 * registered callbacks in other resources (items, menu choices, ...)
@@ -972,7 +978,7 @@ Here is a list of cases where you should create an async context:
 * inside a SetTimeout callback
 * anywhere not already in an async context (initialization of MySQL tables at startup, ...)
 
-If a Tunnel call behave strangely, it's probably that you missed the async context or forgot the `true` parameter.
+If a Tunnel or Proxy call behave strangely, it's probably that you missed the async context or forgot the `true` parameter.
 Only one async context is needed, so place them at the "root", then sub calls will be synchronous-like (but they're not). 
 
 If you want an async call to be non-blocking, make a new async context (force = true) and call it inside.
@@ -982,7 +988,6 @@ Like the callback hell, if one of the async returned function never returns (Tun
 #### Proxy
 
 The proxy lib is used to call other resources functions through a proxy event.
-The proxy doesn't support async functions.
 
 Ex:
 
@@ -1010,6 +1015,8 @@ print("resource2 TEST rvalues = "..rvalue1..","..rvalue2)
 
 The notation is **Interface.function(...)**.
 
+Good practice is to get the interface once and set it as a global, but if you want to get multiple times the same interface from the same resource, you need to specify a unique identifier (the name of the resource + a unique id for each one). 
+
 #### Tunnel
 
 The idea behind tunnels is to easily access any declared server function from any client resource, and to access any declared client function from any server resource.
@@ -1030,7 +1037,7 @@ function serverdef.test(msg)
 end
 
 -- get the client-side access
-clientaccess = Tunnel.getInterface("myrsc","myrsc") -- the second argument is a unique id for this tunnel access, the current resource name is a good choice
+clientaccess = Tunnel.getInterface("myrsc") 
 
 -- (later, in a player spawn event) teleport the player to 0,0,0
 clientaccess.teleport(source,0,0,0)
@@ -1063,7 +1070,7 @@ function clientdef.setModel(hash)
 end
 
 -- get the server-side access
-serveraccess = Tunnel.getInterface("myrsc","myrsc") -- the second argument is a unique id for this tunnel access, the current resource name is a good choice
+serveraccess = Tunnel.getInterface("myrsc")
 
 -- call test on server and print the returned value (in an async context)
 local r = serveraccess.test("my client message")
@@ -1083,6 +1090,10 @@ myrsc_access.teleport(source,0,0,0)
 ```
 
 This way resources can easily use other resources client/server API.
+
+The notation is **Interface.function(dest, ...)**.
+
+Good practice is to get the interface once and set it as a global, but if you want to get multiple times the same interface from the same resource, you need to specify a unique identifier (the name of the resource + a unique id for each one). 
 
 #### MySQL
 

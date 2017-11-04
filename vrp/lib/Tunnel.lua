@@ -126,8 +126,10 @@ end
 
 -- get a tunnel interface to send requests 
 -- name: interface name
--- identifier: unique string to identify this tunnel interface access (the name of the current resource should be fine)
+-- identifier: unique string to identify this tunnel interface access (if nil, will be the name of the resource)
 function Tunnel.getInterface(name,identifier)
+  if not identifier then identifier = GetCurrentResourceName() end
+  
   local ids = Tools.newIDGenerator()
   local callbacks = {}
 
