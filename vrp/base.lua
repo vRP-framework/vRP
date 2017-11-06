@@ -41,7 +41,7 @@ Lang:loadLocale(config.lang, module("cfg/lang/"..config.lang) or {})
 vRP.lang = Lang.lang[config.lang]
 
 -- init
-vRPclient = Tunnel.getInterface("vRP","vRP") -- server -> client tunnel
+vRPclient = Tunnel.getInterface("vRP") -- server -> client tunnel
 
 vRP.users = {} -- will store logged users (id) by first identifier
 vRP.rusers = {} -- store the opposite of users
@@ -269,7 +269,7 @@ end
 function vRP.ban(source,reason)
   local user_id = vRP.getUserId(source)
 
-  if user_id ~= nil then
+  if user_id then
     vRP.setBanned(user_id,true)
     vRP.kick(source,"[Banned] "..reason)
   end
@@ -318,7 +318,7 @@ task_timeout()
 
 function tvRP.ping()
   local user_id = vRP.getUserId(source)
-  if user_id ~= nil then
+  if user_id then
     local tmpdata = vRP.getUserTmpTable(user_id)
     tmpdata.pings = 0 -- reinit ping countdown
   end

@@ -11,7 +11,7 @@ local players = {} -- keep track of connected players (server id)
 Tunnel.bindInterface("vRP", tvRP)
 
 -- get server interface
-vRPserver = Tunnel.getInterface("vRP","vRP")
+vRPserver = Tunnel.getInterface("vRP")
 
 -- add client proxy interface (same as tunnel interface)
 Proxy.addInterface("vRP",tvRP)

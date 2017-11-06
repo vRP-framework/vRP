@@ -74,7 +74,7 @@ local wbody_choices = function(args)
 
   choices["Equip"] = {function(player,choice)
     local user_id = vRP.getUserId(player)
-    if user_id ~= nil then
+    if user_id then
       if vRP.tryGetInventoryItem(user_id, fullidname, 1, true) then -- give weapon body
         local weapons = {}
         weapons[args[2]] = {ammo = 0}
