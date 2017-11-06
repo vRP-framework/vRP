@@ -327,6 +327,16 @@ Form: `@group.aptitude.operator`, operators to check the level are greater `>`, 
 * `@physical.strength.3` -> strength level equal to 3
 * `@science.chemicals.>4` -> chemicals science level greater or equal to 5
 
+##### Special function permission
+
+Permissions can also be custom functions, registered by `vRP.registerPermissionFunction`.
+Form: `!name.param1.param2...`
+
+Here is a list of permission functions defined by vRP:
+* `!not. ...`: negation of another permission function (ex `!not.is.inside`)
+* `!is.inside`: check if the player is inside a building (approximation)
+* `!is.invehicle`: check if the player is inside a vehicle
+
 ##### API
 
 ```lua
@@ -340,6 +350,13 @@ vRP.removeUserGroup(user_id,group)
 
 -- check if the user has a specific group
 vRP.hasGroup(user_id,group)
+
+-- register a special permission function
+-- name: name of the permission -> "!name.[...]"
+-- callback(user_id, parts) 
+--- parts: parts (strings) of the permissions, ex "!name.param1.param2" -> ["name", "param1", "param2"]
+--- should return true or false/nil
+vRP.registerPermissionFunction(name, callback)
 
 -- check if the user has a specific permission
 vRP.hasPermission(user_id, perm)

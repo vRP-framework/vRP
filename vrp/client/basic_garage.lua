@@ -189,6 +189,11 @@ function tvRP.ejectVehicle()
   end
 end
 
+function tvRP.isInVehicle()
+  local ped = GetPlayerPed(-1)
+  return IsPedSittingInAnyVehicle(ped) 
+end
+
 -- vehicle commands
 function tvRP.vc_openDoor(vtype, door_index)
   local vehicle = vehicles[vtype]

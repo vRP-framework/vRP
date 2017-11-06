@@ -128,6 +128,37 @@ function vRP.hasGroup(user_id,group)
   return (user_groups[group] ~= nil)
 end
 
+local func_perms = {}
+
+-- register a special permission function
+-- name: name of the permission -> "!name.[...]"
+-- callback(user_id, parts) 
+--- parts: parts (strings) of the permissions, ex "!name.param1.param2" -> ["name", "param1", "param2"]
+--- should return true or false/nil
+function vRP.registerPermissionFunction(name, callback)
+  func_perms[name] = callback
+end
+
+-- register not fperm (negate another fperm)
+vRP.registerPermissionFunction("not", function(user_id, parts)
+  return not vRP.hasPermission(user_id, "!"..table.concat(parts, ".", 2))
+end)
+
+vRP.registerPermissionFunction("is", function(user_id, parts)
+  local param = parts[2]
+  if param == "inside" then
+    local player = vRP.getUserSource(user_id)
+    if player then
+      return vRPclient.isInside(player)
+    end
+  elseif param == "invehicle" then
+    local player = vRP.getUserSource(user_id)
+    if player then
+      return vRPclient.isInVehicle(player)
+    end
+  end
+end)
+
 -- check if the user has a specific permission
 function vRP.hasPermission(user_id, perm)
   local user_groups = vRP.getUserGroups(user_id)
@@ -175,6 +206,17 @@ function vRP.hasPermission(user_id, perm)
       else -- equal (item.x)
         local n = parseInt(string.sub(op,1,string.len(op)))
         if amount == n then return true end
+      end
+    end
+  elseif fchar == "!" then -- special function permission
+    local _perm = string.sub(perm,2,string.len(perm))
+    local parts = splitString(_perm,".")
+    if #parts > 0 then
+      local fperm = func_perms[parts[1]]
+      if fperm then
+        return fperm(user_id, parts) or false
+      else
+        return false
       end
     end
   else -- regular plain permission
