@@ -952,6 +952,7 @@ vRP.removeNamedMarker(name)
 module(rsc, path)
 
 -- create an async returner
+-- return returner (r:wait(), r(...))
 async()
 
 -- CLIENT and SERVER globals
