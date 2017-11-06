@@ -42,7 +42,7 @@ local function rollback_idle_custom(player)
   end
 end
 
-async(function()
+Citizen.CreateThread(function()
   -- generate menus
   for k,v in pairs(cfg.cloakroom_types) do
     local menu = {name=lang.cloakroom.title({k}),css={top="75px",header_color="rgba(0,125,255,0.75)"}}
@@ -91,7 +91,7 @@ async(function()
       end
     end
   end
-end, true)
+end)
 
 -- clients points
 
@@ -131,9 +131,7 @@ end
 
 -- add points on first spawn
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
-  async(function()
-    if first_spawn then
-      build_client_points(source)
-    end
-  end, true)
+  if first_spawn then
+    build_client_points(source)
+  end
 end)

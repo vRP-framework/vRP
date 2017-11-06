@@ -135,16 +135,17 @@ end
 
 -- hunger/thirst increase
 function task_update()
-  async(function()
-    for k,v in pairs(vRP.users) do
-      vRP.varyHunger(v,cfg.hunger_per_minute)
-      vRP.varyThirst(v,cfg.thirst_per_minute)
-    end
+  for k,v in pairs(vRP.users) do
+    vRP.varyHunger(v,cfg.hunger_per_minute)
+    vRP.varyThirst(v,cfg.thirst_per_minute)
+  end
 
-    SetTimeout(60000,task_update)
-  end, true)
+  SetTimeout(60000,task_update)
 end
-task_update()
+
+Citizen.CreateThread(function()
+  task_update()
+end)
 
 -- handlers
 
@@ -159,19 +160,17 @@ end)
 
 -- add survival progress bars on spawn
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
-  async(function()
-    local data = vRP.getUserDataTable(user_id)
+  local data = vRP.getUserDataTable(user_id)
 
-    -- disable police
-    vRPclient.setPolice(source,cfg.police)
-    -- set friendly fire
-    vRPclient.setFriendlyFire(source,cfg.pvp)
+  -- disable police
+  vRPclient.setPolice(source,cfg.police)
+  -- set friendly fire
+  vRPclient.setFriendlyFire(source,cfg.pvp)
 
-    vRPclient.setProgressBar(source,"vRP:hunger","minimap",htxt,255,153,0,0)
-    vRPclient.setProgressBar(source,"vRP:thirst","minimap",ttxt,0,125,255,0)
-    vRP.setHunger(user_id, data.hunger)
-    vRP.setThirst(user_id, data.thirst)
-  end, true)
+  vRPclient.setProgressBar(source,"vRP:hunger","minimap",htxt,255,153,0,0)
+  vRPclient.setProgressBar(source,"vRP:thirst","minimap",ttxt,0,125,255,0)
+  vRP.setHunger(user_id, data.hunger)
+  vRP.setThirst(user_id, data.thirst)
 end)
 
 -- EMERGENCY
@@ -193,9 +192,7 @@ local choice_revive = {function(player,choice)
             if vRP.tryGetInventoryItem(user_id,"medkit",1,true) then
               vRPclient.playAnim(player,false,revive_seq,false) -- anim
               SetTimeout(15000, function()
-                async(function()
-                  vRPclient.varyHealth(nplayer,50) -- heal 50
-                end, true)
+                vRPclient.varyHealth(nplayer,50) -- heal 50
               end)
             end
           else

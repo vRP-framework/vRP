@@ -35,9 +35,7 @@ function vRP.sendServiceAlert(sender, service_name,x,y,z,msg)
       -- add position for service.time seconds
       local bid = vRPclient.addBlip(v,x,y,z,service.blipid,service.blipcolor,"("..service_name..") "..msg)
       SetTimeout(service.alert_time*1000,function()
-        async(function()
-          vRPclient.removeBlip(v,bid)
-        end, true)
+        vRPclient.removeBlip(v,bid)
       end)
 
       -- call request
@@ -98,9 +96,7 @@ function vRP.sendSMSPos(user_id, phone, x,y,z, cbr)
       -- add position for 5 minutes
       local bid = vRPclient.addBlip(dest_src,x,y,z,162,37,from)
       SetTimeout(cfg.smspos_duration*1000,function()
-        async(function()
-          vRPclient.removeBlip(dest_src,{bid})
-        end, true)
+        vRPclient.removeBlip(dest_src,{bid})
       end)
 
       return true
@@ -335,12 +331,10 @@ phone_menu[lang.phone.announce.title()] = {ch_announce,lang.phone.announce.descr
 
 -- phone menu static builder after 10 seconds
 SetTimeout(10000, function()
-  async(function()
-    local menu = vRP.buildMenu("phone", {})
-    for k,v in pairs(menu) do
-      phone_menu[k] = v
-    end
-  end,true)
+  local menu = vRP.buildMenu("phone", {})
+  for k,v in pairs(menu) do
+    phone_menu[k] = v
+  end
 end)
 
 -- add phone menu to main menu

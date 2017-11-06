@@ -19,9 +19,9 @@ MySQL.createCommand("vRP/get_money","SELECT wallet,bank FROM vrp_user_moneys WHE
 MySQL.createCommand("vRP/set_money","UPDATE vrp_user_moneys SET wallet = @wallet, bank = @bank WHERE user_id = @user_id")
 
 -- init tables
-async(function()
+Citizen.CreateThread(function()
   MySQL.execute("vRP/money_tables")
-end,true)
+end)
 
 -- load config
 local cfg = module("cfg/money")
@@ -138,50 +138,42 @@ end
 
 -- events, init user account if doesn't exist at connection
 AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
-  async(function()
-    MySQL.execute("vRP/money_init_user", {user_id = user_id, wallet = cfg.open_wallet, bank = cfg.open_bank})
-    -- load money (wallet,bank)
-    local tmp = vRP.getUserTmpTable(user_id)
-    if tmp then
-      local rows = MySQL.query("vRP/get_money", {user_id = user_id})
-      if #rows > 0 then
-        tmp.bank = rows[1].bank
-        tmp.wallet = rows[1].wallet
-      end
+  MySQL.execute("vRP/money_init_user", {user_id = user_id, wallet = cfg.open_wallet, bank = cfg.open_bank})
+  -- load money (wallet,bank)
+  local tmp = vRP.getUserTmpTable(user_id)
+  if tmp then
+    local rows = MySQL.query("vRP/get_money", {user_id = user_id})
+    if #rows > 0 then
+      tmp.bank = rows[1].bank
+      tmp.wallet = rows[1].wallet
     end
-  end, true)
+  end
 end)
 
 -- save money on leave
 AddEventHandler("vRP:playerLeave",function(user_id,source)
-  async(function()
-    -- (wallet,bank)
-    local tmp = vRP.getUserTmpTable(user_id)
-    if tmp and tmp.wallet and tmp.bank then
-      MySQL.execute("vRP/set_money", {user_id = user_id, wallet = tmp.wallet, bank = tmp.bank})
-    end
-  end, true)
+  -- (wallet,bank)
+  local tmp = vRP.getUserTmpTable(user_id)
+  if tmp and tmp.wallet and tmp.bank then
+    MySQL.execute("vRP/set_money", {user_id = user_id, wallet = tmp.wallet, bank = tmp.bank})
+  end
 end)
 
 -- save money (at same time that save datatables)
 AddEventHandler("vRP:save", function()
-  async(function()
-    for k,v in pairs(vRP.user_tmp_tables) do
-      if v.wallet and v.bank then
-        MySQL.execute("vRP/set_money", {user_id = k, wallet = v.wallet, bank = v.bank})
-      end
+  for k,v in pairs(vRP.user_tmp_tables) do
+    if v.wallet and v.bank then
+      MySQL.execute("vRP/set_money", {user_id = k, wallet = v.wallet, bank = v.bank})
     end
-  end, true)
+  end
 end)
 
 -- money hud
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
-  async(function()
-    if first_spawn then
-      -- add money display
-      vRPclient.setDiv(source,"money",cfg.display_css,lang.money.display({vRP.getMoney(user_id)}))
-    end
-  end, true)
+  if first_spawn then
+    -- add money display
+    vRPclient.setDiv(source,"money",cfg.display_css,lang.money.display({vRP.getMoney(user_id)}))
+  end
 end)
 
 local function ch_give(player,choice)

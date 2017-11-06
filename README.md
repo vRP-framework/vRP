@@ -951,41 +951,12 @@ vRP.removeNamedMarker(name)
 -- path: lua file path without extension
 module(rsc, path)
 
--- create an async context to execute async code in a sequential way
--- see https://github.com/ImagicTheCat/Luaseq for more informations
-async(func, force)
-
-
+-- create an async returner
+async()
 
 -- CLIENT and SERVER globals
 -- booleans to known the side of the script
 ```
-
-##### Where or when should async be used ?
-
-With FiveM, `async` should always be called with the force parameter to true, it will ensure that the code will be executed in a new coroutine.
-
-`async` should be used when not already inside an async block and where functions that use an async returner are called. 
-Here is an non-exhaustive list:
-* a MySQL query
-* a Tunnel call
-* a Proxy call
-* something calling one of the previous elements
-
-Tunnel and Proxy registered functions will always have an async context when executed remotely, you don't need to create one.
-
-Here is a list of cases where you should create an async context:
-* registered callbacks in other resources (items, menu choices, ...)
-* inside an event handler callback
-* inside a SetTimeout callback
-* anywhere not already in an async context (initialization of MySQL tables at startup, ...)
-
-If a Tunnel or Proxy call behave strangely, it's probably that you missed the async context or forgot the `true` parameter.
-Only one async context is needed, so place them at the "root", then sub calls will be synchronous-like (but they're not). 
-
-If you want an async call to be non-blocking, make a new async context (force = true) and call it inside.
-
-Like the callback hell, if one of the async returned function never returns (Tunnel call to disconnected player, failed query ...), the rest will not be executed. This is intuitive, but it can be an issue for special use cases (where you will need to create new async contexts to be sure to execute the current code).
 
 #### Proxy
 

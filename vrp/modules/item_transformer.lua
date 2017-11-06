@@ -221,11 +221,9 @@ end
 -- task: transformers ticks (every 3 seconds)
 local function transformers_tick()
   SetTimeout(0,function() -- error death protection for transformers_tick() 
-    async(function()
-      for k,tr in pairs(transformers) do
-        tr_tick(tr)
-      end
-    end, true)
+    for k,tr in pairs(transformers) do
+      tr_tick(tr)
+    end
   end)
 
   SetTimeout(3000,transformers_tick)
@@ -245,13 +243,11 @@ transformers_regen()
 
 -- add transformers areas on player first spawn
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
-  async(function()
-    if first_spawn then
-      for k,tr in pairs(transformers) do
-        bind_tr_area(source,tr)
-      end
+  if first_spawn then
+    for k,tr in pairs(transformers) do
+      bind_tr_area(source,tr)
     end
-  end, true)
+  end
 end)
 
 -- STATIC TRANSFORMERS
@@ -277,39 +273,37 @@ local function gen_random_position(positions)
 end
 
 local function hidden_placement_tick()
-  async(function()
-    local data = vRP.getSData("vRP:hidden_trs")
-    local hidden_trs = json.decode(data) or {}
+  local data = vRP.getSData("vRP:hidden_trs")
+  local hidden_trs = json.decode(data) or {}
 
-    for k,v in pairs(cfg.hidden_transformers) do
-      -- init entry
-      local htr = hidden_trs[k]
-      if not htr then
-        hidden_trs[k] = {timestamp=parseInt(os.time()), position=gen_random_position(v.positions)}
-        htr = hidden_trs[k]
-      end
-
-      -- remove hidden transformer if needs respawn
-      if tonumber(os.time())-htr.timestamp >= cfg.hidden_transformer_duration*60 then
-        htr.timestamp = parseInt(os.time())
-        vRP.removeItemTransformer("cfg:"..k)
-        -- generate new position
-        htr.position = gen_random_position(v.positions)
-      end
-
-      -- spawn if unspawned 
-      if transformers["cfg:"..k] == nil then
-        v.def.x = htr.position[1]
-        v.def.y = htr.position[2]
-        v.def.z = htr.position[3]
-
-        vRP.setItemTransformer("cfg:"..k, v.def)
-      end
+  for k,v in pairs(cfg.hidden_transformers) do
+    -- init entry
+    local htr = hidden_trs[k]
+    if not htr then
+      hidden_trs[k] = {timestamp=parseInt(os.time()), position=gen_random_position(v.positions)}
+      htr = hidden_trs[k]
     end
 
-    vRP.setSData("vRP:hidden_trs",json.encode(hidden_trs)) -- save hidden transformers
-    SetTimeout(300000, hidden_placement_tick)
-  end, true)
+    -- remove hidden transformer if needs respawn
+    if tonumber(os.time())-htr.timestamp >= cfg.hidden_transformer_duration*60 then
+      htr.timestamp = parseInt(os.time())
+      vRP.removeItemTransformer("cfg:"..k)
+      -- generate new position
+      htr.position = gen_random_position(v.positions)
+    end
+
+    -- spawn if unspawned 
+    if transformers["cfg:"..k] == nil then
+      v.def.x = htr.position[1]
+      v.def.y = htr.position[2]
+      v.def.z = htr.position[3]
+
+      vRP.setItemTransformer("cfg:"..k, v.def)
+    end
+  end
+
+  vRP.setSData("vRP:hidden_trs",json.encode(hidden_trs)) -- save hidden transformers
+  SetTimeout(300000, hidden_placement_tick)
 end
 SetTimeout(5000, hidden_placement_tick) -- delayed to wait items loading
 
@@ -350,31 +344,27 @@ local function informer_leave()
 end
 
 local function informer_placement_tick()
-  async(function()
-    local pos = gen_random_position(cfg.informer.positions)
-    local x,y,z = table.unpack(pos)
+  local pos = gen_random_position(cfg.informer.positions)
+  local x,y,z = table.unpack(pos)
 
+  for k,v in pairs(vRP.rusers) do
+    local player = vRP.getUserSource(tonumber(k))
+
+    -- add informer blip/marker/area
+    vRPclient.setNamedBlip(player,"vRP:informer",x,y,z,cfg.informer.blipid,cfg.informer.blipcolor,lang.itemtr.informer.title())
+    vRPclient.setNamedMarker(player,"vRP:informer",x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+    vRP.setArea(player,"vRP:informer",x,y,z,1,1.5,informer_enter,informer_leave)
+  end
+
+  -- remove informer blip/marker/area after after a while
+  SetTimeout(cfg.informer.duration*60000, function()
     for k,v in pairs(vRP.rusers) do
       local player = vRP.getUserSource(tonumber(k))
-
-      -- add informer blip/marker/area
-      vRPclient.setNamedBlip(player,"vRP:informer",x,y,z,cfg.informer.blipid,cfg.informer.blipcolor,lang.itemtr.informer.title())
-      vRPclient.setNamedMarker(player,"vRP:informer",x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
-      vRP.setArea(player,"vRP:informer",x,y,z,1,1.5,informer_enter,informer_leave)
+      vRPclient.removeNamedBlip(player,"vRP:informer")
+      vRPclient.removeNamedMarker(player,"vRP:informer")
+      vRP.removeArea(player,"vRP:informer")
     end
-
-    -- remove informer blip/marker/area after after a while
-    SetTimeout(cfg.informer.duration*60000, function()
-      async(function()
-        for k,v in pairs(vRP.rusers) do
-          local player = vRP.getUserSource(tonumber(k))
-          vRPclient.removeNamedBlip(player,"vRP:informer")
-          vRPclient.removeNamedMarker(player,"vRP:informer")
-          vRP.removeArea(player,"vRP:informer")
-        end
-      end, true)
-    end)
-  end, true)
+  end)
 
   SetTimeout(cfg.informer.interval*60000, informer_placement_tick)
 end

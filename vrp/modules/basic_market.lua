@@ -105,9 +105,7 @@ local function build_client_markets(source)
 end
 
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
-  async(function()
-    if first_spawn then
-      build_client_markets(source)
-    end
-  end, true)
+  if first_spawn then
+    build_client_markets(source)
+  end
 end)

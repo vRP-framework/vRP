@@ -92,35 +92,32 @@ function Tunnel.bindInterface(name,interface)
   -- receive request
   RegisterLocalEvent(name..":tunnel_req")
   AddEventHandler(name..":tunnel_req",function(member,args,identifier,rid)
-    async(function()
-      local source = source
-      local delayed = false
+    local source = source
 
-      if Debug.active then
-        Debug.pbegin("tunnelreq#"..rid.."_"..name..":"..member.." "..json.encode(Debug.safeTableCopy(args)))
+    if Debug.active then
+      Debug.pbegin("tunnelreq#"..rid.."_"..name..":"..member.." "..json.encode(Debug.safeTableCopy(args)))
+    end
+
+    local f = interface[member]
+
+    local rets = {}
+    if type(f) == "function" then -- call bound function
+      rets = {f(table.unpack(args, 1, table.maxn(args)))}
+      -- CancelEvent() -- cancel event doesn't seem to cancel the event for the other handlers, but if it does, uncomment this
+    end
+
+    -- send response (even if the function doesn't exist)
+    if rid >= 0 then
+      if SERVER then
+        TriggerRemoteEvent(name..":"..identifier..":tunnel_res",source,rid,rets)
+      else
+        TriggerRemoteEvent(name..":"..identifier..":tunnel_res",rid,rets)
       end
+    end
 
-      local f = interface[member]
-
-      local rets = {}
-      if type(f) == "function" then -- call bound function
-        rets = {f(table.unpack(args, 1, table.maxn(args)))}
-        -- CancelEvent() -- cancel event doesn't seem to cancel the event for the other handlers, but if it does, uncomment this
-      end
-
-      -- send response (even if the function doesn't exist)
-      if rid >= 0 then
-        if SERVER then
-          TriggerRemoteEvent(name..":"..identifier..":tunnel_res",source,rid,rets)
-        else
-          TriggerRemoteEvent(name..":"..identifier..":tunnel_res",rid,rets)
-        end
-      end
-
-      if Debug.active then
-        Debug.pend()
-      end
-    end, true)
+    if Debug.active then
+      Debug.pend()
+    end
   end)
 end
 
@@ -144,7 +141,7 @@ function Tunnel.getInterface(name,identifier)
     end
 
     local callback = callbacks[rid]
-    if callback ~= nil then
+    if callback then
       -- free request id
       ids:free(rid)
       callbacks[rid] = nil

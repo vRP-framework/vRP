@@ -113,19 +113,17 @@ local function ch_trackveh(player,choice)
     vRPclient.notify(player,lang.police.pc.trackveh.tracking())
     local seconds = math.random(cfg.trackveh.min_time,cfg.trackveh.max_time)
     SetTimeout(seconds*1000,function()
-      async(function()
-        local tplayer = vRP.getUserSource(user_id)
-        if tplayer ~= nil then
-          local ok,x,y,z = vRPclient.getAnyOwnedVehiclePosition(tplayer)
-          if ok then -- track success
-            vRP.sendServiceAlert(nil, cfg.trackveh.service,x,y,z,lang.police.pc.trackveh.tracked({reg,note}))
-          else
-            vRPclient.notify(player,lang.police.pc.trackveh.track_failed({reg,note})) -- failed
-          end
+      local tplayer = vRP.getUserSource(user_id)
+      if tplayer then
+        local ok,x,y,z = vRPclient.getAnyOwnedVehiclePosition(tplayer)
+        if ok then -- track success
+          vRP.sendServiceAlert(nil, cfg.trackveh.service,x,y,z,lang.police.pc.trackveh.tracked({reg,note}))
         else
           vRPclient.notify(player,lang.police.pc.trackveh.track_failed({reg,note})) -- failed
         end
-      end, true)
+      else
+        vRPclient.notify(player,lang.police.pc.trackveh.track_failed({reg,note})) -- failed
+      end
     end)
   else
     vRPclient.notify(player,lang.common.not_found())
@@ -534,11 +532,9 @@ end
 
 -- build police points
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
-  async(function()
-    if first_spawn then
-      build_client_points(source)
-    end
-  end, true)
+  if first_spawn then
+    build_client_points(source)
+  end
 end)
 
 -- WANTED SYNC
@@ -572,29 +568,28 @@ end
 
 -- delete wanted entry on leave
 AddEventHandler("vRP:playerLeave", function(user_id, player)
-  async(function()
-    wantedlvl_players[user_id] = nil
-    vRPclient.removeNamedBlip(-1, "vRP:wanted:"..user_id)  -- remove wanted blip (all to prevent phantom blip)
-  end, true)
+  wantedlvl_players[user_id] = nil
+  vRPclient.removeNamedBlip(-1, "vRP:wanted:"..user_id)  -- remove wanted blip (all to prevent phantom blip)
 end)
 
 -- display wanted positions
 local function task_wanted_positions()
-  async(function()
-    local listeners = vRP.getUsersByPermission("police.wanted")
-    for k,v in pairs(wantedlvl_players) do -- each wanted player
-      local player = vRP.getUserSource(tonumber(k))
-      if player and v and v > 0 then
-        local x,y,z = vRPclient.getPosition(player)
-        for l,w in pairs(listeners) do -- each listening player
-          local lplayer = vRP.getUserSource(w)
-          if lplayer then
-            vRPclient.setNamedBlip(lplayer, "vRP:wanted:"..k,x,y,z,cfg.wanted.blipid,cfg.wanted.blipcolor,lang.police.wanted({v}))
-          end
+  local listeners = vRP.getUsersByPermission("police.wanted")
+  for k,v in pairs(wantedlvl_players) do -- each wanted player
+    local player = vRP.getUserSource(tonumber(k))
+    if player and v and v > 0 then
+      local x,y,z = vRPclient.getPosition(player)
+      for l,w in pairs(listeners) do -- each listening player
+        local lplayer = vRP.getUserSource(w)
+        if lplayer then
+          vRPclient.setNamedBlip(lplayer, "vRP:wanted:"..k,x,y,z,cfg.wanted.blipid,cfg.wanted.blipcolor,lang.police.wanted({v}))
         end
       end
     end
-    SetTimeout(5000, task_wanted_positions)
-  end, true)
+  end
+  SetTimeout(5000, task_wanted_positions)
 end
-task_wanted_positions()
+
+Citizen.CreateThread(function()
+  task_wanted_positions()
+end)

@@ -91,7 +91,7 @@ local function build_client_atms(source)
   end
 end
 
-AddEventHandlerAsync("vRP:playerSpawn",function(user_id,source,first_spawn)
+AddEventHandler("vRP:playerSpawn",function(user_id,source,first_spawn)
   if first_spawn then
     build_client_atms(source)
   end

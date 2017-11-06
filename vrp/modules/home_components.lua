@@ -129,19 +129,17 @@ local function gametable_create(owner_id, stype, sid, cid, config, x, y, z, play
               table.insert(bet_players, player)
 
               local close_bet = function()
-                async(function()
-                  if bet_opened then
-                    bet_opened = false
-                    -- select winner
-                    local wplayer = bet_players[math.random(1,#bet_players)]
-                    local wuser_id = vRP.getUserId(wplayer)
-                    if wuser_id then
-                      vRP.giveMoney(wuser_id, bet_total)
-                      vRPclient.notify(wplayer,lang.money.received({bet_total}))
-                      vRPclient.playAnim(wplayer,true,{{"mp_player_introck","mp_player_int_rock",1}},false)
-                    end
+                if bet_opened then
+                  bet_opened = false
+                  -- select winner
+                  local wplayer = bet_players[math.random(1,#bet_players)]
+                  local wuser_id = vRP.getUserId(wplayer)
+                  if wuser_id then
+                    vRP.giveMoney(wuser_id, bet_total)
+                    vRPclient.notify(wplayer,lang.money.received({bet_total}))
+                    vRPclient.playAnim(wplayer,true,{{"mp_player_introck","mp_player_int_rock",1}},false)
                   end
-                end, true)
+                end
               end
 
               -- send bet request to all nearest players
@@ -152,7 +150,7 @@ local function gametable_create(owner_id, stype, sid, cid, config, x, y, z, play
                   local nplayer = parseInt(k)
                   local nuser_id = vRP.getUserId(nplayer)
                   if nuser_id then -- request
-                    async(function() -- non blocking
+                    Citizen.CreateThread(function() -- non blocking
                       if vRP.request(nplayer,lang.home.gametable.bet.request({amount}), 30) and bet_opened then
                         if vRP.tryPayment(nuser_id,amount) then -- register player bet
                           bet_total = bet_total+amount
@@ -167,7 +165,7 @@ local function gametable_create(owner_id, stype, sid, cid, config, x, y, z, play
                       if pcount == 0 then -- autoclose bet, everyone is ok
                         close_bet()
                       end
-                    end, true)
+                    end)
                   end
                 end
 

@@ -16,9 +16,9 @@ MySQL.createCommand("vRP/get_vehicles","SELECT vehicle FROM vrp_user_vehicles WH
 MySQL.createCommand("vRP/get_vehicle","SELECT vehicle FROM vrp_user_vehicles WHERE user_id = @user_id AND vehicle = @vehicle")
 
 -- init
-async(function()
+Citizen.CreateThread(function()
   MySQL.execute("vRP/vehicles_table")
-end, true)
+end)
 
 -- load config
 
@@ -292,7 +292,7 @@ local function build_client_garages(source)
   end
 end
 
-AddEventHandlerAsync("vRP:playerSpawn",function(user_id,source,first_spawn)
+AddEventHandler("vRP:playerSpawn",function(user_id,source,first_spawn)
   if first_spawn then
     build_client_garages(source)
   end
@@ -407,7 +407,7 @@ local function ch_repair(player,choice)
     -- anim and repair
     if vRP.tryGetInventoryItem(user_id,"repairkit",1,true) then
       vRPclient.playAnim(player,false,{task="WORLD_HUMAN_WELDING"},false)
-      SetTimeoutAsync(15000, function()
+      SetTimeout(15000, function()
         vRPclient.fixeNearestVehicle(player,7)
         vRPclient.stopAnim(player,false)
       end)

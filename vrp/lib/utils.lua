@@ -51,21 +51,25 @@ function module(rsc, path)
   end
 end
 
-async = module("vrp", "lib/Luaseq").async
+-- Luaseq like for FiveM
 
-function SetTimeoutAsync(time, callback)
-  SetTimeout(time, function()
-    async(callback, true)
-  end)
+local function wait(self)
+  local rets = Citizen.Await(self.p)
+  if not rets then
+    rets = self.r 
+  end
+
+  return table.unpack(rets, 1, table.maxn(rets))
 end
 
-function AddEventHandlerAsync(name, callback)
-  AddEventHandler(name, function(...)
-    local args = {...}
-    async(function()
-      callback(table.unpack(args, 1, table.maxn(args)))
-    end, true)
-  end)
+local function areturn(self, ...)
+  self.r = {...}
+  self.p:resolve(self.r)
+end
+
+-- create an async returner
+function async()
+  return setmetatable({ wait = wait, p = promise.new() }, { __call = areturn })
 end
 
 function parseInt(v)

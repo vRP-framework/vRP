@@ -30,9 +30,9 @@ MySQL.createCommand("vRP/get_userbyreg","SELECT user_id FROM vrp_user_identities
 MySQL.createCommand("vRP/get_userbyphone","SELECT user_id FROM vrp_user_identities WHERE phone = @phone")
 
 -- init
-async(function()
+Citizen.CreateThread(function()
   MySQL.execute("vRP/identity_tables")
-end, true)
+end)
 
 -- api
 
@@ -102,20 +102,18 @@ end
 
 -- events, init user identity at connection
 AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
-  async(function()
-    if not vRP.getUserIdentity(user_id) then
-      local registration vRP.generateRegistrationNumber()
-      local phone = vRP.generatePhoneNumber()
-      MySQL.execute("vRP/init_user_identity", {
-        user_id = user_id,
-        registration = registration,
-        phone = phone,
-        firstname = cfg.random_first_names[math.random(1,#cfg.random_first_names)],
-        name = cfg.random_last_names[math.random(1,#cfg.random_last_names)],
-        age = math.random(25,40)
-      })
-    end
-  end, true)
+  if not vRP.getUserIdentity(user_id) then
+    local registration vRP.generateRegistrationNumber()
+    local phone = vRP.generatePhoneNumber()
+    MySQL.execute("vRP/init_user_identity", {
+      user_id = user_id,
+      registration = registration,
+      phone = phone,
+      firstname = cfg.random_first_names[math.random(1,#cfg.random_first_names)],
+      name = cfg.random_last_names[math.random(1,#cfg.random_last_names)],
+      age = math.random(25,40)
+    })
+  end
 end)
 
 -- city hall menu
@@ -191,18 +189,16 @@ local function build_client_cityhall(source) -- build the city hall area/marker/
 end
 
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
-  async(function()
-    -- send registration number to client at spawn
-    local identity = vRP.getUserIdentity(user_id)
-    if identity then
-      vRPclient.setRegistrationNumber(source,identity.registration or "000AAA")
-    end
+  -- send registration number to client at spawn
+  local identity = vRP.getUserIdentity(user_id)
+  if identity then
+    vRPclient.setRegistrationNumber(source,identity.registration or "000AAA")
+  end
 
-    -- first spawn, build city hall
-    if first_spawn then
-      build_client_cityhall(source)
-    end
-  end, true)
+  -- first spawn, build city hall
+  if first_spawn then
+    build_client_cityhall(source)
+  end
 end)
 
 -- player identity menu

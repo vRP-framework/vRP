@@ -30,9 +30,9 @@ MySQL.createCommand("vRP/get_business_page","SELECT user_id,name,description,cap
 MySQL.createCommand("vRP/reset_transfer","UPDATE vrp_user_business SET laundered = 0, reset_timestamp = @time WHERE user_id = @user_id")
 
 -- init
-async(function()
-  MySQL.execute("vRP/business_tables")
-end, true)
+Citizen.CreateThread(function()
+MySQL.execute("vRP/business_tables")
+end)
 
 -- api
 
@@ -200,12 +200,10 @@ end
 
 
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
-  async(function()
-    -- first spawn, build business
-    if first_spawn then
-      build_client_business(source)
-    end
-  end, true)
+  -- first spawn, build business
+  if first_spawn then
+    build_client_business(source)
+  end
 end)
 
 
