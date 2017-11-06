@@ -106,7 +106,6 @@ Home components allow developers to create things to be added inside homes using
   * [Map](#map)
 * [Libs](#libs)
   * [utils](#utils)
-     * [Where or when should async be used ?](#where-or-when-should-async-be-used-)
   * [Proxy](#proxy)
   * [Tunnel](#tunnel)
   * [MySQL](#mysql)
@@ -951,13 +950,15 @@ vRP.removeNamedMarker(name)
 -- path: lua file path without extension
 module(rsc, path)
 
--- create an async returner
+-- create an async returner (require a Citizen thread)
 -- return returner (r:wait(), r(...))
 async()
 
 -- CLIENT and SERVER globals
 -- booleans to known the side of the script
 ```
+
+Any function making usage of `async()` require a Citizen thread if not already in one. Citizen will throw an error if you're not in one.
 
 #### Proxy
 
