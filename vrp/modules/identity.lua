@@ -30,7 +30,7 @@ MySQL.createCommand("vRP/get_userbyreg","SELECT user_id FROM vrp_user_identities
 MySQL.createCommand("vRP/get_userbyphone","SELECT user_id FROM vrp_user_identities WHERE phone = @phone")
 
 -- init
-Citizen.CreateThread(function()
+Citizen.CreateThreadNow(function()
   MySQL.execute("vRP/identity_tables")
 end)
 

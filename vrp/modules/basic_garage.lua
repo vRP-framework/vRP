@@ -16,7 +16,7 @@ MySQL.createCommand("vRP/get_vehicles","SELECT vehicle FROM vrp_user_vehicles WH
 MySQL.createCommand("vRP/get_vehicle","SELECT vehicle FROM vrp_user_vehicles WHERE user_id = @user_id AND vehicle = @vehicle")
 
 -- init
-Citizen.CreateThread(function()
+Citizen.CreateThreadNow(function()
   MySQL.execute("vRP/vehicles_table")
 end)
 
