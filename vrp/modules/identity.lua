@@ -103,7 +103,7 @@ end
 -- events, init user identity at connection
 AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
   if not vRP.getUserIdentity(user_id) then
-    local registration vRP.generateRegistrationNumber()
+    local registration = vRP.generateRegistrationNumber()
     local phone = vRP.generatePhoneNumber()
     MySQL.execute("vRP/init_user_identity", {
       user_id = user_id,
