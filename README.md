@@ -5,10 +5,9 @@ The project aim to create a generic and simple RP framework to prevent everyone 
 
 Contributions are welcomed.
 
-If you want to try the framework somewhere, here is a list of servers using vRP, without whitelist and managed by me.
+Config examples are in https://github.com/ImagicTheCat/vRP/tree/vrpex/misc/config
 
-vRP test server availables:
-* 93.115.96.185 (FR) [(config)](http://93.115.96.185/fivem/servers/FR_cfg.zip) [(discord)](https://discord.gg/ZAdE3eu)
+[Discord](https://discord.gg/ZAdE3eu)
 
 Support me on Patreon to keep this project alive:
 
