@@ -76,7 +76,7 @@ AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
       local y = cfg.spawn_position[2]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
       local z = cfg.spawn_position[3]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
       data.position = {x=x,y=y,z=z}
-      vRPclient.teleport(source,{x,y,z})
+      vRPclient.teleport(source,x,y,z)
     end
 
     -- load character customization
