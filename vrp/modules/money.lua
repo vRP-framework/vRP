@@ -55,7 +55,7 @@ end
 -- return true or false (debited if true)
 function vRP.tryPayment(user_id,amount)
   local money = vRP.getMoney(user_id)
-  if money >= amount then
+  if amount >= 0 and money >= amount then
     vRP.setMoney(user_id,money-amount)
     return true
   else
@@ -65,8 +65,10 @@ end
 
 -- give money
 function vRP.giveMoney(user_id,amount)
-  local money = vRP.getMoney(user_id)
-  vRP.setMoney(user_id,money+amount)
+  if amount > 0 then
+    local money = vRP.getMoney(user_id)
+    vRP.setMoney(user_id,money+amount)
+  end
 end
 
 -- get bank money
@@ -99,7 +101,7 @@ end
 -- return true or false (withdrawn if true)
 function vRP.tryWithdraw(user_id,amount)
   local money = vRP.getBankMoney(user_id)
-  if amount > 0 and money >= amount then
+  if amount >= 0 and money >= amount then
     vRP.setBankMoney(user_id,money-amount)
     vRP.giveMoney(user_id,amount)
     return true
@@ -111,7 +113,7 @@ end
 -- try a deposit
 -- return true or false (deposited if true)
 function vRP.tryDeposit(user_id,amount)
-  if amount > 0 and vRP.tryPayment(user_id,amount) then
+  if amount >= 0 and vRP.tryPayment(user_id,amount) then
     vRP.giveBankMoney(user_id,amount)
     return true
   else
