@@ -408,10 +408,11 @@ AddEventHandler("playerDropped",function(reason)
   local source = source
   Debug.pbegin("playerDropped")
 
+  local user_id = vRP.getUserId(source)
+  local endpoint = vRP.getPlayerEndpoint(source)
+
   -- remove player from connected clients
   vRPclient.removePlayer(-1, source)
-
-  local user_id = vRP.getUserId(source)
 
   if user_id then
     TriggerEvent("vRP:playerLeave", user_id, source)
@@ -419,7 +420,7 @@ AddEventHandler("playerDropped",function(reason)
     -- save user data table
     vRP.setUData(user_id,"vRP:datatable",json.encode(vRP.getUserDataTable(user_id)))
 
-    print("[vRP] "..vRP.getPlayerEndpoint(source).." disconnected (user_id = "..user_id..")")
+    print("[vRP] "..endpoint.." disconnected (user_id = "..user_id..")")
     vRP.users[vRP.rusers[user_id]] = nil
     vRP.rusers[user_id] = nil
     vRP.user_tables[user_id] = nil
