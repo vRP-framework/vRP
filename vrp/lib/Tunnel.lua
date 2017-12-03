@@ -34,17 +34,23 @@ local function tunnel_resolve(itable,key)
 
   -- generate access function
   local fcall = function(...)
-    local r = async()
+    local r = nil
 
     local args = {...} 
     local dest = nil
     if SERVER then
       dest = args[1]
       args = {table.unpack(args, 2, table.maxn(args))}
+      if dest >= 0 then -- return values not supported for multiple dests (-1)
+        r = async()
+      end
+    else
+      r = async()
     end
 
     -- get delay data
-    local delay_data = Tunnel.delays[dest]
+    local delay_data = nil
+    if dest then delay_data = Tunnel.delays[dest] end
     if delay_data == nil then
       delay_data = {0,0}
     end
@@ -59,8 +65,12 @@ local function tunnel_resolve(itable,key)
         delay_data[2] = delay_data[2]-add_delay
 
         -- send request
-        local rid = ids:gen()
-        callbacks[rid] = r
+        local rid = -1
+        if r then
+          rid = ids:gen()
+          callbacks[rid] = r
+        end
+
         if SERVER then
           TriggerRemoteEvent(iname..":tunnel_req",dest,key,args,identifier,rid)
         else
@@ -69,8 +79,12 @@ local function tunnel_resolve(itable,key)
       end)
     else -- no delay
       -- send request
-      local rid = ids:gen()
-      callbacks[rid] = r
+      local rid = -1
+      if r then
+        rid = ids:gen()
+        callbacks[rid] = r
+      end
+
       if SERVER then
         TriggerRemoteEvent(iname..":tunnel_req",dest,key,args,identifier,rid)
       else
@@ -78,7 +92,9 @@ local function tunnel_resolve(itable,key)
       end
     end
 
-    return r:wait()
+    if r then
+      return r:wait()
+    end
   end
 
   itable[key] = fcall -- add generated call to table (optimization)
