@@ -131,7 +131,14 @@ Everything you need to know is in the configuration files, but if you have troub
 
 vRP will warn you at server launch if a new version is available. You can also update while I commit things, but do that only if you like to beta test, because you will need to update a lot.
 
-A way to update:
+A good way to update (bleeding-edge):
+* use git to clone vRP to create your own version of it, checkout the branch you want, create a branch from it
+* create a symbolic link (or an update script) to `vrp/` in your fxserver resources directory
+* (repeat) configure, commit your changes, stay updated with the vRP repository, solve conflicts
+
+This way, you will know when config files should be updated and what exactly has been updated.
+
+A more primitive way to update:
 * save your `cfg/` folder somewhere
 * copy all new files in `vrp/`
 * compare your old `cfg/` folder with the new one, fill the gaps (one mistake will break everything, take your time)
