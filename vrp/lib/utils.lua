@@ -68,8 +68,12 @@ local function areturn(self, ...)
 end
 
 -- create an async returner
-function async()
-  return setmetatable({ wait = wait, p = promise.new() }, { __call = areturn })
+function async(func)
+  if func then
+    Citizen.CreateThreadNow(func)
+  else
+    return setmetatable({ wait = wait, p = promise.new() }, { __call = areturn })
+  end
 end
 
 function parseInt(v)

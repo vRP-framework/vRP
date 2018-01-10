@@ -143,7 +143,7 @@ function task_update()
   SetTimeout(60000,task_update)
 end
 
-Citizen.CreateThreadNow(function()
+async(function()
   task_update()
 end)
 

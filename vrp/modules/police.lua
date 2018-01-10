@@ -590,6 +590,6 @@ local function task_wanted_positions()
   SetTimeout(5000, task_wanted_positions)
 end
 
-Citizen.CreateThreadNow(function()
+async(function()
   task_wanted_positions()
 end)

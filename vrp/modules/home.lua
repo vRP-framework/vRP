@@ -23,7 +23,7 @@ MySQL.createCommand("vRP/rm_address","DELETE FROM vrp_user_homes WHERE user_id =
 MySQL.createCommand("vRP/set_address","REPLACE INTO vrp_user_homes(user_id,home,number) VALUES(@user_id,@home,@number)")
 
 -- init
-Citizen.CreateThreadNow(function()
+async(function()
   MySQL.execute("vRP/home_tables")
 end)
 

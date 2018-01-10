@@ -42,7 +42,7 @@ local function rollback_idle_custom(player)
   end
 end
 
-Citizen.CreateThreadNow(function()
+async(function()
   -- generate menus
   for k,v in pairs(cfg.cloakroom_types) do
     local menu = {name=lang.cloakroom.title({k}),css={top="75px",header_color="rgba(0,125,255,0.75)"}}

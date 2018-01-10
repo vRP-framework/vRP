@@ -100,7 +100,7 @@ MySQL.createCommand("vRP/get_last_login","SELECT last_login FROM vrp_users WHERE
 
 -- init tables
 print("[vRP] init base tables")
-Citizen.CreateThreadNow(function()
+async(function()
   MySQL.execute("vRP/base_tables")
 end)
 
@@ -293,7 +293,7 @@ function task_save_datatables()
   SetTimeout(config.save_interval*1000, task_save_datatables)
 end
 
-Citizen.CreateThreadNow(function()
+async(function()
   task_save_datatables()
 end)
 

@@ -30,7 +30,7 @@ MySQL.createCommand("vRP/get_business_page","SELECT user_id,name,description,cap
 MySQL.createCommand("vRP/reset_transfer","UPDATE vrp_user_business SET laundered = 0, reset_timestamp = @time WHERE user_id = @user_id")
 
 -- init
-Citizen.CreateThreadNow(function()
+async(function()
 MySQL.execute("vRP/business_tables")
 end)
 

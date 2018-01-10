@@ -19,7 +19,7 @@ MySQL.createCommand("vRP/get_money","SELECT wallet,bank FROM vrp_user_moneys WHE
 MySQL.createCommand("vRP/set_money","UPDATE vrp_user_moneys SET wallet = @wallet, bank = @bank WHERE user_id = @user_id")
 
 -- init tables
-Citizen.CreateThreadNow(function()
+async(function()
   MySQL.execute("vRP/money_tables")
 end)
 
