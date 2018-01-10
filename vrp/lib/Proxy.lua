@@ -15,19 +15,31 @@ local function proxy_resolve(itable,key)
   local callbacks = mtable.callbacks
   local identifier = mtable.identifier
 
+  local no_wait = false
+  if string.sub(key,1,1) == "_" then
+    key = string.sub(key,2)
+    no_wait = true
+  end
+
   -- generate access function
   local fcall = function(...)
-    local r = async()
+    local rid, r
 
-    local rid = ids:gen()
-    callbacks[rid] = r
+    if no_wait then
+      rid = -1
+    else
+      r = async()
+      rid = ids:gen()
+      callbacks[rid] = r
+    end
 
     local args = {...}
 
     TriggerEvent(iname..":proxy",key, args, identifier, rid)
     
-    return r:wait()
-    --return table.unpack(proxy_rdata, 1, table.maxn(proxy_rdata)) -- returns
+    if not no_wait then
+      return r:wait()
+    end
   end
 
   itable[key] = fcall -- add generated call to table (optimization)
@@ -51,7 +63,9 @@ function Proxy.addInterface(name, itable)
       print("error: proxy call "..name..":"..member.." not found")
     end
 
-    TriggerEvent(name..":"..identifier..":proxy_res",rid,rets)
+    if rid >= 0 then
+      TriggerEvent(name..":"..identifier..":proxy_res",rid,rets)
+    end
 
     if Debug.active then
       Debug.pend()

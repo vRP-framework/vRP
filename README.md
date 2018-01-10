@@ -1089,6 +1089,8 @@ The notation is **Interface.function(dest, ...)**.
 
 Good practice is to get the interface once and set it as a global, but if you want to get multiple times the same interface from the same resource, you need to specify a unique identifier (the name of the resource + a unique id for each one). 
 
+Tunnel and Proxy are blocking calls in the current coroutine until the values are returned, to bypass this behaviour, especially for the Tunnel to optimize speed (ping latency of each call), use `_` as prefix for the function name (Proxy/Tunnel interfaces should not have functions starting with `_`). This will discard the returned values, but if you still need them, you can make normal calls in a new Citizen thread with `Citizen.CreateThreadNow` or `async` to have non-blocking code.
+
 #### MySQL
 
 MySQL queries are managed by the resource `vrp_mysql`, acting like a server for all other resources using it. So connections, commands and queries are globals and should use namespaces if you want to create your own queries to prevent collisions.

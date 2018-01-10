@@ -32,6 +32,12 @@ local function tunnel_resolve(itable,key)
   local callbacks = mtable.tunnel_callbacks
   local identifier = mtable.identifier
 
+  local no_wait = false
+  if string.sub(key,1,1) == "_" then
+    key = string.sub(key,2)
+    no_wait = true
+  end
+
   -- generate access function
   local fcall = function(...)
     local r = nil
@@ -41,10 +47,10 @@ local function tunnel_resolve(itable,key)
     if SERVER then
       dest = args[1]
       args = {table.unpack(args, 2, table.maxn(args))}
-      if dest >= 0 then -- return values not supported for multiple dests (-1)
+      if dest >= 0 and not no_wait then -- return values not supported for multiple dests (-1)
         r = async()
       end
-    else
+    elseif not no_wait then
       r = async()
     end
 
