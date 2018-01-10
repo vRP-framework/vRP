@@ -442,6 +442,7 @@ local lang = {
     }
   },
   itemtr = {
+    not_enough_reagents = "~r~Pas assez d'éléments.",
     informer = {
       title = "Informateur illégal",
       description = "{1} $",

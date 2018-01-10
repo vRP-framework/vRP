@@ -62,6 +62,14 @@ local function tr_tick(tr) -- do transformer tick
           vRPclient._notify(tonumber(k), lang.inventory.full())
         end
 
+        if not money_ok then
+          vRPclient._notify(tonumber(k), lang.money.not_enough())
+        end
+
+        if not reagents_ok then
+          vRPclient._notify(tonumber(k), lang.itemtr.not_enough_reagents())
+        end
+
         if money_ok and reagents_ok and inventory_ok then -- do transformation
           tr.units = tr.units-1 -- sub work unit
 

@@ -443,6 +443,7 @@ local lang = {
     }
   },
   itemtr = {
+    not_enough_reagents = "~r~Not enough reagents.",
     informer = {
       title = "Illegal Informer",
       description = "{1} $",
