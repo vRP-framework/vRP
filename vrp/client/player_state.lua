@@ -19,11 +19,11 @@ Citizen.CreateThread(function()
     if IsPlayerPlaying(PlayerId()) and state_ready then
       local x,y,z = table.unpack(GetEntityCoords(GetPlayerPed(-1),true))
 
-      vRPserver.ping()
-      vRPserver.updatePos(x,y,z)
-      vRPserver.updateHealth(tvRP.getHealth())
-      vRPserver.updateWeapons(tvRP.getWeapons())
-      vRPserver.updateCustomization(tvRP.getCustomization())
+      vRPserver._ping()
+      vRPserver._updatePos(x,y,z)
+      vRPserver._updateHealth(tvRP.getHealth())
+      vRPserver._updateWeapons(tvRP.getWeapons())
+      vRPserver._updateCustomization(tvRP.getCustomization())
     end
   end
 end)

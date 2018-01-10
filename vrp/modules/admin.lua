@@ -10,7 +10,7 @@ local function ch_list(player,choice)
   if user_id and vRP.hasPermission(user_id,"player.list") then
     if player_lists[player] then -- hide
       player_lists[player] = nil
-      vRPclient.removeDiv(player,{"user_list"})
+      vRPclient._removeDiv(player,{"user_list"})
     else -- show
       local content = ""
       for k,v in pairs(vRP.rusers) do
@@ -57,7 +57,7 @@ local function ch_list(player,choice)
   color: rgb(211, 0, 255);
 }
             ]]
-      vRPclient.setDiv(player, "user_list", css, content)
+      vRPclient._setDiv(player, "user_list", css, content)
     end
   end
 end
@@ -68,7 +68,7 @@ local function ch_whitelist(player,choice)
     local id = vRP.prompt(player,"User id to whitelist: ","")
     id = parseInt(id)
     vRP.setWhitelisted(id,true)
-    vRPclient.notify(player, "whitelisted user "..id)
+    vRPclient._notify(player, "whitelisted user "..id)
   end
 end
 
@@ -78,7 +78,7 @@ local function ch_unwhitelist(player,choice)
     local id = vRP.prompt(player,"User id to un-whitelist: ","")
     id = parseInt(id)
     vRP.setWhitelisted(id,false)
-    vRPclient.notify(player, "un-whitelisted user "..id)
+    vRPclient._notify(player, "un-whitelisted user "..id)
   end
 end
 
@@ -89,7 +89,7 @@ local function ch_addgroup(player,choice)
     id = parseInt(id)
     local group = vRP.prompt(player,"Group to add: ","")
     vRP.addUserGroup(id,group)
-    vRPclient.notify(player, group.." added to user "..id)
+    vRPclient._notify(player, group.." added to user "..id)
   end
 end
 
@@ -100,7 +100,7 @@ local function ch_removegroup(player,choice)
     id = parseInt(id)
     local group = vRP.prompt(player,"Group to remove: ","")
     vRP.removeUserGroup(id,group)
-    vRPclient.notify(player, group.." removed from user "..id)
+    vRPclient._notify(player, group.." removed from user "..id)
   end
 end
 
@@ -113,7 +113,7 @@ local function ch_kick(player,choice)
     local source = vRP.getUserSource(id)
     if source then
       vRP.kick(source,reason)
-      vRPclient.notify(player, "kicked user "..id)
+      vRPclient._notify(player, "kicked user "..id)
     end
   end
 end
@@ -127,7 +127,7 @@ local function ch_ban(player,choice)
     local source = vRP.getUserSource(id)
     if source then
       vRP.ban(source,reason)
-      vRPclient.notify(player, "banned user "..id)
+      vRPclient._notify(player, "banned user "..id)
     end
   end
 end
@@ -138,7 +138,7 @@ local function ch_unban(player,choice)
     local id = vRP.prompt(player,"User id to unban: ","")
     id = parseInt(id)
     vRP.setBanned(id,false)
-    vRPclient.notify(player, "un-banned user "..id)
+    vRPclient._notify(player, "un-banned user "..id)
   end
 end
 
@@ -156,7 +156,7 @@ local function ch_emote(player,choice)
       table.insert(seq,{args[1] or "", args[2] or "", args[3] or 1})
     end
 
-    vRPclient.playAnim(player, true,seq,false)
+    vRPclient._playAnim(player, true,seq,false)
   end
 end
 
@@ -168,7 +168,7 @@ local function ch_sound(player,choice)
       for arg in string.gmatch(content,"[^%s]+") do
         table.insert(args,arg)
       end
-      vRPclient.playSound(player, args[1] or "", args[2] or "")
+      vRPclient._playSound(player, args[1] or "", args[2] or "")
   end
 end
 
@@ -182,7 +182,7 @@ local function ch_tptome(player,choice)
   local user_id = vRP.prompt(player,"User id:","")
   local tplayer = vRP.getUserSource(tonumber(user_id))
   if tplayer then
-    vRPclient.teleport(tplayer,x,y,z)
+    vRPclient._teleport(tplayer,x,y,z)
   end
 end
 
@@ -190,7 +190,7 @@ local function ch_tpto(player,choice)
   local user_id = vRP.prompt(player,"User id:","")
   local tplayer = vRP.getUserSource(tonumber(user_id))
   if tplayer then
-    vRPclient.teleport(player, vRPclient.getPosition(tplayer))
+    vRPclient._teleport(player, vRPclient.getPosition(tplayer))
   end
 end
 
@@ -201,7 +201,7 @@ local function ch_tptocoords(player,choice)
     table.insert(coords,tonumber(coord))
   end
 
-  vRPclient.teleport(player, coords[1] or 0, coords[2] or 0, coords[3] or 0)
+  vRPclient._teleport(player, coords[1] or 0, coords[2] or 0, coords[3] or 0)
 end
 
 local function ch_givemoney(player,choice)
@@ -244,11 +244,11 @@ local function ch_calladmin(player,choice)
       if ok then -- take the call
         if not answered then
           -- answer the call
-          vRPclient.notify(player,"An admin took your ticket.")
-          vRPclient.teleport(v, vRPclient.getPosition(player))
+          vRPclient._notify(player,"An admin took your ticket.")
+          vRPclient._teleport(v, vRPclient.getPosition(player))
           answered = true
         else
-          vRPclient.notify(v,"Ticket already taken.")
+          vRPclient._notify(v,"Ticket already taken.")
         end
       end
     end
@@ -261,7 +261,7 @@ local function ch_display_custom(player, choice)
   local custom = vRPclient.getCustomization(player)
   if player_customs[player] then -- hide
     player_customs[player] = nil
-    vRPclient.removeDiv(player,"customization")
+    vRPclient._removeDiv(player,"customization")
   else -- show
     local content = ""
     for k,v in pairs(custom) do
@@ -269,12 +269,12 @@ local function ch_display_custom(player, choice)
     end
 
     player_customs[player] = true
-    vRPclient.setDiv(player,"customization",".div_customization{ margin: auto; padding: 8px; width: 500px; margin-top: 80px; background: black; color: white; font-weight: bold; ", content)
+    vRPclient._setDiv(player,"customization",".div_customization{ margin: auto; padding: 8px; width: 500px; margin-top: 80px; background: black; color: white; font-weight: bold; ", content)
   end
 end
 
 local function ch_noclip(player, choice)
-  vRPclient.toggleNoclip(player)
+  vRPclient._toggleNoclip(player)
 end
 
 vRP.registerMenuBuilder("main", function(add, data)
@@ -364,7 +364,7 @@ function task_god()
 
     local player = vRP.getUserSource(v)
     if player ~= nil then
-      vRPclient.setHealth(player, 200)
+      vRPclient._setHealth(player, 200)
     end
   end
 end

@@ -22,7 +22,7 @@ function vRP.openSkinshop(source,parts)
     -- notify player if wearing a uniform
     local data = vRP.getUserDataTable(user_id)
     if data.cloakroom_idle ~= nil then
-      vRPclient.notify(source,lang.common.wearing_uniform())
+      vRPclient._notify(source,lang.common.wearing_uniform())
     end
 
     -- get old customization to compute the price
@@ -47,7 +47,7 @@ function vRP.openSkinshop(source,parts)
       -- apply change
       local custom = {}
       custom[parts[choice]] = {drawables[choice][1],texture[1]}
-      vRPclient.setCustomization(source,custom)
+      vRPclient._setCustomization(source,custom)
     end
 
     local ondrawable = function(player, choice, mod)
@@ -118,12 +118,12 @@ function vRP.openSkinshop(source,parts)
 
       if vRP.tryPayment(user_id,price) then
         if price > 0 then
-          vRPclient.notify(source,lang.money.paid({price}))
+          vRPclient._notify(source,lang.money.paid({price}))
         end
       else
-        vRPclient.notify(source,lang.money.not_enough())
+        vRPclient._notify(source,lang.money.not_enough())
         -- revert changes
-        vRPclient.setCustomization(source,old_custom)
+        vRPclient._setCustomization(source,old_custom)
       end
     end
 
@@ -149,8 +149,8 @@ local function build_client_skinshops(source)
         vRP.closeMenu(source)
       end
 
-      vRPclient.addBlip(source,x,y,z,73,3,lang.skinshop.title())
-      vRPclient.addMarker(source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+      vRPclient._addBlip(source,x,y,z,73,3,lang.skinshop.title())
+      vRPclient._addMarker(source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
 
       vRP.setArea(source,"vRP:skinshop"..k,x,y,z,1,1.5,skinshop_enter,skinshop_leave)
     end

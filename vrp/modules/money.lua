@@ -49,7 +49,7 @@ function vRP.setMoney(user_id,value)
   -- update client display
   local source = vRP.getUserSource(user_id)
   if source then
-    vRPclient.setDivContent(source,"money",lang.money.display({value}))
+    vRPclient._setDivContent(source,"money",lang.money.display({value}))
   end
 end
 
@@ -174,7 +174,7 @@ end)
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
   if first_spawn then
     -- add money display
-    vRPclient.setDiv(source,"money",cfg.display_css,lang.money.display({vRP.getMoney(user_id)}))
+    vRPclient._setDiv(source,"money",cfg.display_css,lang.money.display({vRP.getMoney(user_id)}))
   end
 end)
 
@@ -191,16 +191,16 @@ local function ch_give(player,choice)
         local amount = parseInt(amount)
         if amount > 0 and vRP.tryPayment(user_id,amount) then
           vRP.giveMoney(nuser_id,amount)
-          vRPclient.notify(player,lang.money.given({amount}))
-          vRPclient.notify(nplayer,lang.money.received({amount}))
+          vRPclient._notify(player,lang.money.given({amount}))
+          vRPclient._notify(nplayer,lang.money.received({amount}))
         else
-          vRPclient.notify(player,lang.money.not_enough())
+          vRPclient._notify(player,lang.money.not_enough())
         end
       else
-        vRPclient.notify(player,lang.common.no_player_near())
+        vRPclient._notify(player,lang.common.no_player_near())
       end
     else
-      vRPclient.notify(player,lang.common.no_player_near())
+      vRPclient._notify(player,lang.common.no_player_near())
     end
   end
 end

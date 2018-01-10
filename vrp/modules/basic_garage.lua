@@ -66,7 +66,7 @@ for group,vehicles in pairs(vehicle_groups) do
           local vehicle = vehicles[vname]
           if vehicle then
             vRP.closeMenu(player)
-            vRPclient.spawnGarageVehicle(player,veh_type,vname)
+            vRPclient._spawnGarageVehicle(player,veh_type,vname)
           end
         end
       end
@@ -110,10 +110,10 @@ for group,vehicles in pairs(vehicle_groups) do
           if vehicle and vRP.tryPayment(user_id,vehicle[2]) then
             MySQL.execute("vRP/add_vehicle", {user_id = user_id, vehicle = vname})
 
-            vRPclient.notify(player,lang.money.paid({vehicle[2]}))
+            vRPclient._notify(player,lang.money.paid({vehicle[2]}))
             vRP.closeMenu(player)
           else
-            vRPclient.notify(player,lang.money.not_enough())
+            vRPclient._notify(player,lang.money.not_enough())
           end
         end
       end
@@ -161,10 +161,10 @@ for group,vehicles in pairs(vehicle_groups) do
               vRP.giveMoney(user_id,price)
               MySQL.execute("vRP/remove_vehicle", {user_id = user_id, vehicle = vname})
 
-              vRPclient.notify(player,lang.money.received({price}))
+              vRPclient._notify(player,lang.money.received({price}))
               vRP.closeMenu(player)
             else
-              vRPclient.notify(player,lang.common.not_found())
+              vRPclient._notify(player,lang.common.not_found())
             end
           end
         end
@@ -218,10 +218,10 @@ for group,vehicles in pairs(vehicle_groups) do
               -- add vehicle to rent tmp data
               tmpdata.rent_vehicles[vname] = true
 
-              vRPclient.notify(player,lang.money.paid({price}))
+              vRPclient._notify(player,lang.money.paid({price}))
               vRP.closeMenu(player)
             else
-              vRPclient.notify(player,lang.money.not_enough())
+              vRPclient._notify(player,lang.money.not_enough())
             end
           end
         end
@@ -253,7 +253,7 @@ for group,vehicles in pairs(vehicle_groups) do
   end,lang.garage.rent.description()}
 
   menu[lang.garage.store.title()] = {function(player,choice)
-    vRPclient.despawnGarageVehicle(player,veh_type,15) 
+    vRPclient._despawnGarageVehicle(player,veh_type,15) 
   end, lang.garage.store.description()}
 end
 
@@ -283,8 +283,8 @@ local function build_client_garages(source)
           vRP.closeMenu(player)
         end
 
-        vRPclient.addBlip(source,x,y,z,gcfg.blipid,gcfg.blipcolor,lang.garage.title({gtype}))
-        vRPclient.addMarker(source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+        vRPclient._addBlip(source,x,y,z,gcfg.blipid,gcfg.blipcolor,lang.garage.title({gtype}))
+        vRPclient._addMarker(source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
 
         vRP.setArea(source,"vRP:garage"..k,x,y,z,1,1.5,garage_enter,garage_leave)
       end
@@ -310,35 +310,35 @@ veh_actions[lang.vehicle.trunk.title()] = {function(user_id,player,vtype,name)
   local max_weight = cfg_inventory.vehicle_chest_weights[string.lower(name)] or cfg_inventory.default_vehicle_chest_weight
 
   -- open chest
-  vRPclient.vc_openDoor(player, vtype,5)
+  vRPclient._vc_openDoor(player, vtype,5)
   vRP.openChest(player, chestname, max_weight, function()
-    vRPclient.vc_closeDoor(player, vtype,5)
+    vRPclient._vc_closeDoor(player, vtype,5)
   end)
 end, lang.vehicle.trunk.description()}
 
 -- detach trailer
 veh_actions[lang.vehicle.detach_trailer.title()] = {function(user_id,player,vtype,name)
-  vRPclient.vc_detachTrailer(player, vtype)
+  vRPclient._vc_detachTrailer(player, vtype)
 end, lang.vehicle.detach_trailer.description()}
 
 -- detach towtruck
 veh_actions[lang.vehicle.detach_towtruck.title()] = {function(user_id,player,vtype,name)
-  vRPclient.vc_detachTowTruck(player, vtype)
+  vRPclient._vc_detachTowTruck(player, vtype)
 end, lang.vehicle.detach_towtruck.description()}
 
 -- detach cargobob
 veh_actions[lang.vehicle.detach_cargobob.title()] = {function(user_id,player,vtype,name)
-  vRPclient.vc_detachCargobob(player, vtype)
+  vRPclient._vc_detachCargobob(player, vtype)
 end, lang.vehicle.detach_cargobob.description()}
 
 -- lock/unlock
 veh_actions[lang.vehicle.lock.title()] = {function(user_id,player,vtype,name)
-  vRPclient.vc_toggleLock(player, vtype)
+  vRPclient._vc_toggleLock(player, vtype)
 end, lang.vehicle.lock.description()}
 
 -- engine on/off
 veh_actions[lang.vehicle.engine.title()] = {function(user_id,player,vtype,name)
-  vRPclient.vc_toggleEngine(player, vtype)
+  vRPclient._vc_toggleEngine(player, vtype)
 end, lang.vehicle.engine.description()}
 
 local function ch_vehicle(player,choice)
@@ -358,7 +358,7 @@ local function ch_vehicle(player,choice)
 
       vRP.openMenu(player,menu)
     else
-      vRPclient.notify(player,lang.vehicle.no_owned_near())
+      vRPclient._notify(player,lang.vehicle.no_owned_near())
     end
   end
 end
@@ -368,7 +368,7 @@ local function ch_asktrunk(player,choice)
   local nplayer = vRPclient.getNearestPlayer(player,10)
   local nuser_id = vRP.getUserId(nplayer)
   if nuser_id then
-    vRPclient.notify(player,lang.vehicle.asktrunk.asked())
+    vRPclient._notify(player,lang.vehicle.asktrunk.asked())
     if vRP.request(nplayer,lang.vehicle.asktrunk.request(),15) then -- request accepted, open trunk
       local ok,vtype,name = vRPclient.getNearestOwnedVehicle(nplayer,7)
       if ok then
@@ -377,26 +377,26 @@ local function ch_asktrunk(player,choice)
 
         -- open chest
         local cb_out = function(idname,amount)
-          vRPclient.notify(nplayer,lang.inventory.give.given({vRP.getItemName(idname),amount}))
+          vRPclient._notify(nplayer,lang.inventory.give.given({vRP.getItemName(idname),amount}))
         end
 
         local cb_in = function(idname,amount)
-          vRPclient.notify(nplayer,lang.inventory.give.received({vRP.getItemName(idname),amount}))
+          vRPclient._notify(nplayer,lang.inventory.give.received({vRP.getItemName(idname),amount}))
         end
 
-        vRPclient.vc_openDoor(nplayer, vtype,5)
+        vRPclient._vc_openDoor(nplayer, vtype,5)
         vRP.openChest(player, chestname, max_weight, function()
-          vRPclient.vc_closeDoor(nplayer, vtype,5)
+          vRPclient._vc_closeDoor(nplayer, vtype,5)
         end,cb_in,cb_out)
       else
-        vRPclient.notify(player,lang.vehicle.no_owned_near())
-        vRPclient.notify(nplayer,lang.vehicle.no_owned_near())
+        vRPclient._notify(player,lang.vehicle.no_owned_near())
+        vRPclient._notify(nplayer,lang.vehicle.no_owned_near())
       end
     else
-      vRPclient.notify(player,lang.common.request_refused())
+      vRPclient._notify(player,lang.common.request_refused())
     end
   else
-    vRPclient.notify(player,lang.common.no_player_near())
+    vRPclient._notify(player,lang.common.no_player_near())
   end
 end
 
@@ -406,10 +406,10 @@ local function ch_repair(player,choice)
   if user_id then
     -- anim and repair
     if vRP.tryGetInventoryItem(user_id,"repairkit",1,true) then
-      vRPclient.playAnim(player,false,{task="WORLD_HUMAN_WELDING"},false)
+      vRPclient._playAnim(player,false,{task="WORLD_HUMAN_WELDING"},false)
       SetTimeout(15000, function()
-        vRPclient.fixeNearestVehicle(player,7)
-        vRPclient.stopAnim(player,false)
+        vRPclient._fixeNearestVehicle(player,7)
+        vRPclient._stopAnim(player,false)
       end)
     end
   end
@@ -417,7 +417,7 @@ end
 
 -- replace nearest vehicle
 local function ch_replace(player,choice)
-  vRPclient.replaceNearestVehicle(player,7)
+  vRPclient._replaceNearestVehicle(player,7)
 end
 
 vRP.registerMenuBuilder("main", function(add, data)

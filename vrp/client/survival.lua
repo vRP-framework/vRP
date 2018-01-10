@@ -61,11 +61,11 @@ Citizen.CreateThread(function()
 
       -- do variation
       if vthirst ~= 0 then
-        vRPserver.varyThirst(vthirst/12.0)
+        vRPserver._varyThirst(vthirst/12.0)
       end
 
       if vhunger ~= 0 then
-        vRPserver.varyHunger(vhunger/12.0)
+        vRPserver._varyHunger(vhunger/12.0)
       end
     end
   end
@@ -93,7 +93,7 @@ Citizen.CreateThread(function() -- coma thread
         -- coma state
         in_coma = true
 
-        vRPserver.updateHealth(cfg.coma_threshold) -- force health update
+        vRPserver._updateHealth(cfg.coma_threshold) -- force health update
 
         SetEntityHealth(ped, cfg.coma_threshold)
         SetEntityInvincible(ped,true)

@@ -41,7 +41,7 @@ items["money_binder"] = {"Money binder","Used to bind 1000$ of money.",function(
           vRP.closeMenu(player)
         end
       else
-        vRPclient.notify(player,vRP.lang.money.not_enough())
+        vRPclient._notify(player,vRP.lang.money.not_enough())
       end
     end
   end}
@@ -78,7 +78,7 @@ local wbody_choices = function(args)
       if vRP.tryGetInventoryItem(user_id, fullidname, 1, true) then -- give weapon body
         local weapons = {}
         weapons[args[2]] = {ammo = 0}
-        vRPclient.giveWeapons(player, weapons)
+        vRPclient._giveWeapons(player, weapons)
 
         vRP.closeMenu(player)
       end
@@ -119,7 +119,7 @@ local wammo_choices = function(args)
         if vRP.tryGetInventoryItem(user_id, fullidname, ramount, true) then -- give weapon ammo
           local weapons = {}
           weapons[args[2]] = {ammo = ramount}
-          vRPclient.giveWeapons(player, weapons,false)
+          vRPclient._giveWeapons(player, weapons,false)
           vRP.closeMenu(player)
         end
       end

@@ -35,7 +35,7 @@ local function rollback_idle_custom(player)
     local data = vRP.getUserDataTable(user_id)
     if data then
       if data.cloakroom_idle ~= nil then -- consume cloakroom idle
-        vRPclient.setCustomization(player,data.cloakroom_idle)
+        vRPclient._setCustomization(player,data.cloakroom_idle)
         data.cloakroom_idle = nil
       end
     end
@@ -75,7 +75,7 @@ async(function()
         end
 
         -- set cloak customization
-        vRPclient.setCustomization(player,idle_copy)
+        vRPclient._setCustomization(player,idle_copy)
       end
     end
 
@@ -110,7 +110,7 @@ local function build_client_points(source)
             -- notify player if wearing a uniform
             local data = vRP.getUserDataTable(user_id)
             if data.cloakroom_idle ~= nil then
-              vRPclient.notify(source,lang.common.wearing_uniform())
+              vRPclient._notify(source,lang.common.wearing_uniform())
             end
           end
 
@@ -123,7 +123,7 @@ local function build_client_points(source)
       end
 
       -- cloakroom
-      vRPclient.addMarker(source,x,y,z-1,0.7,0.7,0.5,0,125,255,125,150)
+      vRPclient._addMarker(source,x,y,z-1,0.7,0.7,0.5,0,125,255,125,150)
       vRP.setArea(source,"vRP:cfg:cloakroom"..k,x,y,z,1,1.5,cloakroom_enter,cloakroom_leave)
     end
   end

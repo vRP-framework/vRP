@@ -40,12 +40,12 @@ function vRP.openMenu(source,menudef)
   rclient_menus[source] = menudata.id
 
   -- openmenu
-  vRPclient.openMenuData(source, menudata)
+  vRPclient._openMenuData(source, menudata)
 end
 
 -- force close player menu
 function vRP.closeMenu(source)
-  vRPclient.closeMenu(source)
+  vRPclient._closeMenu(source)
 end
 
 -- PROMPT
@@ -58,7 +58,7 @@ function vRP.prompt(source,title,default_text)
   local r = async()
   prompts[source] = r
 
-  vRPclient.prompt(source, title,default_text)
+  vRPclient._prompt(source, title,default_text)
 
   return r:wait()
 end
@@ -289,7 +289,7 @@ end
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
   if first_spawn then
     -- load additional css using the div api
-    vRPclient.setDiv(source,"additional_css",".div_additional_css{ display: none; }\n\n"..cfg.css,"")
+    vRPclient._setDiv(source,"additional_css",".div_additional_css{ display: none; }\n\n"..cfg.css,"")
 
     -- load static menus
     build_client_static_menus(source)

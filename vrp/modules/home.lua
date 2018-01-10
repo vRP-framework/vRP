@@ -149,7 +149,7 @@ local function leave_slot(user_id,player,stype,sid) -- called when a player leav
   end
 
   -- teleport to home entry point (outside)
-  vRPclient.teleport(player, table.unpack(home.entry_point)) -- already an array of params (x,y,z)
+  vRPclient._teleport(player, table.unpack(home.entry_point)) -- already an array of params (x,y,z)
 
   -- uncount player
   slot.players[user_id] = nil
@@ -161,7 +161,7 @@ local function leave_slot(user_id,player,stype,sid) -- called when a player leav
     if name == "entry" then
       -- remove marker/area
       local nid = "vRP:home:slot"..stype..sid
-      vRPclient.removeNamedMarker(player,nid)
+      vRPclient._removeNamedMarker(player,nid)
       vRP.removeArea(player,nid)
     else
       local component = components[v[1]]
@@ -232,10 +232,10 @@ local function enter_slot(user_id,player,stype,sid) -- called when a player ente
 
     if name == "entry" then
       -- teleport to the slot entry point
-      vRPclient.teleport(player, x,y,z) -- already an array of params (x,y,z)
+      vRPclient._teleport(player, x,y,z) -- already an array of params (x,y,z)
 
       local nid = "vRP:home:slot"..stype..sid
-      vRPclient.setNamedMarker(player,nid,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+      vRPclient._setNamedMarker(player,nid,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
       vRP.setArea(player,nid,x,y,z,1,1.5,entry_enter,entry_leave)
     else -- load regular component
       local component = components[v[1]]
@@ -289,25 +289,25 @@ local function build_entry_menu(user_id, home_name)
         if huser_id then
           if huser_id == user_id then -- identify owner (direct home access)
             if not vRP.accessHome(user_id, home_name, number) then
-                vRPclient.notify(player,lang.home.intercom.not_available())
+                vRPclient._notify(player,lang.home.intercom.not_available())
               end
           else -- try to access home by asking owner
             local hplayer = vRP.getUserSource(huser_id)
             if hplayer ~= nil then
               local who = vRP.prompt(player,lang.home.intercom.prompt_who(),"")
-                vRPclient.notify(player,lang.home.intercom.asked())
+                vRPclient._notify(player,lang.home.intercom.asked())
                 -- request owner to open the door
                 if vRP.request(hplayer, lang.home.intercom.request({who}), 30) then
                     vRP.accessHome(user_id, home_name, number)
                   else
-                    vRPclient.notify(player,lang.home.intercom.refused())
+                    vRPclient._notify(player,lang.home.intercom.refused())
                   end
             else
-              vRPclient.notify(player,lang.home.intercom.refused())
+              vRPclient._notify(player,lang.home.intercom.refused())
             end
           end
         else
-          vRPclient.notify(player,lang.common.not_found())
+          vRPclient._notify(player,lang.common.not_found())
         end
   end,lang.home.intercom.description()}
 
@@ -320,15 +320,15 @@ local function build_entry_menu(user_id, home_name)
               -- bought, set address
               vRP.setUserAddress(user_id, home_name, number)
 
-              vRPclient.notify(player,lang.home.buy.bought())
+              vRPclient._notify(player,lang.home.buy.bought())
             else
-              vRPclient.notify(player,lang.money.not_enough())
+              vRPclient._notify(player,lang.money.not_enough())
             end
           else
-            vRPclient.notify(player,lang.home.buy.full())
+            vRPclient._notify(player,lang.home.buy.full())
           end
       else
-        vRPclient.notify(player,lang.home.buy.have_home())
+        vRPclient._notify(player,lang.home.buy.have_home())
       end
   end, lang.home.buy.description({home.buy_price})}
 
@@ -338,9 +338,9 @@ local function build_entry_menu(user_id, home_name)
         -- sold, give sell price, remove address
         vRP.giveMoney(user_id, home.sell_price)
         vRP.removeUserAddress(user_id)
-        vRPclient.notify(player,lang.home.sell.sold())
+        vRPclient._notify(player,lang.home.sell.sold())
       else
-        vRPclient.notify(player,lang.home.sell.no_home())
+        vRPclient._notify(player,lang.home.sell.no_home())
       end
   end, lang.home.sell.description({home.sell_price})}
 
@@ -365,8 +365,8 @@ local function build_client_homes(source)
         vRP.closeMenu(player)
       end
 
-      vRPclient.addBlip(source,x,y,z,v.blipid,v.blipcolor,k)
-      vRPclient.addMarker(source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+      vRPclient._addBlip(source,x,y,z,v.blipid,v.blipcolor,k)
+      vRPclient._addMarker(source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
 
       vRP.setArea(source,"vRP:home"..k,x,y,z,1,1.5,entry_enter,entry_leave)
     end

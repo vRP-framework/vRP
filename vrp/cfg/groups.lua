@@ -11,7 +11,7 @@ local cfg = {}
 
 cfg.groups = {
   ["superadmin"] = {
-    _config = {onspawn = function(player) vRPclient.notify(player,"You are superadmin.") end},
+    _config = {onspawn = function(player) vRPclient._notify(player,"You are superadmin.") end},
     "player.group.add",
     "player.group.remove",
     "player.givemoney",
@@ -48,9 +48,9 @@ cfg.groups = {
   ["police"] = {
     _config = { 
       gtype = "job",
-      onjoin = function(player) vRPclient.setCop(player,true) end,
-      onspawn = function(player) vRPclient.setCop(player,true) end,
-      onleave = function(player) vRPclient.setCop(player,false) end
+      onjoin = function(player) vRPclient._setCop(player,true) end,
+      onspawn = function(player) vRPclient._setCop(player,true) end,
+      onleave = function(player) vRPclient._setCop(player,false) end
     },
     "police.menu",
     "police.cloakroom",

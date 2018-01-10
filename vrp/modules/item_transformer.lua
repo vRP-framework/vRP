@@ -14,7 +14,7 @@ local transformers = {}
 local function tr_remove_player(tr,player) -- remove player from transforming
   local recipe = tr.players[player] or ""
   tr.players[player] = nil -- dereference player
-  vRPclient.removeProgressBar(player,"vRP:tr:"..tr.name)
+  vRPclient._removeProgressBar(player,"vRP:tr:"..tr.name)
   vRP.closeMenu(player)
 
   -- onstop
@@ -24,7 +24,7 @@ end
 local function tr_add_player(tr,player,recipe) -- add player to transforming
   tr.players[player] = recipe -- reference player as using transformer
   vRP.closeMenu(player)
-  vRPclient.setProgressBar(player,"vRP:tr:"..tr.name,"center",recipe.."...",tr.itemtr.r,tr.itemtr.g,tr.itemtr.b,0)
+  vRPclient._setProgressBar(player,"vRP:tr:"..tr.name,"center",recipe.."...",tr.itemtr.r,tr.itemtr.g,tr.itemtr.b,0)
 
   -- onstart
   if tr.itemtr.onstart then tr.itemtr.onstart(player,recipe) end
@@ -59,7 +59,7 @@ local function tr_tick(tr) -- do transformer tick
         local inventory_ok = true
         if new_weight > vRP.getInventoryMaxWeight(user_id) then
           inventory_ok = false
-          vRPclient.notify(tonumber(k), lang.inventory.full())
+          vRPclient._notify(tonumber(k), lang.inventory.full())
         end
 
         if money_ok and reagents_ok and inventory_ok then -- do transformation
@@ -94,12 +94,12 @@ local function tr_tick(tr) -- do transformer tick
 
   -- display transformation state to all transforming players
   for k,v in pairs(tr.players) do
-    vRPclient.setProgressBarValue(k,"vRP:tr:"..tr.name,math.floor(tr.units/tr.itemtr.max_units*100.0))
+    vRPclient._setProgressBarValue(k,"vRP:tr:"..tr.name,math.floor(tr.units/tr.itemtr.max_units*100.0))
     
     if tr.units > 0 then -- display units left
-      vRPclient.setProgressBarText(k,"vRP:tr:"..tr.name,v.."... "..tr.units.."/"..tr.itemtr.max_units)
+      vRPclient._setProgressBarText(k,"vRP:tr:"..tr.name,v.."... "..tr.units.."/"..tr.itemtr.max_units)
     else
-      vRPclient.setProgressBarText(k,"vRP:tr:"..tr.name,"empty")
+      vRPclient._setProgressBarText(k,"vRP:tr:"..tr.name,"empty")
     end
   end
 end
@@ -319,11 +319,11 @@ local function ch_informer_buy(player,choice)
 
   if user_id and tr then
     if vRP.tryPayment(user_id, price) then
-      vRPclient.setGPS(player, tr.itemtr.x,tr.itemtr.y) -- set gps marker
-      vRPclient.notify(player, lang.money.paid({price}))
-      vRPclient.notify(player, lang.itemtr.informer.bought())
+      vRPclient._setGPS(player, tr.itemtr.x,tr.itemtr.y) -- set gps marker
+      vRPclient._notify(player, lang.money.paid({price}))
+      vRPclient._notify(player, lang.itemtr.informer.bought())
     else
-      vRPclient.notify(player, lang.money.not_enough())
+      vRPclient._notify(player, lang.money.not_enough())
     end
   end
 end
@@ -351,8 +351,8 @@ local function informer_placement_tick()
     local player = vRP.getUserSource(tonumber(k))
 
     -- add informer blip/marker/area
-    vRPclient.setNamedBlip(player,"vRP:informer",x,y,z,cfg.informer.blipid,cfg.informer.blipcolor,lang.itemtr.informer.title())
-    vRPclient.setNamedMarker(player,"vRP:informer",x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+    vRPclient._setNamedBlip(player,"vRP:informer",x,y,z,cfg.informer.blipid,cfg.informer.blipcolor,lang.itemtr.informer.title())
+    vRPclient._setNamedMarker(player,"vRP:informer",x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
     vRP.setArea(player,"vRP:informer",x,y,z,1,1.5,informer_enter,informer_leave)
   end
 
@@ -360,8 +360,8 @@ local function informer_placement_tick()
   SetTimeout(cfg.informer.duration*60000, function()
     for k,v in pairs(vRP.rusers) do
       local player = vRP.getUserSource(tonumber(k))
-      vRPclient.removeNamedBlip(player,"vRP:informer")
-      vRPclient.removeNamedMarker(player,"vRP:informer")
+      vRPclient._removeNamedBlip(player,"vRP:informer")
+      vRPclient._removeNamedMarker(player,"vRP:informer")
       vRP.removeArea(player,"vRP:informer")
     end
   end)

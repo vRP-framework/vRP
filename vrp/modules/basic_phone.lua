@@ -31,11 +31,11 @@ function vRP.sendServiceAlert(sender, service_name,x,y,z,msg)
 
     -- send notify and alert to all listening players
     for k,v in pairs(players) do
-      vRPclient.notify(v,service.alert_notify..msg)
+      vRPclient._notify(v,service.alert_notify..msg)
       -- add position for service.time seconds
       local bid = vRPclient.addBlip(v,x,y,z,service.blipid,service.blipcolor,"("..service_name..") "..msg)
       SetTimeout(service.alert_time*1000,function()
-        vRPclient.removeBlip(v,bid)
+        vRPclient._removeBlip(v,bid)
       end)
 
       -- call request
@@ -44,11 +44,11 @@ function vRP.sendServiceAlert(sender, service_name,x,y,z,msg)
         if ok then -- take the call
           if not answered then
             -- answer the call
-            vRPclient.notify(sender,service.answer_notify)
-            vRPclient.setGPS(v,x,y)
+            vRPclient._notify(sender,service.answer_notify)
+            vRPclient._setGPS(v,x,y)
             answered = true
           else
-            vRPclient.notify(v,lang.phone.service.taken())
+            vRPclient._notify(v,lang.phone.service.taken())
           end
         end
       end
@@ -76,7 +76,7 @@ function vRP.sendSMS(user_id, phone, msg, cbr)
 
       local from = vRP.getPhoneDirectoryName(dest_id, identity.phone).." ("..identity.phone..")"
 
-      vRPclient.notify(dest_src,lang.phone.sms.notify({from, msg}))
+      vRPclient._notify(dest_src,lang.phone.sms.notify({from, msg}))
       table.insert(phone_sms,1,{identity.phone,msg}) -- insert new sms at first position {phone,message}
       return true
     end
@@ -92,11 +92,11 @@ function vRP.sendSMSPos(user_id, phone, x,y,z, cbr)
     local dest_src = vRP.getUserSource(dest_id)
     if dest_src then
       local from = vRP.getPhoneDirectoryName(dest_id, identity.phone).." ("..identity.phone..")"
-      vRPclient.notify(dest_src,lang.phone.smspos.notify({from})) -- notify
+      vRPclient._notify(dest_src,lang.phone.smspos.notify({from})) -- notify
       -- add position for 5 minutes
       local bid = vRPclient.addBlip(dest_src,x,y,z,162,37,from)
       SetTimeout(cfg.smspos_duration*1000,function()
-        vRPclient.removeBlip(dest_src,{bid})
+        vRPclient._removeBlip(dest_src,{bid})
       end)
 
       return true
@@ -160,9 +160,9 @@ local function ch_directory(player,choice)
       phone = sanitizeString(tostring(phone),sanitizes.text[1],sanitizes.text[2])
       if #name > 0 and #phone > 0 then
         phone_directory[name] = phone -- set entry
-        vRPclient.notify(player, lang.phone.directory.add.added())
+        vRPclient._notify(player, lang.phone.directory.add.added())
       else
-        vRPclient.notify(player, lang.common.invalid_value())
+        vRPclient._notify(player, lang.common.invalid_value())
       end
     end
 
@@ -182,18 +182,18 @@ local function ch_directory(player,choice)
         local msg = vRP.prompt(player,lang.phone.directory.sendsms.prompt({cfg.sms_size}),"")
         msg = sanitizeString(msg,sanitizes.text[1],sanitizes.text[2])
         if vRP.sendSMS(user_id, phone, msg) then
-          vRPclient.notify(player,lang.phone.directory.sendsms.sent({phone}))
+          vRPclient._notify(player,lang.phone.directory.sendsms.sent({phone}))
         else
-          vRPclient.notify(player,lang.phone.directory.sendsms.not_sent({phone}))
+          vRPclient._notify(player,lang.phone.directory.sendsms.not_sent({phone}))
         end
       end
 
       local ch_sendpos = function(player, choice) -- send current position to directory entry
         local x,y,z = vRPclient.getPosition(player)
         if vRP.sendSMSPos(user_id, phone, x,y,z) then
-          vRPclient.notify(player,lang.phone.directory.sendsms.sent({phone}))
+          vRPclient._notify(player,lang.phone.directory.sendsms.sent({phone}))
         else
-          vRPclient.notify(player,lang.phone.directory.sendsms.not_sent({phone}))
+          vRPclient._notify(player,lang.phone.directory.sendsms.not_sent({phone}))
         end
       end
 
@@ -239,9 +239,9 @@ local function ch_sms(player, choice)
         local msg = vRP.prompt(player,lang.phone.directory.sendsms.prompt({cfg.sms_size}),"")
         msg = sanitizeString(msg,sanitizes.text[1],sanitizes.text[2])
         if vRP.sendSMS(user_id, phone, msg) then
-          vRPclient.notify(player,lang.phone.directory.sendsms.sent({phone}))
+          vRPclient._notify(player,lang.phone.directory.sendsms.sent({phone}))
         else
-          vRPclient.notify(player,lang.phone.directory.sendsms.not_sent({phone}))
+          vRPclient._notify(player,lang.phone.directory.sendsms.not_sent({phone}))
         end
       end, lang.phone.sms.info({from,htmlEntities.encode(v[2])})}
     end
@@ -266,7 +266,7 @@ local function ch_service_alert(player,choice) -- alert a service
     local x,y,z = vRPclient.getPosition(player)
     local msg = vRP.prompt(player,lang.phone.service.prompt(),"")
     msg = sanitizeString(msg,sanitizes.text[1],sanitizes.text[2])
-    vRPclient.notify(player,service.notify) -- notify player
+    vRPclient._notify(player,service.notify) -- notify player
     vRP.sendServiceAlert(player,choice,x,y,z,msg) -- send service alert (call request)
   end
 end
@@ -294,7 +294,7 @@ local function ch_announce_alert(player,choice) -- alert a announce
       msg = sanitizeString(msg,sanitizes.text[1],sanitizes.text[2])
       if string.len(msg) > 10 and string.len(msg) < 1000 then
         if announce.price <= 0 or vRP.tryPayment(user_id, announce.price) then -- try to pay the announce
-          vRPclient.notify(player, lang.money.paid({announce.price}))
+          vRPclient._notify(player, lang.money.paid({announce.price}))
 
           msg = htmlEntities.encode(msg)
           msg = string.gsub(msg, "\n", "<br />") -- allow returns
@@ -302,16 +302,16 @@ local function ch_announce_alert(player,choice) -- alert a announce
           -- send announce to all
           local users = vRP.getUsers()
           for k,v in pairs(users) do
-            vRPclient.announce(v,announce.image,msg)
+            vRPclient._announce(v,announce.image,msg)
           end
         else
-          vRPclient.notify(player, lang.money.not_enough())
+          vRPclient._notify(player, lang.money.not_enough())
         end
       else
-        vRPclient.notify(player, lang.common.invalid_value())
+        vRPclient._notify(player, lang.common.invalid_value())
       end
     else
-      vRPclient.notify(player, lang.common.not_allowed())
+      vRPclient._notify(player, lang.common.not_allowed())
     end
   end
 end

@@ -41,19 +41,19 @@ function ch_give(idname, player, choice)
           if vRP.tryGetInventoryItem(user_id,idname,amount,true) then
             vRP.giveInventoryItem(nuser_id,idname,amount,true)
 
-            vRPclient.playAnim(player,true,{{"mp_common","givetake1_a",1}},false)
-            vRPclient.playAnim(nplayer,true,{{"mp_common","givetake2_a",1}},false)
+            vRPclient._playAnim(player,true,{{"mp_common","givetake1_a",1}},false)
+            vRPclient._playAnim(nplayer,true,{{"mp_common","givetake2_a",1}},false)
           else
-            vRPclient.notify(player,lang.common.invalid_value())
+            vRPclient._notify(player,lang.common.invalid_value())
           end
         else
-          vRPclient.notify(player,lang.inventory.full())
+          vRPclient._notify(player,lang.inventory.full())
         end
       else
-        vRPclient.notify(player,lang.common.no_player_near())
+        vRPclient._notify(player,lang.common.no_player_near())
       end
     else
-      vRPclient.notify(player,lang.common.no_player_near())
+      vRPclient._notify(player,lang.common.no_player_near())
     end
   end
 end
@@ -66,10 +66,10 @@ function ch_trash(idname, player, choice)
     local amount = vRP.prompt(player,lang.inventory.trash.prompt({vRP.getInventoryItemAmount(user_id,idname)}),"")
     local amount = parseInt(amount)
     if vRP.tryGetInventoryItem(user_id,idname,amount,false) then
-      vRPclient.notify(player,lang.inventory.trash.done({vRP.getItemName(idname),amount}))
-      vRPclient.playAnim(player,true,{{"pickup_object","pickup_low",1}},false)
+      vRPclient._notify(player,lang.inventory.trash.done({vRP.getItemName(idname),amount}))
+      vRPclient._playAnim(player,true,{{"pickup_object","pickup_low",1}},false)
     else
-      vRPclient.notify(player,lang.common.invalid_value())
+      vRPclient._notify(player,lang.common.invalid_value())
     end
   end
 end
@@ -184,7 +184,7 @@ function vRP.giveInventoryItem(user_id,idname,amount,notify)
     if notify then
       local player = vRP.getUserSource(user_id)
       if player then
-        vRPclient.notify(player,lang.inventory.give.received({vRP.getItemName(idname),amount}))
+        vRPclient._notify(player,lang.inventory.give.received({vRP.getItemName(idname),amount}))
       end
     end
   end
@@ -209,7 +209,7 @@ function vRP.tryGetInventoryItem(user_id,idname,amount,notify)
       if notify then
         local player = vRP.getUserSource(user_id)
         if player then
-          vRPclient.notify(player,lang.inventory.give.given({vRP.getItemName(idname),amount}))
+          vRPclient._notify(player,lang.inventory.give.given({vRP.getItemName(idname),amount}))
         end
       end
 
@@ -221,7 +221,7 @@ function vRP.tryGetInventoryItem(user_id,idname,amount,notify)
         if player then
           local entry_amount = 0
           if entry then entry_amount = entry.amount end
-          vRPclient.notify(player,lang.inventory.missing({vRP.getItemName(idname),amount-entry_amount}))
+          vRPclient._notify(player,lang.inventory.missing({vRP.getItemName(idname),amount-entry_amount}))
         end
       end
     end
@@ -411,10 +411,10 @@ function vRP.openChest(source, name, max_weight, cb_close, cb_in, cb_out)
               -- actualize by closing
               vRP.closeMenu(source)
             else
-              vRPclient.notify(source,lang.inventory.full())
+              vRPclient._notify(source,lang.inventory.full())
             end
           else
-            vRPclient.notify(source,lang.common.invalid_value())
+            vRPclient._notify(source,lang.common.invalid_value())
           end
         end
 
@@ -459,7 +459,7 @@ function vRP.openChest(source, name, max_weight, cb_close, cb_in, cb_out)
               vRP.closeMenu(source)
             end
           else
-            vRPclient.notify(source,lang.inventory.chest.full())
+            vRPclient._notify(source,lang.inventory.chest.full())
           end
         end
 
@@ -496,7 +496,7 @@ function vRP.openChest(source, name, max_weight, cb_close, cb_in, cb_out)
         -- open menu
         vRP.openMenu(source, menu)
       else
-        vRPclient.notify(source,lang.inventory.chest.already_opened())
+        vRPclient._notify(source,lang.inventory.chest.already_opened())
       end
     end
   end

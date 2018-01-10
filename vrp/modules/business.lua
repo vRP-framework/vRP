@@ -111,12 +111,12 @@ local function business_enter()
         if amount > 0 then
           if vRP.tryPayment(user_id,amount) then
             MySQL.execute("vRP/add_capital", {user_id = user_id, capital = amount})
-            vRPclient.notify(player,lang.business.addcapital.added({amount}))
+            vRPclient._notify(player,lang.business.addcapital.added({amount}))
           else
-            vRPclient.notify(player,lang.money.not_enough())
+            vRPclient._notify(player,lang.money.not_enough())
           end
         else
-          vRPclient.notify(player,lang.common.invalid_value())
+          vRPclient._notify(player,lang.common.invalid_value())
         end
       end,lang.business.addcapital.description()}
 
@@ -132,12 +132,12 @@ local function business_enter()
             MySQL.execute("vRP/add_laundered", {user_id = user_id, laundered = amount})
             -- give laundered money
             vRP.giveMoney(user_id,amount)
-            vRPclient.notify(player,lang.business.launder.laundered({amount}))
+            vRPclient._notify(player,lang.business.launder.laundered({amount}))
           else
-            vRPclient.notify(player,lang.business.launder.not_enough())
+            vRPclient._notify(player,lang.business.launder.not_enough())
           end
         else
-          vRPclient.notify(player,lang.common.invalid_value())
+          vRPclient._notify(player,lang.common.invalid_value())
         end
       end,lang.business.launder.description()}
     else -- doesn't have a business
@@ -156,16 +156,16 @@ local function business_enter()
                 time = os.time()
               })
 
-              vRPclient.notify(player,lang.business.open.created())
+              vRPclient._notify(player,lang.business.open.created())
               vRP.closeMenu(player) -- close the menu to force update business info
             else
-              vRPclient.notify(player,lang.money.not_enough())
+              vRPclient._notify(player,lang.money.not_enough())
             end
           else
-            vRPclient.notify(player,lang.common.invalid_value())
+            vRPclient._notify(player,lang.common.invalid_value())
           end
         else
-          vRPclient.notify(player,lang.common.invalid_name())
+          vRPclient._notify(player,lang.common.invalid_name())
         end
       end,lang.business.open.description({cfg.minimum_capital})}
     end
@@ -190,8 +190,8 @@ local function build_client_business(source) -- build the city hall area/marker/
     for k,v in pairs(cfg.commerce_chambers) do
       local x,y,z = table.unpack(v)
 
-      vRPclient.addBlip(source,x,y,z,cfg.blip[1],cfg.blip[2],lang.business.title())
-      vRPclient.addMarker(source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+      vRPclient._addBlip(source,x,y,z,cfg.blip[1],cfg.blip[2],lang.business.title())
+      vRPclient._addMarker(source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
 
       vRP.setArea(source,"vRP:business"..k,x,y,z,1,1.5,business_enter,business_leave)
     end

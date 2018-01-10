@@ -31,11 +31,11 @@ function vRP.setHunger(user_id,value)
 
     -- update bar
     local source = vRP.getUserSource(user_id)
-    vRPclient.setProgressBarValue(source, "vRP:hunger",data.hunger)
+    vRPclient._setProgressBarValue(source, "vRP:hunger",data.hunger)
     if data.hunger >= 100 then
-      vRPclient.setProgressBarText(source,"vRP:hunger",lang.survival.starving())
+      vRPclient._setProgressBarText(source,"vRP:hunger",lang.survival.starving())
     else
-      vRPclient.setProgressBarText(source,"vRP:hunger","")
+      vRPclient._setProgressBarText(source,"vRP:hunger","")
     end
   end
 end
@@ -50,11 +50,11 @@ function vRP.setThirst(user_id,value)
 
     -- update bar
     local source = vRP.getUserSource(user_id)
-    vRPclient.setProgressBarValue(source, "vRP:thirst",data.thirst)
+    vRPclient._setProgressBarValue(source, "vRP:thirst",data.thirst)
     if data.thirst >= 100 then
-      vRPclient.setProgressBarText(source,"vRP:thirst",lang.survival.thirsty())
+      vRPclient._setProgressBarText(source,"vRP:thirst",lang.survival.thirsty())
     else
-      vRPclient.setProgressBarText(source,"vRP:thirst","")
+      vRPclient._setProgressBarText(source,"vRP:thirst","")
     end
   end
 end
@@ -69,7 +69,7 @@ function vRP.varyHunger(user_id, variation)
     -- apply overflow as damage
     local overflow = data.hunger-100
     if overflow > 0 then
-      vRPclient.varyHealth(vRP.getUserSource(user_id),-overflow*cfg.overflow_damage_factor)
+      vRPclient._varyHealth(vRP.getUserSource(user_id),-overflow*cfg.overflow_damage_factor)
     end
 
     if data.hunger < 0 then data.hunger = 0
@@ -78,11 +78,11 @@ function vRP.varyHunger(user_id, variation)
 
     -- set progress bar data
     local source = vRP.getUserSource(user_id)
-    vRPclient.setProgressBarValue(source,"vRP:hunger",data.hunger)
+    vRPclient._setProgressBarValue(source,"vRP:hunger",data.hunger)
     if was_starving and not is_starving then
-      vRPclient.setProgressBarText(source,"vRP:hunger","")
+      vRPclient._setProgressBarText(source,"vRP:hunger","")
     elseif not was_starving and is_starving then
-      vRPclient.setProgressBarText(source,"vRP:hunger",lang.survival.starving())
+      vRPclient._setProgressBarText(source,"vRP:hunger",lang.survival.starving())
     end
   end
 end
@@ -97,7 +97,7 @@ function vRP.varyThirst(user_id, variation)
     -- apply overflow as damage
     local overflow = data.thirst-100
     if overflow > 0 then
-      vRPclient.varyHealth(vRP.getUserSource(user_id),-overflow*cfg.overflow_damage_factor)
+      vRPclient._varyHealth(vRP.getUserSource(user_id),-overflow*cfg.overflow_damage_factor)
     end
 
     if data.thirst < 0 then data.thirst = 0
@@ -106,11 +106,11 @@ function vRP.varyThirst(user_id, variation)
 
     -- set progress bar data
     local source = vRP.getUserSource(user_id)
-    vRPclient.setProgressBarValue(source,"vRP:thirst",data.thirst)
+    vRPclient._setProgressBarValue(source,"vRP:thirst",data.thirst)
     if was_thirsty and not is_thirsty then
-      vRPclient.setProgressBarText(source,"vRP:thirst","")
+      vRPclient._setProgressBarText(source,"vRP:thirst","")
     elseif not was_thirsty and is_thirsty then
-      vRPclient.setProgressBarText(source,"vRP:thirst",lang.survival.thirsty())
+      vRPclient._setProgressBarText(source,"vRP:thirst",lang.survival.thirsty())
     end
   end
 end
@@ -163,12 +163,12 @@ AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
   local data = vRP.getUserDataTable(user_id)
 
   -- disable police
-  vRPclient.setPolice(source,cfg.police)
+  vRPclient._setPolice(source,cfg.police)
   -- set friendly fire
-  vRPclient.setFriendlyFire(source,cfg.pvp)
+  vRPclient._setFriendlyFire(source,cfg.pvp)
 
-  vRPclient.setProgressBar(source,"vRP:hunger","minimap",htxt,255,153,0,0)
-  vRPclient.setProgressBar(source,"vRP:thirst","minimap",ttxt,0,125,255,0)
+  vRPclient._setProgressBar(source,"vRP:hunger","minimap",htxt,255,153,0,0)
+  vRPclient._setProgressBar(source,"vRP:thirst","minimap",ttxt,0,125,255,0)
   vRP.setHunger(user_id, data.hunger)
   vRP.setThirst(user_id, data.thirst)
 end)
@@ -190,16 +190,16 @@ local choice_revive = {function(player,choice)
       if nuser_id then
         if vRPclient.isInComa(nplayer) then
             if vRP.tryGetInventoryItem(user_id,"medkit",1,true) then
-              vRPclient.playAnim(player,false,revive_seq,false) -- anim
+              vRPclient._playAnim(player,false,revive_seq,false) -- anim
               SetTimeout(15000, function()
-                vRPclient.varyHealth(nplayer,50) -- heal 50
+                vRPclient._varyHealth(nplayer,50) -- heal 50
               end)
             end
           else
-            vRPclient.notify(player,lang.emergency.menu.revive.not_in_coma())
+            vRPclient._notify(player,lang.emergency.menu.revive.not_in_coma())
           end
       else
-        vRPclient.notify(player,lang.common.no_player_near())
+        vRPclient._notify(player,lang.common.no_player_near())
       end
   end
 end,lang.emergency.menu.revive.description()}

@@ -170,9 +170,9 @@ Citizen.CreateThread(function()
       local player_in = (GetDistanceBetweenCoords(v.x,v.y,v.z,px,py,pz,true) <= v.radius and math.abs(pz-v.z) <= v.height)
 
       if v.player_in and not player_in then -- was in: leave
-        vRPserver.leaveArea(k)
+        vRPserver._leaveArea(k)
       elseif not v.player_in and player_in then -- wasn't in: enter
-        vRPserver.enterArea(k)
+        vRPserver._enterArea(k)
       end
 
       v.player_in = player_in -- update area player_in

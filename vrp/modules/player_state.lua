@@ -22,36 +22,36 @@ AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
     end
 
     if data.position then -- teleport to saved pos
-      vRPclient.teleport(source,data.position.x,data.position.y,data.position.z)
+      vRPclient._teleport(source,data.position.x,data.position.y,data.position.z)
     end
 
     if data.customization then
       vRPclient.setCustomization(source,data.customization) 
-        if data.weapons then -- load saved weapons
-          vRPclient.giveWeapons(source,data.weapons,true)
+      if data.weapons then -- load saved weapons
+        vRPclient.giveWeapons(source,data.weapons,true)
 
-          if data.health then -- set health
-            vRPclient.setHealth(source,data.health)
-            SetTimeout(5000, function() -- check coma, kill if in coma
-              if vRPclient.isInComa(player) then
-                vRPclient.killComa(player)
-              end
-            end)
-          end
+        if data.health then -- set health
+          vRPclient.setHealth(source,data.health)
+          SetTimeout(5000, function() -- check coma, kill if in coma
+            if vRPclient.isInComa(player) then
+              vRPclient._killComa(player)
+            end
+          end)
         end
+      end
     else
       if data.weapons then -- load saved weapons
         vRPclient.giveWeapons(source,data.weapons,true)
       end
 
       if data.health then
-        vRPclient.setHealth(source,data.health)
+        vRPclient._setHealth(source,data.health)
       end
     end
 
     -- notify last login
     SetTimeout(15000,function()
-      vRPclient.notify(player,lang.common.welcome({tmpdata.last_login}))
+      vRPclient._notify(player,lang.common.welcome({tmpdata.last_login}))
     end)
   else -- not first spawn (player died), don't load weapons, empty wallet, empty inventory
     vRP.setHunger(user_id,0)
@@ -69,19 +69,19 @@ AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
     vRP.setMoney(user_id,0)
 
     -- disable handcuff
-    vRPclient.setHandcuffed(player,false)
+    vRPclient._setHandcuffed(player,false)
 
     if cfg.spawn_enabled then -- respawn
       local x = cfg.spawn_position[1]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
       local y = cfg.spawn_position[2]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
       local z = cfg.spawn_position[3]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
       data.position = {x=x,y=y,z=z}
-      vRPclient.teleport(source,x,y,z)
+      vRPclient._teleport(source,x,y,z)
     end
 
     -- load character customization
     if data.customization then
-      vRPclient.setCustomization(source,data.customization)
+      vRPclient._setCustomization(source,data.customization)
     end
   end
   Debug.pend()

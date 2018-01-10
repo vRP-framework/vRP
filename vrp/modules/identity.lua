@@ -146,19 +146,19 @@ local function ch_identity(player,choice)
             })
 
             -- update client registration
-            vRPclient.setRegistrationNumber(player,registration)
-            vRPclient.notify(player,lang.money.paid({cfg.new_identity_cost}))
+            vRPclient._setRegistrationNumber(player,registration)
+            vRPclient._notify(player,lang.money.paid({cfg.new_identity_cost}))
           else
-            vRPclient.notify(player,lang.money.not_enough())
+            vRPclient._notify(player,lang.money.not_enough())
           end
         else
-          vRPclient.notify(player,lang.common.invalid_value())
+          vRPclient._notify(player,lang.common.invalid_value())
         end
       else
-        vRPclient.notify(player,lang.common.invalid_value())
+        vRPclient._notify(player,lang.common.invalid_value())
       end
     else
-      vRPclient.notify(player,lang.common.invalid_value())
+      vRPclient._notify(player,lang.common.invalid_value())
     end
   end
 end
@@ -181,8 +181,8 @@ local function build_client_cityhall(source) -- build the city hall area/marker/
   if user_id ~= nil then
     local x,y,z = table.unpack(cfg.city_hall)
 
-    vRPclient.addBlip(source,x,y,z,cfg.blip[1],cfg.blip[2],lang.cityhall.title())
-    vRPclient.addMarker(source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+    vRPclient._addBlip(source,x,y,z,cfg.blip[1],cfg.blip[2],lang.cityhall.title())
+    vRPclient._addMarker(source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
 
     vRP.setArea(source,"vRP:cityhall",x,y,z,1,1.5,cityhall_enter,cityhall_leave)
   end
@@ -192,7 +192,7 @@ AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
   -- send registration number to client at spawn
   local identity = vRP.getUserIdentity(user_id)
   if identity then
-    vRPclient.setRegistrationNumber(source,identity.registration or "000AAA")
+    vRPclient._setRegistrationNumber(source,identity.registration or "000AAA")
   end
 
   -- first spawn, build city hall

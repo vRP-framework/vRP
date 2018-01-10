@@ -40,16 +40,16 @@ for gtype,weapons in pairs(gunshop_types) do
 
         -- payment
         if user_id and vRP.tryPayment(user_id,total) then
-          vRPclient.giveWeapons(player,{
+          vRPclient._giveWeapons(player,{
             [weapon] = {ammo=amount}
           })
 
-          vRPclient.notify(player,lang.money.paid({total}))
+          vRPclient._notify(player,lang.money.paid({total}))
         else
-          vRPclient.notify(player,lang.money.not_enough())
+          vRPclient._notify(player,lang.money.not_enough())
         end
       else
-        vRPclient.notify(player,lang.common.invalid_value())
+        vRPclient._notify(player,lang.common.invalid_value())
       end
     end
   end
@@ -87,8 +87,8 @@ local function build_client_gunshops(source)
           vRP.closeMenu(source)
         end
 
-        vRPclient.addBlip(source,x,y,z,gcfg.blipid,gcfg.blipcolor,lang.gunshop.title({gtype}))
-        vRPclient.addMarker(source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+        vRPclient._addBlip(source,x,y,z,gcfg.blipid,gcfg.blipcolor,lang.gunshop.title({gtype}))
+        vRPclient._addMarker(source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
 
         vRP.setArea(source,"vRP:gunshop"..k,x,y,z,1,1.5,gunshop_enter,gunshop_leave)
       end

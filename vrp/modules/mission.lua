@@ -21,7 +21,7 @@ function vRP.startMission(player, mission_data)
     if #mission_data.steps > 0 then
       tmpdata.mission_step = 0
       tmpdata.mission_data = mission_data
-      vRPclient.setDiv(player,"mission",cfg.display_css,"")
+      vRPclient._setDiv(player,"mission",cfg.display_css,"")
       vRP.nextMissionStep(player) -- do first step
     end
   end
@@ -48,14 +48,14 @@ function vRP.nextMissionStep(player)
         if step.onleave then onleave = step.onleave end
 
         -- display
-        vRPclient.setDivContent(player,"mission",lang.mission.display({tmpdata.mission_data.name,tmpdata.mission_step-1,#tmpdata.mission_data.steps,step.text}))
+        vRPclient._setDivContent(player,"mission",lang.mission.display({tmpdata.mission_data.name,tmpdata.mission_step-1,#tmpdata.mission_data.steps,step.text}))
 
         -- blip/route
         local id = vRPclient.setNamedBlip(player, "vRP:mission", x,y,z, blipid, blipcolor, lang.mission.blip({tmpdata.mission_data.name,tmpdata.mission_step,#tmpdata.mission_data.steps}))
-        vRPclient.setBlipRoute(player,id)
+        vRPclient._setBlipRoute(player,id)
 
         -- map trigger
-        vRPclient.setNamedMarker(player,"vRP:mission", x,y,z-1,0.7,0.7,0.5,255,226,0,125,150)
+        vRPclient._setNamedMarker(player,"vRP:mission", x,y,z-1,0.7,0.7,0.5,255,226,0,125,150)
         vRP.setArea(player,"vRP:mission",x,y,z,1,1.5,step.onenter,step.onleave)
       end
     end
@@ -70,9 +70,9 @@ function vRP.stopMission(player)
     tmpdata.mission_step = nil
     tmpdata.mission_data = nil
 
-    vRPclient.removeNamedBlip(player,"vRP:mission")
-    vRPclient.removeNamedMarker(player,"vRP:mission")
-    vRPclient.removeDiv(player,"mission")
+    vRPclient._removeNamedBlip(player,"vRP:mission")
+    vRPclient._removeNamedMarker(player,"vRP:mission")
+    vRPclient._removeDiv(player,"mission")
     vRP.removeArea(player,"vRP:mission")
   end
 end

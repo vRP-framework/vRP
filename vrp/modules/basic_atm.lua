@@ -6,11 +6,11 @@ local cfg = module("cfg/atms")
 local atms = cfg.atms
 
 local function play_atm_enter(player)
-  vRPclient.playAnim(player,false,{{"amb@prop_human_atm@male@enter","enter"},{"amb@prop_human_atm@male@idle_a","idle_a"}},false)
+  vRPclient._playAnim(player,false,{{"amb@prop_human_atm@male@enter","enter"},{"amb@prop_human_atm@male@idle_a","idle_a"}},false)
 end
 
 local function play_atm_exit(player)
-  vRPclient.playAnim(player,false,{{"amb@prop_human_atm@male@exit","exit"}},false)
+  vRPclient._playAnim(player,false,{{"amb@prop_human_atm@male@exit","exit"}},false)
 end
 
 local function atm_choice_deposit(player,choice)
@@ -25,13 +25,13 @@ local function atm_choice_deposit(player,choice)
     local user_id = vRP.getUserId(source)
     if user_id then
       if vRP.tryDeposit(user_id,v) then
-        vRPclient.notify(source,lang.atm.deposit.deposited({v}))
+        vRPclient._notify(source,lang.atm.deposit.deposited({v}))
       else
-        vRPclient.notify(source,lang.money.not_enough())
+        vRPclient._notify(source,lang.money.not_enough())
       end
     end
   else
-    vRPclient.notify(source,lang.common.invalid_value())
+    vRPclient._notify(source,lang.common.invalid_value())
   end
 end
 
@@ -47,13 +47,13 @@ local function atm_choice_withdraw(player,choice)
     local user_id = vRP.getUserId(source)
     if user_id then
       if vRP.tryWithdraw(user_id,v) then
-        vRPclient.notify(source,lang.atm.withdraw.withdrawn({v}))
+        vRPclient._notify(source,lang.atm.withdraw.withdrawn({v}))
       else
-        vRPclient.notify(source,lang.atm.withdraw.not_enough())
+        vRPclient._notify(source,lang.atm.withdraw.not_enough())
       end
     end
   else
-    vRPclient.notify(source,lang.common.invalid_value())
+    vRPclient._notify(source,lang.common.invalid_value())
   end
 end
 
@@ -83,8 +83,8 @@ local function build_client_atms(source)
     for k,v in pairs(atms) do
       local x,y,z = table.unpack(v)
 
-      vRPclient.addBlip(source,x,y,z,108,4,lang.atm.title())
-      vRPclient.addMarker(source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+      vRPclient._addBlip(source,x,y,z,108,4,lang.atm.title())
+      vRPclient._addMarker(source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
 
       vRP.setArea(source,"vRP:atm"..k,x,y,z,1,1.5,atm_enter,atm_leave)
     end

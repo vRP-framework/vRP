@@ -412,7 +412,7 @@ AddEventHandler("playerDropped",function(reason)
   local endpoint = vRP.getPlayerEndpoint(source)
 
   -- remove player from connected clients
-  vRPclient.removePlayer(-1, source)
+  vRPclient._removePlayer(-1, source)
 
   if user_id then
     TriggerEvent("vRP:playerLeave", user_id, source)
@@ -446,24 +446,24 @@ AddEventHandler("vRPcli:playerSpawned", function()
       -- first spawn, reference player
       -- send players to new player
       for k,v in pairs(vRP.user_sources) do
-        vRPclient.addPlayer(source,v)
+        vRPclient._addPlayer(source,v)
       end
       -- send new player to all players
-      vRPclient.addPlayer(-1,source)
+      vRPclient._addPlayer(-1,source)
     end
 
     -- set client tunnel delay at first spawn
     Tunnel.setDestDelay(player, config.load_delay)
 
     -- show loading
-    vRPclient.setProgressBar(player, "vRP:loading", "botright", "Loading...", 0,0,0, 100)
+    vRPclient._setProgressBar(player, "vRP:loading", "botright", "Loading...", 0,0,0, 100)
 
     SetTimeout(2000, function() -- trigger spawn event
       TriggerEvent("vRP:playerSpawn",user_id,player,first_spawn)
 
       SetTimeout(config.load_duration*1000, function() -- set client delay to normal delay
         Tunnel.setDestDelay(player, config.global_delay)
-        vRPclient.removeProgressBar(player,"vRP:loading")
+        vRPclient._removeProgressBar(player,"vRP:loading")
       end)
     end)
   end
