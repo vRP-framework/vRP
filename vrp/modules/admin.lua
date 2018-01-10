@@ -88,8 +88,10 @@ local function ch_addgroup(player,choice)
     local id = vRP.prompt(player,"User id: ","") 
     id = parseInt(id)
     local group = vRP.prompt(player,"Group to add: ","")
-    vRP.addUserGroup(id,group)
-    vRPclient._notify(player, group.." added to user "..id)
+    if group then
+      vRP.addUserGroup(id,group)
+      vRPclient._notify(player, group.." added to user "..id)
+    end
   end
 end
 
@@ -99,8 +101,10 @@ local function ch_removegroup(player,choice)
     local id = vRP.prompt(player,"User id: ","")
     id = parseInt(id)
     local group = vRP.prompt(player,"Group to remove: ","")
-    vRP.removeUserGroup(id,group)
-    vRPclient._notify(player, group.." removed from user "..id)
+    if group then
+      vRP.removeUserGroup(id,group)
+      vRPclient._notify(player, group.." removed from user "..id)
+    end
   end
 end
 
