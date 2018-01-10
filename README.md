@@ -25,16 +25,13 @@ See also (and use it as a basis to understand how to develop extensions for vRP)
 * groups/permissions
 * language config file
 * player state auto saved to database (hunger,thirst,weapons,player apparence,position)
-* player identity
-* business system
-* aptitudes (education/exp)
+* player identity/phone/aptitudes (education/exp)
+* business system / money (wallet/bank)
 * homes (experimental, if a visitor leave in any other way than using the green circle, like crashing, flying or disconnecting, it will require an eject all)
-* phone
 * cloakrooms (uniform for jobs)
 * basic police (PC, check, I.D., handcuff, jails, seize weapons/items)
 * basic emergency (coma, reanimate)
 * emotes
-* money (wallet/bank)
 * inventory (with custom item definition, parametric items), chests (vehicle trunks)
 * basic implementations: ATM, market, gunshop, skinshop, garage
 * item transformer (harvest, process, produce) (illegal informer)
@@ -54,7 +51,6 @@ See also (and use it as a basis to understand how to develop extensions for vRP)
 * police pc: add custom police records
 * admin: tp to marker
 * police research per veh type
-* display some permission/group count
 
 ## NOTES
 ### Homes
