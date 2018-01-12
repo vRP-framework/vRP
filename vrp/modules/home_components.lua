@@ -5,7 +5,7 @@ local sanitizes = module("cfg/sanitizes")
 
 -- CHEST
 
-local function chest_create(owner_id, stype, sid, cid, config, x, y, z, player)
+local function chest_create(owner_id, stype, sid, cid, config, data, x, y, z, player)
   local chest_enter = function(player,area)
     local user_id = vRP.getUserId(player)
     if user_id and user_id == owner_id then
@@ -23,7 +23,7 @@ local function chest_create(owner_id, stype, sid, cid, config, x, y, z, player)
   vRP.setArea(player,nid,x,y,z,1,1.5,chest_enter,chest_leave)
 end
 
-local function chest_destroy(owner_id, stype, sid, cid, config, x, y, z, player)
+local function chest_destroy(owner_id, stype, sid, cid, config, data, x, y, z, player)
   local nid = "vRP:home:slot"..stype..sid..":chest"
   vRPclient._removeNamedMarker(player,nid)
   vRP.removeArea(player,nid)
@@ -33,14 +33,14 @@ vRP.defHomeComponent("chest", chest_create, chest_destroy)
 
 -- WARDROBE
 
-local function wardrobe_create(owner_id, stype, sid, cid, config, x, y, z, player)
+local function wardrobe_create(owner_id, stype, sid, cid, config, data, x, y, z, player)
   local wardrobe_enter = nil
   wardrobe_enter = function(player,area)
     local user_id = vRP.getUserId(player)
     if user_id and user_id == owner_id then
       -- notify player if wearing a uniform
-      local data = vRP.getUserDataTable(user_id)
-      if data.cloakroom_idle then
+      local udata = vRP.getUserDataTable(user_id)
+      if udata.cloakroom_idle then
         vRPclient._notify(player,lang.common.wearing_uniform())
       end
 
@@ -48,8 +48,8 @@ local function wardrobe_create(owner_id, stype, sid, cid, config, x, y, z, playe
       local menu = {name=lang.home.wardrobe.title(),css={top = "75px", header_color="rgba(0,255,125,0.75)"}}
 
       -- load sets
-      local data = vRP.getUData(user_id, "vRP:home:wardrobe")
-      local sets = json.decode(data)
+      local udata = vRP.getUData(user_id, "vRP:home:wardrobe")
+      local sets = json.decode(udata)
       if sets == nil then
         sets = {}
       end
@@ -98,7 +98,7 @@ local function wardrobe_create(owner_id, stype, sid, cid, config, x, y, z, playe
   vRP.setArea(player,nid,x,y,z,1,1.5,wardrobe_enter,wardrobe_leave)
 end
 
-local function wardrobe_destroy(owner_id, stype, sid, cid, config, x, y, z, player)
+local function wardrobe_destroy(owner_id, stype, sid, cid, config, data, x, y, z, player)
   local nid = "vRP:home:slot"..stype..sid..":wardrobe"
   vRPclient._removeNamedMarker(player,nid)
   vRP.removeArea(player,nid)
@@ -108,7 +108,7 @@ vRP.defHomeComponent("wardrobe", wardrobe_create, wardrobe_destroy)
 
 -- GAMETABLE
 
-local function gametable_create(owner_id, stype, sid, cid, config, x, y, z, player)
+local function gametable_create(owner_id, stype, sid, cid, config, data, x, y, z, player)
   local gametable_enter = function(player,area)
     local user_id = vRP.getUserId(player)
     if user_id and user_id == owner_id then
@@ -193,7 +193,7 @@ local function gametable_create(owner_id, stype, sid, cid, config, x, y, z, play
   vRP.setArea(player,nid,x,y,z,1,1.5,gametable_enter,gametable_leave)
 end
 
-local function gametable_destroy(owner_id, stype, sid, cid, config, x, y, z, player)
+local function gametable_destroy(owner_id, stype, sid, cid, config, data, x, y, z, player)
   local nid = "vRP:home:slot"..stype..sid..":gametable"
   vRPclient._removeNamedMarker(player,nid)
   vRP.removeArea(player,nid)
@@ -206,7 +206,7 @@ vRP.defHomeComponent("gametable", gametable_create, gametable_destroy)
 -- item transformers are global to all players, so we need a counter to know when to create/destroy them
 local itemtrs = {}
 
-local function itemtr_create(owner_id, stype, sid, cid, config, x, y, z, player)
+local function itemtr_create(owner_id, stype, sid, cid, config, data, x, y, z, player)
   local nid = "home:slot"..stype..sid..":itemtr"..cid
   if itemtrs[nid] == nil then
     itemtrs[nid] = 1
@@ -227,7 +227,7 @@ local function itemtr_create(owner_id, stype, sid, cid, config, x, y, z, player)
   end
 end
 
-local function itemtr_destroy(owner_id, stype, sid, cid, config, x, y, z, player)
+local function itemtr_destroy(owner_id, stype, sid, cid, config, data, x, y, z, player)
   local nid = "home:slot"..stype..sid..":itemtr"..cid
   if itemtrs[nid] ~= nil then
     itemtrs[nid] = itemtrs[nid]-1

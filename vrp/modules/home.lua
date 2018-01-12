@@ -67,10 +67,18 @@ function vRP.findFreeNumber(home,max,cbr)
   end
 end
 
--- define home component
+-- define home component (oncreate and ondestroy are called for each player entering/leaving a slot)
 -- name: unique component id
--- oncreate(owner_id, slot_type, slot_id, cid, config, x, y, z, player)
--- ondestroy(owner_id, slot_type, slot_id, cid, config, x, y, z, player)
+-- oncreate(owner_id, slot_type, slot_id, cid, config, data, x, y, z, player)
+-- ondestroy(owner_id, slot_type, slot_id, cid, config, data, x, y, z, player)
+--- owner_id: user_id of house owner
+--- slot_type: slot type name
+--- slot_id: slot id for a specific type
+--- cid: component id (for this slot)
+--- config: component config
+--- data: component datatable
+--- x,y,z: component position
+--- player: player joining/leaving the slot
 function vRP.defHomeComponent(name, oncreate, ondestroy)
   components[name] = {oncreate,ondestroy}
 end
@@ -166,8 +174,14 @@ local function leave_slot(user_id,player,stype,sid) -- called when a player leav
     else
       local component = components[v[1]]
       if component then
-        -- ondestroy(owner_id, slot_type, slot_id, cid, config, x, y, z, player)
-        component[2](slot.owner_id, stype, sid, k, v._config or {}, x, y, z, player)
+        local data = slot.components[k]
+        if not data then
+          data = {}
+          slot.components[k] = data
+        end
+
+        -- ondestroy(owner_id, slot_type, slot_id, cid, config, data, x, y, z, player)
+        component[2](slot.owner_id, stype, sid, k, v._config or {}, data, x, y, z, player)
       end
     end
   end
@@ -240,8 +254,14 @@ local function enter_slot(user_id,player,stype,sid) -- called when a player ente
     else -- load regular component
       local component = components[v[1]]
       if component then
-        -- oncreate(owner_id, slot_type, slot_id, cid, config, x, y, z, player)
-        component[1](slot.owner_id, stype, sid, k, v._config or {}, x, y, z, player)
+        local data = slot.components[k]
+        if not data then
+          data = {}
+          slot.components[k] = data
+        end
+
+        -- oncreate(owner_id, slot_type, slot_id, cid, config, data, x, y, z, player)
+        component[1](slot.owner_id, stype, sid, k, v._config or {}, data, x, y, z, player)
       end
     end
   end
@@ -266,6 +286,7 @@ function vRP.accessHome(user_id, home, number)
         slot.home_number = number
         slot.owner_id = owner_id
         slot.players = {} -- map user_id => player
+        slot.components = {} -- components data
       end
     end
 

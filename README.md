@@ -700,10 +700,18 @@ For static areas, configure the file `cfg/item_transformers.lua`, the transforme
 ```lua
 -- PROXY API
 
--- define home component
+-- define home component (oncreate and ondestroy are called for each player entering/leaving a slot)
 -- name: unique component id
--- oncreate(owner_id, slot_type, slot_id, cid, config, x, y, z, player)
--- ondestroy(owner_id, slot_type, slot_id, cid, config, x, y, z, player)
+-- oncreate(owner_id, slot_type, slot_id, cid, config, data, x, y, z, player)
+-- ondestroy(owner_id, slot_type, slot_id, cid, config, data, x, y, z, player)
+--- owner_id: user_id of house owner
+--- slot_type: slot type name
+--- slot_id: slot id for a specific type
+--- cid: component id (for this slot)
+--- config: component config
+--- data: component datatable
+--- x,y,z: component position
+--- player: player joining/leaving the slot
 vRP.defHomeComponent(name, oncreate, ondestroy)
 
 -- user access a home by address (without asking)
