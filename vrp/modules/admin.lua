@@ -281,6 +281,21 @@ local function ch_noclip(player, choice)
   vRPclient._toggleNoclip(player)
 end
 
+local function ch_audiosource(player, choice)
+  local infos = splitString(vRP.prompt(player, "Audio source: name=url, omit url to delete the named source.", ""), "=")
+  local name = infos[1]
+  local url = infos[2]
+
+  if name and string.len(name) > 0 then
+    if url and string.len(url) > 0 then
+      local x,y,z = vRPclient.getPosition(player)
+      vRPclient._setAudioSource(-1,"vRP:admin:"..name,url,x,y,z,0.5,150)
+    else
+      vRPclient._removeAudioSource(-1,"vRP:admin:"..name)
+    end
+  end
+end
+
 vRP.registerMenuBuilder("main", function(add, data)
   local user_id = vRP.getUserId(data.player)
   if user_id then
@@ -325,6 +340,9 @@ vRP.registerMenuBuilder("main", function(add, data)
       end
       if vRP.hasPermission(user_id,"player.custom_sound") then
         menu["@Custom sound"] = {ch_sound}
+      end
+      if vRP.hasPermission(user_id,"player.custom_sound") then
+        menu["@Custom audiosource"] = {ch_audiosource}
       end
       if vRP.hasPermission(user_id,"player.coords") then
         menu["@Coords"] = {ch_coords}

@@ -906,6 +906,26 @@ vRP.registerMenuBuilder(name, builder)
 vRP.buildMenu(name, data, cbr)
 ```
 
+#### Audio
+
+```lua
+-- TUNNEL CLIENT API
+
+-- play audio source (once)
+--- url: valid audio HTML url (ex: .ogg/.wav/direct ogg-stream url)
+--- x,y,z: position
+--- volume: 0-1 
+--- max_dist 
+vRP.playAudioSource(url, x, y, z, volume, max_dist)
+
+-- set named audio source (looping)
+vRP.setAudioSource(name, url, x, y, z, volume, max_dist)
+
+-- remove named audio source
+tvRP.removeAudioSource(name)
+ 
+```
+
 #### Map
 
 ```lua
