@@ -922,9 +922,16 @@ vRP.playAudioSource(url, x, y, z, volume, max_dist)
 vRP.setAudioSource(name, url, x, y, z, volume, max_dist)
 
 -- remove named audio source
-tvRP.removeAudioSource(name)
- 
+vRP.removeAudioSource(name)
 ```
+##### Notes
+
+* it uses the Web Audio API of CEF
+* CEF used by FiveM doesn't have mp3/m3u support, so only direct links to ogg/vorbis/(maybe opus) stream will work (for radio stream)
+* .wav/.ogg formats are supported
+* there is no optimization for punctual audio sources, they will be added and removed when they end (no cache)
+* punctual audio sources will not play if the player is `2*max_dist` far away
+* persistent audio sources will pause themselves when the player is `2*max_dist` far away, and play again when inside this radius (save the bandwidth for radio streams or big music files)
 
 #### Map
 
