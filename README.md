@@ -913,13 +913,18 @@ vRP.buildMenu(name, data, cbr)
 
 -- play audio source (once)
 --- url: valid audio HTML url (ex: .ogg/.wav/direct ogg-stream url)
---- x,y,z: position
 --- volume: 0-1 
---- max_dist 
-vRP.playAudioSource(url, x, y, z, volume, max_dist)
+--- x,y,z: position (omit for unspatialized)
+--- max_dist  (omit for unspatialized)
+vRP.playAudioSource(url, volume, x, y, z, max_dist)
 
 -- set named audio source (looping)
-vRP.setAudioSource(name, url, x, y, z, volume, max_dist)
+--- name: source name
+--- url: valid audio HTML url (ex: .ogg/.wav/direct ogg-stream url)
+--- volume: 0-1 
+--- x,y,z: position (omit for unspatialized)
+--- max_dist  (omit for unspatialized)
+vRP.setAudioSource(name, url, volume, x, y, z, max_dist)
 
 -- remove named audio source
 vRP.removeAudioSource(name)

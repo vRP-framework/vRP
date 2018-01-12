@@ -133,16 +133,21 @@ end
 -- AUDIO
 
 -- play audio source (once)
---- url: valid audio HTML url
---- x,y,z: position
+--- url: valid audio HTML url (ex: .ogg/.wav/direct ogg-stream url)
 --- volume: 0-1 
---- max_dist 
-function tvRP.playAudioSource(url, x, y, z, volume, max_dist)
+--- x,y,z: position (omit for unspatialized)
+--- max_dist  (omit for unspatialized)
+function tvRP.playAudioSource(url, volume, x, y, z, max_dist)
   SendNUIMessage({act="play_audio_source", url = url, x = x, y = y, z = z, volume = volume, max_dist = max_dist})
 end
 
 -- set named audio source (looping)
-function tvRP.setAudioSource(name, url, x, y, z, volume, max_dist)
+--- name: source name
+--- url: valid audio HTML url (ex: .ogg/.wav/direct ogg-stream url)
+--- volume: 0-1 
+--- x,y,z: position (omit for unspatialized)
+--- max_dist  (omit for unspatialized)
+function tvRP.setAudioSource(name, url, volume, x, y, z, max_dist)
   SendNUIMessage({act="set_audio_source", name = name, url = url, x = x, y = y, z = z, volume = volume, max_dist = max_dist})
 end
 

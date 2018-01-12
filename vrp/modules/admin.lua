@@ -289,7 +289,7 @@ local function ch_audiosource(player, choice)
   if name and string.len(name) > 0 then
     if url and string.len(url) > 0 then
       local x,y,z = vRPclient.getPosition(player)
-      vRPclient._setAudioSource(-1,"vRP:admin:"..name,url,x,y,z,0.5,150)
+      vRPclient._setAudioSource(-1,"vRP:admin:"..name,url,0.5,x,y,z,125)
     else
       vRPclient._removeAudioSource(-1,"vRP:admin:"..name)
     end
