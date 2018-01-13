@@ -717,6 +717,10 @@ vRP.defHomeComponent(name, oncreate, ondestroy)
 -- user access a home by address (without asking)
 -- return true on success
 vRP.accessHome(user_id, home, number)
+
+-- get players in the specified home slot
+-- return map of user_id -> player source or nil if the slot is unavailable
+vRP.getHomeSlotPlayers(stype, sid)
 ```
 
 ##### Basic components
@@ -747,6 +751,19 @@ Save your character customization in the wardrobe, so you don't need to customiz
 `itemtr`
 Set the config as any item transformer structure configuration.
 
+###### Radio
+
+`radio`
+
+```lua
+_config = {
+  stations = { -- map of name -> audio source url
+    ["station 1"] = "url",
+    ...
+  },
+  position = {x,y,z} -- optional: define a different position for the audio source (placed 1 meter above the component by default)
+}
+```
 
 #### Mission
 

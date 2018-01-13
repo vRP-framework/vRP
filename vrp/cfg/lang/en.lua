@@ -356,6 +356,12 @@ local lang = {
         request = "[BET] Do you want to bet {1} $ ?",
         started = "~g~Bet started."
       }
+    },
+    radio = {
+      title = "Radio",
+      off = {
+        title = "> turn off"
+      }
     }
   },
   garage = {

@@ -355,6 +355,12 @@ local lang = {
         request = "[PARI] Voulez vous parier {1} $ ?",
         started = "~g~Pari commencé."
       }
+    },
+    radio = {
+      title = "Radio",
+      off = {
+        title = "> éteindre"
+      }
     }
   },
   garage = {

@@ -239,3 +239,61 @@ local function itemtr_destroy(owner_id, stype, sid, cid, config, data, x, y, z, 
 end
 
 vRP.defHomeComponent("itemtr", itemtr_create, itemtr_destroy)
+
+-- RADIO
+
+local function radio_create(owner_id, stype, sid, cid, config, data, x, y, z, player)
+  local nid = "vRP:home:slot"..stype..sid..":radio"..cid
+  -- build menu
+  local menu = {name=lang.home.radio.title(),css={top = "75px", header_color="rgba(0,125,255,0.75)"}}
+
+  -- audio position
+  local rx,ry,rz = x,y,z+1
+  if config.position then
+    rx,ry,rz = table.unpack(config.position)
+  end
+
+  local function choose(player, choice)
+    data.station = config.stations[choice]
+
+    -- apply station change to players
+    local players = vRP.getHomeSlotPlayers(stype, sid) or {}
+    for k,v in pairs(players) do
+      if data.station then
+        vRPclient._setAudioSource(v, nid, data.station, 0.5, rx, ry, rz, 50)
+      else
+        vRPclient._removeAudioSource(v, nid)
+      end
+    end
+  end
+  
+  for k,v in pairs(config.stations) do
+    menu[k] = {choose}
+  end
+
+  menu[lang.home.radio.off.title()] = {choose} -- add off option
+
+  local radio_enter = function(player,area)
+    vRP.openMenu(player, menu)
+  end
+
+  local radio_leave = function(player,area)
+    vRP.closeMenu(player)
+  end
+
+  vRPclient._setNamedMarker(player,nid,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+  vRP.setArea(player,nid,x,y,z,1,1.5,radio_enter,radio_leave)
+
+  if data.station then -- auto load station
+    vRPclient._setAudioSource(player, nid, data.station, 0.5, rx, ry, rz, 50)
+  end
+end
+
+local function radio_destroy(owner_id, stype, sid, cid, config, data, x, y, z, player)
+  local nid = "vRP:home:slot"..stype..sid..":radio"..cid
+  vRPclient._removeNamedMarker(player,nid)
+  vRP.removeArea(player,nid)
+  vRPclient._removeAudioSource(player, nid)
+end
+
+vRP.defHomeComponent("radio", radio_create, radio_destroy)

@@ -83,6 +83,9 @@ function vRP.defHomeComponent(name, oncreate, ondestroy)
   components[name] = {oncreate,ondestroy}
 end
 
+function vRP.getHomeSlotPlayers(stype, sid)
+end
+
 -- SLOTS
 
 -- used (or not) slots
@@ -91,6 +94,15 @@ for k,v in pairs(cfg.slot_types) do
   uslots[k] = {}
   for l,w in pairs(v) do
     uslots[k][l] = {used=false}
+  end
+end
+
+-- get players in the specified home slot
+-- return map of user_id -> player source or nil if the slot is unavailable
+function vRP.getHomeSlotPlayers(stype, sid)
+  local slot = uslots[stype][sid]
+  if slot and slot.used then
+    return slot.players
   end
 end
 

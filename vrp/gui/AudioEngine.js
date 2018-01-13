@@ -1,4 +1,9 @@
 
+var is_playing = function(media)
+{
+  return media.currentTime > 0 && !media.paused && !media.ended && media.readyState > 2;
+}
+
 function AudioEngine()
 {
   this.c = new AudioContext();
@@ -36,9 +41,9 @@ AudioEngine.prototype.setListenerData = function(data)
         var dist = Math.sqrt(dx*dx+dy*dy+dz*dz);
         var active_dist = source[2].maxDistance*2;
 
-        if(source[0].paused && dist <= active_dist)
+        if(!is_playing(source[0]) && dist <= active_dist)
           source[0].play();
-        else if(!source[0].paused && dist > active_dist)
+        else if(is_playing(source[0]) && dist > active_dist)
           source[0].pause();
       }
     }
@@ -60,7 +65,7 @@ AudioEngine.prototype.setupAudioSource = function(data)
     node = this.c.createMediaElementSource(audio);
 
     panner = this.c.createPanner();
-  //  panner.panningModel = "HRTF";
+//    panner.panningModel = "HRTF";
     panner.distanceModel = "inverse";
     panner.refDistance = 1;
     panner.maxDistance = data.max_dist;
@@ -138,7 +143,7 @@ AudioEngine.prototype.removeAudioSource = function(data)
   var source = this.sources[data.name];
   if(source){
     delete this.sources[data.name];
-    if(!source[0].paused)
+    if(is_playing(source[0]))
       source[0].pause();
     if(source[3]) //spatialized
       source[2].disconnect(this.c.destination);
