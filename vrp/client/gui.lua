@@ -171,13 +171,16 @@ end)
 -- VoIP
 
 local channel_callbacks = {}
+local voice_channels = {}
 
 -- request connection to another player for a specific channel
 function tvRP.connectVoice(channel, player)
+  SendNUIMessage({act="connect_voice", channel=channel, player=player})
 end
 
 -- disconnect from another player for a specific channel
 function tvRP.disconnectVoice(channel, player)
+  SendNUIMessage({act="disconnect_voice", channel=channel, player=player})
 end
 
 -- register callbacks for a specific channel
@@ -185,6 +188,7 @@ end
 --- on_connect(player)
 --- on_disconnect(player)
 function tvRP.registerVoiceCallbacks(channel, on_request, on_connect, on_disconnect)
+  channel_callbacks[channel] = {on_request, on_connect, on_disconnect}
 end
 
 -- check if there is an active connection
@@ -197,9 +201,34 @@ end
 
 -- configure channel connections
 --- config:
----- effect: nil, "radio"
+---- effect: nil/"radio"
+---- spatialized: true/false
 function tvRP.configureVoice(channel, config)
 end
+
+RegisterNUICallback("audio",function(data,cb)
+  if data.act == "voice_connected" then
+
+    -- callback
+    local cbs = channel_callbacks[data.channel]
+    if cbs then
+      local cb = cbs[2]
+      if cb then cb(data.player) end
+    end
+  elseif data.act == "voice_disconnected" then
+
+    -- callback
+    local cbs = channel_callbacks[data.channel]
+    if cbs then
+      local cb = cbs[3]
+      if cb then cb(data.player) end
+    end
+  elseif data.act == "voice_ice_candidate" then
+    vRPserver._signalVoicePeer(data.player, {channel=data.channel, candidate=data.candidate})
+  elseif data.act == "voice_sdp_offer" then
+    vRPserver._signalVoicePeer(data.player, {channel=data.channel, sdp_offer=data.sdp})
+  end
+end)
 
 -- CONTROLS/GUI
 

@@ -149,6 +149,10 @@ window.addEventListener("load",function(){
       aengine.removeAudioSource(data);
     else if(data.act == "audio_listener")
       aengine.setListenerData(data);
+    else if(data.act == "connect_voice")
+      aengine.connectVoice(data);
+    else if(data.act == "disconnect_voice")
+      aengine.disconnectVoice(data);
     // CONTROLS
     else if(data.act == "event"){ //EVENTS
       if(data.event == "UP"){

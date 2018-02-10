@@ -313,3 +313,9 @@ AddEventHandler("vRP:playerLeave", function(user_id, source)
     end
   end
 end)
+
+-- VoIP
+
+function tvRP.signalVoicePeer(player, data)
+  vRPclient._signalVoicePeer(player, source, data)
+end
