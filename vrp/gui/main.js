@@ -158,6 +158,10 @@ window.addEventListener("load",function(){
       aengine.disconnectVoice(data);
     else if(data.act == "voice_peer_signal")
       aengine.voicePeerSignal(data);
+    else if(data.act == "set_voice_state")
+      aengine.setVoiceState(data);
+    else if(data.act == "configure_voice")
+      aengine.configureVoice(data);
     // CONTROLS
     else if(data.act == "event"){ //EVENTS
       if(data.event == "UP"){

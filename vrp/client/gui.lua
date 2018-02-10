@@ -193,10 +193,22 @@ end
 
 -- check if there is an active connection
 function tvRP.isVoiceConnected(channel, player)
+  local channel = voice_channels[channel]
+  if channel then
+    return channel[player]
+  end
 end
 
--- active: true/false (enable/disable speaking)
-function tvRP.setVoiceState(channel, active)
+-- return connections (map of channel => map of player => true)
+function tvRP.getVoiceChannels()
+  return voice_channels
+end
+
+-- enable/disable speaking
+--- player: nil to affect all channel peers
+--- active: true/false 
+function tvRP.setVoiceState(channel, player, active)
+  SendNUIMessage({act="set_voice_state", channel=channel, player=player, active=active})
 end
 
 -- configure channel connections
@@ -204,10 +216,18 @@ end
 ---- effect: nil/"radio"
 ---- spatialized: true/false
 function tvRP.configureVoice(channel, config)
+  SendNUIMessage({act="configure_voice", channel=channel, config=config})
 end
 
 RegisterNUICallback("audio",function(data,cb)
   if data.act == "voice_connected" then
+    -- register channel/player
+    local channel = voice_channels[data.channel]
+    if not channel then
+      channel = {}
+      voice_channels[data.channel] = channel
+    end
+    channel[data.player] = true
 
     -- callback
     local cbs = channel_callbacks[data.channel]
@@ -216,6 +236,11 @@ RegisterNUICallback("audio",function(data,cb)
       if cb then cb(data.player) end
     end
   elseif data.act == "voice_disconnected" then
+    -- unregister channel/player
+    local channel = voice_channels[data.channel]
+    if channel then
+      channel[data.player] = nil
+    end
 
     -- callback
     local cbs = channel_callbacks[data.channel]
@@ -229,13 +254,16 @@ RegisterNUICallback("audio",function(data,cb)
 end)
 
 function tvRP.signalVoicePeer(player, data)
-  -- callback
-  local cbs = channel_callbacks[data.channel]
-  if cbs then
-    local cb = cbs[1]
-    if cb and cb(data.player) then
-      SendNUICallback({act="voice_peer_signal", player=player, data=data})
+  if data.sdp_offer then -- check offer
+    local cbs = channel_callbacks[data.channel]
+    if cbs then
+      local cb = cbs[1]
+      if cb and cb(data.player) then
+        SendNUICallback({act="voice_peer_signal", player=player, data=data})
+      end
     end
+  else -- other signal
+    SendNUICallback({act="voice_peer_signal", player=player, data=data})
   end
 end
 

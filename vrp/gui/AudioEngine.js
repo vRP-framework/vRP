@@ -263,3 +263,25 @@ AudioEngine.prototype.voicePeerSignal = function(data)
       peer.conn.setRemoteDescription(data.data.sdp_answer);
   }
 }
+
+AudioEngine.prototype.setVoiceState = function(data)
+{
+  var channel = this.getChannel(data.channel);
+  if(data.player != null){ //specific player
+    var peer = channel[data.player];
+    if(peer)
+      peer.active = data.active;
+  }
+  else{ //entire channel
+    for(var player in channel){
+      if(player != "_config")
+        channel[player].active = data.active;
+    }
+  }
+}
+
+AudioEngine.prototype.configureVoice = function(data)
+{
+  var channel = this.getChannel(data.channel);
+  channel._config = data.config;
+}
