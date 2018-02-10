@@ -168,6 +168,39 @@ Citizen.CreateThread(function()
   end
 end)
 
+-- VoIP
+
+local channel_callbacks = {}
+
+-- request connection to another player for a specific channel
+function tvRP.connectVoice(channel, player)
+end
+
+-- disconnect from another player for a specific channel
+function tvRP.disconnectVoice(channel, player)
+end
+
+-- register callbacks for a specific channel
+--- on_request(player): should return true to accept the connection
+--- on_connect(player)
+--- on_disconnect(player)
+function tvRP.registerVoiceCallbacks(channel, on_request, on_connect, on_disconnect)
+end
+
+-- check if there is an active connection
+function tvRP.isVoiceConnected(channel, player)
+end
+
+-- active: true/false (enable/disable speaking)
+function tvRP.setVoiceState(channel, active)
+end
+
+-- configure channel connections
+--- config:
+---- effect: nil, "radio"
+function tvRP.configureVoice(channel, config)
+end
+
 -- CONTROLS/GUI
 
 local paused = false
