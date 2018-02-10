@@ -267,25 +267,36 @@ function tvRP.signalVoicePeer(player, data)
   end
 end
 
---test
-SetTimeout(5000, function()
-  tvRP.registerVoiceCallbacks("test", function(player)
-    print("(vRPvoice) requested by "..player)
-    return true
-  end,
-  function(player, is_origin)
-    print("(vRPvoice) connected to "..player)
-    if is_origin then
-      SetTimeout(10000, function() 
-        tvRP.disconnectVoice("test", player)
-      end)
-    end
-  end,
-  function(player)
-    print("(vRPvoice) disconnected from "..player)
-  end)
+tvRP.registerVoiceCallbacks("test", function(player)
+  print("(vRPvoice) requested by "..player)
+  return true
+end,
+function(player, is_origin)
+  print("(vRPvoice) connected to "..player)
+  if is_origin then
+    SetTimeout(10000, function() 
+      tvRP.disconnectVoice("test", player)
+    end)
+  end
+end,
+function(player)
+  print("(vRPvoice) disconnected from "..player)
+end)
 
-  tvRP.connectVoice("test", GetPlayerServerId(PlayerId()))
+
+--test
+Citizen.CreateThread(function()
+  local done = false
+  while not done do
+    Citizen.Wait(5000)
+    local p = tvRP.getNearestPlayer(40)
+    print("(vRPvoice) try to find player")
+    if p then
+      print("(vRPvoice) player "..p.." found")
+      tvRP.connectVoice("test", p)
+      done = true
+    end
+  end
 end)
 
 -- CONTROLS/GUI
