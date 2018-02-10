@@ -159,24 +159,24 @@ AudioEngine.prototype.setupPeer = function(peer)
 {
   //setup data channel
   peer.data_channel = peer.conn.createDataChannel(peer.channel, {
-    ordered: false,
+    ordered: true,
     negotiated: true,
     id: 0
   });
 
   peer.data_channel.onopen = function(){
-    $.post("http://vrp/audio",JSON.stringify({act: "voice_connected", player: peer.player, channel: data.channel})); 
+    $.post("http://vrp/audio",JSON.stringify({act: "voice_connected", player: peer.player, channel: peer.channel, origin: peer.origin})); 
   }
 
   peer.data_channel.onclose = function(){
-    $.post("http://vrp/audio",JSON.stringify({act: "voice_disconnected", player: peer.player, channel: data.channel})); 
+    $.post("http://vrp/audio",JSON.stringify({act: "voice_disconnected", player: peer.player, channel: peer.channel})); 
   }
 
   peer.data_channel.onmessage = function(e){
   }
 
   peer.conn.onicecandidate = function(e){
-    $.post("http://vrp/audio",JSON.stringify({act: "voice_peer_signal", player: peer.player, data: {channel: data.channel, candidate: e.candidate}})); 
+    $.post("http://vrp/audio",JSON.stringify({act: "voice_peer_signal", player: peer.player, data: {channel: peer.channel, candidate: e.candidate}})); 
   }
 }
 
@@ -200,9 +200,10 @@ AudioEngine.prototype.connectVoice = function(data)
 
   //setup new peer
   var peer = {
-    conn: new RTCPeerConnection({iceServers: [{urls:["stun.l.google.com:19302"]}]}),
+    conn: new RTCPeerConnection({iceServers: [{urls:["stun:stun.l.google.com:19302"]}]}),
     channel: data.channel,
-    player: data.player
+    player: data.player,
+    origin: true
   }
   channel[data.player] = peer;
 
@@ -210,9 +211,9 @@ AudioEngine.prototype.connectVoice = function(data)
   this.setupPeer(peer);
 
   //SDP
-  peer.createOffer().then(function(sdp){
-    peer.conn.setLocalDescription(sdp);
+  peer.conn.createOffer().then(function(sdp){
     $.post("http://vrp/audio",JSON.stringify({act: "voice_peer_signal", player: data.player, data: {channel: data.channel, sdp_offer: sdp}})); 
+    peer.conn.setLocalDescription(sdp);
   });
 }
 
@@ -221,7 +222,7 @@ AudioEngine.prototype.disconnectVoice = function(data)
   var channel = this.getChannel(data.channel);
   //close peer
   var peer = channel[data.player];
-  if(!peer || peer.conn.connectionState == "closed")
+  if(peer && peer.conn.connectionState != "closed")
     peer.conn.close();
 
   delete channel[data.player];
@@ -233,7 +234,9 @@ AudioEngine.prototype.voicePeerSignal = function(data)
     var channel = this.getChannel(data.data.channel);
     var peer = channel[data.player];
     if(peer)
-      peer.conn.addIceCandidate(new RTCIceCandidate(data.data.candidate));
+      peer.conn.addIceCandidate(new RTCIceCandidate(data.data.candidate)).catch(function(e){
+        console.log(e,data);
+      });
   }
   else if(data.data.sdp_offer){ //offer
     //disconnect peer
@@ -241,7 +244,7 @@ AudioEngine.prototype.voicePeerSignal = function(data)
 
     //setup answer peer
     var peer = {
-      conn: new RTCPeerConnection({iceServers: [{urls:["stun.l.google.com:19302"]}]}),
+      conn: new RTCPeerConnection({iceServers: [{urls:["stun:stun.l.google.com:19302"]}]}),
       channel: data.data.channel,
       player: data.player
     }
@@ -251,9 +254,9 @@ AudioEngine.prototype.voicePeerSignal = function(data)
 
     //SDP
     peer.setRemoteDescription(data.data.sdp_offer);
-    peer.createAnswer().then(function(sdp){
-      peer.setLocalDescription(sdp);
-    $.post("http://vrp/audio",JSON.stringify({act: "voice_peer_signal", player: data.player, data: {channel: data.data.channel, sdp_answer: sdp}})); 
+    peer.conn.createAnswer().then(function(sdp){
+      $.post("http://vrp/audio",JSON.stringify({act: "voice_peer_signal", player: data.player, data: {channel: data.data.channel, sdp_answer: sdp}})); 
+      peer.conn.setLocalDescription(sdp);
     });
   }
   else if(data.data.sdp_answer){ //answer

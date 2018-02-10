@@ -318,4 +318,5 @@ end)
 
 function tvRP.signalVoicePeer(player, data)
   vRPclient._signalVoicePeer(player, source, data)
+  print("signal from "..source.." to "..player.." => "..json.encode(data))
 end

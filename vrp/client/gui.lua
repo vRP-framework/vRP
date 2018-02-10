@@ -185,7 +185,7 @@ end
 
 -- register callbacks for a specific channel
 --- on_offer(player): should return true to accept the connection
---- on_connect(player)
+--- on_connect(player, is_origin): is_origin is true if it's the local peer (not an answer)
 --- on_disconnect(player)
 function tvRP.registerVoiceCallbacks(channel, on_offer, on_connect, on_disconnect)
   channel_callbacks[channel] = {on_request, on_connect, on_disconnect}
@@ -233,7 +233,7 @@ RegisterNUICallback("audio",function(data,cb)
     local cbs = channel_callbacks[data.channel]
     if cbs then
       local cb = cbs[2]
-      if cb then cb(data.player) end
+      if cb then cb(data.player, data.origin) end
     end
   elseif data.act == "voice_disconnected" then
     -- unregister channel/player
@@ -259,13 +259,34 @@ function tvRP.signalVoicePeer(player, data)
     if cbs then
       local cb = cbs[1]
       if cb and cb(data.player) then
-        SendNUICallback({act="voice_peer_signal", player=player, data=data})
+        SendNUIMessage({act="voice_peer_signal", player=player, data=data})
       end
     end
   else -- other signal
-    SendNUICallback({act="voice_peer_signal", player=player, data=data})
+    SendNUIMessage({act="voice_peer_signal", player=player, data=data})
   end
 end
+
+--test
+SetTimeout(5000, function()
+  tvRP.registerVoiceCallbacks("test", function(player)
+    print("(vRPvoice) requested by "..player)
+    return true
+  end,
+  function(player, is_origin)
+    print("(vRPvoice) connected to "..player)
+    if is_origin then
+      SetTimeout(10000, function() 
+        tvRP.disconnectVoice("test", player)
+      end)
+    end
+  end,
+  function(player)
+    print("(vRPvoice) disconnected from "..player)
+  end)
+
+  tvRP.connectVoice("test", GetPlayerServerId(PlayerId()))
+end)
 
 -- CONTROLS/GUI
 
