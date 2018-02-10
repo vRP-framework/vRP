@@ -149,10 +149,15 @@ window.addEventListener("load",function(){
       aengine.removeAudioSource(data);
     else if(data.act == "audio_listener")
       aengine.setListenerData(data);
+    //VoIP
     else if(data.act == "connect_voice")
       aengine.connectVoice(data);
     else if(data.act == "disconnect_voice")
       aengine.disconnectVoice(data);
+    else if(data.act == "disconnect_voice")
+      aengine.disconnectVoice(data);
+    else if(data.act == "voice_peer_signal")
+      aengine.voicePeerSignal(data);
     // CONTROLS
     else if(data.act == "event"){ //EVENTS
       if(data.event == "UP"){

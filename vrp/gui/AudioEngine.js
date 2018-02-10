@@ -155,9 +155,15 @@ AudioEngine.prototype.removeAudioSource = function(data)
 
 //VoIP
 
-AudioEngine.prototype.setupPeerCallbacks = function(peer)
+AudioEngine.prototype.setupPeer = function(peer)
 {
   //setup data channel
+  peer.data_channel = peer.conn.createDataChannel(peer.channel, {
+    ordered: false,
+    negotiated: true,
+    id: 0
+  });
+
   peer.data_channel.onopen = function(){
     $.post("http://vrp/audio",JSON.stringify({act: "voice_connected", player: peer.player, channel: data.channel})); 
   }
@@ -170,14 +176,27 @@ AudioEngine.prototype.setupPeerCallbacks = function(peer)
   }
 
   peer.conn.onicecandidate = function(e){
-    $.post("http://vrp/audio",JSON.stringify({act: "voice_ice_candidate", player: peer.player, channel: data.channel, candidate: e.candidate})); 
+    $.post("http://vrp/audio",JSON.stringify({act: "voice_peer_signal", player: peer.player, data: {channel: data.channel, candidate: e.candidate}})); 
   }
+}
+
+AudioEngine.prototype.getChannel = function(channel)
+{
+  var r = this.voice_channels[channel];
+  if(!r){
+    r = {};
+    this.voice_channels[channel] = r;
+  }
+
+  return r;
 }
 
 AudioEngine.prototype.connectVoice = function(data)
 {
   //close previous peer
   this.disconnectVoice(data);
+
+  var channel = this.getChannel(data.channel);
 
   //setup new peer
   var peer = {
@@ -188,26 +207,59 @@ AudioEngine.prototype.connectVoice = function(data)
   channel[data.player] = peer;
 
   //create data channel
-  peer.data_channel = peer.conn.createDataChannel(data.channel);
-  this.setupPeerCallbacks(peer);
+  this.setupPeer(peer);
 
   //SDP
   peer.createOffer().then(function(sdp){
-    $.post("http://vrp/audio",JSON.stringify({act: "voice_sdp_offer", player: data.player, channel: data.channel, sdp: sdp})); 
     peer.conn.setLocalDescription(sdp);
+    $.post("http://vrp/audio",JSON.stringify({act: "voice_peer_signal", player: data.player, data: {channel: data.channel, sdp_offer: sdp}})); 
   });
 }
 
 AudioEngine.prototype.disconnectVoice = function(data)
 {
-  var channel = this.voice_channels[data.channel];
-  if(channel){
-    //close peer
-    var peer = channel[data.player];
-    if(!peer || peer.conn.connectionState == "closed")
-      peer.conn.close();
+  var channel = this.getChannel(data.channel);
+  //close peer
+  var peer = channel[data.player];
+  if(!peer || peer.conn.connectionState == "closed")
+    peer.conn.close();
 
-    delete channel[data.player];
-  }
+  delete channel[data.player];
 }
 
+AudioEngine.prototype.voicePeerSignal = function(data)
+{
+  if(data.data.candidate){ //candidate
+    var channel = this.getChannel(data.data.channel);
+    var peer = channel[data.player];
+    if(peer)
+      peer.conn.addIceCandidate(new RTCIceCandidate(data.data.candidate));
+  }
+  else if(data.data.sdp_offer){ //offer
+    //disconnect peer
+    this.diconnectVoice({channel: data.data.channel, player: data.player});
+
+    //setup answer peer
+    var peer = {
+      conn: new RTCPeerConnection({iceServers: [{urls:["stun.l.google.com:19302"]}]}),
+      channel: data.data.channel,
+      player: data.player
+    }
+
+    channel[data.player] = peer;
+    this.setupPeer(peer);
+
+    //SDP
+    peer.setRemoteDescription(data.data.sdp_offer);
+    peer.createAnswer().then(function(sdp){
+      peer.setLocalDescription(sdp);
+    $.post("http://vrp/audio",JSON.stringify({act: "voice_peer_signal", player: data.player, data: {channel: data.data.channel, sdp_answer: sdp}})); 
+    });
+  }
+  else if(data.data.sdp_answer){ //answer
+    var channel = this.getChannel(data.data.channel);
+    var peer = channel[data.player];
+    if(peer)
+      peer.conn.setRemoteDescription(data.data.sdp_answer);
+  }
+}

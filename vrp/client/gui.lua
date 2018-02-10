@@ -184,10 +184,10 @@ function tvRP.disconnectVoice(channel, player)
 end
 
 -- register callbacks for a specific channel
---- on_request(player): should return true to accept the connection
+--- on_offer(player): should return true to accept the connection
 --- on_connect(player)
 --- on_disconnect(player)
-function tvRP.registerVoiceCallbacks(channel, on_request, on_connect, on_disconnect)
+function tvRP.registerVoiceCallbacks(channel, on_offer, on_connect, on_disconnect)
   channel_callbacks[channel] = {on_request, on_connect, on_disconnect}
 end
 
@@ -223,12 +223,21 @@ RegisterNUICallback("audio",function(data,cb)
       local cb = cbs[3]
       if cb then cb(data.player) end
     end
-  elseif data.act == "voice_ice_candidate" then
-    vRPserver._signalVoicePeer(data.player, {channel=data.channel, candidate=data.candidate})
-  elseif data.act == "voice_sdp_offer" then
-    vRPserver._signalVoicePeer(data.player, {channel=data.channel, sdp_offer=data.sdp})
+  elseif data.act == "voice_peer_signal" then
+    vRPserver._signalVoicePeer(data.player, data.data)
   end
 end)
+
+function tvRP.signalVoicePeer(player, data)
+  -- callback
+  local cbs = channel_callbacks[data.channel]
+  if cbs then
+    local cb = cbs[1]
+    if cb and cb(data.player) then
+      SendNUICallback({act="voice_peer_signal", player=player, data=data})
+    end
+  end
+end
 
 -- CONTROLS/GUI
 
