@@ -176,14 +176,13 @@ local voice_channels = {}
 -- request connection to another player for a specific channel
 function tvRP.connectVoice(channel, player)
   -- register channel/player
-  local channel = voice_channels[data.channel]
-  if not channel then
-    channel = {}
-    voice_channels[data.channel] = channel
+  local _channel = voice_channels[channel]
+  if not _channel then
+    _channel = {}
+    voice_channels[channel] = _channel
   end
 
-  if channel[data.player] == nil then -- check if not already connecting
-    channel[data.player] = 0 -- wait connection
+  if _channel[player] == nil then -- check if not already connecting
     SendNUIMessage({act="connect_voice", channel=channel, player=player})
   end
 end

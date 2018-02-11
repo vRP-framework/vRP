@@ -235,7 +235,7 @@ AudioEngine.prototype.voicePeerSignal = function(data)
   if(data.data.candidate){ //candidate
     var peer = channel[data.player];
     if(peer){
-      if(peer.conn.remoteDescription) //valid remote description
+      if(peer.initialized) //valid remote description
         peer.conn.addIceCandidate(new RTCIceCandidate(data.data.candidate));
       else
         peer.candidate_queue.push(new RTCIceCandidate(data.data.candidate));
@@ -257,6 +257,7 @@ AudioEngine.prototype.voicePeerSignal = function(data)
 
     //SDP
     peer.conn.setRemoteDescription(data.data.sdp_offer);
+    peer.initialized = true;
     peer.conn.createAnswer().then(function(sdp){
       $.post("http://vrp/audio",JSON.stringify({act: "voice_peer_signal", player: data.player, data: {channel: data.data.channel, sdp_answer: sdp}})); 
       peer.conn.setLocalDescription(sdp);
@@ -266,6 +267,7 @@ AudioEngine.prototype.voicePeerSignal = function(data)
     var peer = channel[data.player];
     if(peer){
       peer.conn.setRemoteDescription(data.data.sdp_answer);
+      peer.initialized = true;
       //add candidates
       for(var i = 0; i < peer.candidate_queue.length; i++)
         peer.conn.addIceCandidate(peer.candidate_queue[i]);
