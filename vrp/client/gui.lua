@@ -175,7 +175,17 @@ local voice_channels = {}
 
 -- request connection to another player for a specific channel
 function tvRP.connectVoice(channel, player)
-  SendNUIMessage({act="connect_voice", channel=channel, player=player})
+  -- register channel/player
+  local channel = voice_channels[data.channel]
+  if not channel then
+    channel = {}
+    voice_channels[data.channel] = channel
+  end
+
+  if channel[data.player] == nil then -- check if not already connecting
+    channel[data.player] = 0 -- wait connection
+    SendNUIMessage({act="connect_voice", channel=channel, player=player})
+  end
 end
 
 -- disconnect from another player for a specific channel
@@ -195,11 +205,11 @@ end
 function tvRP.isVoiceConnected(channel, player)
   local channel = voice_channels[channel]
   if channel then
-    return channel[player]
+    return channel[player] == 1
   end
 end
 
--- return connections (map of channel => map of player => true)
+-- return connections (map of channel => map of player => state (0-1))
 function tvRP.getVoiceChannels()
   return voice_channels
 end
@@ -227,7 +237,7 @@ RegisterNUICallback("audio",function(data,cb)
       channel = {}
       voice_channels[data.channel] = channel
     end
-    channel[data.player] = true
+    channel[data.player] = 1 -- connected
 
     -- callback
     local cbs = channel_callbacks[data.channel]
@@ -256,11 +266,21 @@ end)
 -- receive voice peer signal
 function tvRP.signalVoicePeer(player, data)
   if data.sdp_offer then -- check offer
-    local cbs = channel_callbacks[data.channel]
-    if cbs then
-      local cb = cbs[1]
-      if cb and cb(player) then
-        SendNUIMessage({act="voice_peer_signal", player=player, data=data})
+    -- register channel/player
+    local channel = voice_channels[data.channel]
+    if not channel then
+      channel = {}
+      voice_channels[data.channel] = channel
+    end
+
+    if channel[player] == nil then -- check if not already connecting
+      local cbs = channel_callbacks[data.channel]
+      if cbs then
+        local cb = cbs[1]
+        if cb and cb(player) then
+          channel[player] = 0 -- wait connection
+          SendNUIMessage({act="voice_peer_signal", player=player, data=data})
+        end
       end
     end
   else -- other signal
