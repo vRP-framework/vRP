@@ -231,11 +231,11 @@ AudioEngine.prototype.disconnectVoice = function(data)
 
 AudioEngine.prototype.voicePeerSignal = function(data)
 {
+  var channel = this.getChannel(data.data.channel);
   if(data.data.candidate){ //candidate
-    var channel = this.getChannel(data.data.channel);
     var peer = channel[data.player];
     if(peer){
-      if(peer.remoteDescription) //valid remote description
+      if(peer.conn.remoteDescription) //valid remote description
         peer.conn.addIceCandidate(new RTCIceCandidate(data.data.candidate));
       else
         peer.candidate_queue.push(new RTCIceCandidate(data.data.candidate));
@@ -243,7 +243,7 @@ AudioEngine.prototype.voicePeerSignal = function(data)
   }
   else if(data.data.sdp_offer){ //offer
     //disconnect peer
-    this.diconnectVoice({channel: data.data.channel, player: data.player});
+    this.disconnectVoice({channel: data.data.channel, player: data.player});
 
     //setup answer peer
     var peer = {
@@ -256,14 +256,13 @@ AudioEngine.prototype.voicePeerSignal = function(data)
     this.setupPeer(peer);
 
     //SDP
-    peer.setRemoteDescription(data.data.sdp_offer);
+    peer.conn.setRemoteDescription(data.data.sdp_offer);
     peer.conn.createAnswer().then(function(sdp){
       $.post("http://vrp/audio",JSON.stringify({act: "voice_peer_signal", player: data.player, data: {channel: data.data.channel, sdp_answer: sdp}})); 
       peer.conn.setLocalDescription(sdp);
     });
   }
   else if(data.data.sdp_answer){ //answer
-    var channel = this.getChannel(data.data.channel);
     var peer = channel[data.player];
     if(peer){
       peer.conn.setRemoteDescription(data.data.sdp_answer);

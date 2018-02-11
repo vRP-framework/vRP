@@ -188,7 +188,7 @@ end
 --- on_connect(player, is_origin): is_origin is true if it's the local peer (not an answer)
 --- on_disconnect(player)
 function tvRP.registerVoiceCallbacks(channel, on_offer, on_connect, on_disconnect)
-  channel_callbacks[channel] = {on_request, on_connect, on_disconnect}
+  channel_callbacks[channel] = {on_offer, on_connect, on_disconnect}
 end
 
 -- check if there is an active connection
@@ -253,12 +253,13 @@ RegisterNUICallback("audio",function(data,cb)
   end
 end)
 
+-- receive voice peer signal
 function tvRP.signalVoicePeer(player, data)
   if data.sdp_offer then -- check offer
     local cbs = channel_callbacks[data.channel]
     if cbs then
       local cb = cbs[1]
-      if cb and cb(data.player) then
+      if cb and cb(player) then
         SendNUIMessage({act="voice_peer_signal", player=player, data=data})
       end
     end
