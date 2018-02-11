@@ -4,7 +4,7 @@
 MySQL.createCommand("vRP/vehicles_table", [[
 CREATE TABLE IF NOT EXISTS vrp_user_vehicles(
   user_id INTEGER,
-  vehicle VARCHAR(255),
+  vehicle VARCHAR(100),
   CONSTRAINT pk_user_vehicles PRIMARY KEY(user_id,vehicle),
   CONSTRAINT fk_user_vehicles_users FOREIGN KEY(user_id) REFERENCES vrp_users(id) ON DELETE CASCADE
 );
