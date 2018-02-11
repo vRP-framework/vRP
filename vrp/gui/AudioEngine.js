@@ -203,7 +203,8 @@ AudioEngine.prototype.connectVoice = function(data)
     conn: new RTCPeerConnection({iceServers: [{urls:["stun:stun.l.google.com:19302"]}]}),
     channel: data.channel,
     player: data.player,
-    origin: true
+    origin: true,
+    candidate_queue: []
   }
   channel[data.player] = peer;
 
@@ -233,10 +234,12 @@ AudioEngine.prototype.voicePeerSignal = function(data)
   if(data.data.candidate){ //candidate
     var channel = this.getChannel(data.data.channel);
     var peer = channel[data.player];
-    if(peer)
-      peer.conn.addIceCandidate(new RTCIceCandidate(data.data.candidate)).catch(function(e){
-        console.log(e,data);
-      });
+    if(peer){
+      if(peer.remoteDescription) //valid remote description
+        peer.conn.addIceCandidate(new RTCIceCandidate(data.data.candidate));
+      else
+        peer.candidate_queue.push(new RTCIceCandidate(data.data.candidate));
+    }
   }
   else if(data.data.sdp_offer){ //offer
     //disconnect peer
@@ -262,8 +265,13 @@ AudioEngine.prototype.voicePeerSignal = function(data)
   else if(data.data.sdp_answer){ //answer
     var channel = this.getChannel(data.data.channel);
     var peer = channel[data.player];
-    if(peer)
+    if(peer){
       peer.conn.setRemoteDescription(data.data.sdp_answer);
+      //add candidates
+      for(var i = 0; i < peer.candidate_queue.length; i++)
+        peer.conn.addIceCandidate(peer.candidate_queue[i]);
+      peer.candidate_queue = [];
+    }
   }
 }
 
