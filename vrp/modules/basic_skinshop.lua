@@ -95,11 +95,13 @@ function vRP.openSkinshop(source,parts)
         textures[k][1] = old_part[2]
       end
 
-      -- get max drawables
-      drawables[k][2] = vRPclient.getDrawables(source,v)  -- set max
+      async(function()
+        -- get max drawables
+        drawables[k][2] = vRPclient.getDrawables(source,v)  -- set max
 
-      -- get max textures for this drawable
-      textures[k][2] = vRPclient.getDrawableTextures(source,v,drawables[k][1]) -- set max
+        -- get max textures for this drawable
+        textures[k][2] = vRPclient.getDrawableTextures(source,v,drawables[k][1]) -- set max
+      end)
 
       -- add menu choices
       menudata[k] = {ondrawable}
