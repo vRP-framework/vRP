@@ -162,7 +162,14 @@ Citizen.CreateThread(function()
   while true do
     Citizen.Wait(listener_wait)
 
-    local x,y,z = table.unpack(GetGameplayCamCoord())
+    local x,y,z
+    if cfg.audio_listener_on_player then
+      x,y,z = tvRP.getPosition()
+      z = z+1.5
+    else
+      x,y,z = table.unpack(GetGameplayCamCoord())
+    end
+
     local fx,fy,fz = tvRP.getCamDirection()
     SendNUIMessage({act="audio_listener", x = x, y = y, z = z, fx = fx, fy = fy, fz = fz})
   end
