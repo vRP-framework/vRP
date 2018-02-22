@@ -90,7 +90,7 @@ local function open_business_directory(player,page) -- open business directory w
   end
 end
 
-local function business_enter()
+local function business_enter(source)
   local source = source
 
   local user_id = vRP.getUserId(source)
@@ -180,7 +180,7 @@ local function business_enter()
   end
 end
 
-local function business_leave()
+local function business_leave(source)
   vRP.closeMenu(source)
 end
 

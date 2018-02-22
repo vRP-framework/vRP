@@ -265,14 +265,14 @@ local function build_client_static_menus(source)
       local smenu = cfg.static_menu_types[mtype]
 
       if menu and smenu then
-        local function smenu_enter()
+        local function smenu_enter(source)
           local user_id = vRP.getUserId(source)
           if user_id ~= nil and vRP.hasPermissions(user_id,smenu.permissions or {}) then
             vRP.openMenu(source,menu) 
           end
         end
 
-        local function smenu_leave()
+        local function smenu_leave(source)
           vRP.closeMenu(source)
         end
 

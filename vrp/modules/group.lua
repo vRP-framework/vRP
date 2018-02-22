@@ -296,14 +296,14 @@ local function build_client_selectors(source)
         local y = gcfg.y
         local z = gcfg.z
 
-        local function selector_enter()
+        local function selector_enter(source)
           local user_id = vRP.getUserId(source)
           if user_id ~= nil and vRP.hasPermissions(user_id,gcfg.permissions or {}) then
             vRP.openMenu(source,menu) 
           end
         end
 
-        local function selector_leave()
+        local function selector_leave(source)
           vRP.closeMenu(source)
         end
 

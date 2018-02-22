@@ -165,14 +165,14 @@ end
 
 cityhall_menu[lang.cityhall.identity.title()] = {ch_identity,lang.cityhall.identity.description({cfg.new_identity_cost})}
 
-local function cityhall_enter()
+local function cityhall_enter(source)
   local user_id = vRP.getUserId(source)
   if user_id ~= nil then
     vRP.openMenu(source,cityhall_menu)
   end
 end
 
-local function cityhall_leave()
+local function cityhall_leave(source)
   vRP.closeMenu(source)
 end
 

@@ -340,14 +340,14 @@ for k,v in pairs(cfg.informer.infos) do
   informer_menu[k] = {ch_informer_buy, lang.itemtr.informer.description({v})}
 end
 
-local function informer_enter()
+local function informer_enter(source)
   local user_id = vRP.getUserId(source)
   if user_id then
     vRP.openMenu(source,informer_menu) 
   end
 end
 
-local function informer_leave()
+local function informer_leave(source)
   vRP.closeMenu(source)
 end
 

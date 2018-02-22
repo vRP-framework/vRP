@@ -84,14 +84,14 @@ local function build_client_markets(source)
       if group and menu then -- check market type
         local gcfg = group._config
 
-        local function market_enter()
+        local function market_enter(source)
           local user_id = vRP.getUserId(source)
           if user_id ~= nil and vRP.hasPermissions(user_id,gcfg.permissions or {}) then
             vRP.openMenu(source,menu) 
           end
         end
 
-        local function market_leave()
+        local function market_leave(source)
           vRP.closeMenu(source)
         end
 
