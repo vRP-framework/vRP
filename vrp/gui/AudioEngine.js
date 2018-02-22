@@ -17,6 +17,67 @@ function AudioEngine()
 
   //VoIP
   this.voice_channels = {}; 
+
+  var _this = this;
+
+  //encoder
+  this.mic_enc = new libopus.Encoder(1,48000,24000,true);
+
+  //processor
+  this.mic_processor = this.c.createScriptProcessor(4096,1,1);
+  this.mic_processor.onaudioprocess = function(e){
+    var samples = e.inputBuffer.getChannelData(0);
+
+    //convert to Int16 pcm
+    var isamples = new Int16Array(samples.length);
+    for(var i = 0; i < samples.length; i++){
+      var s = samples[i];
+      s *= 32768 ;
+      if(s > 32767) 
+        s = 32767;
+      else if(s < -32768) 
+        s = -32768;
+
+      isamples[i] = s;
+    }
+
+    //encode
+    _this.mic_enc.input(samples);
+    var data;
+    while(data = _this.mic_enc.output()){
+      var buffer = data.slice().buffer;
+
+      //send packet to active/connected peers
+      for(var nchannel in _this.voice_channels){
+        var channel = _this.voice_channels[nchannel];
+        for(var player in channel){
+          if(player != "_config"){
+            var peer = channel[player];
+            if(peer.connected && peer.active)
+              peer.data_channel.send(buffer);
+          }
+        }
+      }
+    }
+  }
+
+  this.mic_processor.connect(this.c.destination);
+
+  //mic stream
+  navigator.mediaDevices.getUserMedia({
+    audio: {
+      autoGainControl: false,
+      echoCancellation: false,
+      noiseSuppression: false,
+      latency: 0
+    }
+  }).then(function(stream){ 
+    _this.mic_node = _this.c.createMediaStreamSource(stream);
+    _this.mic_node.connect(_this.c.destination);
+    _this.mic_node.connect(_this.mic_processor);
+  });
+
+
 }
 
 AudioEngine.prototype.setListenerData = function(data)
@@ -162,24 +223,79 @@ AudioEngine.prototype.setPeerConfiguration = function(data)
 
 AudioEngine.prototype.setupPeer = function(peer)
 {
-  //setup data channel
+  var _this = this;
+
+  //decoder
+  peer.dec = new libopus.Decoder(1,48000);
+  peer.psamples = []; //packets samples
+  peer.processor = this.c.createScriptProcessor(4096,0,1);
+  peer.processor.onaudioprocess = function(e){
+    var out = e.outputBuffer.getChannelData(0);
+
+    //feed samples to output
+    var nsamples = 0;
+    var i = 0;
+    while(nsamples < out.length && i < peer.psamples.length){
+      var p = peer.psamples[i];
+      var take = Math.min(p.length, out.length-nsamples);
+
+      //write packet samples to output
+      for(var k = 0; k < take; k++){
+        //convert from int16 to float
+        var s = p[k];
+        s /= 32768 ;
+        if(s > 1) 
+          s = 1;
+        else if(s < -1) 
+          s = -1;
+
+        out[nsamples+k] = s;
+      }
+
+      //advance
+      nsamples += take;
+
+      if(take < p.length){ //partial samples
+        //add rest packet
+        peer.psamples.splice(i+1,0,p.subarray(take));
+      }
+
+      i++;
+    }
+
+    //remove processed packets
+    peer.psamples.splice(0,i);
+  }
+  peer.processor.connect(this.c.destination);
+
+  //setup data channel (UDP-like)
   peer.data_channel = peer.conn.createDataChannel(peer.channel, {
-    ordered: true,
+    ordered: false,
     negotiated: true,
+    maxRetransmits: 0,
     id: 0
   });
+  peer.data_channel.binaryType = "arraybuffer";
 
   peer.data_channel.onopen = function(){
     $.post("http://vrp/audio",JSON.stringify({act: "voice_connected", player: peer.player, channel: peer.channel, origin: peer.origin})); 
+    peer.connected = true;
   }
 
   peer.data_channel.onclose = function(){
     $.post("http://vrp/audio",JSON.stringify({act: "voice_disconnected", player: peer.player, channel: peer.channel})); 
+    _this.disconnectVoice({channel: peer.channel, player: peer.player});
   }
 
   peer.data_channel.onmessage = function(e){
+    //receive opus packet
+    peer.dec.input(new Uint8Array(e.data));
+    var data;
+    while(data = peer.dec.ouput())
+      peer.psamples.push(data.slice());
   }
 
+  //ice
   peer.conn.onicecandidate = function(e){
     $.post("http://vrp/audio",JSON.stringify({act: "voice_peer_signal", player: peer.player, data: {channel: peer.channel, candidate: e.candidate}})); 
   }

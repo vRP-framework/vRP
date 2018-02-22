@@ -297,11 +297,7 @@ tvRP.registerVoiceCallbacks("test", function(player)
 end,
 function(player, is_origin)
   print("(vRPvoice) connected to "..player)
-  if is_origin then
-    SetTimeout(10000, function() 
-      tvRP.disconnectVoice("test", player)
-    end)
-  end
+  tvRP.setVoiceState("test", player, true)
 end,
 function(player)
   print("(vRPvoice) disconnected from "..player)

@@ -71,5 +71,6 @@ files{
   "gui/AnnounceManager.js",
   "gui/Div.js",
   "gui/dynamic_classes.js",
-  "gui/AudioEngine.js"
+  "gui/AudioEngine.js",
+  "gui/lib/libopus.js"
 }
