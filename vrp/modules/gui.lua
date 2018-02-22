@@ -167,6 +167,7 @@ end
 -- SERVER TUNNEL API
 
 function tvRP.closeMenu(id)
+  local source = source
   local menu = client_menus[id]
   if menu and menu.source == source then
 
@@ -182,6 +183,7 @@ function tvRP.closeMenu(id)
 end
 
 function tvRP.validMenuChoice(id,choice,mod)
+  local source = source
   local menu = client_menus[id]
   if menu and menu.source == source then
     -- call choice callback
