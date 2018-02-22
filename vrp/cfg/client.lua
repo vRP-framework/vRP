@@ -60,4 +60,7 @@ cfg.vrp_voip = false
 -- radius to establish VoIP connections
 cfg.voip_proximity = 100
 
+-- connect/disconnect interval in milliseconds
+cfg.voip_interval = 5000
+
 return cfg

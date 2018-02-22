@@ -187,7 +187,6 @@ function tvRP.connectVoice(channel, player)
   end
 
   if _channel[player] == nil then -- check if not already connecting/connected
-    _channel[player] = 0 -- wait connection
     SendNUIMessage({act="connect_voice", channel=channel, player=player})
   end
 end
@@ -344,8 +343,12 @@ end
 
 -- detect players near, give positions to AudioEngine
 Citizen.CreateThread(function()
+  local n = 0
+  local ns = math.ceil(cfg.voip_interval/listener_wait) -- connect/disconnect every x milliseconds
+
   while true do
     Citizen.Wait(listener_wait)
+    n = n+1
 
     local pid = PlayerId()
     local px,py,pz = tvRP.getPosition()
@@ -361,15 +364,17 @@ Citizen.CreateThread(function()
         local x,y,z = table.unpack(GetEntityCoords(oped,true))
         positions[k] = {x,y,z+1.5} -- add position
 
-        if cfg.vrp_voip then -- vRP voip detection/connection
+        if cfg.vrp_voip and n >= ns then -- vRP voip detection/connection
           local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
           local in_radius = (distance <= cfg.voip_proximity)
-          local linked = tvRP.isVoiceConnected("world", k) or tvRP.isVoiceConnecting("world", k)
+          local linked = tvRP.isVoiceConnected("world", k)
           if in_radius and not linked then -- join radius
             tvRP.connectVoice("world", k)
           elseif not in_radius and linked then -- leave radius
             tvRP.disconnectVoice("world", k)
           end
+
+          n = 0
         end
       end
     end
