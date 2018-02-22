@@ -387,18 +387,22 @@ AddEventHandler("playerConnecting",function(name,setMessage, deferrals)
           Debug.pend()
         else
           print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: not whitelisted (user_id = "..user_id..")")
+          Citizen.Wait(1000)
           deferrals.done("[vRP] Not whitelisted (user_id = "..user_id..").")
         end
       else
         print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: banned (user_id = "..user_id..")")
+        Citizen.Wait(1000)
         deferrals.done("[vRP] Banned (user_id = "..user_id..").")
       end
     else
       print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: identification error")
+      Citizen.Wait(1000)
       deferrals.done("[vRP] Identification error.")
     end
   else
     print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: missing identifiers")
+    Citizen.Wait(1000)
     deferrals.done("[vRP] Missing identifiers.")
   end
   Debug.pend()
