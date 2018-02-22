@@ -173,6 +173,10 @@ end)
 local channel_callbacks = {}
 local voice_channels = {}
 
+function tvRP.setPeerConfiguration(config)
+  SendNUIMessage({act="set_peer_configuration", config=config})
+end
+
 -- request connection to another player for a specific channel
 function tvRP.connectVoice(channel, player)
   -- register channel/player

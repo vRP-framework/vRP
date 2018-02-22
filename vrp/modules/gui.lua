@@ -320,3 +320,10 @@ function tvRP.signalVoicePeer(player, data)
   vRPclient._signalVoicePeer(player, source, data)
   print("signal from "..source.." to "..player.." => "..json.encode(data))
 end
+
+AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login) 
+  -- send peer config
+  vRPclient._setPeerConfiguration(source, cfg.voip_peer_configuration)
+end)
+
+

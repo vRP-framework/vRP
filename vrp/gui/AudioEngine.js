@@ -155,6 +155,11 @@ AudioEngine.prototype.removeAudioSource = function(data)
 
 //VoIP
 
+AudioEngine.prototype.setPeerConfiguration = function(data)
+{
+  this.peer_config = data.config;
+}
+
 AudioEngine.prototype.setupPeer = function(peer)
 {
   //setup data channel
@@ -200,7 +205,7 @@ AudioEngine.prototype.connectVoice = function(data)
 
   //setup new peer
   var peer = {
-    conn: new RTCPeerConnection({iceServers: [{urls:["stun:stun.l.google.com:19302"]}]}),
+    conn: new RTCPeerConnection(this.peer_config),
     channel: data.channel,
     player: data.player,
     origin: true,
@@ -247,7 +252,7 @@ AudioEngine.prototype.voicePeerSignal = function(data)
 
     //setup answer peer
     var peer = {
-      conn: new RTCPeerConnection({iceServers: [{urls:["stun:stun.l.google.com:19302"]}]}),
+      conn: new RTCPeerConnection(this.peer_config),
       channel: data.data.channel,
       player: data.player
     }
