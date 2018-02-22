@@ -5,9 +5,11 @@ local client_areas = {}
 AddEventHandler("vRP:playerLeave",function(user_id,source)
   -- leave areas
   local areas = client_areas[source]
-  for k,area in pairs(areas) do
-    if area.inside then
-      area.leave(source,k)
+  if areas then
+    for k,area in pairs(areas) do
+      if area.inside then
+        area.leave(source,k)
+      end
     end
   end
 
