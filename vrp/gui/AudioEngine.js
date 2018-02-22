@@ -62,8 +62,10 @@ function AudioEngine()
         var buffer = data.slice().buffer;
 
         //send packet to active/connected peers
-        for(var i = 0; i < peers.length; i++)
-          peers[i].data_channel.send(buffer);
+        for(var i = 0; i < peers.length; i++){
+          if(peers[i].data_channel.readyState == "open")
+            peers[i].data_channel.send(buffer);
+        }
       }
     }
   }
@@ -84,7 +86,7 @@ function AudioEngine()
     _this.mic_node.connect(_this.mic_processor);
   });
 
-
+  this.player_positions = {};
 }
 
 AudioEngine.prototype.setListenerData = function(data)
@@ -228,6 +230,29 @@ AudioEngine.prototype.setPeerConfiguration = function(data)
   this.peer_config = data.config;
 }
 
+AudioEngine.prototype.setPlayerPositions = function(data)
+{
+  this.player_positions = data.positions;
+
+  //update panners (spatialization effect)
+  for(var nchannel in this.voice_channels){
+    var channel = this.voice_channels[nchannel];
+    for(var player in channel){
+      if(player != "_config"){
+        var peer = channel[player];
+        if(peer.panner){
+          var pos = data.positions[player];
+          if(pos){
+            peer.panner.positionX.value = pos[0];
+            peer.panner.positionY.value = pos[1];
+            peer.panner.positionZ.value = pos[2];
+          }
+        }
+      }
+    }
+  }
+}
+
 AudioEngine.prototype.setupPeer = function(peer)
 {
   var _this = this;
@@ -273,7 +298,37 @@ AudioEngine.prototype.setupPeer = function(peer)
     //remove processed packets
     peer.psamples.splice(0,i);
   }
-  peer.processor.connect(this.c.destination);
+
+
+  //add effects
+  var node = peer.processor;
+  var effects = (this.getChannel(peer.channel)._config || {effects:{}}).effects;
+
+  if(effects.spatialization){ //spatialization
+    var panner = this.c.createPanner();
+    panner.distanceModel = "inverse";
+    panner.refDistance = 1;
+    panner.maxDistance = effects.spatialization.max_dist;
+    panner.rolloffFactor = 1;
+    panner.coneInnerAngle = 360;
+    panner.coneOuterAngle = 0;
+    panner.coneOuterGain = 0;
+
+    var pos = this.player_positions[peer.player];
+    if(pos){
+      panner.positionX.value = pos[0];
+      panner.positionY.value = pos[1];
+      panner.positionZ.value = pos[2];
+    }
+
+    peer.panner = panner;
+
+    node.connect(panner);
+    node = panner;
+  }
+
+  //connect final node
+  node.connect(this.c.destination);
 
   //setup data channel (UDP-like)
   peer.data_channel = peer.conn.createDataChannel(peer.channel, {

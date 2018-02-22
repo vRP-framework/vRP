@@ -187,6 +187,7 @@ function tvRP.connectVoice(channel, player)
   end
 
   if _channel[player] == nil then -- check if not already connecting/connected
+    channel[player] = 0 -- wait connection
     SendNUIMessage({act="connect_voice", channel=channel, player=player})
   end
 end
@@ -234,8 +235,9 @@ end
 
 -- configure channel connections
 --- config:
----- effect: nil/"radio"
----- spatialized: true/false
+---- effects: map of name => true/options
+----- spatialization => { max_dist: maximum distance }
+----- radio => {}
 function tvRP.configureVoice(channel, config)
   SendNUIMessage({act="configure_voice", channel=channel, config=config})
 end
@@ -299,31 +301,71 @@ function tvRP.signalVoicePeer(player, data)
   end
 end
 
-tvRP.registerVoiceCallbacks("test", function(player)
-  print("(vRPvoice) requested by "..player)
-  return true
+-- world channel behavior
+tvRP.registerVoiceCallbacks("world", function(player)
+  print("(vRPvoice-world) requested by "..player)
+
+  -- check connection distance
+
+  local pid = PlayerId()
+  local px,py,pz = tvRP.getPosition()
+
+  local cplayer = GetPlayerFromServerId(player)
+
+  if NetworkIsPlayerConnected(cplayer) then
+    local oped = GetPlayerPed(cplayer)
+    local x,y,z = table.unpack(GetEntityCoords(oped,true))
+
+    local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
+    return (distance <= cfg.voip_proximity*1.5) -- valid connection
+  end
 end,
 function(player, is_origin)
-  print("(vRPvoice) connected to "..player)
-  tvRP.setVoiceState("test", player, true)
+  print("(vRPvoice-world) connected to "..player)
+  tvRP.setVoiceState("world", player, true)
 end,
 function(player)
-  print("(vRPvoice) disconnected from "..player)
+  print("(vRPvoice-world) disconnected from "..player)
 end)
 
+-- world channel config
+tvRP.configureVoice("world", {
+  effects = {
+    spatialization = { max_dist = cfg.voip_proximity*0.8 }
+  }
+})
 
---test
+-- detect players near, give positions to AudioEngine
 Citizen.CreateThread(function()
-  local done = false
-  while not done do
-    Citizen.Wait(5000)
-    local p = tvRP.getNearestPlayer(40)
-    print("(vRPvoice) try to find player")
-    if p then
-      print("(vRPvoice) player "..p.." found")
-      tvRP.connectVoice("test", p)
-      done = true
+  while true do
+    Citizen.Wait(listener_wait)
+
+    local pid = PlayerId()
+    local px,py,pz = tvRP.getPosition()
+
+    local positions = {}
+
+    local players = tvRP.getPlayers()
+    for k,v in pairs(players) do
+      local player = GetPlayerFromServerId(k)
+
+      if player ~= pid and NetworkIsPlayerConnected(player) then
+        local oped = GetPlayerPed(player)
+        local x,y,z = table.unpack(GetEntityCoords(oped,true))
+        positions[k] = {x,y,z+1.5}
+
+        local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
+        local in_radius = (distance <= cfg.voip_proximity)
+        local linked = tvRP.isVoiceConnected("world", k) or tvRP.isVoiceConnecting("world", k)
+        if in_radius and not linked then -- join radius
+          tvRP.connectVoice("world", k)
+        elseif not in_radius and linked then -- leave radius
+          tvRP.disconnectVoice("world", k)
+        end
+      end
     end
+
+    SendNUIMessage({act="set_player_positions", positions=positions})
   end
 end)
 

@@ -164,6 +164,8 @@ window.addEventListener("load",function(){
       aengine.configureVoice(data);
     else if(data.act == "set_peer_configuration")
       aengine.setPeerConfiguration(data);
+    else if(data.act == "set_player_positions")
+      aengine.setPlayerPositions(data);
     // CONTROLS
     else if(data.act == "event"){ //EVENTS
       if(data.event == "UP"){

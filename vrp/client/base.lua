@@ -70,6 +70,10 @@ function tvRP.removePlayer(player)
   players[player] = nil
 end
 
+function tvRP.getPlayers()
+  return players
+end
+
 function tvRP.getNearestPlayers(radius)
   local r = {}
 
