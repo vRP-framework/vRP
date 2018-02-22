@@ -156,7 +156,7 @@ function tvRP.removeAudioSource(name)
   SendNUIMessage({act="remove_audio_source", name = name})
 end
 
-local listener_wait = math.ceil(1/cfg.audio_listener_rate)
+local listener_wait = math.ceil(1/cfg.audio_listener_rate*1000)
 
 Citizen.CreateThread(function()
   while true do
@@ -348,7 +348,10 @@ Citizen.CreateThread(function()
 
   while true do
     Citizen.Wait(listener_wait)
+
     n = n+1
+    local voip_check = (n >= ns)
+    if voip_check then n = 0 end
 
     local pid = PlayerId()
     local px,py,pz = tvRP.getPosition()
@@ -364,7 +367,7 @@ Citizen.CreateThread(function()
         local x,y,z = table.unpack(GetEntityCoords(oped,true))
         positions[k] = {x,y,z+1.5} -- add position
 
-        if cfg.vrp_voip and n >= ns then -- vRP voip detection/connection
+        if cfg.vrp_voip and voip_check then -- vRP voip detection/connection
           local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
           local in_radius = (distance <= cfg.voip_proximity)
           local linked = tvRP.isVoiceConnected("world", k)
@@ -373,8 +376,6 @@ Citizen.CreateThread(function()
           elseif not in_radius and linked then -- leave radius
             tvRP.disconnectVoice("world", k)
           end
-
-          n = 0
         end
       end
     end

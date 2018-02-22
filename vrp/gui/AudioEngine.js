@@ -68,6 +68,11 @@ function AudioEngine()
         }
       }
     }
+
+    //silent output
+    var out = e.outputBuffer.getChannelData(0);
+    for(var k = 0; k < out.length; k++)
+      out[k] = 0;
   }
 
   this.mic_processor.connect(this.c.destination);
@@ -297,6 +302,10 @@ AudioEngine.prototype.setupPeer = function(peer)
 
     //remove processed packets
     peer.psamples.splice(0,i);
+
+    //silent last samples
+    for(var k = nsamples; k < out.length; k++)
+      out[k] = 0;
   }
 
 
@@ -328,6 +337,7 @@ AudioEngine.prototype.setupPeer = function(peer)
   }
 
   //connect final node
+  peer.final_node = node;
   node.connect(this.c.destination);
 
   //setup data channel (UDP-like)
@@ -406,8 +416,11 @@ AudioEngine.prototype.disconnectVoice = function(data)
   var channel = this.getChannel(data.channel);
   //close peer
   var peer = channel[data.player];
-  if(peer && peer.conn.connectionState != "closed")
+  if(peer && peer.conn.connectionState != "closed"){
     peer.conn.close();
+    if(peer.final_node)
+      peer.final_node.disconnect(this.c.destination);
+  }
 
   delete channel[data.player];
 }
