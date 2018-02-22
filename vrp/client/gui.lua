@@ -301,39 +301,46 @@ function tvRP.signalVoicePeer(player, data)
   end
 end
 
--- world channel behavior
-tvRP.registerVoiceCallbacks("world", function(player)
-  print("(vRPvoice-world) requested by "..player)
+local speaking = false
+function tvRP.isSpeaking()
+  return speaking
+end
 
-  -- check connection distance
+if cfg.vrp_voip then -- setup voip world channel
+  -- world channel behavior
+  tvRP.registerVoiceCallbacks("world", function(player)
+    print("(vRPvoice-world) requested by "..player)
 
-  local pid = PlayerId()
-  local px,py,pz = tvRP.getPosition()
+    -- check connection distance
 
-  local cplayer = GetPlayerFromServerId(player)
+    local pid = PlayerId()
+    local px,py,pz = tvRP.getPosition()
 
-  if NetworkIsPlayerConnected(cplayer) then
-    local oped = GetPlayerPed(cplayer)
-    local x,y,z = table.unpack(GetEntityCoords(oped,true))
+    local cplayer = GetPlayerFromServerId(player)
 
-    local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
-    return (distance <= cfg.voip_proximity*1.5) -- valid connection
-  end
-end,
-function(player, is_origin)
-  print("(vRPvoice-world) connected to "..player)
-  tvRP.setVoiceState("world", player, true)
-end,
-function(player)
-  print("(vRPvoice-world) disconnected from "..player)
-end)
+    if NetworkIsPlayerConnected(cplayer) then
+      local oped = GetPlayerPed(cplayer)
+      local x,y,z = table.unpack(GetEntityCoords(oped,true))
 
--- world channel config
-tvRP.configureVoice("world", {
-  effects = {
-    spatialization = { max_dist = cfg.voip_proximity*0.8 }
-  }
-})
+      local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
+      return (distance <= cfg.voip_proximity*1.5) -- valid connection
+    end
+  end,
+  function(player, is_origin)
+    print("(vRPvoice-world) connected to "..player)
+    tvRP.setVoiceState("world", nil, speaking)
+  end,
+  function(player)
+    print("(vRPvoice-world) disconnected from "..player)
+  end)
+
+  -- world channel config
+  tvRP.configureVoice("world", {
+    effects = {
+      spatialization = { max_dist = cfg.voip_proximity*0.8 }
+    }
+  })
+end
 
 -- detect players near, give positions to AudioEngine
 Citizen.CreateThread(function()
@@ -352,15 +359,17 @@ Citizen.CreateThread(function()
       if player ~= pid and NetworkIsPlayerConnected(player) then
         local oped = GetPlayerPed(player)
         local x,y,z = table.unpack(GetEntityCoords(oped,true))
-        positions[k] = {x,y,z+1.5}
+        positions[k] = {x,y,z+1.5} -- add position
 
-        local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
-        local in_radius = (distance <= cfg.voip_proximity)
-        local linked = tvRP.isVoiceConnected("world", k) or tvRP.isVoiceConnecting("world", k)
-        if in_radius and not linked then -- join radius
-          tvRP.connectVoice("world", k)
-        elseif not in_radius and linked then -- leave radius
-          tvRP.disconnectVoice("world", k)
+        if cfg.vrp_voip then -- vRP voip detection/connection
+          local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
+          local in_radius = (distance <= cfg.voip_proximity)
+          local linked = tvRP.isVoiceConnected("world", k) or tvRP.isVoiceConnecting("world", k)
+          if in_radius and not linked then -- join radius
+            tvRP.connectVoice("world", k)
+          elseif not in_radius and linked then -- leave radius
+            tvRP.disconnectVoice("world", k)
+          end
         end
       end
     end
@@ -404,6 +413,17 @@ Citizen.CreateThread(function()
     elseif not pause_menu and paused then
       paused = false
       TriggerEvent("vRP:pauseChange", paused)
+    end
+
+    -- voip/speaking
+    local old_speaking = speaking
+    speaking = IsControlPressed(1,249)
+
+    -- voip
+    if cfg.vrp_voip then
+      if old_speaking ~= speaking then
+        tvRP.setVoiceState("world", nil, speaking)
+      end
     end
   end
 end)
