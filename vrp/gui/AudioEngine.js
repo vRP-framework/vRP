@@ -291,7 +291,7 @@ AudioEngine.prototype.setupPeer = function(peer)
     //receive opus packet
     peer.dec.input(new Uint8Array(e.data));
     var data;
-    while(data = peer.dec.ouput())
+    while(data = peer.dec.output())
       peer.psamples.push(data.slice());
   }
 
