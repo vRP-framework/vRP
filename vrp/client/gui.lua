@@ -186,7 +186,7 @@ function tvRP.connectVoice(channel, player)
     voice_channels[channel] = _channel
   end
 
-  if _channel[player] == nil then -- check if not already connecting
+  if _channel[player] == nil then -- check if not already connecting/connected
     SendNUIMessage({act="connect_voice", channel=channel, player=player})
   end
 end
@@ -209,6 +209,14 @@ function tvRP.isVoiceConnected(channel, player)
   local channel = voice_channels[channel]
   if channel then
     return channel[player] == 1
+  end
+end
+
+-- check if there is a pending connection
+function tvRP.isVoiceConnecting(channel, player)
+  local channel = voice_channels[channel]
+  if channel then
+    return channel[player] == 0
   end
 end
 

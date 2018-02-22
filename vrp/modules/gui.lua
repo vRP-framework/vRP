@@ -323,9 +323,11 @@ function tvRP.signalVoicePeer(player, data)
   print("signal from "..source.." to "..player.." => "..json.encode(data))
 end
 
-AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login) 
-  -- send peer config
-  vRPclient._setPeerConfiguration(source, cfg.voip_peer_configuration)
+AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
+  if first_spawn then
+    -- send peer config
+    vRPclient._setPeerConfiguration(source, cfg.voip_peer_configuration)
+  end
 end)
 
 
