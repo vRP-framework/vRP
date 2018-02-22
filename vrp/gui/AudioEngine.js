@@ -28,35 +28,42 @@ function AudioEngine()
   this.mic_processor.onaudioprocess = function(e){
     var samples = e.inputBuffer.getChannelData(0);
 
-    //convert to Int16 pcm
-    var isamples = new Int16Array(samples.length);
-    for(var i = 0; i < samples.length; i++){
-      var s = samples[i];
-      s *= 32768 ;
-      if(s > 32767) 
-        s = 32767;
-      else if(s < -32768) 
-        s = -32768;
-
-      isamples[i] = s;
+    var peers = [];
+    //prepare list of active/connected peers
+    for(var nchannel in _this.voice_channels){
+      var channel = _this.voice_channels[nchannel];
+      for(var player in channel){
+        if(player != "_config"){
+          var peer = channel[player];
+          if(peer.connected && peer.active)
+            peers.push(peer);
+        }
+      }
     }
 
-    //encode
-    _this.mic_enc.input(samples);
-    var data;
-    while(data = _this.mic_enc.output()){
-      var buffer = data.slice().buffer;
+    if(peers.length > 0){
+      //convert to Int16 pcm
+      var isamples = new Int16Array(samples.length);
+      for(var i = 0; i < samples.length; i++){
+        var s = samples[i];
+        s *= 32768 ;
+        if(s > 32767) 
+          s = 32767;
+        else if(s < -32768) 
+          s = -32768;
 
-      //send packet to active/connected peers
-      for(var nchannel in _this.voice_channels){
-        var channel = _this.voice_channels[nchannel];
-        for(var player in channel){
-          if(player != "_config"){
-            var peer = channel[player];
-            if(peer.connected && peer.active)
-              peer.data_channel.send(buffer);
-          }
-        }
+        isamples[i] = s;
+      }
+
+      //encode
+      _this.mic_enc.input(isamples);
+      var data;
+      while(data = _this.mic_enc.output()){ //generate packets
+        var buffer = data.slice().buffer;
+
+        //send packet to active/connected peers
+        for(var i = 0; i < peers.length; i++)
+          peers[i].data_channel.send(buffer);
       }
     }
   }
