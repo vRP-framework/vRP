@@ -237,7 +237,7 @@ end
 ---- effects: map of name => true/options
 ----- spatialization => { max_dist: maximum distance }
 ----- biquad => { frequency: ..., Q: ..., type: ..., detune: ...} see WebAudioAPI BiquadFilter
------- freq = 1700, Q = 3 (radio effect)
+------ freq = 1700, Q = 3, type = "bandpass" (idea for radio effect)
 function tvRP.configureVoice(channel, config)
   SendNUIMessage({act="configure_voice", channel=channel, config=config})
 end
@@ -383,6 +383,7 @@ Citizen.CreateThread(function()
       end
     end
 
+    positions._ = true -- prevent JS array type
     SendNUIMessage({act="set_player_positions", positions=positions})
   end
 end)
