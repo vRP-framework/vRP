@@ -311,30 +311,17 @@ AudioEngine.prototype.setupPeer = function(peer)
   }
 
 
-  //add effects
+  //add peer effects
   var node = peer.processor;
-  var effects = (this.getChannel(peer.channel)._config || {effects:{}}).effects;
-
-  if(effects.biquad){ //biquad filter
-    var biquad = this.c.createBiquadFilter();
-    if(effects.biquad.frenquency)
-      biquad.frequency.value = effects.biquad.frequency;
-    if(effects.biquad.Q)
-      biquad.Q.value = effects.biquad.Q;
-    if(effects.biquad.detune)
-      biquad.detune.value = effects.biquad.detune;
-    biquad.type = effects.biquad.type;
-
-    node.connect(biquad);
-    node = biquad;
-  }
+  var config = this.getChannel(peer.channel)._config || {};
+  var effects = config.effects || {};
 
   if(effects.spatialization){ //spatialization
     var panner = this.c.createPanner();
-    panner.distanceModel = "inverse";
+    panner.distanceModel = effects.spatialization.dist_model || "inverse";
     panner.refDistance = 1;
     panner.maxDistance = effects.spatialization.max_dist;
-    panner.rolloffFactor = 1;
+    panner.rolloffFactor = effects.spatialization.rolloff || 1;
     panner.coneInnerAngle = 360;
     panner.coneOuterAngle = 0;
     panner.coneOuterGain = 0;
@@ -354,7 +341,7 @@ AudioEngine.prototype.setupPeer = function(peer)
 
   //connect final node
   peer.final_node = node;
-  node.connect(this.c.destination);
+  node.connect(config.in_node || this.c.destination); //connect to channel node or destination
 
   //setup data channel (UDP-like)
   peer.data_channel = peer.conn.createDataChannel(peer.channel, {
@@ -430,12 +417,14 @@ AudioEngine.prototype.connectVoice = function(data)
 AudioEngine.prototype.disconnectVoice = function(data)
 {
   var channel = this.getChannel(data.channel);
+  var config = channel._config || {};
+
   //close peer
   var peer = channel[data.player];
   if(peer && peer.conn.connectionState != "closed"){
     peer.conn.close();
-    if(peer.final_node)
-      peer.final_node.disconnect(this.c.destination);
+    if(peer.final_node) //disconnect from channel node or destination
+      peer.final_node.disconnect(config.in_node || this.c.destination);
   }
 
   delete channel[data.player];
@@ -507,5 +496,50 @@ AudioEngine.prototype.setVoiceState = function(data)
 AudioEngine.prototype.configureVoice = function(data)
 {
   var channel = this.getChannel(data.channel);
-  channel._config = data.config;
+  if(!channel._config)
+    channel._config = data.config; //bind config
+
+  var config = data.config;
+  var effects = config.effects || {};
+
+
+  var node = null;
+
+  //build channel effects
+  if(effects.biquad){ //biquad filter
+    var biquad = this.c.createBiquadFilter();
+    if(effects.biquad.frenquency != null)
+      biquad.frequency.value = effects.biquad.frequency;
+    if(effects.biquad.Q != null)
+      biquad.Q.value = effects.biquad.Q;
+    if(effects.biquad.detune != null)
+      biquad.detune.value = effects.biquad.detune;
+    if(effects.biquad.gain != null)
+      biquad.gain.value = effects.biquad.gain;
+
+    if(effects.biquad.type != null)
+      biquad.type = effects.biquad.type;
+
+    if(node)
+      node.connect(biquad);
+    node = biquad;
+    if(!config.in_node)
+      config.in_node = node;
+  }
+
+  if(effects.gain){ //gain
+    var gain = this.c.createGain();
+    if(effects.gain.gain != null)
+      gain.gain.value = effects.gain.gain;
+
+    if(node)
+      node.connect(gain);
+    node = gain;
+    if(!config.in_node)
+      config.in_node = node;
+  }
+
+  //connect final node to output
+  if(node) 
+    node.connect(this.c.destination);
 }

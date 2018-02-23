@@ -232,12 +232,13 @@ function tvRP.setVoiceState(channel, player, active)
   SendNUIMessage({act="set_voice_state", channel=channel, player=player, active=active})
 end
 
--- configure channel connections
+-- configure channel (can only be called once per channel)
 --- config:
 ---- effects: map of name => true/options
------ spatialization => { max_dist: maximum distance }
------ biquad => { frequency: ..., Q: ..., type: ..., detune: ...} see WebAudioAPI BiquadFilter
+----- spatialization => { max_dist: ..., rolloff: ..., dist_model: ... } (per peer effect)
+----- biquad => { frequency: ..., Q: ..., type: ..., detune: ..., gain: ...} see WebAudioAPI BiquadFilter
 ------ freq = 1700, Q = 3, type = "bandpass" (idea for radio effect)
+----- gain => { gain: ... }
 function tvRP.configureVoice(channel, config)
   SendNUIMessage({act="configure_voice", channel=channel, config=config})
 end
@@ -337,7 +338,7 @@ if cfg.vrp_voip then -- setup voip world channel
   -- world channel config
   tvRP.configureVoice("world", {
     effects = {
-      spatialization = { max_dist = cfg.voip_proximity*0.8 }
+      spatialization = { max_dist = cfg.voip_proximity }
     }
   })
 end
