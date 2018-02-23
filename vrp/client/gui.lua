@@ -354,6 +354,7 @@ Citizen.CreateThread(function()
     if voip_check then n = 0 end
 
     local pid = PlayerId()
+    local spid = GetPlayerServerId(pid)
     local px,py,pz = tvRP.getPosition()
 
     local positions = {}
@@ -371,7 +372,8 @@ Citizen.CreateThread(function()
           local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
           local in_radius = (distance <= cfg.voip_proximity)
           local linked = tvRP.isVoiceConnected("world", k)
-          if in_radius and not linked then -- join radius
+          local initiator = (spid < k)
+          if in_radius and not linked and initiator then -- join radius
             tvRP.connectVoice("world", k)
           elseif not in_radius and linked then -- leave radius
             tvRP.disconnectVoice("world", k)
