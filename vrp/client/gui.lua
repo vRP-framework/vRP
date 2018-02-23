@@ -236,7 +236,8 @@ end
 --- config:
 ---- effects: map of name => true/options
 ----- spatialization => { max_dist: maximum distance }
------ radio => {}
+----- biquad => { frequency: ..., Q: ..., type: ..., detune: ...} see WebAudioAPI BiquadFilter
+------ freq = 1700, Q = 3 (radio effect)
 function tvRP.configureVoice(channel, config)
   SendNUIMessage({act="configure_voice", channel=channel, config=config})
 end

@@ -75,7 +75,7 @@ function AudioEngine()
       out[k] = 0;
   }
 
-  this.mic_processor.connect(this.c.destination);
+  this.mic_processor.connect(this.c.destination); //make the processor running
 
   //mic stream
   navigator.mediaDevices.getUserMedia({
@@ -87,8 +87,10 @@ function AudioEngine()
     }
   }).then(function(stream){ 
     _this.mic_node = _this.c.createMediaStreamSource(stream);
-    _this.mic_node.connect(_this.c.destination);
-    _this.mic_node.connect(_this.mic_processor);
+    _this.mic_comp = _this.c.createDynamicsCompressor();
+    _this.mic_node.connect(_this.mic_comp);
+    _this.mic_comp.connect(_this.mic_processor);
+    //_this.mic_comp.connect(_this.c.destination);
   });
 
   this.player_positions = {};
@@ -312,6 +314,20 @@ AudioEngine.prototype.setupPeer = function(peer)
   //add effects
   var node = peer.processor;
   var effects = (this.getChannel(peer.channel)._config || {effects:{}}).effects;
+
+  if(effects.biquad){ //biquad filter
+    var biquad = this.c.createBiquadFilter();
+    if(effects.biquad.frenquency)
+      biquad.frequency.value = effects.biquad.frequency;
+    if(effects.biquad.Q)
+      biquad.Q.value = effects.biquad.Q;
+    if(effects.biquad.detune)
+      biquad.detune.value = effects.biquad.detune;
+    biquad.type = effects.biquad.type;
+
+    node.connect(biquad);
+    node = biquad;
+  }
 
   if(effects.spatialization){ //spatialization
     var panner = this.c.createPanner();
