@@ -162,10 +162,11 @@ Citizen.CreateThread(function()
   while true do
     Citizen.Wait(listener_wait)
 
+
     local x,y,z
     if cfg.audio_listener_on_player then
-      x,y,z = tvRP.getPosition()
-      z = z+1.5
+      local ped = GetPlayerPed(PlayerId())
+      x,y,z = table.unpack(GetPedBoneCoords(ped, 31086, 0,0,0)) -- head pos
     else
       x,y,z = table.unpack(GetGameplayCamCoord())
     end
