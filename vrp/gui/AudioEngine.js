@@ -24,8 +24,12 @@ function AudioEngine()
 
   var _this = this;
 
-  //encoder
-  this.mic_enc = new libopus.Encoder(1,48000,24000,true);
+  libopus.onload = function(){
+    //encoder
+    _this.mic_enc = new libopus.Encoder(1,48000,24000,true);
+  }
+  if(libopus.loaded) //force loading if already loaded
+    libopus.onload();
 
   //processor
   //prepare process function
@@ -472,6 +476,10 @@ AudioEngine.prototype.disconnectVoice = function(data)
     peer.conn.close();
     if(peer.final_node) //disconnect from channel node or destination
       peer.final_node.disconnect(config.in_node || this.c.destination);
+    if(peer.dec){
+      peer.dec.destroy();
+      delete peer.dec;
+    }
   }
 
   delete channel[data.player];
