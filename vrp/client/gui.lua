@@ -367,8 +367,8 @@ Citizen.CreateThread(function()
 
       if player ~= pid and NetworkIsPlayerConnected(player) then
         local oped = GetPlayerPed(player)
-        local x,y,z = table.unpack(GetEntityCoords(oped,true))
-        positions[k] = {x,y,z+1.5} -- add position
+        local x,y,z = table.unpack(GetPedBoneCoords(oped, 31086, 0,0,0)) -- head pos
+        positions[k] = {x,y,z} -- add position
 
         if cfg.vrp_voip and voip_check then -- vRP voip detection/connection
           local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
