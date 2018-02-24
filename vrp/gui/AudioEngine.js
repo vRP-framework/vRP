@@ -1,3 +1,4 @@
+var clamp = function(val, min, max){ return Math.min(Math.max(min, val), max); }
 
 var is_playing = function(media)
 {
@@ -7,6 +8,9 @@ var is_playing = function(media)
 function AudioEngine()
 {
   this.c = new AudioContext();
+  //choose processor buffer size (2^(8-14))
+  this.processor_buffer_size = Math.pow(2, clamp(Math.floor(Math.log(this.c.sampleRate*0.1)/Math.log(2)), 8, 14));
+
   this.sources = {};
   this.listener = this.c.listener;
   this.listener.upX.value = 0;
@@ -24,9 +28,39 @@ function AudioEngine()
   this.mic_enc = new libopus.Encoder(1,48000,24000,true);
 
   //processor
-  this.mic_processor = this.c.createScriptProcessor(4096,1,1);
+  //prepare process function
+  var processOut = function(peers, samples){
+    //convert to Int16 pcm
+    var isamples = new Int16Array(samples.length);
+    for(var i = 0; i < samples.length; i++){
+      var s = samples[i];
+      s *= 32768 ;
+      if(s > 32767) 
+        s = 32767;
+      else if(s < -32768) 
+        s = -32768;
+
+      isamples[i] = s;
+    }
+
+    //encode
+    _this.mic_enc.input(isamples);
+    var data;
+    while(data = _this.mic_enc.output()){ //generate packets
+      var buffer = data.slice().buffer;
+
+      //send packet to active/connected peers
+      for(var i = 0; i < peers.length; i++){
+        if(peers[i].data_channel.readyState == "open")
+          peers[i].data_channel.send(buffer);
+      }
+    }
+  }
+
+
+  this.mic_processor = this.c.createScriptProcessor(this.processor_buffer_size,1,1);
   this.mic_processor.onaudioprocess = function(e){
-    var samples = e.inputBuffer.getChannelData(0);
+    var buffer = e.inputBuffer;
 
     var peers = [];
     //prepare list of active/connected peers
@@ -42,31 +76,21 @@ function AudioEngine()
     }
 
     if(peers.length > 0){
-      //convert to Int16 pcm
-      var isamples = new Int16Array(samples.length);
-      for(var i = 0; i < samples.length; i++){
-        var s = samples[i];
-        s *= 32768 ;
-        if(s > 32767) 
-          s = 32767;
-        else if(s < -32768) 
-          s = -32768;
+      //resample to 48kHz if necessary
+      if(buffer.sampleRate != 48000){
+        var ratio = 48000/buffer.sampleRate;
+        var oac = new OfflineAudioContext(1,Math.floor(ratio*buffer.length),48000);
+        var sbuff = oac.createBufferSource();
+        sbuff.buffer = buffer;
+        sbuff.connect(oac.destination);
+        sbuff.start();
 
-        isamples[i] = s;
+        oac.startRendering().then(function(out_buffer){
+          processOut(peers, out_buffer.getChannelData(0));
+        });
       }
-
-      //encode
-      _this.mic_enc.input(isamples);
-      var data;
-      while(data = _this.mic_enc.output()){ //generate packets
-        var buffer = data.slice().buffer;
-
-        //send packet to active/connected peers
-        for(var i = 0; i < peers.length; i++){
-          if(peers[i].data_channel.readyState == "open")
-            peers[i].data_channel.send(buffer);
-        }
-      }
+      else 
+        processOut(peers, buffer.getChannelData(0)); 
     }
 
     //silent output
@@ -267,7 +291,7 @@ AudioEngine.prototype.setupPeer = function(peer)
   //decoder
   peer.dec = new libopus.Decoder(1,48000);
   peer.psamples = []; //packets samples
-  peer.processor = this.c.createScriptProcessor(4096,0,1);
+  peer.processor = this.c.createScriptProcessor(this.processor_buffer_size,0,1);
   peer.processor.onaudioprocess = function(e){
     var out = e.outputBuffer.getChannelData(0);
 
@@ -280,15 +304,7 @@ AudioEngine.prototype.setupPeer = function(peer)
 
       //write packet samples to output
       for(var k = 0; k < take; k++){
-        //convert from int16 to float
-        var s = p[k];
-        s /= 32768 ;
-        if(s > 1) 
-          s = 1;
-        else if(s < -1) 
-          s = -1;
-
-        out[nsamples+k] = s;
+        out[nsamples+k] = p[k];
       }
 
       //advance
@@ -366,8 +382,39 @@ AudioEngine.prototype.setupPeer = function(peer)
     //receive opus packet
     peer.dec.input(new Uint8Array(e.data));
     var data;
-    while(data = peer.dec.output())
-      peer.psamples.push(data.slice());
+    while(data = peer.dec.output()){
+      //create buffer from samples
+      var buffer = _this.c.createBuffer(1, data.length, 48000);
+      var samples = buffer.getChannelData(0);
+
+      for(var k = 0; k < data.length; k++){
+        //convert from int16 to float
+        var s = data[k];
+        s /= 32768 ;
+        if(s > 1) 
+          s = 1;
+        else if(s < -1) 
+          s = -1;
+
+        samples[k] = s;
+      }
+
+      //resample to AudioContext samplerate if necessary
+      if(_this.c.sampleRate != 48000){
+        var ratio = _this.c.sampleRate/48000;
+        var oac = new OfflineAudioContext(1,Math.floor(ratio*buffer.length),_this.c.sampleRate);
+        var sbuff = oac.createBufferSource();
+        sbuff.buffer = buffer;
+        sbuff.connect(oac.destination);
+        sbuff.start();
+
+        oac.startRendering().then(function(out_buffer){
+          peer.psamples.push(out_buffer.getChannelData(0));
+        });
+      }
+      else 
+        peer.psamples.push(samples);
+    }
   }
 
   //ice
