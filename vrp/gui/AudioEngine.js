@@ -390,41 +390,43 @@ AudioEngine.prototype.setupPeer = function(peer)
   }
 
   peer.data_channel.onmessage = function(e){
-    //receive opus packet
-    peer.dec.input(new Uint8Array(e.data));
-    var data;
-    while(data = peer.dec.output()){
-      //create buffer from samples
-      var buffer = _this.c.createBuffer(1, data.length, 48000);
-      var samples = buffer.getChannelData(0);
+    if(peer.dec){
+      //receive opus packet
+      peer.dec.input(new Uint8Array(e.data));
+      var data;
+      while(data = peer.dec.output()){
+        //create buffer from samples
+        var buffer = _this.c.createBuffer(1, data.length, 48000);
+        var samples = buffer.getChannelData(0);
 
-      for(var k = 0; k < data.length; k++){
-        //convert from int16 to float
-        var s = data[k];
-        s /= 32768 ;
-        if(s > 1) 
-          s = 1;
-        else if(s < -1) 
-          s = -1;
+        for(var k = 0; k < data.length; k++){
+          //convert from int16 to float
+          var s = data[k];
+          s /= 32768 ;
+          if(s > 1) 
+            s = 1;
+          else if(s < -1) 
+            s = -1;
 
-        samples[k] = s;
+          samples[k] = s;
+        }
+
+        //resample to AudioContext samplerate if necessary
+        if(_this.c.sampleRate != 48000){
+          var ratio = _this.c.sampleRate/48000;
+          var oac = new OfflineAudioContext(1,Math.floor(ratio*buffer.length),_this.c.sampleRate);
+          var sbuff = oac.createBufferSource();
+          sbuff.buffer = buffer;
+          sbuff.connect(oac.destination);
+          sbuff.start();
+
+          oac.startRendering().then(function(out_buffer){
+            peer.psamples.push(out_buffer.getChannelData(0));
+          });
+        }
+        else 
+          peer.psamples.push(samples);
       }
-
-      //resample to AudioContext samplerate if necessary
-      if(_this.c.sampleRate != 48000){
-        var ratio = _this.c.sampleRate/48000;
-        var oac = new OfflineAudioContext(1,Math.floor(ratio*buffer.length),_this.c.sampleRate);
-        var sbuff = oac.createBufferSource();
-        sbuff.buffer = buffer;
-        sbuff.connect(oac.destination);
-        sbuff.start();
-
-        oac.startRendering().then(function(out_buffer){
-          peer.psamples.push(out_buffer.getChannelData(0));
-        });
-      }
-      else 
-        peer.psamples.push(samples);
     }
   }
 
@@ -519,7 +521,7 @@ AudioEngine.prototype.voicePeerSignal = function(data)
     if(peer){
       if(peer.initialized) //valid remote description
         peer.conn.addIceCandidate(new RTCIceCandidate(data.data.candidate));
-      else
+      else if(peer.candidate_queue)
         peer.candidate_queue.push(new RTCIceCandidate(data.data.candidate));
     }
   }
