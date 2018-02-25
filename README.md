@@ -101,8 +101,8 @@ Home components allow developers to create things to be added inside homes using
   * [GUI](#gui)
      * [Extending menus](#extending-menus)
   * [Audio](#audio)
-  * [VoIP](#voip)
      * [Notes](#notes-1)
+  * [VoIP](#voip)
   * [Map](#map)
 * [Libs](#libs)
   * [utils](#utils)
@@ -959,6 +959,15 @@ vRP.setAudioSource(name, url, volume, x, y, z, max_dist)
 -- remove named audio source
 vRP.removeAudioSource(name)
 ```
+##### Notes
+
+* it uses the Web Audio API of CEF
+* CEF used by FiveM doesn't have mp3/m3u support, so only direct links to ogg/vorbis/(maybe opus) stream will work (for radio stream)
+* .wav/.ogg formats are supported
+* there is no optimization for punctual audio sources, they will be added and removed when they end (no cache)
+* punctual audio sources will not play if the player is `2*max_dist` far away
+* persistent audio sources will pause themselves when the player is `2*max_dist` far away, and play again when inside this radius (save the bandwidth for radio streams or big music files)
+
 #### VoIP
 
 The VoIP API of vRP is designed using WebRTC and a p2p architecture. It allows to create things like voice chat with spatialization, group radio with audio effects (ex: police radio) or phone calls. It is an experimental feature.
@@ -1023,14 +1032,7 @@ vRP.setVoiceState(channel, player, active)
 vRP.configureVoice(channel, config)
 ```
 
-##### Notes
 
-* it uses the Web Audio API of CEF
-* CEF used by FiveM doesn't have mp3/m3u support, so only direct links to ogg/vorbis/(maybe opus) stream will work (for radio stream)
-* .wav/.ogg formats are supported
-* there is no optimization for punctual audio sources, they will be added and removed when they end (no cache)
-* punctual audio sources will not play if the player is `2*max_dist` far away
-* persistent audio sources will pause themselves when the player is `2*max_dist` far away, and play again when inside this radius (save the bandwidth for radio streams or big music files)
 
 #### Map
 
