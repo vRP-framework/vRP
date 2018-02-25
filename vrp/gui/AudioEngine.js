@@ -59,8 +59,11 @@ function AudioEngine()
 
       //send packet to active/connected peers
       for(var i = 0; i < peers.length; i++){
-        if(peers[i].data_channel.readyState == "open")
+        try{
           peers[i].data_channel.send(buffer);
+        }catch(e){
+          console.log("vRP-VoIP send error to player "+peers[i].player);
+        }
       }
     }
   }
@@ -488,8 +491,11 @@ AudioEngine.prototype.disconnectVoice = function(data)
   for(var i = 0; i < players.length; i++){
     var player = players[i];
     var peer = channel[player];
-    if(peer && peer.conn.connectionState != "closed"){
-      peer.conn.close();
+    if(peer){
+      if(peer.data_channel)
+        peer.data_channel.close();
+      if(peer.conn.connectionState != "closed")
+        peer.conn.close();
       if(peer.final_node) //disconnect from channel node or destination
         peer.final_node.disconnect(config.in_node || this.c.destination);
       if(peer.dec){
