@@ -970,7 +970,7 @@ vRP.removeAudioSource(name)
 
 #### VoIP
 
-The VoIP API of vRP is designed using WebRTC and a p2p architecture. It allows to create things like voice chat with spatialization, group radio with audio effects (ex: police radio) or phone calls. It is an experimental feature.
+The VoIP system of vRP is designed using WebRTC and a p2p architecture. It allows to create things like voice chat with spatialization, group radio with audio effects (ex: police radio) or phone calls. It is an experimental feature.
 
 Check `cfg/client.lua` and `cfg/gui.lua` to configure the VoIP (to also replace the internal voice chat if wanted).
 You will need to setup a STUN/TURN server to have WebRTC working properly.
