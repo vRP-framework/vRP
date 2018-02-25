@@ -80,6 +80,7 @@ Home components allow developers to create things to be added inside homes using
      * [Regular permissions](#regular-permissions)
      * [Special item permission](#special-item-permission)
      * [Special aptitude permission](#special-aptitude-permission)
+     * [Special function permission](#special-function-permission)
      * [API](#api-1)
   * [Survival](#survival)
   * [Police](#police)
@@ -95,9 +96,13 @@ Home components allow developers to create things to be added inside homes using
         * [Wardrobe](#wardrobe)
         * [Game table](#game-table)
         * [Item transformer](#item-transformer-1)
+        * [Radio](#radio)
   * [Mission](#mission)
   * [GUI](#gui)
      * [Extending menus](#extending-menus)
+  * [Audio](#audio)
+  * [VoIP](#voip)
+     * [Notes](#notes-1)
   * [Map](#map)
 * [Libs](#libs)
   * [utils](#utils)
@@ -954,6 +959,70 @@ vRP.setAudioSource(name, url, volume, x, y, z, max_dist)
 -- remove named audio source
 vRP.removeAudioSource(name)
 ```
+#### VoIP
+
+The VoIP API of vRP is designed using WebRTC and a p2p architecture. It allows to create things like voice chat with spatialization, group radio with audio effects (ex: police radio) or phone calls. It is an experimental feature.
+
+Check `cfg/client.lua` and `cfg/gui.lua` to configure the VoIP (to also replace the internal voice chat if wanted).
+You will need to setup a STUN/TURN server to have WebRTC working properly.
+
+You can use [coturn](https://github.com/coturn/coturn) which should be available on most platforms/distributions and is a STUN and TURN server.
+
+Basic example:
+* launch turnserver: `turnserver -a -u user:mdp -r "myserver"`
+* configure iceServers
+```lua
+cfg.voip_peer_configuration = {
+  iceServers = {
+    {
+      urls = {"stun:mydomain.ext:3478", "turn:mydomain.ext:3478"},
+      username = "user",
+      credential = "mdp"
+    }
+  }
+}
+```
+
+```lua
+-- TUNNEL CLIENT API
+
+-- request connection to another player for a specific channel
+vRP.connectVoice(channel, player)
+
+-- disconnect from another player for a specific channel
+-- player: nil to disconnect from all players
+vRP.disconnectVoice(channel, player)
+
+-- register callbacks for a specific channel
+--- on_offer(player): should return true to accept the connection
+--- on_connect(player, is_origin): is_origin is true if it's the local peer (not an answer)
+--- on_disconnect(player)
+vRP.registerVoiceCallbacks(channel, on_offer, on_connect, on_disconnect)
+
+-- check if there is an active connection
+vRP.isVoiceConnected(channel, player)
+
+-- check if there is a pending connection
+vRP.isVoiceConnecting(channel, player)
+
+-- return connections (map of channel => map of player => state (0-1))
+vRP.getVoiceChannels()
+
+-- enable/disable speaking
+--- player: nil to affect all channel peers
+--- active: true/false 
+vRP.setVoiceState(channel, player, active)
+
+-- configure channel (can only be called once per channel)
+--- config:
+---- effects: map of name => true/options
+----- spatialization => { max_dist: ..., rolloff: ..., dist_model: ... } (per peer effect)
+----- biquad => { frequency: ..., Q: ..., type: ..., detune: ..., gain: ...} see WebAudioAPI BiquadFilter
+------ freq = 1700, Q = 3, type = "bandpass" (idea for radio effect)
+----- gain => { gain: ... }
+vRP.configureVoice(channel, config)
+```
+
 ##### Notes
 
 * it uses the Web Audio API of CEF

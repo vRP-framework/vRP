@@ -200,7 +200,7 @@ function tvRP.connectVoice(channel, player)
 end
 
 -- disconnect from another player for a specific channel
--- player: nil to disconnect all players
+-- player: nil to disconnect from all players
 function tvRP.disconnectVoice(channel, player)
   SendNUIMessage({act="disconnect_voice", channel=channel, player=player})
 end
