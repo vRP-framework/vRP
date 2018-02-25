@@ -50,7 +50,8 @@ client_scripts{
   "client/identity.lua",
   "client/basic_garage.lua",
   "client/police.lua",
-  "client/admin.lua"
+  "client/admin.lua",
+  "client/basic_phone.lua"
 }
 
 -- client files
