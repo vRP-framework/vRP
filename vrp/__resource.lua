@@ -72,5 +72,6 @@ files{
   "gui/Div.js",
   "gui/dynamic_classes.js",
   "gui/AudioEngine.js",
-  "gui/lib/libopus.wasm.js"
+  "gui/lib/libopus.wasm.js",
+  "gui/images/voice_active.png"
 }

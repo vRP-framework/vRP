@@ -20,6 +20,10 @@ function AudioEngine()
   this.last_check = new Date().getTime();
 
   //VoIP
+  this.voice_indicator_div = document.createElement("div");
+  this.voice_indicator_div.id = "voice_indicator";
+  document.body.appendChild(this.voice_indicator_div);
+
   this.voice_channels = {}; 
 
   var _this = this;
@@ -470,19 +474,35 @@ AudioEngine.prototype.disconnectVoice = function(data)
   var channel = this.getChannel(data.channel);
   var config = channel._config || {};
 
-  //close peer
-  var peer = channel[data.player];
-  if(peer && peer.conn.connectionState != "closed"){
-    peer.conn.close();
-    if(peer.final_node) //disconnect from channel node or destination
-      peer.final_node.disconnect(config.in_node || this.c.destination);
-    if(peer.dec){
-      peer.dec.destroy();
-      delete peer.dec;
+  var players = [];
+  if(data.player != null)
+    players.push(data.player);
+  else{ //add all players
+    for(var player in channel){
+      if(player != "_config")
+        players.push(player);
     }
   }
 
-  delete channel[data.player];
+  //close peers
+  for(var i = 0; i < players.length; i++){
+    var player = players[i];
+    var peer = channel[player];
+    if(peer && peer.conn.connectionState != "closed"){
+      peer.conn.close();
+      if(peer.final_node) //disconnect from channel node or destination
+        peer.final_node.disconnect(config.in_node || this.c.destination);
+      if(peer.dec){
+        peer.dec.destroy();
+        delete peer.dec;
+      }
+    }
+
+    delete channel[player];
+  }
+
+  //update indicator
+  this.updateVoiceIndicator();
 }
 
 AudioEngine.prototype.voicePeerSignal = function(data)
@@ -546,6 +566,9 @@ AudioEngine.prototype.setVoiceState = function(data)
         channel[player].active = data.active;
     }
   }
+
+  //update indicator
+  this.updateVoiceIndicator();
 }
 
 AudioEngine.prototype.configureVoice = function(data)
@@ -597,4 +620,27 @@ AudioEngine.prototype.configureVoice = function(data)
   //connect final node to output
   if(node) 
     node.connect(this.c.destination);
+}
+
+AudioEngine.prototype.isVoiceActive = function()
+{
+  for(var name in this.voice_channels){
+    var channel = this.voice_channels[name];
+    for(var player in channel){
+      if(player != "_config"){
+        if(channel[player].active)
+          return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+AudioEngine.prototype.updateVoiceIndicator = function()
+{
+  if(this.isVoiceActive())
+    this.voice_indicator_div.classList.add("active");
+  else
+    this.voice_indicator_div.classList.remove("active");
 }

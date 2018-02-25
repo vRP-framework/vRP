@@ -194,3 +194,18 @@ html, body {
   opacity: 0.90;
 }
 
+/* VoIP */
+
+#voice_indicator{
+  position: absolute;
+  width: 75px;
+  height: 75px;
+  right: 0;
+  top: 35%;
+  background-image: url("images/voice_active.png");
+  display: none;
+}
+
+#voice_indicator.active{
+  display: block;
+}

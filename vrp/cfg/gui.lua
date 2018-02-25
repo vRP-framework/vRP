@@ -16,6 +16,7 @@ cfg.css = [[
 body{
   font-family: "Custom Font";
 }
+
 ]]
 
 -- list of static menu types (map of name => {.title,.blipid,.blipcolor,.permissions (optional)})

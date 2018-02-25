@@ -58,7 +58,7 @@ end
 
 -- send an sms from an user to a phone number
 -- return true on success
-function vRP.sendSMS(user_id, phone, msg, cbr)
+function vRP.sendSMS(user_id, phone, msg)
   if string.len(msg) > cfg.sms_size then -- clamp sms
     sms = string.sub(msg,1,cfg.sms_size)
   end
@@ -77,21 +77,65 @@ function vRP.sendSMS(user_id, phone, msg, cbr)
       local from = vRP.getPhoneDirectoryName(dest_id, identity.phone).." ("..identity.phone..")"
 
       vRPclient._notify(dest_src,lang.phone.sms.notify({from, msg}))
+      vRPclient._playAudioSource(dest_src, cfg.sms_sound, 0.5)
       table.insert(phone_sms,1,{identity.phone,msg}) -- insert new sms at first position {phone,message}
       return true
     end
   end
 end
 
+-- call from a user to a phone number
+-- return true if the communication is established
+function vRP.phoneCall(user_id, phone)
+  local identity = vRP.getUserIdentity(user_id)
+  local src = vRP.getUserSource(user_id)
+  local dest_id = vRP.getUserByPhone(phone)
+  if identity and dest_id then
+    local dest_src = vRP.getUserSource(dest_id)
+    if dest_src then
+      local to = vRP.getPhoneDirectoryName(user_id, phone).." ("..phone..")"
+      local from = vRP.getPhoneDirectoryName(dest_id, identity.phone).." ("..identity.phone..")"
+
+      vRPclient._phoneCallWaiting(src, dest_src, true) -- make caller to wait the answer
+
+      -- notify
+      vRPclient._notify(src,lang.phone.call.notify_to({to}))
+      vRPclient._notify(dest_src,lang.phone.call.notify_from({from}))
+
+      -- play dialing sound
+      vRPclient._setAudioSource(src, "vRP:phone:dialing", cfg.dialing_sound, 0.5)
+      vRPclient._setAudioSource(dest_src, "vRP:phone:dialing", cfg.ringing_sound, 0.5)
+
+      local ok = false
+
+      -- send request to called
+      if vRP.request(dest_src, lang.phone.call.ask({from}), 15) then -- accepted
+        vRPclient._connectVoice(dest_src, "phone", src) -- connect voice
+        ok = true
+      else -- refused
+        vRPclient._notify(src,lang.phone.call.notify_refused({to})) 
+        vRPclient._phoneCallWaiting(src, dest_src, false) 
+      end
+
+      -- remove dialing sound
+      vRPclient._removeAudioSource(src, "vRP:phone:dialing")
+      vRPclient._removeAudioSource(dest_src, "vRP:phone:dialing")
+
+      return ok
+    end
+  end
+end
+
 -- send an smspos from an user to a phone number
 -- return true on success
-function vRP.sendSMSPos(user_id, phone, x,y,z, cbr)
+function vRP.sendSMSPos(user_id, phone, x,y,z)
   local identity = vRP.getUserIdentity(user_id)
   local dest_id = vRP.getUserByPhone(phone)
   if identity and dest_id then
     local dest_src = vRP.getUserSource(dest_id)
     if dest_src then
       local from = vRP.getPhoneDirectoryName(dest_id, identity.phone).." ("..identity.phone..")"
+      vRPclient._playAudioSource(dest_src, cfg.sms_sound, 0.5)
       vRPclient._notify(dest_src,lang.phone.smspos.notify({from})) -- notify
       -- add position for 5 minutes
       local bid = vRPclient.addBlip(dest_src,x,y,z,162,37,from)
@@ -197,6 +241,13 @@ local function ch_directory(player,choice)
         end
       end
 
+      local ch_call = function(player, choice) -- call player
+        if not vRP.phoneCall(user_id, phone) then
+          vRPclient._notify(player,lang.phone.directory.call.not_reached({phone}))
+        end
+      end
+
+      emenu[lang.phone.directory.call.title()] = {ch_call}
       emenu[lang.phone.directory.sendsms.title()] = {ch_sendsms}
       emenu[lang.phone.directory.sendpos.title()] = {ch_sendpos}
       emenu[lang.phone.directory.remove.title()] = {ch_remove}
@@ -324,10 +375,15 @@ local function ch_announce(player, choice)
   vRP.openMenu(player,announce_menu)
 end
 
+local function ch_hangup(player, choice)
+  vRPclient._phoneHangUp(player)
+end
+
 phone_menu[lang.phone.directory.title()] = {ch_directory,lang.phone.directory.description()}
 phone_menu[lang.phone.sms.title()] = {ch_sms,lang.phone.sms.description()}
 phone_menu[lang.phone.service.title()] = {ch_service,lang.phone.service.description()}
 phone_menu[lang.phone.announce.title()] = {ch_announce,lang.phone.announce.description()}
+phone_menu[lang.phone.hangup.title()] = {ch_hangup,lang.phone.hangup.description()}
 
 -- phone menu static builder after 10 seconds
 SetTimeout(10000, function()

@@ -274,6 +274,10 @@ local lang = {
       },
       remove = {
         title = "Supprimer"
+      },
+      call = {
+        title = "Appeler",
+        not_reached = "~r~ n°{1} indisponible."
       }
     },
     sms = {
@@ -297,6 +301,16 @@ local lang = {
       description = "Envoyer une annonce visible à tous pendant quelques secondes.",
       item_desc = "{1} $<br /><br/>{2}",
       prompt = "Contenu de l'annonce (10-1000 caractères): "
+    },
+    call = {
+      ask = "Accepter l'appel depuis {1} ?",
+      notify_to = "Appel~b~ {1}...",
+      notify_from = "Appel reçu de ~b~ {1}...",
+      notify_refused = "Appel vers ~b~ {1}... ~r~ refusé."
+    },
+    hangup = {
+      title = "Raccrocher",
+      description = "Raccrocher le téléphone (terminer l'appel en cours)."
     }
   },
   emotes = {
