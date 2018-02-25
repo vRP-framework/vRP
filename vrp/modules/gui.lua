@@ -167,6 +167,7 @@ end
 -- SERVER TUNNEL API
 
 function tvRP.closeMenu(id)
+  local source = source
   local menu = client_menus[id]
   if menu and menu.source == source then
 
@@ -182,6 +183,7 @@ function tvRP.closeMenu(id)
 end
 
 function tvRP.validMenuChoice(id,choice,mod)
+  local source = source
   local menu = client_menus[id]
   if menu and menu.source == source then
     -- call choice callback
@@ -313,3 +315,19 @@ AddEventHandler("vRP:playerLeave", function(user_id, source)
     end
   end
 end)
+
+-- VoIP
+
+function tvRP.signalVoicePeer(player, data)
+  vRPclient._signalVoicePeer(player, source, data)
+  print("signal from "..source.." to "..player.." => "..json.encode(data))
+end
+
+AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
+  if first_spawn then
+    -- send peer config
+    vRPclient._setPeerConfiguration(source, cfg.voip_peer_configuration)
+  end
+end)
+
+

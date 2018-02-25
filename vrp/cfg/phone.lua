@@ -10,6 +10,11 @@ cfg.sms_size = 500
 -- duration of a sms position marker (in seconds)
 cfg.smspos_duration = 300
 
+-- phone sounds (playAudioSource)
+cfg.dialing_sound = "sounds/phone_dialing.ogg" -- loop
+cfg.ringing_sound = "sounds/phone_ringing.ogg" -- loop
+cfg.sms_sound = "sounds/phone_sms.ogg"
+
 -- define phone services
 -- blipid, blipcolor (customize alert blip)
 -- alert_time (alert blip display duration in seconds)
@@ -90,3 +95,4 @@ cfg.announces = {
 }
 
 return cfg
+

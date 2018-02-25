@@ -50,7 +50,8 @@ client_scripts{
   "client/identity.lua",
   "client/basic_garage.lua",
   "client/police.lua",
-  "client/admin.lua"
+  "client/admin.lua",
+  "client/basic_phone.lua"
 }
 
 -- client files
@@ -71,5 +72,7 @@ files{
   "gui/AnnounceManager.js",
   "gui/Div.js",
   "gui/dynamic_classes.js",
-  "gui/AudioEngine.js"
+  "gui/AudioEngine.js",
+  "gui/lib/libopus.wasm.js",
+  "gui/images/voice_active.png"
 }
