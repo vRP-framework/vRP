@@ -978,7 +978,7 @@ You will need to setup a STUN/TURN server to have WebRTC working properly.
 You can use [coturn](https://github.com/coturn/coturn) which should be available on most platforms/distributions and is a STUN and TURN server.
 
 Basic example:
-* launch turnserver: `turnserver -a -u user:mdp -r "myserver"`
+* launch turnserver: `turnserver -a -u user:password -r "myserver"`
 * configure iceServers
 ```lua
 cfg.voip_peer_configuration = {
@@ -986,7 +986,7 @@ cfg.voip_peer_configuration = {
     {
       urls = {"stun:mydomain.ext:3478", "turn:mydomain.ext:3478"},
       username = "user",
-      credential = "mdp"
+      credential = "password"
     }
   }
 }
