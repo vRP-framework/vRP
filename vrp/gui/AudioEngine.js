@@ -596,7 +596,7 @@ AudioEngine.prototype.configureVoice = function(data)
   //build channel effects
   if(effects.biquad){ //biquad filter
     var biquad = this.c.createBiquadFilter();
-    if(effects.biquad.frenquency != null)
+    if(effects.biquad.frequency != null)
       biquad.frequency.value = effects.biquad.frequency;
     if(effects.biquad.Q != null)
       biquad.Q.value = effects.biquad.Q;
