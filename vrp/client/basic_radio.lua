@@ -22,7 +22,7 @@ function(player)
 end)
 
 -- radio channel config
-tvRP.configureVoice("radio", {
+tvRP.configureVoice("radio", cfg.radio_voice_config or {
   effects = {
     biquad = { type = "bandpass", frequency = 1700, Q = 2 }
   }
