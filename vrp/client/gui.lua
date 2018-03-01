@@ -210,7 +210,11 @@ end
 --- on_connect(player, is_origin): is_origin is true if it's the local peer (not an answer)
 --- on_disconnect(player)
 function tvRP.registerVoiceCallbacks(channel, on_offer, on_connect, on_disconnect)
-  channel_callbacks[channel] = {on_offer, on_connect, on_disconnect}
+  if not channel_callbacks[channel] then
+    channel_callbacks[channel] = {on_offer, on_connect, on_disconnect}
+  else
+    print("[vRP] VoIP channel callbacks for <"..channel.."> already registered.")
+  end
 end
 
 -- check if there is an active connection

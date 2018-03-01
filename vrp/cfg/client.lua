@@ -35,7 +35,7 @@ cfg.controls = {
     yes = {1,166}, -- Michael, F5
     no = {1,167} -- Franklin, F6
   },
-  radio = {1,246}
+  radio = {1,246} -- team chat (Y)
 }
 
 -- disable menu if handcuffed
