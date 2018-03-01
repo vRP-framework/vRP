@@ -35,7 +35,8 @@ server_scripts{
   "modules/basic_garage.lua",
   "modules/basic_items.lua",
   "modules/basic_skinshop.lua",
-  "modules/cloakroom.lua"
+  "modules/cloakroom.lua",
+  "modules/basic_radio.lua"
 }
 
 -- client scripts
@@ -51,7 +52,8 @@ client_scripts{
   "client/basic_garage.lua",
   "client/police.lua",
   "client/admin.lua",
-  "client/basic_phone.lua"
+  "client/basic_phone.lua",
+  "client/basic_radio.lua"
 }
 
 -- client files
@@ -74,5 +76,10 @@ files{
   "gui/dynamic_classes.js",
   "gui/AudioEngine.js",
   "gui/lib/libopus.wasm.js",
-  "gui/images/voice_active.png"
+  "gui/images/voice_active.png",
+  "gui/sounds/phone_dialing.ogg",
+  "gui/sounds/phone_ringing.ogg",
+  "gui/sounds/phone_sms.ogg",
+  "gui/sounds/radio_on.ogg",
+  "gui/sounds/radio_off.ogg"
 }

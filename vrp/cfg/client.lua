@@ -34,7 +34,8 @@ cfg.controls = {
   request = {
     yes = {1,166}, -- Michael, F5
     no = {1,167} -- Franklin, F6
-  }
+  },
+  radio = {1,246}
 }
 
 -- disable menu if handcuffed

@@ -487,6 +487,9 @@ local lang = {
       group = "{1}: ",
       aptitude = "{1} NIV {3} EXP {2}"
     }
+  },
+  radio = {
+    title = "Radio ON/OFF"
   }
 }
 

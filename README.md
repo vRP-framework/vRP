@@ -20,6 +20,15 @@ See also (and use it as a basis to understand how to develop extensions for vRP)
 * https://github.com/ImagicTheCat/vRP-basic-mission (repair/delivery missions extension)
 * https://github.com/ImagicTheCat/vRP-TCG (Trading Card Game extension)
 
+## Resource credits
+
+### Sounds
+
+* radio: https://freesound.org/people/JustinBW/sounds/70107/
+* phone sms: https://freesound.org/people/SpiceProgram/sounds/399191/
+* phone ringing: https://freesound.org/people/Framing_Noise/sounds/223183/
+* phone dialing: https://freesound.org/people/Felfa/sounds/178823/
+
 ## Features
 * basic admin tools (kick,ban,whitelist)
 * groups/permissions

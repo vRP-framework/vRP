@@ -258,6 +258,8 @@ AudioEngine.prototype.removeAudioSource = function(data)
   var source = this.sources[data.name];
   if(source){
     delete this.sources[data.name];
+    source[0].src = "";
+    source[0].loop = false;
     if(is_playing(source[0]))
       source[0].pause();
     if(source[3]) //spatialized
