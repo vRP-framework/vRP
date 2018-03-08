@@ -37,13 +37,13 @@ function tvRP.spawnGarageVehicle(vtype,name,pos) -- vtype is the vehicle type (o
       SetEntityInvincible(nveh,false)
       SetPedIntoVehicle(GetPlayerPed(-1),nveh,-1) -- put player inside
       SetVehicleNumberPlateText(nveh, "P "..tvRP.getRegistrationNumber())
-      Citizen.InvokeNative(0xAD738C3085FE7E11, nveh, true, true) -- set as mission entity
+      --Citizen.InvokeNative(0xAD738C3085FE7E11, nveh, true, true) -- set as mission entity
       SetVehicleHasBeenOwnedByPlayer(nveh,true)
 
-      if not cfg.vehicle_migration then
+      --Network vehicle set to allow migration by default
         local nid = NetworkGetNetworkIdFromEntity(nveh)
-        SetNetworkIdCanMigrate(nid,false)
-      end
+        SetNetworkIdCanMigrate(nid,cfg.vehicle_migration)
+
 
       vehicles[vtype] = {vtype,name,nveh} -- set current vehicule
 
