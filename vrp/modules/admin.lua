@@ -244,17 +244,19 @@ local function ch_calladmin(player,choice)
 
     -- send notify and alert to all listening players
     for k,v in pairs(players) do
-      local ok = vRP.request(v,"Admin ticket (user_id = "..user_id..") take/TP to ?: "..htmlEntities.encode(desc), 60)
-      if ok then -- take the call
-        if not answered then
-          -- answer the call
-          vRPclient._notify(player,"An admin took your ticket.")
-          vRPclient._teleport(v, vRPclient.getPosition(player))
-          answered = true
-        else
-          vRPclient._notify(v,"Ticket already taken.")
+      async(function()
+        local ok = vRP.request(v,"Admin ticket (user_id = "..user_id..") take/TP to ?: "..htmlEntities.encode(desc), 60)
+        if ok then -- take the call
+          if not answered then
+            -- answer the call
+            vRPclient._notify(player,"An admin took your ticket.")
+            vRPclient._teleport(v, vRPclient.getPosition(player))
+            answered = true
+          else
+            vRPclient._notify(v,"Ticket already taken.")
+          end
         end
-      end
+      end)
     end
   end
 end

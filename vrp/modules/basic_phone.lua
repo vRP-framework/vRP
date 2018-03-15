@@ -40,17 +40,19 @@ function vRP.sendServiceAlert(sender, service_name,x,y,z,msg)
 
       -- call request
       if sender ~= nil then
-        local ok = vRP.request(v,lang.phone.service.ask_call({service_name, htmlEntities.encode(msg)}), 30)
-        if ok then -- take the call
-          if not answered then
-            -- answer the call
-            vRPclient._notify(sender,service.answer_notify)
-            vRPclient._setGPS(v,x,y)
-            answered = true
-          else
-            vRPclient._notify(v,lang.phone.service.taken())
+        async(function()
+          local ok = vRP.request(v,lang.phone.service.ask_call({service_name, htmlEntities.encode(msg)}), 30)
+          if ok then -- take the call
+            if not answered then
+              -- answer the call
+              vRPclient._notify(sender,service.answer_notify)
+              vRPclient._setGPS(v,x,y)
+              answered = true
+            else
+              vRPclient._notify(v,lang.phone.service.taken())
+            end
           end
-        end
+        end)
       end
     end
   end
