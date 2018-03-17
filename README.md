@@ -30,27 +30,15 @@ See also (and use it as a basis to understand how to develop extensions for vRP)
 * phone dialing: https://freesound.org/people/Felfa/sounds/178823/
 
 ## Features
-* basic admin tools (kick,ban,whitelist)
-* groups/permissions
-* language config file
+* basic admin tools (kick,ban,whitelist), groups/permissions, languages, identification system (persistant user id for database storage), user custom data key/value
 * player state auto saved to database (hunger,thirst,weapons,player apparence,position)
-* player identity/phone/aptitudes (education/exp)
-* business system / money (wallet/bank)
-* homes (experimental, if a visitor leave in any other way than using the green circle, like crashing, flying or disconnecting, it will require an eject all)
-* cloakrooms (uniform for jobs)
-* basic police (PC, check, I.D., handcuff, jails, seize weapons/items)
-* basic emergency (coma, reanimate)
-* emotes
-* inventory (with custom item definition, parametric items), chests (vehicle trunks)
+* player identity/phone/aptitudes (education/exp), emotes, business system / money (wallet/bank), homes
+* cloakrooms (uniform for jobs), basic police (PC, check, I.D., handcuff, jails, seize weapons/items), basic emergency (coma, reanimate)
+* inventory (with custom item definition, parametric items), chests (vehicle trunks), item transformer (harvest, process, produce) (illegal informer)
 * basic implementations: ATM, market, gunshop, skinshop, garage
-* item transformer (harvest, process, produce) (illegal informer)
-* identification system (persistant user id for database storage)
-* user custom data key/value
-* gui (dynamic menu, progress bars, prompt) API
-* blip, markers (colored circles), areas (enter/leave callbacks) API
-* MySQL lua bindings (prepared statements)
-* proxy for easy server-side inter-resource developement
-* tunnel for easy server/clients communication
+* gui (dynamic menu, progress bars, prompt) API, blip, markers (colored circles), areas (enter/leave callbacks) API
+* database SQL/MySQL "driver" system to interface to any MySQL resources
+* proxy for easy inter-resource developement, tunnel for easy server/clients communication
 
 ## TODO LIST
 * home stuff (home garage,etc)
@@ -60,6 +48,8 @@ See also (and use it as a basis to understand how to develop extensions for vRP)
 * police pc: add custom police records
 * admin: tp to marker
 * police research per veh type
+* vehicle ownership rework
+* props, NPC
 
 ## NOTES
 ### Homes
@@ -830,7 +820,7 @@ end
 local onchoose = function(player,choice,mod)
   -- mod will be input modulation -1,0,1 (left,(c)enter,right)
   print("player choose "..choice)
-  vRP.closeMenu({source}) -- ({} because proxy call) close the menu after the first choice (an action menu for example)
+  vRP.closeMenu(source) -- close the menu after the first choice (an action menu for example)
 end
 
 -- add options and callbacks
@@ -1106,7 +1096,7 @@ vRP.removeNamedMarker(name)
 -- path: lua file path without extension
 module(rsc, path)
 
--- create an async returner (require a Citizen thread)
+-- create an async returner (require a Citizen thread) (also alias for Citizen.CreateThread)
 -- return returner (r:wait(), r(...))
 async()
 
