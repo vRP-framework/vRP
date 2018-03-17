@@ -7,7 +7,7 @@ Contributions are welcomed.
 
 Config examples are in https://github.com/ImagicTheCat/vRP/tree/vrpex/misc/config
 
-[Discord](discord.gg/xzGZBAb)
+[Discord](http://discord.gg/xzGZBAb)
 
 Support me on Patreon to keep this project alive:
 
