@@ -17,6 +17,7 @@ Support me on Patreon to keep this project alive:
 
 
 See also (and use it as a basis to understand how to develop extensions for vRP) :
+* https://github.com/ImagicTheCat/vRP-db-drivers (DB driver alternatives for `vrp_mysql`)
 * https://github.com/ImagicTheCat/vRP-basic-mission (repair/delivery missions extension)
 * https://github.com/ImagicTheCat/vRP-TCG (Trading Card Game extension)
 
