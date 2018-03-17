@@ -48,6 +48,7 @@ local db_drivers = {}
 local db_driver
 local cached_prepares = {}
 local cached_queries = {}
+local prepared_queries = {}
 local db_initialized = false
 
 -- register a DB driver
@@ -101,6 +102,8 @@ function vRP.prepare(name, query)
     print("[vRP] prepare "..name.." = \""..string.sub(query,1,Debug.maxlen).."...\"")
   end
 
+  prepared_queries[name] = true
+
   if db_initialized then -- direct call
     db_driver[2](name, query)
   else
@@ -116,6 +119,10 @@ end
 ---- "execute": should return affected
 ---- "scalar": should return a scalar
 function vRP.query(name, params, mode)
+  if not prepared_queries[name] then
+    error("[vRP] query "..name.." doesn't exist.")
+  end
+
   if not mode then mode = "query" end
 
   if config.debug then
@@ -123,10 +130,10 @@ function vRP.query(name, params, mode)
   end
 
   if db_initialized then -- direct call
-    return db_driver[3](name, params, mode)
+    return db_driver[3](name, params or {}, mode)
   else -- async call, wait query result
     local r = async()
-    table.insert(cached_queries, {{name, params, mode}, r})
+    table.insert(cached_queries, {{name, params or {}, mode}, r})
     return r:wait()
   end
 end
