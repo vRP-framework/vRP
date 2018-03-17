@@ -94,6 +94,7 @@ function vRP.registerDBDriver(name, on_init, on_prepare, on_query)
 end
 
 -- prepare a query
+--- name: unique name for the query
 --- query: SQL string with @params notation
 function vRP.prepare(name, query)
   if config.debug then
@@ -108,11 +109,12 @@ function vRP.prepare(name, query)
 end
 
 -- execute a query
----- params: map of parameters
----- mode: default is "query"
------ "query": should return rows, affected
------ "execute": should return affected
------ "scalar": should return a scalar
+--- name: unique name of the query
+--- params: map of parameters
+--- mode: default is "query"
+---- "query": should return rows (list of map of parameter => value), affected
+---- "execute": should return affected
+---- "scalar": should return a scalar
 function vRP.query(name, params, mode)
   if not mode then mode = "query" end
 

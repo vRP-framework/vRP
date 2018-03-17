@@ -117,7 +117,7 @@ Home components allow developers to create things to be added inside homes using
   * [utils](#utils)
   * [Proxy](#proxy)
   * [Tunnel](#tunnel)
-  * [MySQL](#mysql)
+  * [Database](#database)
 
 [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
@@ -1228,73 +1228,57 @@ Good practice is to get the interface once and set it as a global, but if you wa
 
 Tunnel and Proxy are blocking calls in the current coroutine until the values are returned, to bypass this behaviour, especially for the Tunnel to optimize speed (ping latency of each call), use `_` as prefix for the function name (Proxy/Tunnel interfaces should not have functions starting with `_`). This will discard the returned values, but if you still need them, you can make normal calls in a new Citizen thread with `Citizen.CreateThreadNow` or `async` to have non-blocking code.
 
-#### MySQL
+#### Database
 
-MySQL queries are managed by the resource `vrp_mysql`, acting like a server for all other resources using it. So connections, commands and queries are globals and should use namespaces if you want to create your own queries to prevent collisions.
-
-By default, the `vRP` connection is created, using credentials in `cfg/base.lua`, so you can add new commands to it if you are creating a vRP extension.
+SQL queries are managed by DB drivers, you can use the default vRP driver `vrp_mysql` or use a custom one (`vrp_mysql` has crappy code).
 
 ```lua
--- API
+-- API (PROXY)
 
--- create a connection
--- host can also be written "host:port"
-MySQL.createConnection(name, host, user, password, database)
+-- register a DB driver
+--- name: unique name for the driver
+--- on_init(cfg): called when the driver is initialized (connection), should return true on success
+---- cfg: db config
+--- on_prepare(name, query): should prepare the query (@param notation)
+--- on_query(name, params, mode): should execute the prepared query
+---- params: map of parameters
+---- mode: 
+----- "query": should return rows (list of map of parameter => value), affected
+----- "execute": should return affected
+----- "scalar": should return a scalar
+vRP.registerDBDriver(name, on_init, on_prepare, on_query)
 
--- create a command for a specific connection
---- path: "conname/cmdname"
-MySQL.createCommand(path, sql)
+-- prepare a query
+--- name: unique name for the query
+--- query: SQL string with @params notation
+vRP.prepare(name, query)
 
--- do query
---- path: "conname/cmdname"
---- (optional) params: associative table of SQL params ("@something" => something)
--- return rows, affected: rows as list, with associative table for columns
-MySQL.query(path, params, callback)
+-- execute a query
+--- name: unique name of the query
+--- params: map of parameters
+--- mode: default is "query"
+---- "query": should return rows (list of map of parameter => value), affected
+---- "execute": should return affected
+---- "scalar": should return a scalar
+vRP.query(name, params, mode)
 
--- do a scalar query (one row, one column)
--- return scalar
-MySQL.scalar(path, params, callback)
+-- shortcut for vRP.query with "execute"
+vRP.execute(name, params)
 
--- do a execute query (no results)
--- return affected
-MySQL.execute(path, params, callback)
-```
+-- shortcut for vRP.query with "scalar"
+vRP.scalar(name, params)
 
-Here is an example of how to use the MySQL module in other resources :
-* add the dependencies `vrp` and `vrp_mysql` to your resource
-* load `@vrp/lib/utils.lua` in your resource (first)
-* then load/use the MySQL module:
 
-```lua
--- load the MySQL module
-local MySQL = module("vrp_mysql", "MySQL")
-
--- create a new connection
-MySQL.createConnection("con_name", host, user, password, database)
-
--- create a command for this connection
-MySQL.createCommand("con_name/command_name", [[
-CREATE TABLE things(
-  id INTEGER PRIMARY AUTO_INCREMENT,
-  thing TEXT
-);
-]])
-
--- execute the command to init tables
-MySQL.execute("con_name/command_name")
-
--- you can also add commands to a created connection
--- adding a command to the vRP connection to get all banned or not banned users
-MySQL.createCommand("vRP/myrsc_getbans", "SELECT id FROM vrp_users WHERE banned = @banned")
+-- examples
 
 -- execute the command after a while, get all banned users
-local rows, affected = MySQL.query("vRP/myrsc_getbans", {banned = true}) -- in async context
+local rows, affected = vRP.query("vRP/myrsc_getbans", {banned = true}) -- in async context
 -- rows: rows as a list
 -- affected: number of rows affected (when updating things, etc)
 -- display banned users
 
 -- execute the command after a while, get all non banned users
-local rows, affected = MySQL.query("vRP/myrsc_getbans", {banned = false}) -- in async context
+local rows, affected = vRP.query("vRP/myrsc_getbans", {banned = false}) -- in async context
 -- rows: rows as a list
 -- affected: number of rows affected (when updating things, etc)
 -- display banned users
