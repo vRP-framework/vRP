@@ -1096,7 +1096,7 @@ vRP.removeNamedMarker(name)
 -- path: lua file path without extension
 module(rsc, path)
 
--- create an async returner (require a Citizen thread) (also alias for Citizen.CreateThread)
+-- create an async returner (require a Citizen thread) (also alias for Citizen.CreateThreadNow)
 -- return returner (r:wait(), r(...))
 async()
 
