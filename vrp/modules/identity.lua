@@ -8,7 +8,7 @@ local sanitizes = module("cfg/sanitizes")
 -- this module describe the identity system
 
 -- init sql
-MySQL.createCommand("vRP/identity_tables", [[
+vRP.prepare("vRP/identity_tables", [[
 CREATE TABLE IF NOT EXISTS vrp_user_identities(
   user_id INTEGER,
   registration VARCHAR(20),
@@ -23,28 +23,28 @@ CREATE TABLE IF NOT EXISTS vrp_user_identities(
 );
 ]])
 
-MySQL.createCommand("vRP/get_user_identity","SELECT * FROM vrp_user_identities WHERE user_id = @user_id")
-MySQL.createCommand("vRP/init_user_identity","INSERT IGNORE INTO vrp_user_identities(user_id,registration,phone,firstname,name,age) VALUES(@user_id,@registration,@phone,@firstname,@name,@age)")
-MySQL.createCommand("vRP/update_user_identity","UPDATE vrp_user_identities SET firstname = @firstname, name = @name, age = @age, registration = @registration, phone = @phone WHERE user_id = @user_id")
-MySQL.createCommand("vRP/get_userbyreg","SELECT user_id FROM vrp_user_identities WHERE registration = @registration")
-MySQL.createCommand("vRP/get_userbyphone","SELECT user_id FROM vrp_user_identities WHERE phone = @phone")
+vRP.prepare("vRP/get_user_identity","SELECT * FROM vrp_user_identities WHERE user_id = @user_id")
+vRP.prepare("vRP/init_user_identity","INSERT IGNORE INTO vrp_user_identities(user_id,registration,phone,firstname,name,age) VALUES(@user_id,@registration,@phone,@firstname,@name,@age)")
+vRP.prepare("vRP/update_user_identity","UPDATE vrp_user_identities SET firstname = @firstname, name = @name, age = @age, registration = @registration, phone = @phone WHERE user_id = @user_id")
+vRP.prepare("vRP/get_userbyreg","SELECT user_id FROM vrp_user_identities WHERE registration = @registration")
+vRP.prepare("vRP/get_userbyphone","SELECT user_id FROM vrp_user_identities WHERE phone = @phone")
 
 -- init
 async(function()
-  MySQL.execute("vRP/identity_tables")
+  vRP.execute("vRP/identity_tables")
 end)
 
 -- api
 
 -- return user identity
 function vRP.getUserIdentity(user_id, cbr)
-  local rows = MySQL.query("vRP/get_user_identity", {user_id = user_id})
+  local rows = vRP.query("vRP/get_user_identity", {user_id = user_id})
   return rows[1]
 end
 
 -- return user_id by registration or nil
 function vRP.getUserByRegistration(registration, cbr)
-  local rows = MySQL.query("vRP/get_userbyreg", {registration = registration or ""})
+  local rows = vRP.query("vRP/get_userbyreg", {registration = registration or ""})
   if #rows > 0 then
     return rows[1].user_id
   end
@@ -52,7 +52,7 @@ end
 
 -- return user_id by phone or nil
 function vRP.getUserByPhone(phone, cbr)
-  local rows = MySQL.query("vRP/get_userbyphone", {phone = phone or ""})
+  local rows = vRP.query("vRP/get_userbyphone", {phone = phone or ""})
   if #rows > 0 then
     return rows[1].user_id
   end
@@ -105,7 +105,7 @@ AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
   if not vRP.getUserIdentity(user_id) then
     local registration = vRP.generateRegistrationNumber()
     local phone = vRP.generatePhoneNumber()
-    MySQL.execute("vRP/init_user_identity", {
+    vRP.execute("vRP/init_user_identity", {
       user_id = user_id,
       registration = registration,
       phone = phone,
@@ -136,7 +136,7 @@ local function ch_identity(player,choice)
             local registration = vRP.generateRegistrationNumber()
             local phone = vRP.generatePhoneNumber()
 
-            MySQL.execute("vRP/update_user_identity", {
+            vRP.execute("vRP/update_user_identity", {
               user_id = user_id,
               firstname = firstname,
               name = name,
