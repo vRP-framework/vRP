@@ -5,21 +5,13 @@ Debug.active = false
 Debug.maxlen = 75
 Debug.stack = {}
 
-function Debug.pbegin(name)
+function Debug.log(str)
   if Debug.active then
-    if string.len(name) > Debug.maxlen then
-      name = string.sub(name,1,Debug.maxlen).."..."
+    if string.len(str) > Debug.maxlen then
+      str = string.sub(str,1,Debug.maxlen).."..."
     end
 
-    table.insert(Debug.stack, {name,os.clock()})
-    print("[profile] => "..name)
-  end
-end
-
-function Debug.pend()
-  if Debug.active then
-    local front = table.remove(Debug.stack)
-    print("[profile] <= "..front[1].." "..(os.clock()-front[2]).."s")
+    print("[vRP Debug] "..str)
   end
 end
 

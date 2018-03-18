@@ -83,8 +83,8 @@ end
 --- name: unique name for the query
 --- query: SQL string with @params notation
 function vRP.prepare(name, query)
-  if config.debug then
-    print("[vRP] prepare "..name.." = \""..string.sub(query,1,Debug.maxlen).."...\"")
+  if Debug.active then
+    Debug.log("prepare "..name.." = \""..query.."\"")
   end
 
   prepared_queries[name] = true
@@ -110,8 +110,8 @@ function vRP.query(name, params, mode)
 
   if not mode then mode = "query" end
 
-  if config.debug then
-    print("[vRP] query "..name.." ("..mode..") params = "..string.sub(json.encode(params),1,Debug.maxlen).."...")
+  if Debug.active then
+    Debug.log("query "..name.." ("..mode..") params = "..json.encode(params or {}))
   end
 
   if db_initialized then -- direct call
@@ -404,12 +404,11 @@ end
 function task_save_datatables()
   TriggerEvent("vRP:save")
 
-  Debug.pbegin("vRP save datatables")
+  Debug.log("save datatables")
   for k,v in pairs(vRP.user_tables) do
     vRP.setUData(k,"vRP:datatable",json.encode(v))
   end
 
-  Debug.pend()
   SetTimeout(config.save_interval*1000, task_save_datatables)
 end
 
@@ -437,7 +436,7 @@ AddEventHandler("playerConnecting",function(name,setMessage, deferrals)
   deferrals.defer()
 
   local source = source
-  Debug.pbegin("playerConnecting")
+  Debug.log("playerConnecting "..name)
   local ids = GetPlayerIdentifiers(source)
 
   if ids ~= nil and #ids > 0 then
@@ -449,7 +448,6 @@ AddEventHandler("playerConnecting",function(name,setMessage, deferrals)
       if not vRP.isBanned(user_id) then
         deferrals.update("[vRP] Checking whitelisted...")
         if not config.whitelist or vRP.isWhitelisted(user_id) then
-          Debug.pbegin("playerConnecting_delayed")
           if vRP.rusers[user_id] == nil then -- not present on the server, init
             -- load user data table
             deferrals.update("[vRP] Loading datatable...")
@@ -492,7 +490,6 @@ AddEventHandler("playerConnecting",function(name,setMessage, deferrals)
             tmpdata.spawns = 0
           end
 
-          Debug.pend()
         else
           print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: not whitelisted (user_id = "..user_id..")")
           Citizen.Wait(1000)
@@ -513,20 +510,18 @@ AddEventHandler("playerConnecting",function(name,setMessage, deferrals)
     Citizen.Wait(1000)
     deferrals.done("[vRP] Missing identifiers.")
   end
-  Debug.pend()
 end)
 
 AddEventHandler("playerDropped",function(reason)
   local source = source
-  Debug.pbegin("playerDropped")
+  Debug.log("playerDropped "..source)
 
   vRP.dropPlayer(source)
-  Debug.pend()
 end)
 
 RegisterServerEvent("vRPcli:playerSpawned")
 AddEventHandler("vRPcli:playerSpawned", function()
-  Debug.pbegin("playerSpawned")
+  Debug.log("playerSpawned "..source)
   -- register user sources and then set first spawn to false
   local user_id = vRP.getUserId(source)
   local player = source
@@ -561,8 +556,6 @@ AddEventHandler("vRPcli:playerSpawned", function()
       end)
     end)
   end
-
-  Debug.pend()
 end)
 
 RegisterServerEvent("vRP:playerDied")

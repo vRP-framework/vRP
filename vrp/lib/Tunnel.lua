@@ -117,7 +117,7 @@ function Tunnel.bindInterface(name,interface)
     local source = source
 
     if Debug.active then
-      Debug.pbegin("tunnelreq#"..rid.."_"..name..":"..member.." "..json.encode(Debug.safeTableCopy(args)))
+      Debug.log("tunnelreq#"..rid.."_"..name..":"..member.." "..json.encode(Debug.safeTableCopy(args)))
     end
 
     local f = interface[member]
@@ -135,10 +135,6 @@ function Tunnel.bindInterface(name,interface)
       else
         TriggerRemoteEvent(name..":"..identifier..":tunnel_res",rid,rets)
       end
-    end
-
-    if Debug.active then
-      Debug.pend()
     end
   end)
 end
@@ -159,7 +155,7 @@ function Tunnel.getInterface(name,identifier)
   RegisterLocalEvent(name..":"..identifier..":tunnel_res")
   AddEventHandler(name..":"..identifier..":tunnel_res",function(rid,args)
     if Debug.active then
-      Debug.pbegin("tunnelres#"..rid.."_"..name.." "..json.encode(Debug.safeTableCopy(args)))
+      Debug.log("tunnelres#"..rid.."_"..name.." "..json.encode(Debug.safeTableCopy(args)))
     end
 
     local callback = callbacks[rid]
@@ -171,8 +167,6 @@ function Tunnel.getInterface(name,identifier)
       -- call
       callback(table.unpack(args, 1, table.maxn(args)))
     end
-
-    Debug.pend()
   end)
 
   return r

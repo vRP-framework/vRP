@@ -50,7 +50,7 @@ end
 function Proxy.addInterface(name, itable)
   AddEventHandler(name..":proxy", function(member,args,identifier,rid)
     if Debug.active then
-      Debug.pbegin("proxy_"..name..":"..identifier.."("..rid.."):"..member.." "..json.encode(Debug.safeTableCopy(args)))
+      Debug.log("proxy_"..name..":"..identifier.."("..rid.."):"..member.." "..json.encode(Debug.safeTableCopy(args)))
     end
 
     local f = itable[member]
@@ -65,10 +65,6 @@ function Proxy.addInterface(name, itable)
 
     if rid >= 0 then
       TriggerEvent(name..":"..identifier..":proxy_res",rid,rets)
-    end
-
-    if Debug.active then
-      Debug.pend()
     end
   end)
 end
@@ -85,7 +81,7 @@ function Proxy.getInterface(name, identifier)
 
   AddEventHandler(name..":"..identifier..":proxy_res", function(rid,rets)
     if Debug.active then
-      Debug.pbegin("proxy_"..name..":"..identifier.."_res("..rid.."): "..json.encode(Debug.safeTableCopy(rets)))
+      Debug.log("proxy_"..name..":"..identifier.."_res("..rid.."): "..json.encode(Debug.safeTableCopy(rets)))
     end
 
     local callback = callbacks[rid]
@@ -98,7 +94,6 @@ function Proxy.getInterface(name, identifier)
       callback(table.unpack(rets, 1, table.maxn(rets)))
     end
 
-    Debug.pend()
   end)
 
   return r

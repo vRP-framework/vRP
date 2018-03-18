@@ -3,7 +3,6 @@ local lang = vRP.lang
 
 -- client -> server events
 AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
-  Debug.pbegin("playerSpawned_player_state")
   local player = source
   local data = vRP.getUserDataTable(user_id)
   local tmpdata = vRP.getUserTmpTable(user_id)
@@ -84,7 +83,6 @@ AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
       vRPclient._setCustomization(source,data.customization)
     end
   end
-  Debug.pend()
 end)
 
 -- updates
