@@ -492,7 +492,7 @@ AddEventHandler("playerConnecting",function(name,setMessage, deferrals)
 
             -- set last login
             local ep = vRP.getPlayerEndpoint(source)
-            local last_login_stamp = ep.." "..os.date("%H:%M:%S %d/%m/%Y")
+            local last_login_stamp = os.date("%H:%M:%S %d/%m/%Y")
             vRP.execute("vRP/set_last_login", {user_id = user_id, last_login = last_login_stamp})
 
             -- trigger join
