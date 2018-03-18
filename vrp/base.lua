@@ -4,24 +4,7 @@ local Luang = module("lib/Luang")
 Debug = module("lib/Debug")
 
 local config = module("cfg/base")
-local version = module("version")
 Debug.active = config.debug
-
--- versioning
-print("[vRP] launch version "..version)
-PerformHttpRequest("https://raw.githubusercontent.com/ImagicTheCat/vRP/fxserver/vrp/version.lua",function(code,text,headers)
-  if code == 200 then
-    text = string.gsub(text,"return ","")
-    local r_version = tonumber(text)
-    if version ~= r_version then
-      print("##########")
-      print("[vRP] WARNING: A new version of vRP is available here https://github.com/ImagicTheCat/vRP, update to benefit from the last features and to fix exploits/bugs.")
-      print("##########")
-    end
-  else
-    print("[vRP] unable to check the remote version")
-  end
-end, "GET", "")
 
 vRP = {}
 Proxy.addInterface("vRP",vRP)
