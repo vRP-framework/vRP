@@ -80,7 +80,9 @@ function vRP.registerDBDriver(name, on_init, on_prepare, on_query)
 
         -- execute cached queries
         for _,query in pairs(cached_queries) do
-          query[2](on_query(table.unpack(query[1], 1, table.maxn(query[1]))))
+          async(function()
+            query[2](on_query(table.unpack(query[1], 1, table.maxn(query[1]))))
+          end)
         end
 
         cached_prepares = nil
