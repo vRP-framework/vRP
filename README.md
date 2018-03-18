@@ -1043,6 +1043,9 @@ vRP.configureVoice(channel, config)
 -- cb_enter, cb_leave: function(player,area_name)
 vRP.setArea(source,name,x,y,z,radius,height,cb_enter,cb_leave)
 
+-- check if a player is in an area
+vRP.inArea(source,name)
+
 -- remove a player area
 vRP.removeArea(source,name)
 

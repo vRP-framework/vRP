@@ -176,7 +176,11 @@ function vRP.setItemTransformer(name,itemtr)
       end
     end
 
-    tr.menu[action] = {function(player,choice) tr_add_player(tr,player,action) end, recipe.description..info}
+    tr.menu[action] = {function(player,choice)
+      if vRP.inArea(player, "vRP:tr:"..tr.name) then
+        tr_add_player(tr,player,action)
+      end
+    end, recipe.description..info}
   end
 
   -- build area

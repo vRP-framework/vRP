@@ -25,6 +25,15 @@ function vRP.setArea(source,name,x,y,z,radius,height,cb_enter,cb_leave)
   vRPclient._setArea(source,name,x,y,z,radius,height)
 end
 
+-- check if a player is in an area
+function vRP.inArea(source,name)
+  local areas = client_areas[source]
+  if areas then
+    local area = areas[name]
+    if area then return area.inside end
+  end
+end
+
 -- delete a player area
 function vRP.removeArea(source,name)
   -- delete remote area
