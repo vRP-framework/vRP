@@ -1220,6 +1220,8 @@ Good practice is to get the interface once and set it as a global, but if you wa
 
 Tunnel and Proxy are blocking calls in the current coroutine until the values are returned, to bypass this behaviour, especially for the Tunnel to optimize speed (ping latency of each call), use `_` as prefix for the function name (Proxy/Tunnel interfaces should not have functions starting with `_`). This will discard the returned values, but if you still need them, you can make normal calls in a new Citizen thread with `Citizen.CreateThreadNow` or `async` to have non-blocking code.
 
+Also remember that Citizen event handlers (used by Proxy and Tunnel) seem to not work while loading the resource, to use the Proxy at loading time, you will need to delay it with `Citizen.CreateThread` or a `SetTimeout`.
+
 #### Database
 
 SQL queries are managed by DB drivers, you can use the default vRP driver `vrp_mysql` or use a custom one (`vrp_mysql` has crappy code).
