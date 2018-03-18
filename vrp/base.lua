@@ -468,6 +468,10 @@ AddEventHandler("playerConnecting",function(name,setMessage, deferrals)
         if not config.whitelist or vRP.isWhitelisted(user_id) then
           Debug.pbegin("playerConnecting_delayed")
           if vRP.rusers[user_id] == nil then -- not present on the server, init
+            -- load user data table
+            deferrals.update("[vRP] Loading datatable...")
+            local sdata = vRP.getUData(user_id, "vRP:datatable")
+
             -- init entries
             vRP.users[ids[1]] = user_id
             vRP.rusers[user_id] = ids[1]
@@ -475,9 +479,6 @@ AddEventHandler("playerConnecting",function(name,setMessage, deferrals)
             vRP.user_tmp_tables[user_id] = {}
             vRP.user_sources[user_id] = source
 
-            -- load user data table
-            deferrals.update("[vRP] Loading datatable...")
-            local sdata = vRP.getUData(user_id, "vRP:datatable")
             local data = json.decode(sdata)
             if type(data) == "table" then vRP.user_tables[user_id] = data end
 
