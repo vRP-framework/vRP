@@ -43,8 +43,8 @@ function vRP.removeArea(source,name)
   local areas = client_areas[source]
   if areas then
     local area = areas[name] 
-    if area and area.inside then
-      if area.leave then
+    if area then
+      if area.inside and area.leave then
         area.leave(source,name)
       end
 

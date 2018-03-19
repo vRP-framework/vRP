@@ -222,6 +222,9 @@ vRP.getUserId(source)
 -- return source of the user or nil if not connected
 vRP.getUserSource(user_id)
 
+-- check if the user is spawned
+vRP.isSpawned(user_id)
+
 -- set user data (textual data)
 vRP.setUData(user_id,key,value)
 

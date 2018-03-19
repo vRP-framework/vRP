@@ -328,13 +328,10 @@ function vRP.getUserTmpTable(user_id)
   return vRP.user_tmp_tables[user_id]
 end
 
-function vRP.isConnected(user_id)
-  return vRP.rusers[user_id] ~= nil
-end
-
-function vRP.isFirstSpawn(user_id)
+-- check if the user is spawned
+function vRP.isSpawned(user_id)
   local tmp = vRP.getUserTmpTable(user_id)
-  return tmp and tmp.spawns == 1
+  return tmp and (tmp.spawns or 0) > 0
 end
 
 function vRP.getUserId(source)
@@ -482,12 +479,12 @@ AddEventHandler("playerConnecting",function(name,setMessage, deferrals)
             deferrals.done()
           else -- already connected
             print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") re-joined (user_id = "..user_id..")")
-            TriggerEvent("vRP:playerRejoin", user_id, source, name)
-            deferrals.done()
-
             -- reset first spawn
             local tmpdata = vRP.getUserTmpTable(user_id)
             tmpdata.spawns = 0
+
+            TriggerEvent("vRP:playerRejoin", user_id, source, name)
+            deferrals.done()
           end
 
         else
