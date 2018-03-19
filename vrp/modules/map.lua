@@ -7,7 +7,7 @@ AddEventHandler("vRP:playerLeave",function(user_id,source)
   local areas = client_areas[source]
   if areas then
     for k,area in pairs(areas) do
-      if area.inside then
+      if area.inside and area.leave then
         area.leave(source,k)
       end
     end
@@ -42,7 +42,14 @@ function vRP.removeArea(source,name)
   -- delete local area
   local areas = client_areas[source]
   if areas then
-    areas[name] = nil
+    local area = areas[name] 
+    if area and area.inside then
+      if area.leave then
+        area.leave(source,name)
+      end
+
+      areas[name] = nil
+    end
   end
 end
 
@@ -52,9 +59,11 @@ function tvRP.enterArea(name)
   local areas = client_areas[source]
   if areas then
     local area = areas[name] 
-    if area and area.enter and not area.inside then -- trigger enter callback
+    if area and not area.inside then -- trigger enter callback
       area.inside = true
-      area.enter(source,name)
+      if area.enter then
+        area.enter(source,name)
+      end
     end
   end
 end
@@ -64,9 +73,11 @@ function tvRP.leaveArea(name)
 
   if areas then
     local area = areas[name] 
-    if area and area.leave and area.inside then -- trigger leave callback
+    if area and area.inside then -- trigger leave callback
       area.inside = false
-      area.leave(source,name)
+      if area.leave then
+        area.leave(source,name)
+      end
     end
   end
 end
