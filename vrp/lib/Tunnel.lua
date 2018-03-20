@@ -32,9 +32,10 @@ local function tunnel_resolve(itable,key)
   local callbacks = mtable.tunnel_callbacks
   local identifier = mtable.identifier
 
+  local fname = key
   local no_wait = false
   if string.sub(key,1,1) == "_" then
-    key = string.sub(key,2)
+    fname = string.sub(key,2)
     no_wait = true
   end
 
@@ -78,9 +79,9 @@ local function tunnel_resolve(itable,key)
         end
 
         if SERVER then
-          TriggerRemoteEvent(iname..":tunnel_req",dest,key,args,identifier,rid)
+          TriggerRemoteEvent(iname..":tunnel_req",dest,fname,args,identifier,rid)
         else
-          TriggerRemoteEvent(iname..":tunnel_req",key,args,identifier,rid)
+          TriggerRemoteEvent(iname..":tunnel_req",fname,args,identifier,rid)
         end
       end)
     else -- no delay
@@ -92,9 +93,9 @@ local function tunnel_resolve(itable,key)
       end
 
       if SERVER then
-        TriggerRemoteEvent(iname..":tunnel_req",dest,key,args,identifier,rid)
+        TriggerRemoteEvent(iname..":tunnel_req",dest,fname,args,identifier,rid)
       else
-        TriggerRemoteEvent(iname..":tunnel_req",key,args,identifier,rid)
+        TriggerRemoteEvent(iname..":tunnel_req",fname,args,identifier,rid)
       end
     end
 

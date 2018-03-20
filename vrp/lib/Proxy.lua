@@ -15,9 +15,10 @@ local function proxy_resolve(itable,key)
   local callbacks = mtable.callbacks
   local identifier = mtable.identifier
 
+  local fname = key
   local no_wait = false
   if string.sub(key,1,1) == "_" then
-    key = string.sub(key,2)
+    fname = string.sub(key,2)
     no_wait = true
   end
 
@@ -35,7 +36,7 @@ local function proxy_resolve(itable,key)
 
     local args = {...}
 
-    TriggerEvent(iname..":proxy",key, args, identifier, rid)
+    TriggerEvent(iname..":proxy",fname, args, identifier, rid)
     
     if not no_wait then
       return r:wait()
