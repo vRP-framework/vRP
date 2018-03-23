@@ -4,7 +4,6 @@ local Luang = module("lib/Luang")
 Debug = module("lib/Debug")
 
 local config = module("cfg/base")
-Debug.active = config.debug
 
 vRP = {}
 Proxy.addInterface("vRP",vRP)

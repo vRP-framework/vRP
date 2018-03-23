@@ -42,6 +42,7 @@ local function tunnel_resolve(itable,key)
   -- generate access function
   local fcall = function(...)
     local r = nil
+    local profile -- debug
 
     local args = {...} 
     local dest = nil
@@ -76,6 +77,10 @@ local function tunnel_resolve(itable,key)
         if r then
           rid = ids:gen()
           callbacks[rid] = r
+
+          if Debug.active then -- debug
+            profile = Debug.pbegin("tunnel_"..iname..":"..identifier.."("..rid.."):"..fname)
+          end
         end
 
         if SERVER then
@@ -90,6 +95,10 @@ local function tunnel_resolve(itable,key)
       if r then
         rid = ids:gen()
         callbacks[rid] = r
+
+        if Debug.active then -- debug
+          profile = Debug.pbegin("tunnel_"..iname..":"..identifier.."("..rid.."):"..fname)
+        end
       end
 
       if SERVER then
@@ -100,7 +109,13 @@ local function tunnel_resolve(itable,key)
     end
 
     if r then
-      return r:wait()
+      if profile then -- debug
+        local rets = {r:wait()}
+        Debug.pend(profile)
+        return table.unpack(rets, 1, table.maxn(rets))
+      else
+        return r:wait()
+      end
     end
   end
 
@@ -155,9 +170,9 @@ function Tunnel.getInterface(name,identifier)
   -- receive response
   RegisterLocalEvent(name..":"..identifier..":tunnel_res")
   AddEventHandler(name..":"..identifier..":tunnel_res",function(rid,args)
-    if Debug.active then
-      Debug.log("tunnelres#"..rid.."_"..name.." "..json.encode(Debug.safeTableCopy(args)))
-    end
+--    if Debug.active then
+--      Debug.log("tunnelres#"..rid.."_"..name.." "..json.encode(Debug.safeTableCopy(args)))
+--    end
 
     local callback = callbacks[rid]
     if callback then

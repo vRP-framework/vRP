@@ -1,6 +1,6 @@
 -- Proxy interface system, used to add/call functions between resources
 
-local Debug = module("lib/Debug")
+local Debug = module("lib/Debug") 
 local Tools = module("lib/Tools")
 
 local Proxy = {}
@@ -25,6 +25,7 @@ local function proxy_resolve(itable,key)
   -- generate access function
   local fcall = function(...)
     local rid, r
+    local profile -- debug
 
     if no_wait then
       rid = -1
@@ -32,6 +33,10 @@ local function proxy_resolve(itable,key)
       r = async()
       rid = ids:gen()
       callbacks[rid] = r
+
+      if Debug.active then
+        profile = Debug.pbegin("proxy_"..iname..":"..identifier.."("..rid.."):"..fname)
+      end
     end
 
     local args = {...}
@@ -39,7 +44,13 @@ local function proxy_resolve(itable,key)
     TriggerEvent(iname..":proxy",fname, args, identifier, rid)
     
     if not no_wait then
-      return r:wait()
+      if Debug.active then -- debug
+        local rets = {r:wait()}
+        Debug.pend(profile)
+        return table.unpack(rets, 1, table.maxn(rets))
+      else
+        return r:wait()
+      end
     end
   end
 
@@ -81,9 +92,9 @@ function Proxy.getInterface(name, identifier)
   local r = setmetatable({},{ __index = proxy_resolve, name = name, ids = ids, callbacks = callbacks, identifier = identifier })
 
   AddEventHandler(name..":"..identifier..":proxy_res", function(rid,rets)
-    if Debug.active then
-      Debug.log("proxy_"..name..":"..identifier.."_res("..rid.."): "..json.encode(Debug.safeTableCopy(rets)))
-    end
+--    if Debug.active then
+--      Debug.log("proxy_"..name..":"..identifier.."_res("..rid.."): "..json.encode(Debug.safeTableCopy(rets)))
+--    end
 
     local callback = callbacks[rid]
     if callback then

@@ -25,7 +25,11 @@ cfg.ping_timeout = 5 -- number of minutes after a client should be kicked if not
 cfg.ignore_ip_identifier = true
 
 cfg.lang = "en"
+
 cfg.debug = false
+
+-- time to wait before displaying async return warning
+cfg.debug_async_time = 2
 
 
 return cfg
