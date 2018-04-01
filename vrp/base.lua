@@ -327,10 +327,14 @@ function vRP.getUserTmpTable(user_id)
   return vRP.user_tmp_tables[user_id]
 end
 
--- check if the user is spawned
-function vRP.isSpawned(user_id)
+-- return the player spawn count (0 = not spawned, 1 = first spawn, ...)
+function vRP.getSpawns(user_id)
   local tmp = vRP.getUserTmpTable(user_id)
-  return tmp and (tmp.spawns or 0) > 0
+  if tmp then
+    return tmp.spawns or 0
+  end
+
+  return 0
 end
 
 function vRP.getUserId(source)
