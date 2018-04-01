@@ -28,7 +28,7 @@ cfg.lang = "en"
 
 cfg.debug = false
 
--- time to wait before displaying async return warning
+-- time to wait before displaying async return warning (seconds)
 cfg.debug_async_time = 2
 
 
