@@ -153,17 +153,17 @@ function vRP.setItemTransformer(name,itemtr)
     local info = "<br /><br />"
     if recipe.in_money > 0 then info = info.."- "..recipe.in_money end
     for k,v in pairs(recipe.reagents) do
-      local item = vRP.items[k]
-      if item then
-        info = info.."<br />"..v.." "..item.name
+      local item_name, item_desc, item_weight = vRP.getItemDefinition(k)
+      if item_name then
+        info = info.."<br />"..v.." "..item_name
       end
     end
     info = info.."<br /><span style=\"color: rgb(0,255,125)\">=></span>"
     if recipe.out_money > 0 then info = info.."<br />+ "..recipe.out_money end
     for k,v in pairs(recipe.products) do
-      local item = vRP.items[k]
-      if item then
-        info = info.."<br />"..v.." "..item.name
+      local item_name, item_desc, item_weight = vRP.getItemDefinition(k)
+      if item_name then
+        info = info.."<br />"..v.." "..item_name
       end
     end
     for k,v in pairs(recipe.aptitudes or {}) do

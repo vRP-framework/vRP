@@ -282,9 +282,9 @@ local choice_check = {function(player,choice)
     local data = vRP.getUserDataTable(nuser_id)
     if data and data.inventory then
       for k,v in pairs(data.inventory) do
-        local item = vRP.items[k]
-        if item then
-          items = items.."<br />"..item.name.." ("..v.amount..")"
+        local item_name, item_desc, item_weight = vRP.getItemDefinition(k)
+        if item_name then
+          items = items.."<br />"..item_name.." ("..v.amount..")"
         end
       end
     end
@@ -342,11 +342,11 @@ local choice_seize_items = {function(player, choice)
         for k,v in pairs(cfg.seizable_items) do -- transfer seizable items
           local amount = vRP.getInventoryItemAmount(nuser_id,v)
           if amount > 0 then
-            local item = vRP.items[v]
-            if item then -- do transfer
+            local item_name, item_desc, item_weight = vRP.getItemDefinition(v)
+            if item_name then -- do transfer
               if vRP.tryGetInventoryItem(nuser_id,v,amount,true) then
                 vRP.giveInventoryItem(user_id,v,amount,false)
-                vRPclient._notify(player,lang.police.menu.seize.seized({item.name,amount}))
+                vRPclient._notify(player,lang.police.menu.seize.seized({item_name,amount}))
               end
             end
           end

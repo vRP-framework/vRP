@@ -22,18 +22,18 @@ local function build_market_menus()
     -- item choice
     local market_choice = function(player,choice)
       local idname = kitems[choice][1]
-      local item = vRP.items[idname]
+      local item_name, item_desc, item_weight = vRP.getItemDefinition(idname)
       local price = kitems[choice][2]
 
-      if item then
+      if item_name then
         -- prompt amount
         local user_id = vRP.getUserId(player)
         if user_id then
-          local amount = vRP.prompt(player,lang.market.prompt({item.name}),"")
+          local amount = vRP.prompt(player,lang.market.prompt({item_name}),"")
           local amount = parseInt(amount)
           if amount > 0 then
             -- weight check
-            local new_weight = vRP.getInventoryWeight(user_id)+item.weight*amount
+            local new_weight = vRP.getInventoryWeight(user_id)+item_weight*amount
             if new_weight <= vRP.getInventoryMaxWeight(user_id) then
               -- payment
               if vRP.tryPayment(user_id,amount*price) then
@@ -54,10 +54,10 @@ local function build_market_menus()
 
     -- add item options
     for k,v in pairs(mitems) do
-      local item = vRP.items[k]
-      if item then
-        kitems[item.name] = {k,math.max(v,0)} -- idname/price
-        market_menu[item.name] = {market_choice,lang.market.info({v,item.description})}
+      local item_name, item_desc, item_weight = vRP.getItemDefinition(k)
+      if item_name then
+        kitems[item_name] = {k,math.max(v,0)} -- idname/price
+        market_menu[item_name] = {market_choice,lang.market.info({v,item_desc})}
       end
     end
 
