@@ -5,7 +5,7 @@ The project aim to create a generic and simple RP framework to prevent everyone 
 
 Contributions are welcomed.
 
-Config examples are in https://github.com/ImagicTheCat/vRP/tree/vrpex/misc/config
+Config examples are git branches as `cfg_NAME...`. It's easier to update, for example if `cfg_FR` is not up-to-date, you could do a `git merge` from the last version.
 
 [Discord](http://discord.gg/xzGZBAb)
 
