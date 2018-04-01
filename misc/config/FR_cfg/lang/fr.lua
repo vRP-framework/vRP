@@ -2,7 +2,7 @@
 
 local lang = {
   common = {
-    welcome = "Bienvenue. Utilise les touches du téléphone pour les menus.",
+    welcome = "Bienvenue. Utilise les touches du téléphone pour les menus.~n~dernière connexion: {1}",
     no_player_near = "~r~Pas de joueur à proximité.",
     invalid_value = "~r~Valeur incorrecte.",
     invalid_name = "~r~Nom incorrect.",
@@ -10,6 +10,9 @@ local lang = {
     request_refused = "~r~Requête refusée.",
     wearing_uniform = "~r~Attention, vous portez un uniforme.",
     not_allowed = "~r~Non autorisé."
+  },
+  weapon = {
+    pistol = "Pistolet"
   },
   survival = {
     starving = "Affamé",
@@ -33,14 +36,14 @@ local lang = {
     iteminfo = "({1})<br /><br />{2}<br /><em>{3} kg</em>",
     info_weight = "poids {1}/{2} kg",
     give = {
-      title = " Donner",
+      title = "Donner",
       description = "Donner un objet au joueur le plus proche.",
       prompt = "Quantité à donner (max {1}):",
       given = "Vous avez donné ~r~{1} ~s~{2}.",
       received = "Vous avez reçu ~g~{1} ~s~{2}.",
     },
     trash = {
-      title = " Jeter",
+      title = "Jeter",
       description = "Jeter un objet.",
       prompt = "Quantité à jeter (max {1}):",
       done = "Jeté ~r~{1} ~s~{2}."
@@ -271,6 +274,10 @@ local lang = {
       },
       remove = {
         title = "Supprimer"
+      },
+      call = {
+        title = "Appeler",
+        not_reached = "~r~ n°{1} indisponible."
       }
     },
     sms = {
@@ -294,6 +301,16 @@ local lang = {
       description = "Envoyer une annonce visible à tous pendant quelques secondes.",
       item_desc = "{1} $<br /><br/>{2}",
       prompt = "Contenu de l'annonce (10-1000 caractères): "
+    },
+    call = {
+      ask = "Accepter l'appel depuis {1} ?",
+      notify_to = "Appel~b~ {1}...",
+      notify_from = "Appel reçu de ~b~ {1}...",
+      notify_refused = "Appel vers ~b~ {1}... ~r~ refusé."
+    },
+    hangup = {
+      title = "Raccrocher",
+      description = "Raccrocher le téléphone (terminer l'appel en cours)."
     }
   },
   emotes = {
@@ -351,6 +368,12 @@ local lang = {
         prompt = "Mise du pari:",
         request = "[PARI] Voulez vous parier {1} $ ?",
         started = "~g~Pari commencé."
+      }
+    },
+    radio = {
+      title = "Radio",
+      off = {
+        title = "> éteindre"
       }
     }
   },
@@ -439,6 +462,7 @@ local lang = {
     }
   },
   itemtr = {
+    not_enough_reagents = "~r~Pas assez d'éléments.",
     informer = {
       title = "Informateur illégal",
       description = "{1} $",
@@ -461,8 +485,11 @@ local lang = {
     level_up = "Compétence ~b~{1}/{2} ~g~monte en niveau ({3}).",
     display = {
       group = "{1}: ",
-      aptitude = "--- {1} | exp {2} | niv. {3} | progression {4}%"
+      aptitude = "{1} NIV {3} EXP {2}"
     }
+  },
+  radio = {
+    title = "Radio ON/OFF"
   }
 }
 

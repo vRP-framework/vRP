@@ -8,22 +8,22 @@ local function play_drink(player)
     {"mp_player_intdrink","outro_bottle",1}
   }
 
-  vRPclient.playAnim(player,{true,seq,false})
+  vRPclient._playAnim(player,true,seq,false)
 end
 
 local pills_choices = {}
 pills_choices["Take"] = {function(player,choice)
   local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
+  if user_id then
     if vRP.tryGetInventoryItem(user_id,"pills",1) then
-      vRPclient.varyHealth(player,{25})
-      vRPclient.notify(player,{"~g~ Taking pills."})
+      vRPclient._varyHealth(player,25)
+      vRPclient._notify(player,"~g~ Prend le médicament.")
       play_drink(player)
       vRP.closeMenu(player)
     end
   end
 end}
 
-items["pills"] = {"Pills","A simple medication.",function(args) return pills_choices end,0.1}
+items["pills"] = {"Pills","Un médicament générique.",function(args) return pills_choices end,0.1}
 
 return items

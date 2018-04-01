@@ -23,6 +23,4 @@ cfg.display_css = [[
 }
 ]]
 
-
-
 return cfg

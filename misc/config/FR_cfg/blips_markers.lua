@@ -1,5 +1,6 @@
 
 -- this file is used to define additional static blips and markers to the map
+-- some lists: https://wiki.gtanet.work/index.php?title=Blips
 
 local cfg = {}
 
@@ -11,7 +12,8 @@ cfg.blips = {
   {123.05940246582,3336.2939453125,30.7280216217041,85,5,"Gisement d'Or"},
   {-75.9527359008789,6495.42919921875,31.4908847808838,85,5,"Traitement de l'Or"},
   {1032.71105957031,2516.86010742188,46.6488876342773,85,5,"Raffinement de l'Or"},
-  {-139.963653564453,-823.515258789063,31.4466247558594,85,5,"Revente d'Or"}
+  {-139.963653564453,-823.515258789063,31.4466247558594,85,5,"Revente d'Or"},
+  {-1202.96252441406,-1566.14086914063,4.61040639877319,311,17,"Body training"}
 }
 
 -- list of markers

@@ -18,36 +18,36 @@ function police.init(player)
   weapons["WEAPON_FLASHLIGHT"] = {ammo=0}
   
   vRPclient.giveWeapons(player,{weapons,true})
-  vRPclient.setCop(player,{true})
+  vRPclient._setCop(player,{true})
 end
 
 function police.onjoin(player)
   police.init(player)
-  vRPclient.notify(player,{"Vous avez rejoint la police."})
+  vRPclient._notify(player,{"Vous avez rejoint la police."})
 end
 
 function police.onleave(player)
   vRPclient.giveWeapons(player,{{},true})
-  vRPclient.notify(player,{"Vous avez quitté la police."})
-  vRPclient.setCop(player,{false})
+  vRPclient._notify(player,{"Vous avez quitté la police."})
+  vRPclient._setCop(player,{false})
 end
 
 function police.onspawn(player)
   police.init(player)
-  vRPclient.notify(player,{"Vous êtes policier."})
+  vRPclient._notify(player,{"Vous êtes policier."})
 end
 
 local taxi = {}
 function taxi.onjoin(player)
-  vRPclient.notify(player,{"Vous êtes chauffeur de taxi."})
+  vRPclient._notify(player,{"Vous êtes chauffeur de taxi."})
 end
 
 function taxi.onspawn(player)
-  vRPclient.notify(player,{"Vous êtes chauffeur de taxi."})
+  vRPclient._notify(player,{"Vous êtes chauffeur de taxi."})
 end
 
 function taxi.onleave(player)
-  vRPclient.notify(player,{"Vous avez quitté les chauffeurs de taxi."})
+  vRPclient._notify(player,{"Vous avez quitté les chauffeurs de taxi."})
 end
 
 local function user_spawn(player)
@@ -56,14 +56,14 @@ local function user_spawn(player)
     -- welcome instructions
     local data = vRP.getUserDataTable(user_id)
 
-    vRPclient.notify(player,{"Ce serveur permet de tester le framework vRP~n~https://github.com/ImagicTheCat/vRP"})
-    vRPclient.notify(player,{"N'oubliez pas de changer votre touche \"haut\" du téléphone pour correctement utiliser les menus."})
+    vRPclient._notify(player,{"Ce serveur permet de tester le framework vRP~n~https://github.com/ImagicTheCat/vRP"})
+    vRPclient._notify(player,{"N'oubliez pas de changer votre touche \"haut\" du téléphone pour correctement utiliser les menus."})
   end
 end
 
 cfg.groups = {
   ["superadmin"] = {
-    _config = {onspawn = function(player) vRPclient.notify(player,{"You are superadmin."}) end},
+    _config = {onspawn = function(player) vRPclient._notify(player,{"Vous êtes superadmin."}) end},
     "player.group.add",
     "player.group.remove",
     "player.givemoney",
@@ -86,6 +86,9 @@ cfg.groups = {
     "admin.tickets",
     "admin.announce"
   },
+  ["god"] = {
+    "admin.god" -- reset survivals/health periodically
+  },
   -- the group user is auto added to all logged players
   ["user"] = {
     _config = { onspawn = user_spawn },
@@ -97,6 +100,7 @@ cfg.groups = {
   },
   ["police"] = {
     _config = { gtype = "job", onleave = police.onleave, onjoin = police.onjoin, onspawn = police.onspawn },
+    "police.menu",
     "police.cloakroom",
     "police.pc",
     "police.handcuff",
@@ -127,6 +131,12 @@ cfg.groups = {
     "taxi.service",
     "taxi.vehicle"
   },
+  ["réparateur"] = {
+    _config = { gtype = "job" },
+    "vehicle.repair",
+    "vehicle.replace",
+    "repair.service"
+  },
   ["citoyen"] = {
     _config = { gtype = "job" }
   }
@@ -137,21 +147,18 @@ cfg.users = {
   [1] = { -- give superadmin and admin group to the first created user on the database
     "superadmin",
     "admin"
-  },
-  [192] = {
-    "superadmin",
-    "admin"
   }
 }
 
 -- group selectors
 -- _config
---- x,y,z, blipid, blipcolor permission (optional)
+--- x,y,z, blipid, blipcolor permissions (optional)
 
 cfg.selectors = {
   ["Métiers"] = {
     _config = {x = -268.363739013672, y = -957.255126953125, z = 31.22313880920410, blipid = 351, blipcolor = 47},
     "taxi",
+    "réparateur",
     "citoyen"
   },
   ["Pointage police"] = {

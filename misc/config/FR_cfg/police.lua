@@ -1,9 +1,9 @@
 
 local cfg = {}
 
--- PC position
+-- PCs positions
 cfg.pcs = {
-  {441.595916748047,-978.925598144531,30.6896076202393}
+  {1853.21, 3689.51, 34.2671}
 }
 
 -- vehicle tracking configuration
@@ -22,7 +22,8 @@ cfg.wanted = {
 
 -- illegal items (seize)
 cfg.seizable_items = {
-  "dirty_money"
+  "dirty_money",
+  "weed"
 }
 
 -- jails {x,y,z,radius}
@@ -35,12 +36,12 @@ cfg.jails = {
 -- fines
 -- map of name -> money
 cfg.fines = {
-  ["Injure"] = 100,
-  ["Excès de vitesse"] = 250,
-  ["Vol"] = 1000,
-  ["Crime organisé (faible)"] = 10000,
-  ["Crime organisé (moyen)"] = 25000,
-  ["Crime organisé (fort)"] = 50000
+  ["Insult"] = 100,
+  ["Speeding"] = 250,
+  ["Stealing"] = 1000,
+  ["Organized crime (low)"] = 10000,
+  ["Organized crime (medium)"] = 25000,
+  ["Organized crime (high)"] = 50000
 }
 
 return cfg

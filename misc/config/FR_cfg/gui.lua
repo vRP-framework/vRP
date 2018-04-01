@@ -16,6 +16,7 @@ cfg.css = [[
 body{
   font-family: "Custom Font";
 }
+
 ]]
 
 -- list of static menu types (map of name => {.title,.blipid,.blipcolor,.permissions (optional)})
@@ -30,6 +31,16 @@ cfg.static_menu_types = {
 
 -- list of static menu points
 cfg.static_menus = {
+  {"missions", 1855.13940429688,3688.68579101563,34.2670478820801}
+}
+
+-- VoIP
+
+-- configuration passed to RTCPeerConnection
+cfg.voip_peer_configuration = {
+  iceServers = {
+    {urls = {"stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"}}
+  }
 }
 
 return cfg

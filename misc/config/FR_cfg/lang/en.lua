@@ -12,6 +12,9 @@ local lang = {
     wearing_uniform = "~r~Be careful, you are wearing a uniform.",
     not_allowed = "~r~Not allowed."
   },
+  weapon = {
+    pistol = "Pistol"
+  },
   survival = {
     starving = "starving",
     thirsty = "thirsty"
@@ -272,6 +275,10 @@ local lang = {
       },
       remove = {
         title = "Remove"
+      },
+      call = {
+        title = "Call",
+        not_reached = "~r~ n°{1} not reached."
       }
     },
     sms = {
@@ -295,6 +302,16 @@ local lang = {
       description = "Post an announce visible to everyone for a few seconds.",
       item_desc = "{1} $<br /><br/>{2}",
       prompt = "Announce content (10-1000 chars): "
+    },
+    call = {
+      ask = "Accept call from {1} ?",
+      notify_to = "Calling~b~ {1}...",
+      notify_from = "Receive call from ~b~ {1}...",
+      notify_refused = "Call to ~b~ {1}... ~r~ refused."
+    },
+    hangup = {
+      title = "Hang up",
+      description = "Hang up the phone (shutdown current call)."
     }
   },
   emotes = {
@@ -352,6 +369,12 @@ local lang = {
         prompt = "Bet amount:",
         request = "[BET] Do you want to bet {1} $ ?",
         started = "~g~Bet started."
+      }
+    },
+    radio = {
+      title = "Radio",
+      off = {
+        title = "> turn off"
       }
     }
   },
@@ -440,6 +463,7 @@ local lang = {
     }
   },
   itemtr = {
+    not_enough_reagents = "~r~Not enough reagents.",
     informer = {
       title = "Illegal Informer",
       description = "{1} $",
@@ -462,8 +486,11 @@ local lang = {
     level_up = "Aptitude ~b~{1}/{2} ~g~level up ({3}).",
     display = {
       group = "{1}: ",
-      aptitude = "--- {1} | exp {2} | lvl {3} | progress {4}%"
+      aptitude = "{1} LVL {3} EXP {2}"
     }
+  },
+  radio = {
+    title = "Radio ON/OFF"
   }
 }
 

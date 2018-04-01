@@ -10,6 +10,11 @@ cfg.sms_size = 500
 -- duration of a sms position marker (in seconds)
 cfg.smspos_duration = 300
 
+-- phone sounds (playAudioSource)
+cfg.dialing_sound = "sounds/phone_dialing.ogg" -- loop
+cfg.ringing_sound = "sounds/phone_ringing.ogg" -- loop
+cfg.sms_sound = "sounds/phone_sms.ogg"
+
 -- define phone services
 -- blipid, blipcolor (customize alert blip)
 -- alert_time (alert blip display duration in seconds)
@@ -43,7 +48,17 @@ cfg.services = {
     alert_notify = "~y~Taxi alerte:~n~~s~",
     notify = "~y~Vous avez appelé un taxi.",
     answer_notify = "~y~Un taxi arrive."
+  },
+  ["repair"] = {
+    blipid = 446,
+    blipcolor = 5,
+    alert_time = 300,
+    alert_permission = "repair.service",
+    alert_notify = "~y~Réparation alerte:~n~~s~",
+    notify = "~y~Vous avez appelé un réparateur.",
+    answer_notify = "~y~Un réparateur arrive."
   }
+
 }
 
 -- define phone announces

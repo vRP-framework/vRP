@@ -3,8 +3,8 @@ local cfg = {}
 
 -- define the first spawn position/radius of the player (very first spawn on the server, or after death)
 cfg.spawn_enabled = true -- set to false to disable the feature
-cfg.spawn_position = {-538.570434570313,-215.849624633789,37.6497993469238}
-cfg.spawn_radius = 0.5
+cfg.spawn_position = {1854.21, 3685.51, 34.2671}
+cfg.spawn_radius = 1
 
 -- customization set when spawning for the first time
 -- see https://wiki.fivem.net/wiki/Peds
