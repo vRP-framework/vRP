@@ -30,7 +30,7 @@ function vRP.connectRadio(user_id)
       local players = {}
       for ruser,_ in pairs(rusers) do -- each radio user
         for k,v in pairs(groups) do -- each player group
-          for _,cgroup in pairs(cgroups[k] or {}) do -- each group from connect graph for this group
+          for cgroup,_ in pairs(cgroups[k] or {}) do -- each group from connect graph for this group
             if vRP.hasGroup(ruser, cgroup) then -- if in group
               local rplayer = vRP.getUserSource(ruser) 
               if rplayer then
