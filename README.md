@@ -858,6 +858,10 @@ vRP.addStaticMenuChoices(name, choices)
 
 -- TUNNEL CLIENT API
 
+-- return menu state
+--- opened: boolean
+vRP.getMenuState()
+
 -- return menu paused state
 vRP.isPaused()
 
