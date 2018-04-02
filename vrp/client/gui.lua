@@ -62,16 +62,11 @@ function tvRP.announce(background,content)
   SendNUIMessage({act="announce",background=background,content=content})
 end
 
--- cfg
-RegisterNUICallback("cfg",function(data,cb) -- if NUI loaded after
-  SendNUIMessage({act="cfg",cfg=cfg.gui})
+-- init
+RegisterNUICallback("init",function(data,cb) -- NUI initialized
+  SendNUIMessage({act="cfg",cfg=cfg.gui}) -- send cfg
+  TriggerEvent("vRP:NUIready")
 end)
-SendNUIMessage({act="cfg",cfg=cfg.gui}) -- if NUI loaded before
-
--- try to fix missing cfg issue (cf: https://github.com/ImagicTheCat/vRP/issues/89)
-for i=1,5 do
-  SetTimeout(5000*i, function() SendNUIMessage({act="cfg",cfg=cfg.gui}) end)
-end
 
 -- PROGRESS BAR
 
@@ -348,13 +343,17 @@ if cfg.vrp_voip then -- setup voip world channel
     print("(vRPvoice-world) disconnected from "..player)
   end)
 
-  -- world channel config
-  tvRP.configureVoice("world", cfg.world_voice_config or {
-    effects = {
-      spatialization = { max_dist = cfg.voip_proximity }
-    }
-  })
+  AddEventHandler("vRP:NUIready", function()
+    -- world channel config
+    tvRP.configureVoice("world", cfg.world_voice_config or {
+      effects = {
+        spatialization = { max_dist = cfg.voip_proximity }
+      }
+    })
+  end)
 end
+
+
 
 -- detect players near, give positions to AudioEngine
 Citizen.CreateThread(function()

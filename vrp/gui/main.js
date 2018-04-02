@@ -26,8 +26,8 @@ window.addEventListener("load",function(){
   dynamic_menu.onClose = function(){ $.post("http://vrp/menu",JSON.stringify({act: "close", id: dynamic_menu.id})); }
   dynamic_menu.onValid = function(choice,mod){ $.post("http://vrp/menu",JSON.stringify({act: "valid", id: dynamic_menu.id, choice: choice, mod: mod})); }
 
-  //request config
-  $.post("http://vrp/cfg",""); 
+  //init
+  $.post("http://vrp/init",""); 
 
   var current_menu = dynamic_menu;
   var pbars = {}

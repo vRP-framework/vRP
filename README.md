@@ -180,6 +180,9 @@ AddEventHandler("vRP:playerLeaveGroup", function(user_id, group, gtype) end)
 
 -- (client) called when the menu pause state change
 AddEventHandler("vRP:pauseChange", function(paused) end)
+
+-- (client) called when the vRP NUI is ready
+AddEventHandler("vRP:NUIready", function() end)
 ```
 
 ### API
