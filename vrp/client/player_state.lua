@@ -3,14 +3,9 @@
 
 local state_ready = false
 
-AddEventHandler("playerSpawned",function() -- delay state recording
-  state_ready = false
-  
-  Citizen.CreateThread(function()
-    Citizen.Wait(30000)
-    state_ready = true
-  end)
-end)
+function tvRP.playerStateReady(state)
+  state_ready = state
+end
 
 Citizen.CreateThread(function()
   while true do

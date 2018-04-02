@@ -539,21 +539,23 @@ AddEventHandler("vRPcli:playerSpawned", function()
       end
       -- send new player to all players
       vRPclient._addPlayer(-1,source)
+
+      -- set client tunnel delay at first spawn
+      Tunnel.setDestDelay(player, config.load_delay)
+
+      -- show loading
+      vRPclient._setProgressBar(player, "vRP:loading", "botright", "Loading...", 0,0,0, 100)
+
+      SetTimeout(2000, function() 
+        SetTimeout(config.load_duration*1000, function() -- set client delay to normal delay
+          Tunnel.setDestDelay(player, config.global_delay)
+          vRPclient._removeProgressBar(player,"vRP:loading")
+        end)
+      end)
     end
-
-    -- set client tunnel delay at first spawn
-    Tunnel.setDestDelay(player, config.load_delay)
-
-    -- show loading
-    vRPclient._setProgressBar(player, "vRP:loading", "botright", "Loading...", 0,0,0, 100)
 
     SetTimeout(2000, function() -- trigger spawn event
       TriggerEvent("vRP:playerSpawn",user_id,player,first_spawn)
-
-      SetTimeout(config.load_duration*1000, function() -- set client delay to normal delay
-        Tunnel.setDestDelay(player, config.global_delay)
-        vRPclient._removeProgressBar(player,"vRP:loading")
-      end)
     end)
   end
 end)

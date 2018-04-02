@@ -21,7 +21,7 @@ AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
     end
 
     if data.position then -- teleport to saved pos
-      vRPclient._teleport(source,data.position.x,data.position.y,data.position.z)
+      vRPclient.teleport(source,data.position.x,data.position.y,data.position.z)
     end
 
     if data.customization then
@@ -33,7 +33,7 @@ AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
           vRPclient.setHealth(source,data.health)
           SetTimeout(5000, function() -- check coma, kill if in coma
             if vRPclient.isInComa(player) then
-              vRPclient._killComa(player)
+              vRPclient.killComa(player)
             end
           end)
         end
@@ -44,9 +44,10 @@ AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
       end
 
       if data.health then
-        vRPclient._setHealth(source,data.health)
+        vRPclient.setHealth(source,data.health)
       end
     end
+
 
     -- notify last login
     SetTimeout(15000,function()
@@ -83,6 +84,8 @@ AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
       vRPclient._setCustomization(source,data.customization)
     end
   end
+
+  vRPclient._playerStateReady(source, true)
 end)
 
 -- updates
