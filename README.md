@@ -588,6 +588,13 @@ vRP.giveInventoryItem(user_id,idname,amount,notify)
 -- return true if the item has been found and the quantity removed
 vRP.tryGetInventoryItem(user_id,idname,amount,notify)
 
+-- get item amount from a connected user inventory
+vRP.getInventoryItemAmount(user_id,idname)
+
+-- get connected user inventory
+-- return map of full idname => amount or nil 
+vRP.getInventory(user_id)
+
 -- clear connected user inventory
 vRP.clearInventory(user_id)
 

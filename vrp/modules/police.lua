@@ -339,14 +339,30 @@ local choice_seize_items = {function(player, choice)
     local nuser_id = vRP.getUserId(nplayer)
     if nuser_id and vRP.hasPermission(nuser_id, "police.seizable") then
       if vRPclient.isHandcuffed(nplayer) then  -- check handcuffed
+        local inv = vRP.getInventory(user_id)
+
         for k,v in pairs(cfg.seizable_items) do -- transfer seizable items
-          local amount = vRP.getInventoryItemAmount(nuser_id,v)
-          if amount > 0 then
-            local item_name, item_desc, item_weight = vRP.getItemDefinition(v)
-            if item_name then -- do transfer
-              if vRP.tryGetInventoryItem(nuser_id,v,amount,true) then
-                vRP.giveInventoryItem(user_id,v,amount,false)
-                vRPclient._notify(player,lang.police.menu.seize.seized({item_name,amount}))
+          local sub_items = {v} -- single item
+
+          if string.sub(v,1,1) == "*" then -- seize all parametric items of this idname
+            local idname = string.sub(v,2)
+            sub_items = {}
+            for fidname,_ in pairs(inv) do
+              if splitString(fidname, "|")[1] == idname then -- same parametric item
+                table.insert(sub_items, fidname) -- add full idname
+              end
+            end
+          end
+
+          for _,idname in pairs(sub_items) do
+            local amount = vRP.getInventoryItemAmount(nuser_id,idname)
+            if amount > 0 then
+              local item_name, item_desc, item_weight = vRP.getItemDefinition(idname)
+              if item_name then -- do transfer
+                if vRP.tryGetInventoryItem(nuser_id,idname,amount,true) then
+                  vRP.giveInventoryItem(user_id,idname,amount,false)
+                  vRPclient._notify(player,lang.police.menu.seize.seized({item_name,amount}))
+                end
               end
             end
           end

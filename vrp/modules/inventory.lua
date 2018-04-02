@@ -230,7 +230,7 @@ function vRP.tryGetInventoryItem(user_id,idname,amount,notify)
   return false
 end
 
--- get user inventory amount of item
+-- get item amount from a connected user inventory
 function vRP.getInventoryItemAmount(user_id,idname)
   local data = vRP.getUserDataTable(user_id)
   if data and data.inventory then
@@ -241,6 +241,15 @@ function vRP.getInventoryItemAmount(user_id,idname)
   end
 
   return 0
+end
+
+-- get connected user inventory
+-- return map of full idname => amount or nil 
+function vRP.getInventory(user_id)
+  local data = vRP.getUserDataTable(user_id)
+  if data then
+    return data.inventory
+  end
 end
 
 -- return user inventory total weight
