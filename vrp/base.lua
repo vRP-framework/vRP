@@ -402,14 +402,13 @@ end
 -- tasks
 
 function task_save_datatables()
+  SetTimeout(config.save_interval*1000, task_save_datatables)
   TriggerEvent("vRP:save")
 
   Debug.log("save datatables")
   for k,v in pairs(vRP.user_tables) do
     vRP.setUData(k,"vRP:datatable",json.encode(v))
   end
-
-  SetTimeout(config.save_interval*1000, task_save_datatables)
 end
 
 async(function()
