@@ -245,6 +245,9 @@ vRP.getSData(key)
 
 -- TUNNEL CLIENT API
 
+-- get user id (client-side)
+vRP.getUserId()
+
 -- teleport the player to the specified coordinates
 vRP.teleport(x,y,z)
 
@@ -926,7 +929,7 @@ List of known menu names you can extend, each line is `name`: description (data 
 * `main`: main menu (player)
 * `police`: police menu (player)
 * `admin`: admin menu (player)
-* `vehicle`: vehicle menu (user_id, player, vtype, vname)
+* `vehicle`: vehicle menu (user_id, player, vname)
 * `phone`: phone menu, no properties, builders are called one time after server launch
 * `static:<name>`: any static menu, replace `<name>` by the static menu name (player)
 
