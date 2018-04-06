@@ -18,6 +18,15 @@ Proxy.addInterface("vRP",tvRP)
 
 -- functions
 
+local user_id
+function tvRP.setUserId(_user_id)
+  user_id = _user_id
+end
+
+-- get user id (client-side)
+function tvRP.getUserId()
+  return user_id
+end
 
 function tvRP.teleport(x,y,z)
   tvRP.unjail() -- force unjail before a teleportation

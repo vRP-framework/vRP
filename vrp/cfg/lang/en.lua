@@ -399,7 +399,9 @@ local lang = {
     },
     store = {
       title = "Store",
-      description = "Put your current vehicle in the garage."
+      description = "Put your current vehicle in the garage.",
+      too_far = "The vehicle is too far away.",
+      wrong_garage = "The vehicle can't be stored in this garage."
     }
   },
   vehicle = {
