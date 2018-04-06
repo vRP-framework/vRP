@@ -176,7 +176,7 @@ function tvRP.getNearestOwnedVehicle(radius)
   end
 
   if min_k then
-    return true,k
+    return true,min_k
   end
 
   return false,""
