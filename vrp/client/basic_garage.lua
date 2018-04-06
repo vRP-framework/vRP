@@ -161,10 +161,22 @@ function tvRP.getNearestOwnedVehicle(radius)
   tvRP.tryOwnNearestVehicle(radius) -- get back network lost vehicles
 
   local px,py,pz = tvRP.getPosition()
+  local min_dist
+  local min_k
   for k,v in pairs(vehicles) do
     local x,y,z = table.unpack(GetEntityCoords(v[2],true))
     local dist = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
-    if dist <= radius+0.0001 then return true,v[1] end
+
+    if dist <= radius+0.0001 then
+      if not min_dist or dist < min_dist then
+        min_dist = dist
+        min_k = k
+      end
+    end
+  end
+
+  if min_k then
+    return true,k
   end
 
   return false,""
