@@ -510,3 +510,43 @@ function vRP.openChest(source, name, max_weight, cb_close, cb_in, cb_out)
     end
   end
 end
+
+-- STATIC CHESTS
+
+local function build_client_static_chests(source)
+  local user_id = vRP.getUserId(source)
+  if user_id then
+    for k,v in pairs(cfg.static_chests) do
+      local mtype,x,y,z = table.unpack(v)
+      local schest = cfg.static_chest_types[mtype]
+
+      if schest then
+        local function schest_enter(source)
+          local user_id = vRP.getUserId(source)
+          if user_id ~= nil and vRP.hasPermissions(user_id,schest.permissions or {}) then
+            -- open chest
+            vRP.openChest(source, "static:"..k, schest.weight or 0)
+          end
+        end
+
+        local function schest_leave(source)
+          vRP.closeMenu(source)
+        end
+
+        vRPclient._addBlip(source,x,y,z,schest.blipid,schest.blipcolor,schest.title)
+        vRPclient._addMarker(source,x,y,z-1,0.7,0.7,0.5,255,226,0,125,150)
+
+        vRP.setArea(source,"vRP:static_chest:"..k,x,y,z,1,1.5,schest_enter,schest_leave)
+      end
+    end
+  end
+end
+
+AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
+  if first_spawn then
+    -- load static chests
+    build_client_static_chests(source)
+  end
+end)
+
+

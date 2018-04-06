@@ -44,7 +44,6 @@ See also (and use it as a basis to understand how to develop extensions for vRP)
 ## TODO LIST
 * home stuff (home garage,etc)
 * vehicle customization
-* static chests
 * drop weapon/save weapon components
 * police pc: add custom police records
 * admin: tp to marker

@@ -11,4 +11,19 @@ cfg.vehicle_chest_weights = {
   ["monster"] = 250
 }
 
+-- list of static chest types (map of name => {.title,.blipid,.blipcolor,.weight, .permissions (optional)})
+cfg.static_chest_types = {
+  ["chest"] = { -- example of a static chest
+    title = "Test chest",
+    blipid = 205,
+    blipcolor = 5,
+    weight = 100
+  }
+}
+
+-- list of static menu points
+cfg.static_chests = {
+  {"chest", 1855.13940429688,3688.68579101563,34.2670478820801}
+}
+
 return cfg
