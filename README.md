@@ -1268,7 +1268,7 @@ vRP.prepare(name, query)
 --- name: unique name of the query
 --- params: map of parameters
 --- mode: default is "query"
----- "query": should return rows (list of map of parameter => value), affected
+---- "query": should return rows (list of map of field => value), affected
 ---- "execute": should return affected
 ---- "scalar": should return a scalar
 vRP.query(name, params, mode)
