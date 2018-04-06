@@ -856,11 +856,6 @@ vRP.prompt(source,title,default_text,cb_result)
 -- cb_ok: function(player,ok)
 vRP.request(source,text,time,cb_ok)
 
--- STATIC MENUS
-
--- define choices to a static menu by name (needs to be called like inventory item definition, at initialization)
-vRP.addStaticMenuChoices(name, choices)
-
 -- TUNNEL SERVER API
 
 -- TUNNEL CLIENT API
@@ -934,6 +929,7 @@ List of known menu names you can extend, each line is `name`: description (data 
 * `admin`: admin menu (player)
 * `vehicle`: vehicle menu (user_id, player, vtype, vname)
 * `phone`: phone menu, no properties, builders are called one time after server launch
+* `static:<name>`: any static menu, replace `<name>` by the static menu name (player)
 
 ```lua
 -- PROXY API
@@ -948,7 +944,7 @@ vRP.registerMenuBuilder(name, builder)
 --- name: menu name type
 --- data: custom data table
 -- return built choices
-vRP.buildMenu(name, data, cbr)
+vRP.buildMenu(name, data)
 ```
 
 #### Audio

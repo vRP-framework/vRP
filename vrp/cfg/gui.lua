@@ -20,7 +20,7 @@ body{
 ]]
 
 -- list of static menu types (map of name => {.title,.blipid,.blipcolor,.permissions (optional)})
--- static menus are menu with choices defined by vRP.addStaticMenuChoices(name, choices)
+-- static menus are menu with choices defined by menu builders (named "static:name" and with the player parameter)
 cfg.static_menu_types = {
   ["missions"] = { -- example of a mission menu that can be filled by other resources
     title = "Missions",

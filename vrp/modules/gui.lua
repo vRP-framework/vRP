@@ -115,7 +115,7 @@ end
 --- name: menu name type
 --- data: custom data table
 -- return built choices
-function vRP.buildMenu(name, data, cbr)
+function vRP.buildMenu(name, data)
   local r = async()
 
   -- the task will return the built choices even if they aren't complete
@@ -228,48 +228,24 @@ end
 
 
 -- STATIC MENUS
-local static_menu_choices = {}
-
--- define choices to a static menu by name
-function vRP.addStaticMenuChoices(name, choices)
-  local mchoices = static_menu_choices[name]
-  if mchoices == nil then
-    static_menu_choices[name] = {}
-    mchoices = static_menu_choices[name]
-  end
-
-  for k,v in pairs(choices) do
-    mchoices[k] = v
-  end
-end
-
--- build static menus
-local static_menus = {}
-SetTimeout(10000,function() -- wait for vRP.addStaticMenuChoices calls
-  for k,v in pairs(cfg.static_menu_types) do
-    local menu = {name=v.title, css={top="75px",header_color="rgba(255,226,0,0.75)"}}
-    local choices = static_menu_choices[k] or {}
-
-    for l,w in pairs(choices) do
-      menu[l] = w
-    end
-
-    static_menus[k] = menu
-  end
-end)
 
 local function build_client_static_menus(source)
   local user_id = vRP.getUserId(source)
   if user_id then
     for k,v in pairs(cfg.static_menus) do
       local mtype,x,y,z = table.unpack(v)
-      local menu = static_menus[mtype]
       local smenu = cfg.static_menu_types[mtype]
 
-      if menu and smenu then
+      if smenu then
         local function smenu_enter(source)
           local user_id = vRP.getUserId(source)
           if user_id ~= nil and vRP.hasPermissions(user_id,smenu.permissions or {}) then
+            -- build static menu
+            local menu = vRP.buildMenu("static:"..k, {player=source})
+            menu.name=v.title
+            menu.css={top="75px",header_color="rgba(255,226,0,0.75)"}
+
+            -- open
             vRP.openMenu(source,menu) 
           end
         end
