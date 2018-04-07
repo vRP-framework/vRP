@@ -274,21 +274,28 @@ end
 
 -- GROUP SELECTORS
 
-local function ch_select(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id then
-    vRP.addUserGroup(user_id, choice)
-    vRP.closeMenu(player)
-  end
-end
-
 -- build menus
 local selector_menus = {}
 for k,v in pairs(selectors) do
+  local kgroups = {}
+
+  local function ch_select(player,choice)
+    local user_id = vRP.getUserId(player)
+    if user_id then
+      local gname = kgroups[choice]
+      if gname then
+        vRP.addUserGroup(user_id, gname)
+        vRP.closeMenu(player)
+      end
+    end
+  end
+
   local menu = {name=k, css={top="75px",header_color="rgba(255,154,24,0.75)"}}
   for l,w in pairs(v) do
     if l ~= "_config" then
-      menu[w] = {ch_select}
+      local title = vRP.getGroupTitle(w)
+      kgroups[title] = w
+      menu[title] = {ch_select}
     end
   end
 
