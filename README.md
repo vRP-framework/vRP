@@ -103,6 +103,7 @@ Home components allow developers to create things to be added inside homes using
      * [Notes](#notes-1)
   * [VoIP](#voip)
   * [Map](#map)
+  * [Misc](#misc)
 * [Libs](#libs)
   * [utils](#utils)
   * [Proxy](#proxy)
@@ -1103,6 +1104,20 @@ vRP.setNamedMarker(name,x,y,z,sx,sy,sz,r,g,b,a,visible_distance)
 vRP.removeNamedMarker(name)
 
 ```
+
+#### Misc
+
+```lua
+-- PROXY API
+
+-- remove the player uniform (cloakroom)
+vRP.removeCloak(player)
+
+-- TUNNEL SERVER API
+
+-- TUNNEL CLIENT API
+```
+
 
 ### Libs
 

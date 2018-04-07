@@ -29,7 +29,8 @@ local function save_idle_custom(player, custom)
   return r_idle
 end
 
-local function rollback_idle_custom(player)
+-- remove the player uniform (cloakroom)
+function vRP.removeCloak(player)
   local user_id = vRP.getUserId(player)
   if user_id then
     local data = vRP.getUserDataTable(user_id)
@@ -81,7 +82,7 @@ async(function()
 
     -- rollback clothes
     if not not_uniform then
-      menu[lang.cloakroom.undress.title()] = {function(player,choice) rollback_idle_custom(player) end}
+      menu[lang.cloakroom.undress.title()] = {function(player,choice) vRP.removeCloak(player) end}
     end
 
     -- add cloak choices
