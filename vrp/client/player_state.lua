@@ -123,7 +123,7 @@ end
 
 -- set player armour (0-100)
 function tvRP.setArmour(amount)
-  SetPedArmour(GetPlayerPed(-1))
+  SetPedArmour(GetPlayerPed(-1), amount)
 end
 
 --[[
