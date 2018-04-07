@@ -25,5 +25,6 @@ end
 load_item_pack("required")
 load_item_pack("food")
 load_item_pack("drugs")
+load_item_pack("police")
 
 return cfg

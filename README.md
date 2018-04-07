@@ -488,6 +488,9 @@ vRP.getCustomization()
 -- set player apparence
 -- customization_data: same structure as returned by getCustomization()
 vRP.setCustomization(customization_data)
+
+-- set player armour (0-100)
+vRP.setArmour(amount)
 ```
 
 #### Identity

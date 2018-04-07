@@ -121,6 +121,11 @@ function tvRP.giveWeapons(weapons,clear_before)
   end
 end
 
+-- set player armour (0-100)
+function tvRP.setArmour(amount)
+  SetPedArmour(GetPlayerPed(-1))
+end
+
 --[[
 function tvRP.dropWeapon()
   SetPedDropsWeapon(GetPlayerPed(-1))
