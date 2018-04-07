@@ -3,6 +3,7 @@ local cfg = {}
 
 -- define each group with a set of permissions
 -- _config property:
+--- title (optional): group display name
 --- gtype (optional): used to have only one group with the same gtype per player (example: a job gtype to only have one job)
 --- onspawn (optional): function(player) (called when the player spawn with the group)
 --- onjoin (optional): function(player) (called when the player join the group)
@@ -46,7 +47,8 @@ cfg.groups = {
     "police.seizable" -- can be seized
   },
   ["police"] = {
-    _config = { 
+    _config = {
+      title = "Police",
       gtype = "job",
       onjoin = function(player) vRPclient._setCop(player,true) end,
       onspawn = function(player) vRPclient._setCop(player,true) end,
@@ -70,23 +72,35 @@ cfg.groups = {
     "-police.seizable" -- negative permission, police can't seize itself, even if another group add the permission
   },
   ["emergency"] = {
-    _config = { gtype = "job" },
+    _config = {
+      title = "Emergency",
+      gtype = "job"
+    },
     "emergency.revive",
     "emergency.shop",
     "emergency.service"
   },
   ["repair"] = {
-    _config = { gtype = "job"},
+    _config = {
+      title = "Repair",
+      gtype = "job"
+    },
     "vehicle.repair",
     "vehicle.replace",
     "repair.service"
   },
   ["taxi"] = {
-    _config = { gtype = "job" },
+    _config = {
+      title = "Taxi",
+      gtype = "job"
+    },
     "taxi.service"
   },
   ["citizen"] = {
-    _config = { gtype = "job" }
+    _config = {
+      title = "Citizen",
+      gtype = "job"
+    }
   }
 }
 

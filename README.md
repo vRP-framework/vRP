@@ -356,6 +356,9 @@ Here is a list of permission functions defined by vRP:
 ```lua
 -- PROXY API
 
+-- return group title
+vRP.getGroupTitle(group)
+
 -- add a group to a connected user
 vRP.addUserGroup(user_id,group)
 

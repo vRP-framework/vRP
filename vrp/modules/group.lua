@@ -11,6 +11,17 @@ local groups = cfg.groups
 local users = cfg.users
 local selectors = cfg.selectors
 
+-- return group title
+function vRP.getGroupTitle(group)
+  local g = groups[group]
+
+  if g and g._config and g._config.title then
+    return g._config.title
+  end
+
+  return group
+end
+
 -- get groups keys of a connected user
 function vRP.getUserGroups(user_id)
   local data = vRP.getUserDataTable(user_id)
