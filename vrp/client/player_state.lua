@@ -206,10 +206,12 @@ function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] com
         end
 
         if HasModelLoaded(mhash) then
-          -- changing player model remove weapons, so save it
+          -- changing player model remove weapons and armour, so save it
           local weapons = tvRP.getWeapons()
+          local armour = GetPedArmour(ped)
           SetPlayerModel(PlayerId(), mhash)
           tvRP.giveWeapons(weapons,true)
+          tvRP.setArmour(armour)
           SetModelAsNoLongerNeeded(mhash)
         end
       end
