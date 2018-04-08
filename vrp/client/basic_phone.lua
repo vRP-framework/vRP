@@ -37,11 +37,7 @@ end)
 
 AddEventHandler("vRP:NUIready", function()
   -- phone channel config
-  tvRP.configureVoice("phone", cfg.phone_voice_config or {
-    effects = {
-  --    biquad = { type = "bandpass", frequency = 1700, Q = 3 }
-    }
-  })
+  tvRP.configureVoice("phone", cfg.phone_voice_config)
 end)
 
 Citizen.CreateThread(function()

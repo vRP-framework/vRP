@@ -357,11 +357,7 @@ if cfg.vrp_voip then -- setup voip world channel
 
   AddEventHandler("vRP:NUIready", function()
     -- world channel config
-    tvRP.configureVoice("world", cfg.world_voice_config or {
-      effects = {
-        spatialization = { max_dist = cfg.voip_proximity }
-      }
-    })
+    tvRP.configureVoice("world", cfg.world_voice_config)
   end)
 end
 

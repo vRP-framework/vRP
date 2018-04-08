@@ -63,9 +63,23 @@ cfg.voip_proximity = 100
 -- connect/disconnect interval in milliseconds
 cfg.voip_interval = 5000
 
--- override vRP.configureVoice configs
---- cfg.world_voice_config
---- cfg.phone_voice_config
---- cfg.radio_voice_config
+-- vRP.configureVoice settings
+-- world
+cfg.world_voice_config = {
+  effects = {
+    spatialization = { max_dist = cfg.voip_proximity }
+  }
+}
+
+-- phone
+cfg.phone_voice_config = {
+}
+
+-- radio
+cfg.radio_voice_config = {
+  effects = {
+    biquad = { type = "bandpass", frequency = 1700, Q = 2, gain = 1.2 }
+  }
+}
 
 return cfg
