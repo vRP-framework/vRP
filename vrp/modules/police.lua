@@ -166,6 +166,24 @@ local choice_handcuff = {function(player,choice)
   end
 end,lang.police.menu.handcuff.description()}
 
+---- drag
+local choice_drag = {function(player,choice)
+  local nplayer = vRPclient.getNearestPlayer(player,10)
+  if nplayer then
+    local nuser_id = vRP.getUserId(nplayer)
+    if nuser_id then
+      local followed = vRPclient.getFollowedPlayer(nplayer)
+      if followed ~= player then -- drag
+        vRPclient._followPlayer(nplayer, player)
+      else -- stop follow
+        vRPclient._followPlayer(nplayer)
+      end
+    else
+      vRPclient._notify(player,lang.common.no_player_near())
+    end
+  end
+end,lang.police.menu.drag.description()}
+
 ---- putinveh
 --[[
 -- veh at position version
@@ -491,6 +509,10 @@ vRP.registerMenuBuilder("main", function(add, data)
 
         if vRP.hasPermission(user_id,"police.handcuff") then
           menu[lang.police.menu.handcuff.title()] = choice_handcuff
+        end
+
+        if vRP.hasPermission(user_id,"police.drag") then
+          menu[lang.police.menu.drag.title()] = choice_drag
         end
 
         if vRP.hasPermission(user_id,"police.putinveh") then

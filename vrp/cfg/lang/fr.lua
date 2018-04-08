@@ -183,6 +183,10 @@ local lang = {
         title = "Menotter",
         description = "Menotter/démenotter le joueur le plus proche."
       },
+      drag = {
+        title = "Traîner",
+        description = "Traîner/arrêter de traîner le joueur le plus proche."
+      },
       putinveh = {
         title = "Mettre dans le véhicule",
         description = "Mettre le joueur menotté le plus proche dans le véhicule le plus proche vous appartenant."
