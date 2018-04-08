@@ -98,6 +98,7 @@ function vRP.phoneCall(user_id, phone)
       local to = vRP.getPhoneDirectoryName(user_id, phone).." ("..phone..")"
       local from = vRP.getPhoneDirectoryName(dest_id, identity.phone).." ("..identity.phone..")"
 
+      vRPclient._phoneHangUp(src) -- hangup phone of the caller
       vRPclient._phoneCallWaiting(src, dest_src, true) -- make caller to wait the answer
 
       -- notify
@@ -112,6 +113,7 @@ function vRP.phoneCall(user_id, phone)
 
       -- send request to called
       if vRP.request(dest_src, lang.phone.call.ask({from}), 15) then -- accepted
+        vRPclient._phoneHangUp(dest_src) -- hangup phone of the receiver
         vRPclient._connectVoice(dest_src, "phone", src) -- connect voice
         ok = true
       else -- refused
