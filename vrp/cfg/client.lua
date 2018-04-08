@@ -10,7 +10,7 @@ cfg.voice_proximity_inside = 9.0
 
 cfg.audio_listener_rate = 15 -- audio listener position update rate
 
-cfg.audio_listener_on_player = true -- set the listener position on the player instead of the camera
+cfg.audio_listener_on_player = false -- set the listener position on the player instead of the camera
 
 cfg.gui = {
   anchor_minimap_width = 260,
