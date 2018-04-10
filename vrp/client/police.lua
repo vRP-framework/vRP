@@ -108,6 +108,41 @@ Citizen.CreateThread(function()
   end
 end)
 
+-- FOLLOW
+
+local follow_player
+
+-- follow another player
+-- player: nil to disable
+function tvRP.followPlayer(player)
+  follow_player = player
+
+  if not player then -- unfollow
+    ClearPedTasks(GetPlayerPed(-1))
+  end
+end
+
+-- return player or nil if not following anyone
+function tvRP.getFollowedPlayer()
+  return follow_player
+end
+
+-- follow thread
+Citizen.CreateThread(function()
+  while true do
+    Citizen.Wait(5000)
+    if follow_player then
+      local tplayer = GetPlayerFromServerId(follow_player)
+      local ped = GetPlayerPed(-1)
+      if NetworkIsPlayerConnected(tplayer) then
+        local tped = GetPlayerPed(tplayer)
+        TaskGoToEntity(ped, tped, -1, 1.0, 10.0, 1073741824.0, 0)
+        SetPedKeepTask(ped, true)
+      end
+    end
+  end
+end)
+
 -- JAIL
 
 local jail = nil
@@ -127,6 +162,7 @@ function tvRP.isJailed()
   return jail ~= nil
 end
 
+-- jail thread
 Citizen.CreateThread(function()
   while true do
     Citizen.Wait(5)

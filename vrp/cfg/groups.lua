@@ -58,6 +58,7 @@ cfg.groups = {
     "police.cloakroom",
     "police.pc",
     "police.handcuff",
+    "police.drag",
     "police.putinveh",
     "police.getoutveh",
     "police.check",

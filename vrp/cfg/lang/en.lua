@@ -184,6 +184,10 @@ local lang = {
         title = "Handcuff",
         description = "Handcuff/unhandcuff nearest player."
       },
+      drag = {
+        title = "Drag",
+        description = "Make the nearest player follow/unfollow you."
+      },
       putinveh = {
         title = "Put in vehicle",
         description = "Put the nearest handcuffed player in the nearest vehicle, as passenger."
