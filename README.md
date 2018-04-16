@@ -1261,6 +1261,7 @@ Also remember that Citizen event handlers (used by Proxy and Tunnel) seem to not
 #### Database
 
 SQL queries are managed by DB drivers, you can use the default vRP driver `vrp_mysql` or use a custom one (`vrp_mysql` has crappy code).
+DB drivers will register themselves (as resources) with a specific name to use in `cfg/base.lua`. Since there is no guarantee about when the driver will be registered, all queries will be cached until that moment. So `[vRP] DB driver "driver_name" not initialized yet (X prepares cached, Y queries cached).`  is not an error, but a warning that the driver is not registered yet and will stop being outputted if the driver is loaded (a message will also say that the driver is loaded).
 
 ```lua
 -- API (PROXY)
