@@ -369,8 +369,8 @@ AudioEngine.prototype.setupPeer = function(peer)
     var pos = this.player_positions[peer.player];
     if(pos){
       panner.positionX.setValueAtTime(pos[0], this.c.currentTime);
-      panner.positionX.setValueAtTime(pos[1], this.c.currentTime);
-      panner.positionX.setValueAtTime(pos[2], this.c.currentTime);
+      panner.positionY.setValueAtTime(pos[1], this.c.currentTime);
+      panner.positionZ.setValueAtTime(pos[2], this.c.currentTime);
     }
 
     peer.panner = panner;
