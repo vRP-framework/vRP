@@ -13,9 +13,9 @@ function AudioEngine()
 
   this.sources = {};
   this.listener = this.c.listener;
-  this.listener.upX.value = 0;
-  this.listener.upY.value = 0;
-  this.listener.upZ.value = 1;
+  this.listener.upX.setTargetAtTime(0, this.c.currentTime, 0.1);
+  this.listener.upY.setTargetAtTime(0, this.c.currentTime, 0.1);
+  this.listener.upZ.setTargetAtTime(1, this.c.currentTime, 0.1);
 
   this.last_check = new Date().getTime();
 
@@ -134,12 +134,17 @@ function AudioEngine()
 AudioEngine.prototype.setListenerData = function(data)
 {
   var l = this.listener;
-  l.positionX.value = data.x;
-  l.positionY.value = data.y;
-  l.positionZ.value = data.z;
-  l.forwardX.value = data.fx;
-  l.forwardY.value = data.fy;
-  l.forwardZ.value = data.fz;
+  l.positionX.setTargetAtTime(data.x, this.c.currentTime, 0.1);
+  l.positionY.setTargetAtTime(data.y, this.c.currentTime, 0.1);
+  l.positionZ.setTargetAtTime(data.z, this.c.currentTime, 0.1);
+  l.forwardX.setTargetAtTime(data.fx, this.c.currentTime, 0.1);
+  l.forwardY.setTargetAtTime(data.fy, this.c.currentTime, 0.1);
+  l.forwardZ.setTargetAtTime(data.fz, this.c.currentTime, 0.1);
+
+  l.l_coords = []
+  l.l_coords.x = data.x
+  l.l_coords.y = data.y
+  l.l_coords.z = data.z
 
   var time = new Date().getTime();
   if(time-this.last_check >= 2000){ // every 2s
@@ -150,9 +155,9 @@ AudioEngine.prototype.setListenerData = function(data)
       var source = this.sources[name];
 
       if(source[3]){ //spatialized
-        var dx = data.x-source[2].positionX.value;
-        var dy = data.y-source[2].positionY.value;
-        var dz = data.z-source[2].positionZ.value;
+        var dx = data.x-source[2].panner_coords.x;
+        var dy = data.y-source[2].panner_coords.y;
+        var dz = data.z-source[2].panner_coords.z;
         var dist = Math.sqrt(dx*dx+dy*dy+dz*dz);
         var active_dist = source[2].maxDistance*2;
 
@@ -188,9 +193,15 @@ AudioEngine.prototype.setupAudioSource = function(data)
     panner.coneInnerAngle = 360;
     panner.coneOuterAngle = 0;
     panner.coneOuterGain = 0;
-    panner.positionX.value = data.x;
-    panner.positionY.value = data.y;
-    panner.positionZ.value = data.z;
+
+    panner.panner_coords = []
+    panner.panner_coords.x = data.x
+    panner.panner_coords.y = data.y
+    panner.panner_coords.z = data.z
+
+    panner.positionX.setValueAtTime(data.x, this.c.currentTime);
+    panner.positionY.setValueAtTime(data.y, this.c.currentTime);
+    panner.positionZ.setValueAtTime(data.z, this.c.currentTime);
 
     node.connect(panner);
     panner.connect(this.c.destination);
@@ -208,9 +219,9 @@ AudioEngine.prototype.playAudioSource = function(data)
   var active_dist = 0;
 
   if(spatialized){
-    var dx = this.listener.positionX.value-data.x;
-    var dy = this.listener.positionY.value-data.y;
-    var dz = this.listener.positionZ.value-data.z;
+    var dx = this.listener.l_coords.x-data.x;
+    var dy = this.listener.l_coords.y-data.y;
+    var dz = this.listener.l_coords.z-data.z;
     dist = Math.sqrt(dx*dx+dy*dy+dz*dz);
     active_dist = data.max_dist*2;
   }
@@ -242,9 +253,9 @@ AudioEngine.prototype.setAudioSource = function(data)
   var dist = 10;
   var active_dist = 0;
   if(source[3]){ // spatialized
-    var dx = this.listener.positionX.value-source[2].positionX.value;
-    var dy = this.listener.positionY.value-source[2].positionY.value;
-    var dz = this.listener.positionZ.value-source[2].positionZ.value;
+    var dx = this.listener.l_coords.x-source[2].panner_coords.x;
+    var dy = this.listener.l_coords.y-source[2].panner_coords.y;
+    var dz = this.listener.l_coords.z-source[2].panner_coords.z;
     dist = Math.sqrt(dx*dx+dy*dy+dz*dz);
     active_dist = source[2].maxDistance*2;
   }
@@ -287,9 +298,9 @@ AudioEngine.prototype.setPlayerPositions = function(data)
         if(peer.panner){
           var pos = data.positions[player];
           if(pos){
-            peer.panner.positionX.value = pos[0];
-            peer.panner.positionY.value = pos[1];
-            peer.panner.positionZ.value = pos[2];
+            peer.panner.positionX.setValueAtTime(pos[0], this.c.currentTime);
+            peer.panner.positionY.setValueAtTime(pos[1], this.c.currentTime);
+            peer.panner.positionZ.setValueAtTime(pos[2], this.c.currentTime);
           }
         }
       }
@@ -357,9 +368,9 @@ AudioEngine.prototype.setupPeer = function(peer)
 
     var pos = this.player_positions[peer.player];
     if(pos){
-      panner.positionX.value = pos[0];
-      panner.positionY.value = pos[1];
-      panner.positionZ.value = pos[2];
+      panner.positionX.setValueAtTime(pos[0], this.c.currentTime);
+      panner.positionX.setValueAtTime(pos[1], this.c.currentTime);
+      panner.positionX.setValueAtTime(pos[2], this.c.currentTime);
     }
 
     peer.panner = panner;
@@ -597,13 +608,13 @@ AudioEngine.prototype.configureVoice = function(data)
   if(effects.biquad){ //biquad filter
     var biquad = this.c.createBiquadFilter();
     if(effects.biquad.frequency != null)
-      biquad.frequency.value = effects.biquad.frequency;
+      biquad.frequency.setValueAtTime(effects.biquad.frequency, this.c.currentTime);
     if(effects.biquad.Q != null)
-      biquad.Q.value = effects.biquad.Q;
+      biquad.Q.setValueAtTime(effects.biquad.Q, this.c.currentTime);
     if(effects.biquad.detune != null)
-      biquad.detune.value = effects.biquad.detune;
+      biquad.detune.setValueAtTime(effects.biquad.detune, this.c.currentTime);
     if(effects.biquad.gain != null)
-      biquad.gain.value = effects.biquad.gain;
+      biquad.gain.setValueAtTime(effects.biquad.gain, this.c.currentTime);
 
     if(effects.biquad.type != null)
       biquad.type = effects.biquad.type;
@@ -618,7 +629,7 @@ AudioEngine.prototype.configureVoice = function(data)
   if(effects.gain){ //gain
     var gain = this.c.createGain();
     if(effects.gain.gain != null)
-      gain.gain.value = effects.gain.gain;
+      gain.gain.setValueAtTime(effects.gain.gain, this.c.currentTime);
 
     if(node)
       node.connect(gain);
