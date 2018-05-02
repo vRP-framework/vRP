@@ -1,11 +1,13 @@
 
 description "vRP MySQL async"
 
+dependency "vrp"
+
 -- server scripts
 server_scripts{ 
   "@vrp/lib/utils.lua",
-  "init.lua",
-  "mysql.net.dll"
+  "mysql.net.dll",
+  "init.lua"
 }
 
 server_exports{

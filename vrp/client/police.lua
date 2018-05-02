@@ -104,6 +104,50 @@ Citizen.CreateThread(function()
       DisableControlAction(0,143,true) -- disable melee
       DisableControlAction(0,75,true) -- disable exit vehicle
       DisableControlAction(27,75,true) -- disable exit vehicle
+      DisableControlAction(0,22,true) -- disable jump
+      DisableControlAction(0,32,true) -- disable move up
+      DisableControlAction(0,268,true)
+      DisableControlAction(0,33,true) -- disable move down
+      DisableControlAction(0,269,true)
+      DisableControlAction(0,34,true) -- disable move left
+      DisableControlAction(0,270,true)
+      DisableControlAction(0,35,true) -- disable move right
+      DisableControlAction(0,271,true)
+    end
+  end
+end)
+
+-- FOLLOW
+
+local follow_player
+
+-- follow another player
+-- player: nil to disable
+function tvRP.followPlayer(player)
+  follow_player = player
+
+  if not player then -- unfollow
+    ClearPedTasks(GetPlayerPed(-1))
+  end
+end
+
+-- return player or nil if not following anyone
+function tvRP.getFollowedPlayer()
+  return follow_player
+end
+
+-- follow thread
+Citizen.CreateThread(function()
+  while true do
+    Citizen.Wait(5000)
+    if follow_player then
+      local tplayer = GetPlayerFromServerId(follow_player)
+      local ped = GetPlayerPed(-1)
+      if NetworkIsPlayerConnected(tplayer) then
+        local tped = GetPlayerPed(tplayer)
+        TaskGoToEntity(ped, tped, -1, 1.0, 10.0, 1073741824.0, 0)
+        SetPedKeepTask(ped, true)
+      end
     end
   end
 end)
@@ -127,6 +171,7 @@ function tvRP.isJailed()
   return jail ~= nil
 end
 
+-- jail thread
 Citizen.CreateThread(function()
   while true do
     Citizen.Wait(5)
@@ -184,7 +229,7 @@ Citizen.CreateThread(function()
     local nwanted_level = GetPlayerWantedLevel(PlayerId())
     if nwanted_level ~= wanted_level then
       wanted_level = nwanted_level
-      vRPserver.updateWantedLevel({wanted_level})
+      vRPserver._updateWantedLevel(wanted_level)
     end
   end
 end)

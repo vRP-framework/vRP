@@ -21,9 +21,12 @@ cfg.wanted = {
 }
 
 -- illegal items (seize)
+-- specify list of "idname" or "*idname" to seize all parametric items
 cfg.seizable_items = {
   "dirty_money",
-  "weed"
+  "weed",
+  "*wbody",
+  "*wammo"
 }
 
 -- jails {x,y,z,radius}

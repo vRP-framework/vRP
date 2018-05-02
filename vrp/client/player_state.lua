@@ -3,14 +3,9 @@
 
 local state_ready = false
 
-AddEventHandler("playerSpawned",function() -- delay state recording
-  state_ready = false
-  
-  Citizen.CreateThread(function()
-    Citizen.Wait(30000)
-    state_ready = true
-  end)
-end)
+function tvRP.playerStateReady(state)
+  state_ready = state
+end
 
 Citizen.CreateThread(function()
   while true do
@@ -18,11 +13,11 @@ Citizen.CreateThread(function()
 
     if IsPlayerPlaying(PlayerId()) and state_ready then
       local x,y,z = table.unpack(GetEntityCoords(GetPlayerPed(-1),true))
-      vRPserver.ping({})
-      vRPserver.updatePos({x,y,z})
-      vRPserver.updateHealth({tvRP.getHealth()})
-      vRPserver.updateWeapons({tvRP.getWeapons()})
-      vRPserver.updateCustomization({tvRP.getCustomization()})
+
+      vRPserver._updatePos(x,y,z)
+      vRPserver._updateHealth(tvRP.getHealth())
+      vRPserver._updateWeapons(tvRP.getWeapons())
+      vRPserver._updateCustomization(tvRP.getCustomization())
     end
   end
 end)
@@ -126,6 +121,11 @@ function tvRP.giveWeapons(weapons,clear_before)
   end
 end
 
+-- set player armour (0-100)
+function tvRP.setArmour(amount)
+  SetPedArmour(GetPlayerPed(-1), amount)
+end
+
 --[[
 function tvRP.dropWeapon()
   SetPedDropsWeapon(GetPlayerPed(-1))
@@ -184,7 +184,7 @@ end
 
 -- partial customization (only what is set is changed)
 function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] components or props (p0...) plus .modelhash or .model
-  local exit = TUNNEL_DELAYED() -- delay the return values
+  local r = async()
 
   Citizen.CreateThread(function() -- new thread
     if custom then
@@ -192,13 +192,13 @@ function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] com
       local mhash = nil
 
       -- model
-      if custom.modelhash ~= nil then
+      if custom.modelhash then
         mhash = custom.modelhash
-      elseif custom.model ~= nil then
+      elseif custom.model then
         mhash = GetHashKey(custom.model)
       end
 
-      if mhash ~= nil then
+      if mhash then
         local i = 0
         while not HasModelLoaded(mhash) and i < 10000 do
           RequestModel(mhash)
@@ -206,10 +206,12 @@ function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] com
         end
 
         if HasModelLoaded(mhash) then
-          -- changing player model remove weapons, so save it
+          -- changing player model remove weapons and armour, so save it
           local weapons = tvRP.getWeapons()
+          local armour = GetPedArmour(ped)
           SetPlayerModel(PlayerId(), mhash)
           tvRP.giveWeapons(weapons,true)
+          tvRP.setArmour(armour)
           SetModelAsNoLongerNeeded(mhash)
         end
       end
@@ -233,8 +235,10 @@ function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] com
       end
     end
 
-    exit({})
+    r()
   end)
+
+  return r:wait()
 end
 
 -- fix invisible players by resetting customization every minutes

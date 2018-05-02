@@ -1,5 +1,25 @@
+-- this file define global tools required by vRP and vRP extensions
+-- it will create module, SERVER, CLIENT, async...
+
+-- side detection
+SERVER = not IsVehicleEngineStarting
+CLIENT = not SERVER
+
+function table.maxn(t)
+  local max = 0
+  for k,v in pairs(t) do
+    local n = tonumber(k)
+    if n and n > max then max = n end
+  end
+
+  return max
+end
+
 local modules = {}
-function module(rsc, path) -- load a LUA resource file as module
+-- load a lua resource file as module
+-- rsc: resource name
+-- path: lua file path without extension
+function module(rsc, path)
   if path == nil then -- shortcut for vrp, can omit the resource parameter
     path = rsc
     rsc = "vrp"
@@ -7,47 +27,67 @@ function module(rsc, path) -- load a LUA resource file as module
 
   local key = rsc..path
 
-  if modules[key] then -- cached module
-    return table.unpack(modules[key])
+  local module = modules[key]
+  if module then -- cached module
+    return module
   else
-    local f,err = load(LoadResourceFile(rsc, path..".lua"))
-    if f then
-      local ar = {pcall(f)}
-      if ar[1] then
-        table.remove(ar,1)
-        modules[key] = ar
-        return table.unpack(ar)
+    local code = LoadResourceFile(rsc, path..".lua")
+    if code then
+      local f,err = load(code, rsc.."/"..path..".lua")
+      if f then
+        local ok, res = xpcall(f, debug.traceback)
+        if ok then
+          modules[key] = res
+          return res
+        else
+          error("error loading module "..rsc.."/"..path..":"..res)
+        end
       else
-        modules[key] = nil
-        print("[vRP] error loading module "..rsc.."/"..path..":"..ar[2])
+        error("error parsing module "..rsc.."/"..path..":"..debug.traceback(err))
       end
     else
-      print("[vRP] error parsing module "..rsc.."/"..path..":"..err)
+      error("resource file "..rsc.."/"..path..".lua not found")
     end
   end
 end
 
--- generate a task metatable (helper to return delayed values with timeout)
---- dparams: default params in case of timeout or empty cbr()
---- timeout: milliseconds, default 5000
-function Task(callback, dparams, timeout) 
-  if timeout == nil then timeout = 5000 end
+-- Luaseq like for FiveM
 
-  local r = {}
-  r.done = false
+local Debug = module("vrp", "lib/Debug")
 
-  local finish = function(params) 
-    if not r.done then
-      if params == nil then params = dparams or {} end
-      r.done = true
-      callback(table.unpack(params))
-    end
+local function wait(self)
+  if Debug.active then -- debug
+    SetTimeout(math.floor(Debug.async_time)*1000, function()
+      if not self.r then
+        Debug.log("WARNING: in resource \""..GetCurrentResourceName().."\" async return take more than "..Debug.async_time.."s "..self.traceback, true)
+      end
+    end)
   end
 
-  setmetatable(r, {__call = function(t,params) finish(params) end })
-  SetTimeout(timeout, function() finish(dparams) end)
+  local rets = Citizen.Await(self.p)
+  if not rets then
+    rets = self.r 
+  end
 
-  return r
+  return table.unpack(rets, 1, table.maxn(rets))
+end
+
+local function areturn(self, ...)
+  self.r = {...}
+  self.p:resolve(self.r)
+end
+
+-- create an async returner
+function async(func)
+  if func then
+    Citizen.CreateThreadNow(func)
+  else
+    if Debug.active then -- debug
+      return setmetatable({ wait = wait, p = promise.new(), traceback = debug.traceback("",2) }, { __call = areturn })
+    else
+      return setmetatable({ wait = wait, p = promise.new() }, { __call = areturn })
+    end
+  end
 end
 
 function parseInt(v)
@@ -130,3 +170,4 @@ function joinStrings(list, sep)
 
   return str
 end
+

@@ -1,5 +1,6 @@
 -- BLIPS: see https://wiki.gtanet.work/index.php?title=Blips for blip id/color
 
+local Tools = module("vrp", "lib/Tools")
 -- TUNNEL CLIENT API
 
 -- BLIP
@@ -97,7 +98,7 @@ end
 
 -- remove marker
 function tvRP.removeMarker(id)
-  if markers[id] ~= nil then
+  if markers[id] then
     markers[id] = nil
     marker_ids:free(id)
   end
@@ -113,7 +114,7 @@ function tvRP.setNamedMarker(name,x,y,z,sx,sy,sz,r,g,b,a,visible_distance)
 end
 
 function tvRP.removeNamedMarker(name)
-  if named_markers[name] ~= nil then
+  if named_markers[name] then
     tvRP.removeMarker(named_markers[name])
     named_markers[name] = nil
   end
@@ -151,7 +152,7 @@ end
 
 -- remove area
 function tvRP.removeArea(name)
-  if areas[name] ~= nil then
+  if areas[name] then
     areas[name] = nil
   end
 end
@@ -169,9 +170,9 @@ Citizen.CreateThread(function()
       local player_in = (GetDistanceBetweenCoords(v.x,v.y,v.z,px,py,pz,true) <= v.radius and math.abs(pz-v.z) <= v.height)
 
       if v.player_in and not player_in then -- was in: leave
-        vRPserver.leaveArea({k})
+        vRPserver._leaveArea(k)
       elseif not v.player_in and player_in then -- wasn't in: enter
-        vRPserver.enterArea({k})
+        vRPserver._enterArea(k)
       end
 
       v.player_in = player_in -- update area player_in

@@ -1,8 +1,6 @@
 
 description "RP module/framework"
 
-dependency "vrp_mysql"
-
 ui_page "gui/index.html"
 
 -- server scripts
@@ -35,14 +33,13 @@ server_scripts{
   "modules/basic_garage.lua",
   "modules/basic_items.lua",
   "modules/basic_skinshop.lua",
-  "modules/cloakroom.lua"
+  "modules/cloakroom.lua",
+  "modules/basic_radio.lua"
 }
 
 -- client scripts
 client_scripts{
   "lib/utils.lua",
-  "client/Tunnel.lua",
-  "client/Proxy.lua",
   "client/base.lua",
   "client/iplloader.lua",
   "client/gui.lua",
@@ -52,11 +49,18 @@ client_scripts{
   "client/identity.lua",
   "client/basic_garage.lua",
   "client/police.lua",
-  "client/admin.lua"
+  "client/admin.lua",
+  "client/basic_phone.lua",
+  "client/basic_radio.lua"
 }
 
 -- client files
 files{
+  "lib/Tunnel.lua",
+  "lib/Proxy.lua",
+  "lib/Debug.lua",
+  "lib/Luaseq.lua",
+  "lib/Tools.lua",
   "cfg/client.lua",
   "gui/index.html",
   "gui/design.css",
@@ -67,5 +71,13 @@ files{
   "gui/RequestManager.js",
   "gui/AnnounceManager.js",
   "gui/Div.js",
-  "gui/dynamic_classes.js"
+  "gui/dynamic_classes.js",
+  "gui/AudioEngine.js",
+  "gui/lib/libopus.wasm.js",
+  "gui/images/voice_active.png",
+  "gui/sounds/phone_dialing.ogg",
+  "gui/sounds/phone_ringing.ogg",
+  "gui/sounds/phone_sms.ogg",
+  "gui/sounds/radio_on.ogg",
+  "gui/sounds/radio_off.ogg"
 }

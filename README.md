@@ -1,10 +1,3 @@
-`/!\ THIS IS THE FXSERVER VERSION /!\`
-```
-Lot of things change in this version, moving to FXServer and MySQL full async requests.
-Many functions based on MySQL queries are now async too.
-A lot of those changes are not yet documented.
-```
-
 # vRP
 FiveM RP addon/framework
 
@@ -12,10 +5,9 @@ The project aim to create a generic and simple RP framework to prevent everyone 
 
 Contributions are welcomed.
 
-If you want to try the framework somewhere, here is a list of servers using vRP, without whitelist and managed by me.
+Config examples are git branches as `cfg_NAME...`. It's easier to update, for example if `cfg_FR` is not up-to-date, you could do a `git merge` from the last version.
 
-vRP test server availables:
-* 93.115.96.185 (FR) [(config)](http://93.115.96.185/fivem/servers/FR_cfg.zip) [(discord)](https://discord.gg/ZAdE3eu)
+[Discord](http://discord.gg/xzGZBAb)
 
 Support me on Patreon to keep this project alive:
 
@@ -25,44 +17,39 @@ Support me on Patreon to keep this project alive:
 
 
 See also (and use it as a basis to understand how to develop extensions for vRP) :
+* https://github.com/ImagicTheCat/vRP-db-drivers (some DB driver alternatives for `vrp_mysql`)
 * https://github.com/ImagicTheCat/vRP-basic-mission (repair/delivery missions extension)
 * https://github.com/ImagicTheCat/vRP-TCG (Trading Card Game extension)
 
+## Resource credits
+
+### Sounds
+
+* radio: https://freesound.org/people/JustinBW/sounds/70107/
+* phone sms: https://freesound.org/people/SpiceProgram/sounds/399191/
+* phone ringing: https://freesound.org/people/Framing_Noise/sounds/223183/
+* phone dialing: https://freesound.org/people/Felfa/sounds/178823/
+
 ## Features
-* basic admin tools (kick,ban,whitelist)
-* groups/permissions
-* language config file
+* basic admin tools (kick,ban,whitelist), groups/permissions, languages, identification system (persistant user id for database storage), user custom data key/value
 * player state auto saved to database (hunger,thirst,weapons,player apparence,position)
-* player identity
-* business system
-* aptitudes (education/exp)
-* homes (experimental, if a visitor leave in any other way than using the green circle, like crashing, flying or disconnecting, it will require an eject all)
-* phone
-* cloakrooms (uniform for jobs)
-* basic police (PC, check, I.D., handcuff, jails, seize weapons/items)
-* basic emergency (coma, reanimate)
-* emotes
-* money (wallet/bank)
-* inventory (with custom item definition, parametric items), chests (vehicle trunks)
+* player identity/phone/aptitudes (education/exp), emotes, business system / money (wallet/bank), homes
+* cloakrooms (uniform for jobs), basic police (PC, check, I.D., handcuff, jails, seize weapons/items), basic emergency (coma, reanimate)
+* inventory (with custom item definition, parametric items), chests (vehicle trunks), item transformer (harvest, process, produce) (illegal informer)
 * basic implementations: ATM, market, gunshop, skinshop, garage
-* item transformer (harvest, process, produce) (illegal informer)
-* identification system (persistant user id for database storage)
-* user custom data key/value
-* gui (dynamic menu, progress bars, prompt) API
-* blip, markers (colored circles), areas (enter/leave callbacks) API
-* MySQL lua bindings (prepared statements)
-* proxy for easy server-side inter-resource developement
-* tunnel for easy server/clients communication
+* gui (dynamic menu, progress bars, prompt) API, blip, markers (colored circles), areas (enter/leave callbacks) API
+* database SQL/MySQL "driver" system to interface to any MySQL resources
+* proxy for easy inter-resource developement, tunnel for easy server/clients communication
 
 ## TODO LIST
 * home stuff (home garage,etc)
 * vehicle customization
-* static chests
 * drop weapon/save weapon components
 * police pc: add custom police records
 * admin: tp to marker
 * police research per veh type
-* display some permission/group count
+* vehicle ownership rework
+* props, NPC
 
 ## NOTES
 ### Homes
@@ -89,35 +76,48 @@ Home components allow developers to create things to be added inside homes using
 * [API](#api)
   * [Base](#base-1)
   * [Group/permission](#grouppermission)
+     * [Regular permissions](#regular-permissions)
+     * [Special item permission](#special-item-permission)
+     * [Special aptitude permission](#special-aptitude-permission)
+     * [Special function permission](#special-function-permission)
+     * [API](#api-1)
   * [Survival](#survival)
   * [Police](#police)
   * [Player state](#player-state)
   * [Identity](#identity)
   * [Money](#money)
   * [Inventory](#inventory)
+     * [Items](#items)
   * [Item transformer](#item-transformer)
   * [Home](#home)
+     * [Basic components](#basic-components)
+        * [Chest](#chest)
+        * [Wardrobe](#wardrobe)
+        * [Game table](#game-table)
+        * [Item transformer](#item-transformer-1)
+        * [Radio](#radio)
   * [Mission](#mission)
   * [GUI](#gui)
-     * [Registering choices to the main menu](#registering-choices-to-the-main-menu)
+     * [Extending menus](#extending-menus)
+  * [Audio](#audio)
+     * [Notes](#notes-1)
+  * [VoIP](#voip)
   * [Map](#map)
+  * [Misc](#misc)
 * [Libs](#libs)
+  * [utils](#utils)
   * [Proxy](#proxy)
   * [Tunnel](#tunnel)
-  * [MySQL](#mysql)
-  * [Asynchronous Hell](#asynchronous-hell)
+  * [Database](#database)
 
-[(gh-md-toc)](https://github.com/ekalinin/github-markdown-toc)
+[gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
 
 ### Deployment
 #### Installation
 
 vRP has been tested under Windows and GNU/Linux with Mono 4.8.
 
-First, make sure you don't have other resources loaded (especially resources using MySQL, add them later and see if they break vRP).
-vRP use a new version of MySql.Data.dll, the 4.5, since only one version can be loaded at a time, if another resource load an older version, things will get crazy.
-
-Then clone the repository or download the master [archive](https://github.com/ImagicTheCat/vRP/archive/master.zip) and copy the `vrp/` directory to your resource folder. Add `vrp_mysql` then `vrp` to the loading resource list (first after the basic FiveM resources is better).
+Clone the repository or download the fxserver [archive](https://github.com/ImagicTheCat/vRP/archive/fxserver.zip) and copy the `vrp` and `vrp_mysql` directories to your resource folder. Add `vrp_mysql` then `vrp` to the loading resource list (first after the basic FiveM resources is better).
 
 #### Configuration
 
@@ -130,9 +130,14 @@ Everything you need to know is in the configuration files, but if you have troub
 
 #### Update
 
-vRP will warn you at server launch if a new version is available. You can also update while I commit things, but do that only if you like to beta test, because you will need to update a lot.
+A good way to update (bleeding-edge):
+* use git to clone vRP to create your own version of it, checkout the branch you want, create a branch from it
+* create a symbolic link (or an update script) to `vrp/` in your fxserver resources directory
+* (repeat) configure, commit your changes, stay updated with the vRP repository, solve conflicts
 
-A way to update:
+This way, you will know when config files should be updated and what exactly has been updated.
+
+A more primitive way to update:
 * save your `cfg/` folder somewhere
 * copy all new files in `vrp/`
 * compare your old `cfg/` folder with the new one, fill the gaps (one mistake will break everything, take your time)
@@ -152,7 +157,6 @@ For questions, help, discussions around the project, please go instead on the vR
 #### Base
 
 ```lua
-
 -- (server) called after identification
 AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login) end)
 
@@ -176,6 +180,9 @@ AddEventHandler("vRP:playerLeaveGroup", function(user_id, group, gtype) end)
 
 -- (client) called when the menu pause state change
 AddEventHandler("vRP:pauseChange", function(paused) end)
+
+-- (client) called when the vRP NUI is ready
+AddEventHandler("vRP:NUIready", function() end)
 ```
 
 ### API
@@ -183,28 +190,26 @@ AddEventHandler("vRP:pauseChange", function(paused) end)
 To call the server-side API functions, get the vRP interface.
 
 ```lua
-local Proxy = require("resources/vRP/lib/Proxy")
+local Proxy = module("vrp", "lib/Proxy")
 
 vRP = Proxy.getInterface("vRP")
 
 -- ex:
-vRP.getUserId({source},function(user_id)
-  print("user_id = "..user_id)
-end)
+local user_id = vRP.getUserId(source)
 ```
 
-You can also do it client-side, the API is the same as the TUNNEL CLIENT APIs (copy and add the `vrp/client/Proxy.lua` to your resources, first).
+You can also do it client-side, the API is the same as the TUNNEL CLIENT APIs.
 
 ```lua
 vRP = Proxy.getInterface("vRP")
 
 -- ex:
-vRP.notify({"A notification."}) -- notify the player
+vRP.notify("A notification.") -- notify the player
 ```
 
 For the client/server tunnel API, the interface is also "vRP", see the Tunnel library below.
 
-In the config files callbacks, you can use directly vRP and vRPclient (the tunnel to the clients).
+In the config file callbacks, you can use directly the globals `vRP` (Proxy) and `vRPclient` (the tunnel to the clients).
 
 #### Base
 
@@ -219,6 +224,9 @@ vRP.getUserId(source)
 
 -- return source of the user or nil if not connected
 vRP.getUserSource(user_id)
+
+-- return the player spawn count (0 = not spawned, 1 = first spawn, ...)
+vRP.getSpawns(user_id)
 
 -- set user data (textual data)
 vRP.setUData(user_id,key,value)
@@ -237,6 +245,9 @@ vRP.getSData(key)
 -- TUNNEL SERVER API
 
 -- TUNNEL CLIENT API
+
+-- get user id (client-side)
+vRP.getUserId()
 
 -- teleport the player to the specified coordinates
 vRP.teleport(x,y,z)
@@ -330,10 +341,23 @@ Form: `@group.aptitude.operator`, operators to check the level are greater `>`, 
 * `@physical.strength.3` -> strength level equal to 3
 * `@science.chemicals.>4` -> chemicals science level greater or equal to 5
 
+##### Special function permission
+
+Permissions can also be custom functions, registered by `vRP.registerPermissionFunction`.
+Form: `!name.param1.param2...`
+
+Here is a list of permission functions defined by vRP:
+* `!not. ...`: negation of another permission function (ex `!not.is.inside`)
+* `!is.inside`: check if the player is inside a building (approximation)
+* `!is.invehicle`: check if the player is inside a vehicle
+
 ##### API
 
 ```lua
 -- PROXY API
+
+-- return group title
+vRP.getGroupTitle(group)
 
 -- add a group to a connected user
 vRP.addUserGroup(user_id,group)
@@ -343,6 +367,13 @@ vRP.removeUserGroup(user_id,group)
 
 -- check if the user has a specific group
 vRP.hasGroup(user_id,group)
+
+-- register a special permission function
+-- name: name of the permission -> "!name.[...]"
+-- callback(user_id, parts) 
+--- parts: parts (strings) of the permissions, ex "!name.param1.param2" -> ["name", "param1", "param2"]
+--- should return true or false/nil
+vRP.registerPermissionFunction(name, callback)
 
 -- check if the user has a specific permission
 vRP.hasPermission(user_id, perm)
@@ -461,6 +492,9 @@ vRP.getCustomization()
 -- set player apparence
 -- customization_data: same structure as returned by getCustomization()
 vRP.setCustomization(customization_data)
+
+-- set player armour (0-100)
+vRP.setArmour(amount)
 ```
 
 #### Identity
@@ -563,6 +597,13 @@ vRP.giveInventoryItem(user_id,idname,amount,notify)
 -- return true if the item has been found and the quantity removed
 vRP.tryGetInventoryItem(user_id,idname,amount,notify)
 
+-- get item amount from a connected user inventory
+vRP.getInventoryItemAmount(user_id,idname)
+
+-- get connected user inventory
+-- return map of full idname => amount or nil 
+vRP.getInventory(user_id)
+
 -- clear connected user inventory
 vRP.clearInventory(user_id)
 
@@ -588,39 +629,33 @@ Full example of a resource defining a water bottle item.
 Once defined, items can be used by any resources (ex: they can be added to shops).
 
 ```lua
-local Proxy = require("resources/vRP/lib/Proxy")
-local Tunnel = require("resources/vRP/lib/Tunnel")
+local Proxy = module("vrp", "lib/Proxy")
+local Tunnel = require("vrp", "lib/Tunnel")
 
 vRP = Proxy.getInterface("vRP")
 vRPclient = Tunnel.getInterface("vRP","vrp_waterbottle")
 
--- create Water bottle item (the callback hell begins)
+-- create Water bottle item 
 local wb_choices = {}  -- (see gui API for menudata choices structure)
 
 wb_choices["Drink"] = {function(player,choice) -- add drink action
-  local user_id = vRP.getUserId({player}) -- get user_id
-  if user_id ~= nil then
-    if vRP.tryGetInventoryItem({user_id,"water_bottle",1}) -- try to remove one bottle
-      vRP.varyThirst({user_id,-35}) -- decrease thirst
-      vRPclient.notify(player,{"~b~ Drinking."}) -- notify
-      vRP.closeMenu({player}) -- the water bottle is consumed by the action, close the menu
+  local user_id = vRP.getUserId(player) -- get user_id
+  if user_id then
+    if vRP.tryGetInventoryItem(user_id,"water_bottle",1) then -- try to remove one bottle
+      vRP.varyThirst(user_id,-35) -- decrease thirst
+      vRPclient.notify(player,"~b~ Drinking.") -- notify
+      vRP.closeMenu(player) -- the water bottle is consumed by the action, close the menu
     end
 end
 end,"Do it."}
 
 -- add item definition
-vRP.defInventoryItem({"water_bottle","Water bottle","Drink this my friend.",function() return wb_choices end,0.5})
+vRP.defInventoryItem("water_bottle","Water bottle","Drink this my friend.",function() return wb_choices end,0.5)
 
 -- (at any time later) give 2 water bottles to a connected user
-vRP.giveInventoryItem({user_id,"water_bottle",2})
-
+vRP.giveInventoryItem(user_id,"water_bottle",2)
 ```
 
-Example of utilisation of notification picture
-```lua
-vRPclient.notifyPicture(player,{"CHAR_LESTER", 1, "Unknown", false, "I have a job for you!"})
-```
- 
 #### Item transformer
 
 The item transformer is a very generic way to create harvest and processing areas.
@@ -680,7 +715,7 @@ local itemtr = {
   }
 }
 
-vRP.setItemTransformer({"my_unique_transformer",itemtr})
+vRP.setItemTransformer("my_unique_transformer",itemtr)
 ```
 
 For static areas, configure the file `cfg/item_transformers.lua`, the transformers will be automatically added.
@@ -690,15 +725,27 @@ For static areas, configure the file `cfg/item_transformers.lua`, the transforme
 ```lua
 -- PROXY API
 
--- define home component
+-- define home component (oncreate and ondestroy are called for each player entering/leaving a slot)
 -- name: unique component id
--- oncreate(owner_id, slot_type, slot_id, cid, config, x, y, z, player)
--- ondestroy(owner_id, slot_type, slot_id, cid, config, x, y, z, player)
+-- oncreate(owner_id, slot_type, slot_id, cid, config, data, x, y, z, player)
+-- ondestroy(owner_id, slot_type, slot_id, cid, config, data, x, y, z, player)
+--- owner_id: user_id of house owner
+--- slot_type: slot type name
+--- slot_id: slot id for a specific type
+--- cid: component id (for this slot)
+--- config: component config
+--- data: component datatable
+--- x,y,z: component position
+--- player: player joining/leaving the slot
 vRP.defHomeComponent(name, oncreate, ondestroy)
 
 -- user access a home by address (without asking)
 -- return true on success
 vRP.accessHome(user_id, home, number)
+
+-- get players in the specified home slot
+-- return map of user_id -> player source or nil if the slot is unavailable
+vRP.getHomeSlotPlayers(stype, sid)
 ```
 
 ##### Basic components
@@ -729,6 +776,19 @@ Save your character customization in the wardrobe, so you don't need to customiz
 `itemtr`
 Set the config as any item transformer structure configuration.
 
+###### Radio
+
+`radio`
+
+```lua
+_config = {
+  stations = { -- map of name -> audio source url
+    ["station 1"] = "url",
+    ...
+  },
+  position = {x,y,z} -- optional: define a different position for the audio source (placed 1 meter above the component by default)
+}
+```
 
 #### Mission
 
@@ -781,7 +841,7 @@ end
 local onchoose = function(player,choice,mod)
   -- mod will be input modulation -1,0,1 (left,(c)enter,right)
   print("player choose "..choice)
-  vRP.closeMenu({source}) -- ({} because proxy call) close the menu after the first choice (an action menu for example)
+  vRP.closeMenu(source) -- close the menu after the first choice (an action menu for example)
 end
 
 -- add options and callbacks
@@ -805,14 +865,13 @@ vRP.prompt(source,title,default_text,cb_result)
 -- cb_ok: function(player,ok)
 vRP.request(source,text,time,cb_ok)
 
--- STATIC MENUS
-
--- define choices to a static menu by name (needs to be called like inventory item definition, at initialization)
-vRP.addStaticMenuChoices(name, choices)
-
 -- TUNNEL SERVER API
 
 -- TUNNEL CLIENT API
+
+-- return menu state
+--- opened: boolean
+vRP.getMenuState()
 
 -- return menu paused state
 vRP.isPaused()
@@ -877,8 +936,9 @@ List of known menu names you can extend, each line is `name`: description (data 
 * `main`: main menu (player)
 * `police`: police menu (player)
 * `admin`: admin menu (player)
-* `vehicle`: vehicle menu (user_id, player, vtype, vname)
+* `vehicle`: vehicle menu (user_id, player, vname)
 * `phone`: phone menu, no properties, builders are called one time after server launch
+* `static:<name>`: any static menu, replace `<name>` by the static menu name (player)
 
 ```lua
 -- PROXY API
@@ -892,9 +952,107 @@ vRP.registerMenuBuilder(name, builder)
 -- build a menu
 --- name: menu name type
 --- data: custom data table
--- cbreturn built choices
-vRP.buildMenu(name, data, cbr)
+-- return built choices
+vRP.buildMenu(name, data)
 ```
+
+#### Audio
+
+```lua
+-- TUNNEL CLIENT API
+
+-- play audio source (once)
+--- url: valid audio HTML url (ex: .ogg/.wav/direct ogg-stream url)
+--- volume: 0-1 
+--- x,y,z: position (omit for unspatialized)
+--- max_dist  (omit for unspatialized)
+vRP.playAudioSource(url, volume, x, y, z, max_dist)
+
+-- set named audio source (looping)
+--- name: source name
+--- url: valid audio HTML url (ex: .ogg/.wav/direct ogg-stream url)
+--- volume: 0-1 
+--- x,y,z: position (omit for unspatialized)
+--- max_dist  (omit for unspatialized)
+vRP.setAudioSource(name, url, volume, x, y, z, max_dist)
+
+-- remove named audio source
+vRP.removeAudioSource(name)
+```
+##### Notes
+
+* it uses the Web Audio API of CEF
+* CEF used by FiveM doesn't have mp3/m3u support, so only direct links to ogg/vorbis/(maybe opus) stream will work (for radio stream)
+* .wav/.ogg formats are supported
+* there is no optimization for punctual audio sources, they will be added and removed when they end (no cache)
+* punctual audio sources will not play if the player is `2*max_dist` far away
+* persistent audio sources will pause themselves when the player is `2*max_dist` far away, and play again when inside this radius (save the bandwidth for radio streams or big music files)
+
+#### VoIP
+
+The VoIP system of vRP is designed using WebRTC and a p2p architecture. It allows to create things like voice chat with spatialization, group radio with audio effects (ex: police radio) or phone calls. It is an experimental feature.
+
+Check `cfg/client.lua` and `cfg/gui.lua` to configure the VoIP (to also replace the internal voice chat if wanted).
+You will need to setup a STUN/TURN server to have WebRTC working properly.
+
+You can use [coturn](https://github.com/coturn/coturn) which should be available on most platforms/distributions and is a STUN and TURN server.
+
+Basic example:
+* launch turnserver: `turnserver -a -u user:password -r "myserver"`
+* configure iceServers
+```lua
+cfg.voip_peer_configuration = {
+  iceServers = {
+    {
+      urls = {"stun:mydomain.ext:3478", "turn:mydomain.ext:3478"},
+      username = "user",
+      credential = "password"
+    }
+  }
+}
+```
+
+```lua
+-- TUNNEL CLIENT API
+
+-- request connection to another player for a specific channel
+vRP.connectVoice(channel, player)
+
+-- disconnect from another player for a specific channel
+-- player: nil to disconnect from all players
+vRP.disconnectVoice(channel, player)
+
+-- register callbacks for a specific channel
+--- on_offer(player): should return true to accept the connection
+--- on_connect(player, is_origin): is_origin is true if it's the local peer (not an answer)
+--- on_disconnect(player)
+vRP.registerVoiceCallbacks(channel, on_offer, on_connect, on_disconnect)
+
+-- check if there is an active connection
+vRP.isVoiceConnected(channel, player)
+
+-- check if there is a pending connection
+vRP.isVoiceConnecting(channel, player)
+
+-- return connections (map of channel => map of player => state (0-1))
+vRP.getVoiceChannels()
+
+-- enable/disable speaking
+--- player: nil to affect all channel peers
+--- active: true/false 
+vRP.setVoiceState(channel, player, active)
+
+-- configure channel (can only be called once per channel)
+--- config:
+---- effects: map of name => true/options
+----- spatialization => { max_dist: ..., rolloff: ..., dist_model: ... } (per peer effect)
+----- biquad => { frequency: ..., Q: ..., type: ..., detune: ..., gain: ...} see WebAudioAPI BiquadFilter
+------ freq = 1700, Q = 3, type = "bandpass" (idea for radio effect)
+----- gain => { gain: ... }
+vRP.configureVoice(channel, config)
+```
+
+
 
 #### Map
 
@@ -904,6 +1062,9 @@ vRP.buildMenu(name, data, cbr)
 -- create/update a player area (will trigger enter and leave callbacks)
 -- cb_enter, cb_leave: function(player,area_name)
 vRP.setArea(source,name,x,y,z,radius,height,cb_enter,cb_leave)
+
+-- check if a player is in an area
+vRP.inArea(source,name)
 
 -- remove a player area
 vRP.removeArea(source,name)
@@ -947,7 +1108,41 @@ vRP.removeNamedMarker(name)
 
 ```
 
+#### Misc
+
+```lua
+-- PROXY API
+
+-- remove the player uniform (cloakroom)
+vRP.removeCloak(player)
+
+-- TUNNEL SERVER API
+
+-- TUNNEL CLIENT API
+```
+
+
 ### Libs
+
+#### utils
+
+`lib/utils` define global tools required by vRP and vRP extensions.
+
+```lua
+-- load a lua resource file as module
+-- rsc: resource name
+-- path: lua file path without extension
+module(rsc, path)
+
+-- create an async returner (require a Citizen thread) (also alias for Citizen.CreateThreadNow)
+-- return returner (r:wait(), r(...))
+async()
+
+-- CLIENT and SERVER globals
+-- booleans to known the side of the script
+```
+
+Any function making usage of `async()` require a Citizen thread if not already in one. Citizen will throw an error if you're not in one.
 
 #### Proxy
 
@@ -957,7 +1152,7 @@ Ex:
 
 resource1.lua
 ```lua
-local Proxy = require("resources/vRP/lib/Proxy")
+local Proxy = module("vrp", "lib/Proxy")
 
 Resource1 = {}
 Proxy.addInterface("resource1",Resource1) -- add functions to resource1 interface (can be called multiple times if multiple files declare different functions for the same interface)
@@ -969,15 +1164,17 @@ end
 ```
 resource2.lua
 ```lua
-local Proxy = require("resources/vRP/lib/Proxy")
+local Proxy = module("vrp", "lib/Proxy")
 
 Resource1 = Proxy.getInterface("resource1")
 
-local rvalue1, rvalue2 = Resource1.test({13,42})
+local rvalue1, rvalue2 = Resource1.test(13,42)
 print("resource2 TEST rvalues = "..rvalue1..","..rvalue2)
 ```
 
-The notation is **Interface.function({arguments})**.
+The notation is **Interface.function(...)**.
+
+Good practice is to get the interface once and set it as a global, but if you want to get multiple times the same interface from the same resource, you need to specify a unique identifier (the name of the resource + a unique id for each one). 
 
 #### Tunnel
 
@@ -985,9 +1182,9 @@ The idea behind tunnels is to easily access any declared server function from an
 
 Example of two-way resource communication:
 
-Server-side myrsc
+Server-side myrsc:
 ```lua
-local Tunnel = require("resources/vRP/lib/Tunnel")
+local Tunnel = module("vrp", "lib/Tunnel")
 
 -- build the server-side interface
 serverdef = {} -- you can add function to serverdef later in other server scripts
@@ -999,13 +1196,13 @@ function serverdef.test(msg)
 end
 
 -- get the client-side access
-clientaccess = Tunnel.getInterface("myrsc","myrsc") -- the second argument is a unique id for this tunnel access, the current resource name is a good choice
+clientaccess = Tunnel.getInterface("myrsc") 
 
 -- (later, in a player spawn event) teleport the player to 0,0,0
-clientaccess.teleport(source,{0,0,0})
+clientaccess.teleport(source,0,0,0)
 ```
 
-Client-side myrsc (copy the resources/vRP/client/Tunnel.lua and add it first to the client scripts of your resource)
+Client-side myrsc: 
 ```lua
 
 -- build the client-side interface
@@ -1016,157 +1213,104 @@ function clientdef.teleport(x,y,z)
   SetEntityCoords(GetPlayerPed(-1), x, y, z, 1,0,0,0)
 end
 
--- sometimes, you would want to return the tunnel call asynchronously
+-- sometimes, you would want to return the tunnel call with asynchronous data
 -- ex:
 function clientdef.setModel(hash)
-  local exit = TUNNEL_DELAYED() -- get the delayed return function
+  local r = async()
 
   Citizen.CreateThread(function()
     -- do the asynchronous model loading
     Citizen.Wait(1000)
 
-    exit({true}) -- return a boolean to confirm loading (calling exit will not really exit the function, but just send back the array as the tunnel call return values, so call it wisely)
+    r(true)  -- return true 
   end)
+
+  return r:wait() -- wait for the async returned value
 end
 
 -- get the server-side access
-serveraccess = Tunnel.getInterface("myrsc","myrsc") -- the second argument is a unique id for this tunnel access, the current resource name is a good choice
+serveraccess = Tunnel.getInterface("myrsc")
 
--- call test on server and print the returned value
-serveraccess.test({"my client message"},function(r)
-  print(r)
-end)
-
+-- call test on server and print the returned value (in an async context)
+local r = serveraccess.test("my client message")
+print(r) -- true
 ```
 
 Now if we want to use the same teleport function in another resource:
 
 ```lua
-local Tunnel = require("resources/vRP/lib/Tunnel")
+local Tunnel = module("lib/Tunnel")
 
 -- get the client-side access of myrsc
 myrsc_access = Tunnel.getInterface("myrsc","myotherrsc")
 
 -- (later, in a player spawn event) teleport the player to 0,0,0
-myrsc_access.teleport(source,{0,0,0})
+myrsc_access.teleport(source,0,0,0)
 ```
 
 This way resources can easily use other resources client/server API.
 
-A magic trick with the tunnel system (which is based on the TriggerEvent), imagine we want to teleport all players to the same position:
+The notation is **Interface.function(dest, ...)**.
+
+Good practice is to get the interface once and set it as a global, but if you want to get multiple times the same interface from the same resource, you need to specify a unique identifier (the name of the resource + a unique id for each one). 
+
+Tunnel and Proxy are blocking calls in the current coroutine until the values are returned, to bypass this behaviour, especially for the Tunnel to optimize speed (ping latency of each call), use `_` as prefix for the function name (Proxy/Tunnel interfaces should not have functions starting with `_`). This will discard the returned values, but if you still need them, you can make normal calls in a new Citizen thread with `Citizen.CreateThreadNow` or `async` to have non-blocking code.
+
+Also remember that Citizen event handlers (used by Proxy and Tunnel) seem to not work while loading the resource, to use the Proxy at loading time, you will need to delay it with `Citizen.CreateThread` or a `SetTimeout`.
+
+#### Database
+
+SQL queries are managed by DB drivers, you can use the default vRP driver `vrp_mysql` or use a custom one (`vrp_mysql` has crappy code).
+DB drivers will register themselves (as resources) with a specific name to use in `cfg/base.lua`. Since there is no guarantee about when the driver will be registered, all queries will be cached until that moment. So `[vRP] DB driver "driver_name" not initialized yet (X prepares cached, Y queries cached).`  is not an error, but a warning that the driver is not registered yet and will stop being outputted if the driver is loaded (a message will also say that the driver is loaded).
 
 ```lua
-clientaccess.teleport(-1,{0,0,0},function()
-  print("player "..source.." teleported") -- will be displayed for each teleported player
-end)
-```
+-- API (PROXY)
 
-#### MySQL
+-- register a DB driver
+--- name: unique name for the driver
+--- on_init(cfg): called when the driver is initialized (connection), should return true on success
+---- cfg: db config
+--- on_prepare(name, query): should prepare the query (@param notation)
+--- on_query(name, params, mode): should execute the prepared query
+---- params: map of parameters
+---- mode: 
+----- "query": should return rows (list of map of parameter => value), affected
+----- "execute": should return affected
+----- "scalar": should return a scalar
+vRP.registerDBDriver(name, on_init, on_prepare, on_query)
 
-MySQL queries are managed by the resource `vrp_mysql`, acting like a server for all other resources using it. So connections, commands and queries are globals and should use namespaces if you want to create your own queries to prevent collisions.
+-- prepare a query
+--- name: unique name for the query
+--- query: SQL string with @params notation
+vRP.prepare(name, query)
 
-By default, the `vRP` connection is created, using credentials in `cfg/base.lua`, so you can add new commands to it if you are creating a vRP extension.
+-- execute a query
+--- name: unique name of the query
+--- params: map of parameters
+--- mode: default is "query"
+---- "query": should return rows (list of map of field => value), affected
+---- "execute": should return affected
+---- "scalar": should return a scalar
+vRP.query(name, params, mode)
 
-```lua
--- API
+-- shortcut for vRP.query with "execute"
+vRP.execute(name, params)
 
--- create a connection
--- host can also be written "host:port"
-MySQL.createConnection(name, host, user, password, database)
+-- shortcut for vRP.query with "scalar"
+vRP.scalar(name, params)
 
--- create a command for a specific connection
---- path: "conname/cmdname"
-MySQL.createCommand(path, sql)
 
--- do query
---- path: "conname/cmdname"
---- (optional) params: associative table of SQL params ("@something" => something)
---- (optional) callback(rows, affected): rows as list, with associative table for columns
-MySQL.query(path, params, callback)
-
--- do a scalar query (one row, one column)
---- (optional) callback(scalar)
-MySQL.scalar(path, params, callback)
-
--- do a execute query (no results)
---- (optional) callback(affected)
-MySQL.execute(path, params, callback)
-```
-
-Here is an example of how to use the MySQL module in other resources :
-* add the dependencies `vrp` and `vrp_mysql` to your resource
-* load `@vrp/lib/utils.lua` in your resource (first)
-* then load/use the MySQL module:
-
-```lua
--- load the MySQL module
-local MySQL = module("vrp_mysql", "MySQL")
-
--- create a new connection
-MySQL.createConnection("con_name", host, user, password, database)
-
--- create a command for this connection
-MySQL.createCommand("con_name/command_name", [[
-CREATE TABLE things(
-  id INTEGER PRIMARY AUTO_INCREMENT,
-  thing TEXT
-);
-]])
-
--- execute the command to init tables
-MySQL.execute("con_name/command_name")
-
--- you can also add commands to a created connection
--- adding a command to the vRP connection to get all banned or not banned users
-MySQL.createCommand("vRP/myrsc_getbans", "SELECT id FROM vrp_users WHERE banned = @banned")
+-- examples
 
 -- execute the command after a while, get all banned users
-MySQL.query("vRP/myrsc_getbans", {banned = true}, function(rows, affected)
-  -- rows: rows as a list
-  -- affected: number of rows affected (when updating things, etc)
-
-  -- display banned users
-end)
+local rows, affected = vRP.query("vRP/myrsc_getbans", {banned = true}) -- in async context
+-- rows: rows as a list
+-- affected: number of rows affected (when updating things, etc)
+-- display banned users
 
 -- execute the command after a while, get all non banned users
-MySQL.query("vRP/myrsc_getbans", {banned = false}, function(rows, affected)
-  -- rows: rows as a list
-  -- affected: number of rows affected (when updating things, etc)
-
-  -- display banned users
-end)
-```
-
-#### Asynchronous Hell
-
-As you can see, this new version of vRP rely on asynchronous MySQL queries, so many API functions are now asynchronous. The current way of handling async calls is to pass a callback which will act as the trigger to get the return values when done.
-
-If you need to create your own API function in an async way, a little helper exists in `lib/utils.lua`.
-
-```lua
-local MySQL = module("vrp_mysql", "MySQL")
-local rsc = {}
-
--- async api call, following the previous example
-
--- list banned (or not) users
--- cbreturns list of users
-function rsc.getBannedUsers(banned, cbr)
-  -- this case is simple, but sometimes you would want to have conditional returns, and a default return value
-  -- create the task
-  --- callback, default return values as a table (default nil), timeout in milliseconds (optional, default 5000)
-  local task = Task(cbr, {{}}, 5000)
-
-  -- this ensure that if the mysql query fails, the task will return the empty list of users "{}" after 5 seconds
-
-  MySQL.query("vRP/myrsc_getbans", {banned = banned}, function(rows, affected)
-    local list = {}
-
-    for k,v in pairs(rows) do
-      table.insert(list, v.id)
-    end
-
-    task({list}) -- trigger end of the task, return list of values
-  end)
-end
+local rows, affected = vRP.query("vRP/myrsc_getbans", {banned = false}) -- in async context
+-- rows: rows as a list
+-- affected: number of rows affected (when updating things, etc)
+-- display banned users
 ```

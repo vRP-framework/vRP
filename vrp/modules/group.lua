@@ -11,6 +11,17 @@ local groups = cfg.groups
 local users = cfg.users
 local selectors = cfg.selectors
 
+-- return group title
+function vRP.getGroupTitle(group)
+  local g = groups[group]
+
+  if g and g._config and g._config.title then
+    return g._config.title
+  end
+
+  return group
+end
+
 -- get groups keys of a connected user
 function vRP.getUserGroups(user_id)
   local data = vRP.getUserDataTable(user_id)
@@ -107,7 +118,7 @@ function vRP.removeUserGroup(user_id,group)
   local groupdef = groups[group]
   if groupdef and groupdef._config and groupdef._config.onleave then
     local source = vRP.getUserSource(user_id)
-    if source ~= nil then
+    if source then
       groupdef._config.onleave(source) -- call leave callback
     end
   end
@@ -127,6 +138,37 @@ function vRP.hasGroup(user_id,group)
   local user_groups = vRP.getUserGroups(user_id)
   return (user_groups[group] ~= nil)
 end
+
+local func_perms = {}
+
+-- register a special permission function
+-- name: name of the permission -> "!name.[...]"
+-- callback(user_id, parts) 
+--- parts: parts (strings) of the permissions, ex "!name.param1.param2" -> ["name", "param1", "param2"]
+--- should return true or false/nil
+function vRP.registerPermissionFunction(name, callback)
+  func_perms[name] = callback
+end
+
+-- register not fperm (negate another fperm)
+vRP.registerPermissionFunction("not", function(user_id, parts)
+  return not vRP.hasPermission(user_id, "!"..table.concat(parts, ".", 2))
+end)
+
+vRP.registerPermissionFunction("is", function(user_id, parts)
+  local param = parts[2]
+  if param == "inside" then
+    local player = vRP.getUserSource(user_id)
+    if player then
+      return vRPclient.isInside(player)
+    end
+  elseif param == "invehicle" then
+    local player = vRP.getUserSource(user_id)
+    if player then
+      return vRPclient.isInVehicle(player)
+    end
+  end
+end)
 
 -- check if the user has a specific permission
 function vRP.hasPermission(user_id, perm)
@@ -177,6 +219,17 @@ function vRP.hasPermission(user_id, perm)
         if amount == n then return true end
       end
     end
+  elseif fchar == "!" then -- special function permission
+    local _perm = string.sub(perm,2,string.len(perm))
+    local parts = splitString(_perm,".")
+    if #parts > 0 then
+      local fperm = func_perms[parts[1]]
+      if fperm then
+        return fperm(user_id, parts) or false
+      else
+        return false
+      end
+    end
   else -- regular plain permission
     -- precheck negative permission
     local nperm = "-"..perm
@@ -221,21 +274,28 @@ end
 
 -- GROUP SELECTORS
 
-local function ch_select(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
-    vRP.addUserGroup(user_id, choice)
-    vRP.closeMenu(player)
-  end
-end
-
 -- build menus
 local selector_menus = {}
 for k,v in pairs(selectors) do
+  local kgroups = {}
+
+  local function ch_select(player,choice)
+    local user_id = vRP.getUserId(player)
+    if user_id then
+      local gname = kgroups[choice]
+      if gname then
+        vRP.addUserGroup(user_id, gname)
+        vRP.closeMenu(player)
+      end
+    end
+  end
+
   local menu = {name=k, css={top="75px",header_color="rgba(255,154,24,0.75)"}}
   for l,w in pairs(v) do
     if l ~= "_config" then
-      menu[w] = {ch_select}
+      local title = vRP.getGroupTitle(w)
+      kgroups[title] = w
+      menu[title] = {ch_select}
     end
   end
 
@@ -244,7 +304,7 @@ end
 
 local function build_client_selectors(source)
   local user_id = vRP.getUserId(source)
-  if user_id ~= nil then
+  if user_id then
     for k,v in pairs(selectors) do
       local gcfg = v._config
       local menu = selector_menus[k]
@@ -254,19 +314,19 @@ local function build_client_selectors(source)
         local y = gcfg.y
         local z = gcfg.z
 
-        local function selector_enter()
+        local function selector_enter(source)
           local user_id = vRP.getUserId(source)
           if user_id ~= nil and vRP.hasPermissions(user_id,gcfg.permissions or {}) then
             vRP.openMenu(source,menu) 
           end
         end
 
-        local function selector_leave()
+        local function selector_leave(source)
           vRP.closeMenu(source)
         end
 
-        vRPclient.addBlip(source,{x,y,z,gcfg.blipid,gcfg.blipcolor,k})
-        vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,255,154,24,125,150})
+        vRPclient._addBlip(source,x,y,z,gcfg.blipid,gcfg.blipcolor,k)
+        vRPclient._addMarker(source,x,y,z-1,0.7,0.7,0.5,255,154,24,125,150)
 
         vRP.setArea(source,"vRP:gselector:"..k,x,y,z,1,1.5,selector_enter,selector_leave)
       end
@@ -285,7 +345,7 @@ AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
 
     -- add groups on user join 
     local user = users[user_id]
-    if user ~= nil then
+    if user then
       for k,v in pairs(user) do
         vRP.addUserGroup(user_id,v)
       end

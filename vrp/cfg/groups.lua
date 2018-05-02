@@ -3,6 +3,7 @@ local cfg = {}
 
 -- define each group with a set of permissions
 -- _config property:
+--- title (optional): group display name
 --- gtype (optional): used to have only one group with the same gtype per player (example: a job gtype to only have one job)
 --- onspawn (optional): function(player) (called when the player spawn with the group)
 --- onjoin (optional): function(player) (called when the player join the group)
@@ -11,7 +12,7 @@ local cfg = {}
 
 cfg.groups = {
   ["superadmin"] = {
-    _config = {onspawn = function(player) vRPclient.notify(player,{"You are superadmin."}) end},
+    _config = {onspawn = function(player) vRPclient._notify(player,"You are superadmin.") end},
     "player.group.add",
     "player.group.remove",
     "player.givemoney",
@@ -46,16 +47,18 @@ cfg.groups = {
     "police.seizable" -- can be seized
   },
   ["police"] = {
-    _config = { 
+    _config = {
+      title = "Police",
       gtype = "job",
-      onjoin = function(player) vRPclient.setCop(player,{true}) end,
-      onspawn = function(player) vRPclient.setCop(player,{true}) end,
-      onleave = function(player) vRPclient.setCop(player,{false}) end
+      onjoin = function(player) vRPclient._setCop(player,true) end,
+      onspawn = function(player) vRPclient._setCop(player,true) end,
+      onleave = function(player) vRPclient._setCop(player,false) end
     },
     "police.menu",
     "police.cloakroom",
     "police.pc",
     "police.handcuff",
+    "police.drag",
     "police.putinveh",
     "police.getoutveh",
     "police.check",
@@ -70,23 +73,35 @@ cfg.groups = {
     "-police.seizable" -- negative permission, police can't seize itself, even if another group add the permission
   },
   ["emergency"] = {
-    _config = { gtype = "job" },
+    _config = {
+      title = "Emergency",
+      gtype = "job"
+    },
     "emergency.revive",
     "emergency.shop",
     "emergency.service"
   },
   ["repair"] = {
-    _config = { gtype = "job"},
+    _config = {
+      title = "Repair",
+      gtype = "job"
+    },
     "vehicle.repair",
     "vehicle.replace",
     "repair.service"
   },
   ["taxi"] = {
-    _config = { gtype = "job" },
+    _config = {
+      title = "Taxi",
+      gtype = "job"
+    },
     "taxi.service"
   },
   ["citizen"] = {
-    _config = { gtype = "job" }
+    _config = {
+      title = "Citizen",
+      gtype = "job"
+    }
   }
 }
 

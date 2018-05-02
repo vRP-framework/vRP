@@ -1,24 +1,37 @@
 cfg = module("cfg/client")
 
+local Tunnel = module("vrp", "lib/Tunnel")
+local Proxy = module("vrp", "lib/Proxy")
+local Tools = module("vrp", "lib/Tools")
+
 tvRP = {}
 local players = {} -- keep track of connected players (server id)
 
 -- bind client tunnel interface
-Tunnel.bindInterface("vRP",tvRP)
+Tunnel.bindInterface("vRP", tvRP)
 
 -- get server interface
-vRPserver = Tunnel.getInterface("vRP","vRP")
+vRPserver = Tunnel.getInterface("vRP")
 
 -- add client proxy interface (same as tunnel interface)
 Proxy.addInterface("vRP",tvRP)
 
 -- functions
 
+local user_id
+function tvRP.setUserId(_user_id)
+  user_id = _user_id
+end
+
+-- get user id (client-side)
+function tvRP.getUserId()
+  return user_id
+end
 
 function tvRP.teleport(x,y,z)
   tvRP.unjail() -- force unjail before a teleportation
   SetEntityCoords(GetPlayerPed(-1), x+0.0001, y+0.0001, z+0.0001, 1,0,0,1)
-  vRPserver.updatePos({x,y,z})
+  vRPserver._updatePos(x,y,z)
 end
 
 -- return x,y,z
@@ -64,6 +77,10 @@ end
 
 function tvRP.removePlayer(player)
   players[player] = nil
+end
+
+function tvRP.getPlayers()
+  return players
 end
 
 function tvRP.getNearestPlayers(radius)
@@ -167,7 +184,7 @@ local anim_ids = Tools.newIDGenerator()
 -- seq: list of animations as {dict,anim_name,loops} (loops is the number of loops, default 1) or a task def (properties: task, play_exit)
 -- looping: if true, will infinitely loop the first element of the sequence until stopAnim is called
 function tvRP.playAnim(upper, seq, looping)
-  if seq.task ~= nil then -- is a task (cf https://github.com/ImagicTheCat/vRP/pull/118)
+  if seq.task then -- is a task (cf https://github.com/ImagicTheCat/vRP/pull/118)
     tvRP.stopAnim(true)
 
     local ped = GetPlayerPed(-1)
@@ -306,20 +323,24 @@ end)
 Citizen.CreateThread(function()
   while true do
     Citizen.Wait(500)
-    local ped = GetPlayerPed(-1)
-    local proximity = cfg.voice_proximity
+    if cfg.vrp_voip then -- vRP voip
+      NetworkSetTalkerProximity(0) -- disable voice chat
+    else -- regular voice chat
+      local ped = GetPlayerPed(-1)
+      local proximity = cfg.voice_proximity
 
-    if IsPedSittingInAnyVehicle(ped) then
-      local veh = GetVehiclePedIsIn(ped,false)
-      local hash = GetEntityModel(veh)
-      -- make open vehicles (bike,etc) use the default proximity
-      if IsThisModelACar(hash) or IsThisModelAHeli(hash) or IsThisModelAPlane(hash) then
-        proximity = cfg.voice_proximity_vehicle
+      if IsPedSittingInAnyVehicle(ped) then
+        local veh = GetVehiclePedIsIn(ped,false)
+        local hash = GetEntityModel(veh)
+        -- make open vehicles (bike,etc) use the default proximity
+        if IsThisModelACar(hash) or IsThisModelAHeli(hash) or IsThisModelAPlane(hash) then
+          proximity = cfg.voice_proximity_vehicle
+        end
+      elseif tvRP.isInside() then
+        proximity = cfg.voice_proximity_inside
       end
-    elseif tvRP.isInside() then
-      proximity = cfg.voice_proximity_inside
-    end
 
-    NetworkSetTalkerProximity(proximity+0.0001)
+      NetworkSetTalkerProximity(proximity+0.0001)
+    end
   end
 end)

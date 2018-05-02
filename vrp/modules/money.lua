@@ -4,7 +4,7 @@ local lang = vRP.lang
 -- The money is managed with direct SQL requests to prevent most potential value corruptions
 -- the wallet empty itself when respawning (after death)
 
-MySQL.createCommand("vRP/money_tables", [[
+vRP.prepare("vRP/money_tables", [[
 CREATE TABLE IF NOT EXISTS vrp_user_moneys(
   user_id INTEGER,
   wallet INTEGER,
@@ -14,12 +14,14 @@ CREATE TABLE IF NOT EXISTS vrp_user_moneys(
 );
 ]])
 
-MySQL.createCommand("vRP/money_init_user","INSERT IGNORE INTO vrp_user_moneys(user_id,wallet,bank) VALUES(@user_id,@wallet,@bank)")
-MySQL.createCommand("vRP/get_money","SELECT wallet,bank FROM vrp_user_moneys WHERE user_id = @user_id")
-MySQL.createCommand("vRP/set_money","UPDATE vrp_user_moneys SET wallet = @wallet, bank = @bank WHERE user_id = @user_id")
+vRP.prepare("vRP/money_init_user","INSERT IGNORE INTO vrp_user_moneys(user_id,wallet,bank) VALUES(@user_id,@wallet,@bank)")
+vRP.prepare("vRP/get_money","SELECT wallet,bank FROM vrp_user_moneys WHERE user_id = @user_id")
+vRP.prepare("vRP/set_money","UPDATE vrp_user_moneys SET wallet = @wallet, bank = @bank WHERE user_id = @user_id")
 
 -- init tables
-MySQL.execute("vRP/money_tables")
+async(function()
+  vRP.execute("vRP/money_tables")
+end)
 
 -- load config
 local cfg = module("cfg/money")
@@ -46,8 +48,8 @@ function vRP.setMoney(user_id,value)
 
   -- update client display
   local source = vRP.getUserSource(user_id)
-  if source ~= nil then
-    vRPclient.setDivContent(source,{"money",lang.money.display({value})})
+  if source then
+    vRPclient._setDivContent(source,"money",lang.money.display({value}))
   end
 end
 
@@ -138,34 +140,32 @@ end
 
 -- events, init user account if doesn't exist at connection
 AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login)
-  MySQL.execute("vRP/money_init_user", {user_id = user_id, wallet = cfg.open_wallet, bank = cfg.open_bank}, function(affected)
-    -- load money (wallet,bank)
-    local tmp = vRP.getUserTmpTable(user_id)
-    if tmp then
-      MySQL.query("vRP/get_money", {user_id = user_id}, function(rows, affected)
-        if #rows > 0 then
-          tmp.bank = rows[1].bank
-          tmp.wallet = rows[1].wallet
-        end
-      end)
+  vRP.execute("vRP/money_init_user", {user_id = user_id, wallet = cfg.open_wallet, bank = cfg.open_bank})
+  -- load money (wallet,bank)
+  local tmp = vRP.getUserTmpTable(user_id)
+  if tmp then
+    local rows = vRP.query("vRP/get_money", {user_id = user_id})
+    if #rows > 0 then
+      tmp.bank = rows[1].bank
+      tmp.wallet = rows[1].wallet
     end
-  end)
+  end
 end)
 
 -- save money on leave
 AddEventHandler("vRP:playerLeave",function(user_id,source)
   -- (wallet,bank)
   local tmp = vRP.getUserTmpTable(user_id)
-  if tmp and tmp.wallet ~= nil and tmp.bank ~= nil then
-    MySQL.execute("vRP/set_money", {user_id = user_id, wallet = tmp.wallet, bank = tmp.bank})
+  if tmp and tmp.wallet and tmp.bank then
+    vRP.execute("vRP/set_money", {user_id = user_id, wallet = tmp.wallet, bank = tmp.bank})
   end
 end)
 
 -- save money (at same time that save datatables)
 AddEventHandler("vRP:save", function()
   for k,v in pairs(vRP.user_tmp_tables) do
-    if v.wallet ~= nil and v.bank ~= nil then
-      MySQL.execute("vRP/set_money", {user_id = k, wallet = v.wallet, bank = v.bank})
+    if v.wallet and v.bank then
+      vRP.execute("vRP/set_money", {user_id = k, wallet = v.wallet, bank = v.bank})
     end
   end
 end)
@@ -174,43 +174,41 @@ end)
 AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
   if first_spawn then
     -- add money display
-    vRPclient.setDiv(source,{"money",cfg.display_css,lang.money.display({vRP.getMoney(user_id)})})
+    vRPclient._setDiv(source,"money",cfg.display_css,lang.money.display({vRP.getMoney(user_id)}))
   end
 end)
 
 local function ch_give(player,choice)
   -- get nearest player
   local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
-    vRPclient.getNearestPlayer(player,{10},function(nplayer)
-      if nplayer ~= nil then
-        local nuser_id = vRP.getUserId(nplayer)
-        if nuser_id ~= nil then
-          -- prompt number
-          vRP.prompt(player,lang.money.give.prompt(),"",function(player,amount)
-            local amount = parseInt(amount)
-            if amount > 0 and vRP.tryPayment(user_id,amount) then
-              vRP.giveMoney(nuser_id,amount)
-              vRPclient.notify(player,{lang.money.given({amount})})
-              vRPclient.notify(nplayer,{lang.money.received({amount})})
-            else
-              vRPclient.notify(player,{lang.money.not_enough()})
-            end
-          end)
+  if user_id then
+    local nplayer = vRPclient.getNearestPlayer(player,10)
+    if nplayer then
+      local nuser_id = vRP.getUserId(nplayer)
+      if nuser_id then
+        -- prompt number
+        local amount = vRP.prompt(player,lang.money.give.prompt(),"")
+        local amount = parseInt(amount)
+        if amount > 0 and vRP.tryPayment(user_id,amount) then
+          vRP.giveMoney(nuser_id,amount)
+          vRPclient._notify(player,lang.money.given({amount}))
+          vRPclient._notify(nplayer,lang.money.received({amount}))
         else
-          vRPclient.notify(player,{lang.common.no_player_near()})
+          vRPclient._notify(player,lang.money.not_enough())
         end
       else
-        vRPclient.notify(player,{lang.common.no_player_near()})
+        vRPclient._notify(player,lang.common.no_player_near())
       end
-    end)
+    else
+      vRPclient._notify(player,lang.common.no_player_near())
+    end
   end
 end
 
 -- add player give money to main menu
 vRP.registerMenuBuilder("main", function(add, data)
   local user_id = vRP.getUserId(data.player)
-  if user_id ~= nil then
+  if user_id then
     local choices = {}
     choices[lang.money.give.title()] = {ch_give, lang.money.give.description()}
 

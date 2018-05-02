@@ -10,7 +10,7 @@ local function play_eat(player)
     {"mp_player_inteat@burger", "mp_player_int_eat_exit_burger",1}
   }
 
-  vRPclient.playAnim(player,{true,seq,false})
+  vRPclient._playAnim(player,true,seq,false)
 end
 
 local function play_drink(player)
@@ -20,7 +20,7 @@ local function play_drink(player)
     {"mp_player_intdrink","outro_bottle",1}
   }
 
-  vRPclient.playAnim(player,{true,seq,false})
+  vRPclient._playAnim(player,true,seq,false)
 end
 
 -- gen food choices as genfunc
@@ -44,10 +44,10 @@ local function gen(ftype, vary_hunger, vary_thirst)
           if vary_thirst ~= 0 then vRP.varyThirst(user_id,vary_thirst) end
 
           if ftype == "drink" then
-            vRPclient.notify(player,{"~b~ Drinking "..name.."."})
+            vRPclient._notify(player,"~b~ Drinking "..name..".")
             play_drink(player)
           elseif ftype == "eat" then
-            vRPclient.notify(player,{"~o~ Eating "..name.."."})
+            vRPclient._notify(player,"~o~ Eating "..name..".")
             play_eat(player)
           end
 

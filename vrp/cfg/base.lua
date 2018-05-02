@@ -3,6 +3,7 @@ local cfg = {}
 
 -- mysql credentials
 cfg.db = {
+  driver = "vrp_mysql",
   host = "127.0.0.1",
   database = "vRP",
   user = "vRP",
@@ -24,7 +25,11 @@ cfg.ping_timeout = 5 -- number of minutes after a client should be kicked if not
 cfg.ignore_ip_identifier = true
 
 cfg.lang = "en"
+
 cfg.debug = false
+
+-- time to wait before displaying async return warning (seconds)
+cfg.debug_async_time = 2
 
 
 return cfg

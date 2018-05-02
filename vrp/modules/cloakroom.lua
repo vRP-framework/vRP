@@ -12,7 +12,7 @@ local function save_idle_custom(player, custom)
   local r_idle = {}
 
   local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
+  if user_id then
     local data = vRP.getUserDataTable(user_id)
     if data then
       if data.cloakroom_idle == nil then -- set cloakroom idle if not already set
@@ -29,67 +29,70 @@ local function save_idle_custom(player, custom)
   return r_idle
 end
 
-local function rollback_idle_custom(player)
+-- remove the player uniform (cloakroom)
+function vRP.removeCloak(player)
   local user_id = vRP.getUserId(player)
-  if user_id ~= nil then
+  if user_id then
     local data = vRP.getUserDataTable(user_id)
     if data then
       if data.cloakroom_idle ~= nil then -- consume cloakroom idle
-        vRPclient.setCustomization(player,{data.cloakroom_idle})
+        vRPclient._setCustomization(player,data.cloakroom_idle)
         data.cloakroom_idle = nil
       end
     end
   end
 end
 
-for k,v in pairs(cfg.cloakroom_types) do
-  local menu = {name=lang.cloakroom.title({k}),css={top="75px",header_color="rgba(0,125,255,0.75)"}}
-  menus[k] = menu
+async(function()
+  -- generate menus
+  for k,v in pairs(cfg.cloakroom_types) do
+    local menu = {name=lang.cloakroom.title({k}),css={top="75px",header_color="rgba(0,125,255,0.75)"}}
+    menus[k] = menu
 
-  -- check if not uniform cloakroom
-  local not_uniform = false
-  if v._config and v._config.not_uniform then not_uniform = true end
+    -- check if not uniform cloakroom
+    local not_uniform = false
+    if v._config and v._config.not_uniform then not_uniform = true end
 
-  -- choose cloak 
-  local choose = function(player, choice)
-    local custom = v[choice]
-    if custom then
-      vRPclient.getCustomization(player,{},function(custom)
+    -- choose cloak 
+    local choose = function(player, choice)
+      local custom = v[choice]
+      if custom then
+        old_custom = vRPclient.getCustomization(player)
         local idle_copy = {}
 
         if not not_uniform then -- if a uniform cloakroom
           -- save old customization if not already saved (idle customization)
-          idle_copy = save_idle_custom(player, custom)
+          idle_copy = save_idle_custom(player, old_custom)
         end
 
         -- prevent idle_copy to hide the cloakroom model property (modelhash priority)
-        if v[choice].model ~= nil then
+        if custom.model then
           idle_copy.modelhash = nil
         end
 
         -- write on idle custom copy
-        for l,w in pairs(v[choice]) do
+        for l,w in pairs(custom) do
           idle_copy[l] = w
         end
 
         -- set cloak customization
-        vRPclient.setCustomization(player,{idle_copy})
-      end)
+        vRPclient._setCustomization(player,idle_copy)
+      end
+    end
+
+    -- rollback clothes
+    if not not_uniform then
+      menu[lang.cloakroom.undress.title()] = {function(player,choice) vRP.removeCloak(player) end}
+    end
+
+    -- add cloak choices
+    for l,w in pairs(v) do
+      if l ~= "_config" then
+        menu[l] = {choose}
+      end
     end
   end
-
-  -- rollback clothes
-  if not not_uniform then
-    menu[lang.cloakroom.undress.title()] = {function(player,choice) rollback_idle_custom(player) end}
-  end
-
-  -- add cloak choices
-  for l,w in pairs(v) do
-    if l ~= "_config" then
-      menu[l] = {choose}
-    end
-  end
-end
+end)
 
 -- clients points
 
@@ -103,12 +106,12 @@ local function build_client_points(source)
 
       local function cloakroom_enter(source,area)
         local user_id = vRP.getUserId(source)
-        if user_id ~= nil and vRP.hasPermissions(user_id,gcfg.permissions or {}) then
+        if user_id and vRP.hasPermissions(user_id,gcfg.permissions or {}) then
           if gcfg.not_uniform then -- not a uniform cloakroom
             -- notify player if wearing a uniform
             local data = vRP.getUserDataTable(user_id)
             if data.cloakroom_idle ~= nil then
-              vRPclient.notify(source,{lang.common.wearing_uniform()})
+              vRPclient._notify(source,lang.common.wearing_uniform())
             end
           end
 
@@ -121,7 +124,7 @@ local function build_client_points(source)
       end
 
       -- cloakroom
-      vRPclient.addMarker(source,{x,y,z-1,0.7,0.7,0.5,0,125,255,125,150})
+      vRPclient._addMarker(source,x,y,z-1,0.7,0.7,0.5,0,125,255,125,150)
       vRP.setArea(source,"vRP:cfg:cloakroom"..k,x,y,z,1,1.5,cloakroom_enter,cloakroom_leave)
     end
   end
@@ -133,5 +136,3 @@ AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
     build_client_points(source)
   end
 end)
-
-

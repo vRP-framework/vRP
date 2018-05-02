@@ -184,6 +184,10 @@ local lang = {
         title = "Handcuff",
         description = "Handcuff/unhandcuff nearest player."
       },
+      drag = {
+        title = "Drag",
+        description = "Make the nearest player follow/unfollow you."
+      },
       putinveh = {
         title = "Put in vehicle",
         description = "Put the nearest handcuffed player in the nearest vehicle, as passenger."
@@ -275,6 +279,10 @@ local lang = {
       },
       remove = {
         title = "Remove"
+      },
+      call = {
+        title = "Call",
+        not_reached = "~r~ n°{1} not reached."
       }
     },
     sms = {
@@ -298,6 +306,16 @@ local lang = {
       description = "Post an announce visible to everyone for a few seconds.",
       item_desc = "{1} $<br /><br/>{2}",
       prompt = "Announce content (10-1000 chars): "
+    },
+    call = {
+      ask = "Accept call from {1} ?",
+      notify_to = "Calling~b~ {1}...",
+      notify_from = "Receive call from ~b~ {1}...",
+      notify_refused = "Call to ~b~ {1}... ~r~ refused."
+    },
+    hangup = {
+      title = "Hang up",
+      description = "Hang up the phone (shutdown current call)."
     }
   },
   emotes = {
@@ -356,6 +374,12 @@ local lang = {
         request = "[BET] Do you want to bet {1} $ ?",
         started = "~g~Bet started."
       }
+    },
+    radio = {
+      title = "Radio",
+      off = {
+        title = "> turn off"
+      }
     }
   },
   garage = {
@@ -379,7 +403,9 @@ local lang = {
     },
     store = {
       title = "Store",
-      description = "Put your current vehicle in the garage."
+      description = "Put your current vehicle in the garage.",
+      too_far = "The vehicle is too far away.",
+      wrong_garage = "The vehicle can't be stored in this garage."
     }
   },
   vehicle = {
@@ -443,6 +469,7 @@ local lang = {
     }
   },
   itemtr = {
+    not_enough_reagents = "~r~Not enough reagents.",
     informer = {
       title = "Illegal Informer",
       description = "{1} $",
@@ -467,6 +494,9 @@ local lang = {
       group = "{1}: ",
       aptitude = "{1} LVL {3} EXP {2}"
     }
+  },
+  radio = {
+    title = "Radio ON/OFF"
   }
 }
 

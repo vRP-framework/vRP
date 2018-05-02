@@ -3,17 +3,15 @@ local cfg = {}
 -- define garage types with their associated vehicles
 -- (vehicle list: https://wiki.fivem.net/wiki/Vehicles)
 
--- each garage type is an associated list of veh_name/veh_definition 
--- they need a _config property to define the blip and the vehicle type for the garage (each vtype allow one vehicle to be spawned at a time, the default vtype is "default")
--- this is used to let the player spawn a boat AND a car at the same time for example, and only despawn it in the correct garage
--- _config: vtype, blipid, blipcolor, permissions (optional, only users with the permission will have access to the shop)
+-- each garage type is a map of veh_name => {title, price, description}
+-- _config: blipid, blipcolor, permissions (optional, only users with the permissions will have access to the shop)
 
 cfg.rent_factor = 0.1 -- 10% of the original price if a rent
 cfg.sell_factor = 0.75 -- sell for 75% of the original price
 
 cfg.garage_types = {
   ["compacts"]  = {
-    _config = {vtype="car",blipid=50,blipcolor=4},
+    _config = {blipid=50,blipcolor=4},
     ["blista"] = {"Blista", 15000, ""},
     ["brioso"] = {"Brioso R/A", 155000, ""},
     ["dilettante"] = {"Dilettante", 25000, ""},
@@ -24,7 +22,7 @@ cfg.garage_types = {
   },
 
   ["coupe"] = {
-    _config = {vtype="car",blipid=50,blipcolor=4},
+    _config = {blipid=50,blipcolor=4},
     ["cogcabrio"] = {"Cognoscenti Cabrio",180000, ""},
     ["exemplar"] = {"Exemplar", 200000, ""},
     ["F620"] = {"F620", 80000, ""},
@@ -42,7 +40,7 @@ cfg.garage_types = {
   },
 
   ["sports"] = {
-    _config = {vtype="car",blipid=50,blipcolor=4},
+    _config = {blipid=50,blipcolor=4},
     ["ninef"] = {"9F",120000, ""},
     ["ninef2"] = {"9F Cabrio",130000, ""},
     ["alpha"] = {"Alpha",150000, ""},
@@ -76,7 +74,7 @@ cfg.garage_types = {
   },
 
   ["sportsclassics"] = {
-    _config = {vtype="car",blipid=50,blipcolor=5},
+    _config = {blipid=50,blipcolor=5},
     ["casco"] = {"Casco",680000, ""},
     ["coquette2"] = {"Coquette Classic",665000, ""},
     ["jb700"] = {"JB 700",350000, ""},
@@ -88,7 +86,7 @@ cfg.garage_types = {
   },
 
   ["supercars"] = {
-    _config = {vtype="car",blipid=50,blipcolor=5},
+    _config = {blipid=50,blipcolor=5},
     ["adder"] = {"Adder",1000000, ""},
     ["banshee2"] = {"Banshee 900R",565000, ""},
     ["bullet"] = {"Bullet",155000, ""},
@@ -111,7 +109,7 @@ cfg.garage_types = {
   },
 
   ["musclecars"] = {
-    _config = {vtype="car",blipid=50,blipcolor=4},
+    _config = {blipid=50,blipcolor=4},
     ["blade"] = {"Blade",160000, ""},
     ["buccaneer"] = {"Buccaneer",29000, ""},
     ["Chino"] = {"Chino",225000, ""},
@@ -130,7 +128,7 @@ cfg.garage_types = {
   },
 
   ["off-road"] = {
-    _config = {vtype="car",blipid=50,blipcolor=4},
+    _config = {blipid=50,blipcolor=4},
     ["bifta"] = {"Bifta",75000, ""},
     ["blazer"] = {"Blazer",8000, ""},
     ["brawler"] = {"Brawler",715000, ""},
@@ -143,7 +141,7 @@ cfg.garage_types = {
   },
 
   ["suvs"]  = {
-    _config = {vtype="car",blipid=50,blipcolor=4},
+    _config = {blipid=50,blipcolor=4},
     ["baller"] = {"Baller",90000, ""},
     ["cavalcade"] = {"Cavalcade",60000, ""},
     ["granger"] = {"Grabger",35000, ""},
@@ -156,7 +154,7 @@ cfg.garage_types = {
   },
 
   ["vans"] = {
-    _config = {vtype="car",blipid=50,blipcolor=4},
+    _config = {blipid=50,blipcolor=4},
     ["bison"] = {"Bison",30000, ""},
     ["bobcatxl"] = {"Bobcat XL",23000, ""},
     ["gburrito"] = {"Gang Burrito",65000, ""},
@@ -169,7 +167,7 @@ cfg.garage_types = {
   },
 
   ["sedans"] = {
-    _config = {vtype="car",blipid=50,blipcolor=4},
+    _config = {blipid=50,blipcolor=4},
     ["asea"] = {"Asea",1000000, ""},
     ["asterope"] = {"Asterope",1000000, ""},
     ["cognoscenti"] = {"Cognoscenti",1000000, ""},
@@ -196,7 +194,7 @@ cfg.garage_types = {
   },
 
   ["motorcycles"] = {
-    _config = {vtype="bike",blipid=226,blipcolor=4},
+    _config = {blipid=226,blipcolor=4},
     ["AKUMA"] = {"Akuma",9000, ""},
     ["bagger"] = {"Bagger",5000, ""},
     ["bati"] = {"Bati 801",15000, ""},

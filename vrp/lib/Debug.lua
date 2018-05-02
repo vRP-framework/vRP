@@ -1,25 +1,50 @@
 
+local Tools = module("vrp", "lib/Tools")
+
 local Debug = {}
 
-Debug.active = false
+if SERVER then
+  local cfg = module("vrp", "cfg/base")
+  Debug.active = cfg.debug
+  Debug.async_time = cfg.debug_async_time or 2
+end
 Debug.maxlen = 75
-Debug.stack = {}
 
-function Debug.pbegin(name)
+local profile_ids = Tools.newIDGenerator()
+local profiles = {}
+
+function Debug.log(str, no_limit)
   if Debug.active then
-    if string.len(name) > Debug.maxlen then
-      name = string.sub(name,1,Debug.maxlen).."..."
+    if not no_limit and string.len(str) > Debug.maxlen then
+      str = string.sub(str,1,Debug.maxlen).."..."
     end
 
-    table.insert(Debug.stack, {name,os.clock()})
-    print("[profile] => "..name)
+    print("[vRP Debug] "..str)
   end
 end
 
-function Debug.pend()
+-- begin profile
+function Debug.pbegin(str)
+  if not max_time then
+    max_time = 2
+  end
+
   if Debug.active then
-    local front = table.remove(Debug.stack)
-    print("[profile] <= "..front[1].." "..(os.clock()-front[2]).."s")
+    local id = profile_ids:gen()
+    profiles[id] = {os.clock(), str}
+    return id
+  end
+end
+
+-- end profile
+function Debug.pend(id)
+  if Debug.active then
+    local profile = profiles[id]
+    if profile then
+      Debug.log("profiled "..profile[2].." = "..(math.floor((os.clock()-profile[1])*1000)/1000).."s", true)
+      profiles[id] = nil
+      profile_ids:free(id)
+    end
   end
 end
 
