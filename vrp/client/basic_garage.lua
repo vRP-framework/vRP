@@ -99,17 +99,18 @@ Citizen.CreateThread(function()
 end)
 --]]
 
-function GetVehicleInDirection(coordFrom, coordTo)
+function tvRP.GetVehicleInDirection(coordFrom, coordTo)
 	local rayHandle = CastRayPointToPoint(coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 10, GetPlayerPed(-1), 0)
 	local a, b, c, d, vehicle = GetRaycastResult(rayHandle)
 	return vehicle
 end
 
-function TryGetVehicleInDirection(radius)-- Optimize in pls
+function tvRP.TryGetVehicleInDirection(radius)
+	local x,y,z = vRP.getPosition()
 	local coordA = GetEntityCoords(GetPlayerPed(-1), true)
 	for i = 1, 32 do
 		local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), 0.0, radius, 0.0)
-		veh = GetVehicleInDirection(coordA, coordB)
+		veh = tvRP.GetVehicleInDirection(coordA, coordB)
 		if veh ~= nil and veh ~= 0 then
 			vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
 			if GetDistanceBetweenCoords(x,y,z, vx, vy, vz, false) then
@@ -119,7 +120,7 @@ function TryGetVehicleInDirection(radius)-- Optimize in pls
 	end
 	for i = 1, 32 do
 		local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius, 0.0, 0.0)
-		veh = GetVehicleInDirection(coordA, coordB)
+		veh = tvRP.GetVehicleInDirection(coordA, coordB)
 		if veh ~= nil and veh ~= 0 then
 			vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
 			if GetDistanceBetweenCoords(x,y,z, vx, vy, vz, false) then
@@ -129,7 +130,7 @@ function TryGetVehicleInDirection(radius)-- Optimize in pls
 	end
 	for i = 1, 32 do
 		local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), 0.0, radius*-1, 0.0)
-		veh = GetVehicleInDirection(coordA, coordB)
+		veh = tvRP.GetVehicleInDirection(coordA, coordB)
 		if veh ~= nil and veh ~= 0 then
 			vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
 			if GetDistanceBetweenCoords(x,y,z, vx, vy, vz, false) then
@@ -139,7 +140,7 @@ function TryGetVehicleInDirection(radius)-- Optimize in pls
 	end
 	for i = 1, 32 do
 		local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius*-1, 0.0, 0.0)
-		veh = GetVehicleInDirection(coordA, coordB)
+		veh = tvRP.GetVehicleInDirection(coordA, coordB)
 		if veh ~= nil and veh ~= 0 then
 			vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
 			if GetDistanceBetweenCoords(x,y,z, vx, vy, vz, false) then
@@ -149,7 +150,7 @@ function TryGetVehicleInDirection(radius)-- Optimize in pls
 	end
 	for i = 1, 32 do
 		local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius, radius, 0.0)
-		veh = GetVehicleInDirection(coordA, coordB)
+		veh = tvRP.GetVehicleInDirection(coordA, coordB)
 		if veh ~= nil and veh ~= 0 then
 			vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
 			if GetDistanceBetweenCoords(x,y,z, vx, vy, vz, false) then
@@ -159,7 +160,7 @@ function TryGetVehicleInDirection(radius)-- Optimize in pls
 	end
 	for i = 1, 32 do
 		local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius*-1, radius*-1, 0.0)
-		veh = GetVehicleInDirection(coordA, coordB)
+		veh = tvRP.GetVehicleInDirection(coordA, coordB)
 		if veh ~= nil and veh ~= 0 then
 			vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
 			if GetDistanceBetweenCoords(x,y,z, vx, vy, vz, false) then
@@ -169,7 +170,7 @@ function TryGetVehicleInDirection(radius)-- Optimize in pls
 	end
 	for i = 1, 32 do
 		local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius*-1, radius, 0.0)
-		veh = GetVehicleInDirection(coordA, coordB)
+		veh = tvRP.GetVehicleInDirection(coordA, coordB)
 		if veh ~= nil and veh ~= 0 then
 			vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
 			if GetDistanceBetweenCoords(x,y,z, vx, vy, vz, false) then
@@ -179,7 +180,7 @@ function TryGetVehicleInDirection(radius)-- Optimize in pls
 	end
 	for i = 1, 32 do
 		local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius, radius*-1, 0.0)
-		veh = GetVehicleInDirection(coordA, coordB)
+		veh = tvRP.GetVehicleInDirection(coordA, coordB)
 		if veh ~= nil and veh ~= 0 then
 			vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
 			if GetDistanceBetweenCoords(x,y,z, vx, vy, vz, false) then
@@ -189,8 +190,6 @@ function TryGetVehicleInDirection(radius)-- Optimize in pls
 	end
 end
 
--- (experimental) this function return the nearest vehicle
--- Work for all vehicle, with player in side too.
 function tvRP.getNearestVehicle(radius)
 	local x,y,z = vRP.getPosition()
 	local ped = GetPlayerPed(-1)
@@ -201,7 +200,7 @@ function tvRP.getNearestVehicle(radius)
 		if not IsEntityAVehicle(veh) then -- Have ped in vehicle
 			veh = GetClosestVehicle(x+0.0001,y+0.0001,z+0.0001, radius+0.0001, 0, 4+2+1)
 			if not IsEntityAVehicle(veh) then
-				veh = TryGetVehicleInDirection(radius)
+				veh = tvRP.TryGetVehicleInDirection(radius)
 			end
 		end -- cars
 		return veh
