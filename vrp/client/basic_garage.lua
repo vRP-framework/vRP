@@ -99,23 +99,113 @@ Citizen.CreateThread(function()
 end)
 --]]
 
--- (experimental) this function return the nearest vehicle
--- (don't work with all vehicles, but aim to)
-function tvRP.getNearestVehicle(radius)
-  local x,y,z = tvRP.getPosition()
-  local ped = GetPlayerPed(-1)
-  if IsPedSittingInAnyVehicle(ped) then
-    return GetVehiclePedIsIn(ped, true)
-  else
-    -- flags used:
-    --- 8192: boat
-    --- 4096: helicos
-    --- 4,2,1: cars (with police)
+function GetVehicleInDirection(coordFrom, coordTo)
+	local rayHandle = CastRayPointToPoint(coordFrom.x, coordFrom.y, coordFrom.z, coordTo.x, coordTo.y, coordTo.z, 10, GetPlayerPed(-1), 0)
+	local a, b, c, d, vehicle = GetRaycastResult(rayHandle)
+	return vehicle
+end
 
-    local veh = GetClosestVehicle(x+0.0001,y+0.0001,z+0.0001, radius+0.0001, 0, 8192+4096+4+2+1)  -- boats, helicos
-    if not IsEntityAVehicle(veh) then veh = GetClosestVehicle(x+0.0001,y+0.0001,z+0.0001, radius+0.0001, 0, 4+2+1) end -- cars
-    return veh
-  end
+function TryGetVehicleInDirection(radius)-- Optimize in pls
+	local coordA = GetEntityCoords(GetPlayerPed(-1), true)
+	for i = 1, 32 do
+		local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), 0.0, radius, 0.0)
+		veh = GetVehicleInDirection(coordA, coordB)
+		if veh ~= nil and veh ~= 0 then
+			vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
+			if GetDistanceBetweenCoords(x,y,z, vx, vy, vz, false) then
+				return veh
+			end
+		end
+	end
+	for i = 1, 32 do
+		local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius, 0.0, 0.0)
+		veh = GetVehicleInDirection(coordA, coordB)
+		if veh ~= nil and veh ~= 0 then
+			vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
+			if GetDistanceBetweenCoords(x,y,z, vx, vy, vz, false) then
+				return veh
+			end
+		end
+	end
+	for i = 1, 32 do
+		local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), 0.0, radius*-1, 0.0)
+		veh = GetVehicleInDirection(coordA, coordB)
+		if veh ~= nil and veh ~= 0 then
+			vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
+			if GetDistanceBetweenCoords(x,y,z, vx, vy, vz, false) then
+				return veh
+			end
+		end
+	end
+	for i = 1, 32 do
+		local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius*-1, 0.0, 0.0)
+		veh = GetVehicleInDirection(coordA, coordB)
+		if veh ~= nil and veh ~= 0 then
+			vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
+			if GetDistanceBetweenCoords(x,y,z, vx, vy, vz, false) then
+				return veh
+			end
+		end
+	end
+	for i = 1, 32 do
+		local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius, radius, 0.0)
+		veh = GetVehicleInDirection(coordA, coordB)
+		if veh ~= nil and veh ~= 0 then
+			vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
+			if GetDistanceBetweenCoords(x,y,z, vx, vy, vz, false) then
+				return veh
+			end
+		end
+	end
+	for i = 1, 32 do
+		local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius*-1, radius*-1, 0.0)
+		veh = GetVehicleInDirection(coordA, coordB)
+		if veh ~= nil and veh ~= 0 then
+			vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
+			if GetDistanceBetweenCoords(x,y,z, vx, vy, vz, false) then
+				return veh
+			end
+		end
+	end
+	for i = 1, 32 do
+		local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius*-1, radius, 0.0)
+		veh = GetVehicleInDirection(coordA, coordB)
+		if veh ~= nil and veh ~= 0 then
+			vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
+			if GetDistanceBetweenCoords(x,y,z, vx, vy, vz, false) then
+				return veh
+			end
+		end
+	end
+	for i = 1, 32 do
+		local coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius, radius*-1, 0.0)
+		veh = GetVehicleInDirection(coordA, coordB)
+		if veh ~= nil and veh ~= 0 then
+			vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
+			if GetDistanceBetweenCoords(x,y,z, vx, vy, vz, false) then
+				return veh
+			end
+		end
+	end
+end
+
+-- (experimental) this function return the nearest vehicle
+-- Work for all vehicle, with player in side too.
+function tvRP.getNearestVehicle(radius)
+	local x,y,z = vRP.getPosition()
+	local ped = GetPlayerPed(-1)
+	if IsPedSittingInAnyVehicle(ped) then
+		return GetVehiclePedIsIn(ped, true)
+	else
+		local veh = GetClosestVehicle(x+0.0001,y+0.0001,z+0.0001, radius+0.0001, 0, 8192+4096+4+2+1)  -- boats, helicos
+		if not IsEntityAVehicle(veh) then -- Have ped in vehicle
+			veh = GetClosestVehicle(x+0.0001,y+0.0001,z+0.0001, radius+0.0001, 0, 4+2+1)
+			if not IsEntityAVehicle(veh) then
+				veh = TryGetVehicleInDirection(radius)
+			end
+		end -- cars
+		return veh
+	end
 end
 
 -- try to re-own the nearest vehicle
