@@ -110,7 +110,7 @@ function tvRP.TryGetVehicleInDirection(x, y, z, radius)
 	local coordB
 	local veh
 	
-	coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), 0.0, radius, 0.0)
+	coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), 0.0, radius, 0.0) -- ↑
 	veh = tvRP.GetVehicleInDirection(coordA, coordB)
 	if veh ~= nil and veh ~= 0 then
 		local vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
@@ -119,7 +119,7 @@ function tvRP.TryGetVehicleInDirection(x, y, z, radius)
 		end
 	end
 	
-	coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius, 0.0, 0.0)
+	coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), 0.0, radius*-1, 0.0) -- ↓
 	veh = tvRP.GetVehicleInDirection(coordA, coordB)
 	if veh ~= nil and veh ~= 0 then
 		local vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
@@ -128,7 +128,16 @@ function tvRP.TryGetVehicleInDirection(x, y, z, radius)
 		end
 	end
 	
-	coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), 0.0, radius*-1, 0.0)
+	coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius, 0.0, 0.0) -- ←
+	veh = tvRP.GetVehicleInDirection(coordA, coordB)
+	if veh ~= nil and veh ~= 0 then
+		local vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
+		if GetDistanceBetweenCoords(x, y, z, vx, vy, vz, false) then
+			return veh
+		end
+	end
+
+	coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius*-1, 0.0, 0.0) -- →
 	veh = tvRP.GetVehicleInDirection(coordA, coordB)
 	if veh ~= nil and veh ~= 0 then
 		local vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
@@ -137,7 +146,7 @@ function tvRP.TryGetVehicleInDirection(x, y, z, radius)
 		end
 	end
 	
-	coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius*-1, 0.0, 0.0)
+	coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), (radius+1), radius, 0.0)
 	veh = tvRP.GetVehicleInDirection(coordA, coordB)
 	if veh ~= nil and veh ~= 0 then
 		local vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
@@ -146,7 +155,7 @@ function tvRP.TryGetVehicleInDirection(x, y, z, radius)
 		end
 	end
 	
-	coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius, radius, 0.0)
+	coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), (radius+1)*-1, radius*-1, 0.0)
 	veh = tvRP.GetVehicleInDirection(coordA, coordB)
 	if veh ~= nil and veh ~= 0 then
 		local vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
@@ -155,7 +164,7 @@ function tvRP.TryGetVehicleInDirection(x, y, z, radius)
 		end
 	end
 	
-	coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius*-1, radius*-1, 0.0)
+	coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), (radius+1)*-1, radius, 0.0)
 	veh = tvRP.GetVehicleInDirection(coordA, coordB)
 	if veh ~= nil and veh ~= 0 then
 		local vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
@@ -164,7 +173,7 @@ function tvRP.TryGetVehicleInDirection(x, y, z, radius)
 		end
 	end
 	
-	coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius*-1, radius, 0.0)
+	coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), (radius+1), radius*-1, 0.0)
 	veh = tvRP.GetVehicleInDirection(coordA, coordB)
 	if veh ~= nil and veh ~= 0 then
 		local vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
@@ -173,7 +182,16 @@ function tvRP.TryGetVehicleInDirection(x, y, z, radius)
 		end
 	end
 	
-	coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), radius, radius*-1, 0.0)
+	coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), 0.0, 0.0, radius)
+	veh = tvRP.GetVehicleInDirection(coordA, coordB)
+	if veh ~= nil and veh ~= 0 then
+		local vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
+		if GetDistanceBetweenCoords(x, y, z, vx, vy, vz, false) then
+			return veh
+		end
+	end
+	
+	coordB = GetOffsetFromEntityInWorldCoords(GetPlayerPed(-1), 0.0, 0.0, radius*-1)
 	veh = tvRP.GetVehicleInDirection(coordA, coordB)
 	if veh ~= nil and veh ~= 0 then
 		local vx, vy, vz = table.unpack(GetEntityCoords(veh, false))
