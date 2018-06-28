@@ -1307,6 +1307,7 @@ vRP.execute(name, params)
 vRP.scalar(name, params)
 ----
 
+.Usage
 ====
 [source,lua]
 ----
