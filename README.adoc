@@ -1,36 +1,45 @@
-# vRP
-FiveM RP addon/framework
+= vRP
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc: left
+:toclevels: 5
 
-The project aim to create a generic and simple RP framework to prevent everyone from reinventing the wheel.
-
+_FiveM RP addon/framework_ +
+The project aim to create a generic and simple RP framework to prevent everyone from reinventing the wheel. +
 Contributions are welcomed.
 
-Config examples are git branches as `cfg_NAME...`. It's easier to update, for example if `cfg_FR` is not up-to-date, you could do a `git merge` from the last version.
+TIP: Config examples are git branches as `cfg_NAME...`. It's easier to update, for example if `cfg_FR` is not up-to-date, you could do a `git merge` from the last version.
 
-[Discord](http://discord.gg/xzGZBAb)
+http://discord.gg/xzGZBAb[Discord]
 
 Support me on Patreon to keep this project alive:
 
-[![Support me and the project on Patreon](http://i.imgur.com/dyePK6Q.png)](https://www.patreon.com/ImagicTheCat)
+image::http://i.imgur.com/dyePK6Q.png[Support me and the project on Patreon,link="https://www.patreon.com/ImagicTheCat"]
 
-[(old pledgie, thank you to the donors)](https://pledgie.com/campaigns/34016)
+https://pledgie.com/campaigns/34016[(old pledgie, thank you to the donors)]
 
 
-See also (and use it as a basis to understand how to develop extensions for vRP) :
+.See also (and use it as a basis to understand how to develop extensions for vRP):
 * https://github.com/ImagicTheCat/vRP-db-drivers (some DB driver alternatives for `vrp_mysql`)
 * https://github.com/ImagicTheCat/vRP-basic-mission (repair/delivery missions extension)
 * https://github.com/ImagicTheCat/vRP-TCG (Trading Card Game extension)
 
-## Resource credits
+== Resource credits
 
-### Sounds
+=== Sounds
 
-* radio: https://freesound.org/people/JustinBW/sounds/70107/
-* phone sms: https://freesound.org/people/SpiceProgram/sounds/399191/
-* phone ringing: https://freesound.org/people/Framing_Noise/sounds/223183/
-* phone dialing: https://freesound.org/people/Felfa/sounds/178823/
+[horizontal]
+radio:: https://freesound.org/people/JustinBW/sounds/70107/
+phone sms:: https://freesound.org/people/SpiceProgram/sounds/399191/
+phone ringing:: https://freesound.org/people/Framing_Noise/sounds/223183/
+phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 
-## Features
+== Features
 * basic admin tools (kick,ban,whitelist), groups/permissions, languages, identification system (persistant user id for database storage), user custom data key/value
 * player state auto saved to database (hunger,thirst,weapons,player apparence,position)
 * player identity/phone/aptitudes (education/exp), emotes, business system / money (wallet/bank), homes
@@ -41,7 +50,7 @@ See also (and use it as a basis to understand how to develop extensions for vRP)
 * database SQL/MySQL "driver" system to interface to any MySQL resources
 * proxy for easy inter-resource developement, tunnel for easy server/clients communication
 
-## TODO LIST
+== TODO LIST
 * home stuff (home garage,etc)
 * vehicle customization
 * drop weapon/save weapon components
@@ -51,112 +60,67 @@ See also (and use it as a basis to understand how to develop extensions for vRP)
 * vehicle ownership rework
 * props, NPC
 
-## NOTES
-### Homes
+== NOTES
+=== Homes
 
-The home system is experimental, don't expect too much from it at this point. But it's a good basis for some RP interactions, and further developments.
+WARNING: The home system is experimental, don't expect too much from it at this point. But it's a good basis for some RP interactions, and further developments.
 
-#### How it works
+==== How it works
 
 Homes are closed interiors allocated to players when they want to go inside their home, it means that if no slots are availables, you can't enter to your home. Slots are freed when everyone moves out, die, crash or disconnect inside, the slot could not close itself in rare cases, only "eject all" will close the slot. So it's possible that all slots are locked after a while, restarting the server will fix the issue.
 
 Also, player addresses are bound to the home cluster name, it means that if you change the cluster configuration name, players will not be able to enter/sell their home anymore. So choose the name well and don't change it, if you don't want to deal with this.
 
-Home components allow developers to create things to be added inside homes using the config files. See the home API.
+TIP: Home components allow developers to create things to be added inside homes using the config files. See the home API.
 
-## Tutorials
+== Tutorials
 
-* [Deployment](#deployment)
-  * [Installation](#installation)
-  * [Configuration](#configuration)
-  * [Update](#update)
-  * [Issues / Features / Help](#issues--features--help)
-* [Events](#events)
-  * [Base](#base)
-* [API](#api)
-  * [Base](#base-1)
-  * [Group/permission](#grouppermission)
-     * [Regular permissions](#regular-permissions)
-     * [Special item permission](#special-item-permission)
-     * [Special aptitude permission](#special-aptitude-permission)
-     * [Special function permission](#special-function-permission)
-     * [API](#api-1)
-  * [Survival](#survival)
-  * [Police](#police)
-  * [Player state](#player-state)
-  * [Identity](#identity)
-  * [Money](#money)
-  * [Inventory](#inventory)
-     * [Items](#items)
-  * [Item transformer](#item-transformer)
-  * [Home](#home)
-     * [Basic components](#basic-components)
-        * [Chest](#chest)
-        * [Wardrobe](#wardrobe)
-        * [Game table](#game-table)
-        * [Item transformer](#item-transformer-1)
-        * [Radio](#radio)
-  * [Mission](#mission)
-  * [GUI](#gui)
-     * [Extending menus](#extending-menus)
-  * [Audio](#audio)
-     * [Notes](#notes-1)
-  * [VoIP](#voip)
-  * [Map](#map)
-  * [Misc](#misc)
-* [Libs](#libs)
-  * [utils](#utils)
-  * [Proxy](#proxy)
-  * [Tunnel](#tunnel)
-  * [Database](#database)
+=== Deployment
+==== Installation
 
-[gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
+NOTE: vRP has been tested under Windows and GNU/Linux with Mono 4.8.
 
-### Deployment
-#### Installation
+Clone the repository or download the master https://github.com/ImagicTheCat/vRP/archive/master.zip[archive] and copy the `vrp` and `vrp_mysql` directories to your resource folder. Add `vrp_mysql` then `vrp` to the loading resource list (first after the basic FiveM resources is better).
 
-vRP has been tested under Windows and GNU/Linux with Mono 4.8.
+==== Configuration
 
-Clone the repository or download the fxserver [archive](https://github.com/ImagicTheCat/vRP/archive/fxserver.zip) and copy the `vrp` and `vrp_mysql` directories to your resource folder. Add `vrp_mysql` then `vrp` to the loading resource list (first after the basic FiveM resources is better).
-
-#### Configuration
-
-Only the files in the `cfg/` directory should be modified. Modifying the vRP core files is highly discouraged (don't open an issue if it's about modified core files).
+WARNING: Only the files in the `cfg/` directory should be modified. Modifying the vRP core files is highly discouraged (don't open an issue if it's about modified core files).
 
 There is only one required file to configure before launching the server, `cfg/base.lua`, to setup the MySQL database credentials.
 
-There is a lot to configure in vRP, nothing comes preconfigured so everyone can make his unique server.
+There is a lot to configure in vRP, nothing comes preconfigured so everyone can make his unique server. +
 Everything you need to know is in the configuration files, but if you have troubles configuring, look at the configuration of the vRP LaTest servers above.
 
-#### Update
+==== Update
 
-A good way to update (bleeding-edge):
-* use git to clone vRP to create your own version of it, checkout the branch you want, create a branch from it
-* create a symbolic link (or an update script) to `vrp/` in your fxserver resources directory
-* (repeat) configure, commit your changes, stay updated with the vRP repository, solve conflicts
+.A good way to update (bleeding-edge):
+. use git to clone vRP to create your own version of it, checkout the branch you want, create a branch from it
+. create a symbolic link (or an update script) to `vrp/` in your fxserver resources directory
+. (repeat) configure, commit your changes, stay updated with the vRP repository, solve conflicts
 
 This way, you will know when config files should be updated and what exactly has been updated.
 
-A more primitive way to update:
-* save your `cfg/` folder somewhere
-* copy all new files in `vrp/`
-* compare your old `cfg/` folder with the new one, fill the gaps (one mistake will break everything, take your time)
-* replace the new `cfg/` folder with the old modified `cfg/` folder
+.A more primitive way to update:
+. save your `cfg/` folder somewhere
+. copy all new files in `vrp/`
+. compare your old `cfg/` folder with the new one, fill the gaps (one mistake will break everything, take your time)
+. replace the new `cfg/` folder with the old modified `cfg/` folder
 
-#### Issues / Features / Help
+==== Issues / Features / Help
 
-The issue section is only for bug reports and feature requests. I will close (and ban) issues not related to the core of vRP, to keep the github clean.
+WARNING: The issue section is only for bug reports and feature requests. I will close (and ban) issues not related to the core of vRP, to keep the github clean.
 Don't submit issues about your own modifications, I will close them without warning.
 
 When submitting an issue, add any information you can find, with all details. Saying that something doesn't work is useless and will not solve the issue.
 If you have errors in your console BEFORE the issue happen, everything could be corrupted, so the issue is irrelevant, you should solve all unrelated errors before submitting issues.
 
-For questions, help, discussions around the project, please go instead on the vRP thread of the FiveM forum here: https://forum.fivem.net/t/release-vrp-framework/22894
+NOTE: For questions, help, discussions around the project, please go instead on the vRP thread of the FiveM forum here: https://forum.fivem.net/t/release-vrp-framework/22894
 
-### Events
-#### Base
+=== Events
+==== Base
 
-```lua
+[source,lua]
+----
 -- (server) called after identification
 AddEventHandler("vRP:playerJoin",function(user_id,source,name,last_login) end)
 
@@ -183,37 +147,40 @@ AddEventHandler("vRP:pauseChange", function(paused) end)
 
 -- (client) called when the vRP NUI is ready
 AddEventHandler("vRP:NUIready", function() end)
-```
+----
 
-### API
+=== API
 
 To call the server-side API functions, get the vRP interface.
 
-```lua
+[source,lua]
+----
 local Proxy = module("vrp", "lib/Proxy")
 
 vRP = Proxy.getInterface("vRP")
 
 -- ex:
 local user_id = vRP.getUserId(source)
-```
+----
 
 You can also do it client-side, the API is the same as the TUNNEL CLIENT APIs.
 
-```lua
+[source,lua]
+----
 vRP = Proxy.getInterface("vRP")
 
 -- ex:
 vRP.notify("A notification.") -- notify the player
-```
+----
 
-For the client/server tunnel API, the interface is also "vRP", see the Tunnel library below.
+For the client/server tunnel API, the interface is also `vRP`, see the Tunnel library below.
 
-In the config file callbacks, you can use directly the globals `vRP` (Proxy) and `vRPclient` (the tunnel to the clients).
+TIP: In the config file callbacks, you can use directly the globals `vRP` (Proxy) and `vRPclient` (the tunnel to the clients).
 
-#### Base
+==== Base
 
-```lua
+[source,lua]
+----
 -- PROXY API
 
 -- return map of user_id -> player source
@@ -315,45 +282,53 @@ vRP.playSpatializedSound(dict,name,x,y,z,range)
 
 -- play sound
 vRP.playSound(dict,name)
-```
+----
 
-#### Group/permission
+==== Group/permission
 
 Group and permissions are a way to limit features to specific players.
 Each group have a set of permissions defined in `cfg/groups.lua`.
 Permissions can be used with most of the vRP modules, giving the ability to create specific garages, item transformers, etc.
 
-##### Regular permissions
+===== Regular permissions
 
 Regular permissions are plain text permissions, they can be added to groups. You can add a `-` before the permission to negate (even if other groups add the permission, they will be ignored).
 
-##### Special item permission
+===== Special item permission
 
 You can use a special permission to check for items.
-Form: `#idname.operator`, operators to check the amount are greater `>`, less `<`, equal ` `. Ex:
+Form: `#idname.operator`, operators to check the amount are greater `>`, less `<`, equal ` `.
+
+====
 * `#tacos.>0` -> one or more tacos
 * `#weed.1` -> exactly one weed
+====
 
-##### Special aptitude permission
+===== Special aptitude permission
 
-You can use a special permission to check for aptitudes.
-Form: `@group.aptitude.operator`, operators to check the level are greater `>`, less `<`, equal ` `. Ex:
+You can use a special permission to check for aptitudes. +
+Form: `@group.aptitude.operator`, operators to check the level are greater `>`, less `<`, equal ` `. 
+
+====
 * `@physical.strength.3` -> strength level equal to 3
 * `@science.chemicals.>4` -> chemicals science level greater or equal to 5
+====
 
-##### Special function permission
+===== Special function permission
 
-Permissions can also be custom functions, registered by `vRP.registerPermissionFunction`.
+Permissions can also be custom functions, registered by `vRP.registerPermissionFunction`. +
 Form: `!name.param1.param2...`
 
-Here is a list of permission functions defined by vRP:
-* `!not. ...`: negation of another permission function (ex `!not.is.inside`)
-* `!is.inside`: check if the player is inside a building (approximation)
-* `!is.invehicle`: check if the player is inside a vehicle
+.Here is a list of permission functions defined by vRP:
+[horizontal]
+!not. ...:: negation of another permission function (ex `!not.is.inside`)
+!is.inside:: check if the player is inside a building (approximation)
+!is.invehicle:: check if the player is inside a vehicle
 
-##### API
+===== API
 
-```lua
+[source,lua]
+----
 -- PROXY API
 
 -- return group title
@@ -390,17 +365,19 @@ vRP.getUsersByGroup(group)
 
 -- return list of connected users by permission
 vRP.getUsersByPermission(perm)
-```
+----
 
-#### Survival
+==== Survival
 
 Running, walking, being hurt/injured, and just living add hunger and thirst. When the hunger and the thirst are at their maximum level (100%), next hunger/thirst overflow will damage the character by the same amount (ex: when thirsty, don't run, take a car).
-This module disable the basic health regen.
 
-The survival module implement also a coma system, if the health of the player is below the coma threshold, the player is in coma for a specific duration before dying. The health (thus coma) is recorded in the player state.
+NOTE: This module disable the basic health regen.
+
+The survival module implement also a coma system. If the health of the player is below the coma threshold, the player is in coma for a specific duration before dying. The health (thus coma) is recorded in the player state.
 If a player disconnect and reconnect while in coma, he will fall in coma again and die in a few seconds.
 
-```lua
+[source,lua]
+----
 -- PROXY API
 
 -- return hunger (0-100)
@@ -442,11 +419,12 @@ vRP.setFriendlyFire(flag)
 -- enable/disable spawned player ability to be chased/arrested by cops
 -- flag: boolean
 vRP.setPolice(flag)
-```
+----
 
-#### Police
+==== Police
 
-```lua
+[source,lua]
+----
 -- PROXY API
 
 -- insert a police record for a specific user
@@ -464,10 +442,11 @@ vRP.applyWantedLevel(stars)
 -- true to enable, false to disable
 -- if enabled, will prevent NPC cops to fire at the player
 vRP.setCop(flag)
-```
+----
 
-#### Player state
-```lua
+==== Player state
+[source,lua]
+----
 -- PROXY API
 
 -- TUNNEL SERVER API
@@ -495,27 +474,29 @@ vRP.setCustomization(customization_data)
 
 -- set player armour (0-100)
 vRP.setArmour(amount)
-```
+----
 
-#### Identity
+==== Identity
 
 The identity module add identity cards with a car registration number (one per identity, all vehicles will have the same registration number).
 
-```lua
+[source,lua]
+----
 -- PROXY API
 
 -- get user identity
 -- return nil if not found
 -- identity keys are the database fields: user_id, name, firstname, age, registration
 vRP.getUserIdentity(user_id)
-```
+----
 
-#### Money
+==== Money
 
 The money is managed with direct SQL queries to prevent most potential value corruptions.
 The wallet empties itself when respawning (after death).
 
-```lua
+[source,lua]
+----
 -- PROXY API
 
 -- get money in wallet
@@ -552,19 +533,20 @@ vRP.tryDeposit(user_id,amount)
 -- TUNNEL SERVER API
 
 -- TUNNEL CLIENT API
-```
+----
 
-#### Inventory
+==== Inventory
 
 The inventory is autosaved and, as the wallet, gets empty upon death.
 
-##### Items
+===== Items
 
 Items are simple identifiers associated with a quantity in an inventory. But they can also be parametrics.
 
 Parametrics items are identified like other items in the inventory but also have arguments as: `weapon|pistol` instead of just an ID. Parametric items don't contain any data, they are generic item definitions that will be specialized by the arguments.
 
-```lua
+[source,lua]
+----
 -- PROXY API
 
 -- define an inventory item (call this at server start) (parametric or plain text data)
@@ -623,12 +605,14 @@ vRP.openChest(source, name, max_weight, cb_close)
 -- TUNNEL SERVER API
 
 -- TUNNEL CLIENT API
-```
+----
 
-Full example of a resource defining a water bottle item.
+.Full example of a resource defining a water bottle item.
+====
 Once defined, items can be used by any resources (ex: they can be added to shops).
 
-```lua
+[source,lua]
+----
 local Proxy = module("vrp", "lib/Proxy")
 local Tunnel = require("vrp", "lib/Tunnel")
 
@@ -654,20 +638,24 @@ vRP.defInventoryItem("water_bottle","Water bottle","Drink this my friend.",funct
 
 -- (at any time later) give 2 water bottles to a connected user
 vRP.giveInventoryItem(user_id,"water_bottle",2)
-```
+----
+====
 
-#### Item transformer
+==== Item transformer
 
 The item transformer is a very generic way to create harvest and processing areas.
-The concept is simple:
+
+.The concept:
 * you can use the action of the item transformer when entering the area
 * the item transformer has a number of work units, regenerated at a specific rate
 * the item transformer takes reagents (money, items or none) to produce products (money or items) and it consumes a work unit
 
 This way, processing and harvesting are limited by the work units.
-Item transformers can be dynamically set and removed, if you want to build random harvest points.
 
-```lua
+TIP: Item transformers can be dynamically set and removed, if you want to build random harvest points.
+
+[source,lua]
+----
 -- add an item transformer
 -- name: transformer id name
 -- itemtr: item transformer definition table
@@ -691,10 +679,12 @@ vRP.setItemTransformer(name,itemtr)
 
 -- remove an item transformer
 vRP.removeItemTransformer(name)
+----
 
-
--- Example from another resource using proxy
-
+.Example from another resource using proxy
+====
+[source,lua]
+----
 local itemtr = {
   name="Water bottles tree", -- menu name
   r=0,g=125,b=255, -- color
@@ -716,13 +706,15 @@ local itemtr = {
 }
 
 vRP.setItemTransformer("my_unique_transformer",itemtr)
-```
+----
+====
 
-For static areas, configure the file `cfg/item_transformers.lua`, the transformers will be automatically added.
+NOTE: For static areas, configure the file `cfg/item_transformers.lua`, the transformers will be automatically added.
 
-#### Home
+==== Home
 
-```lua
+[source,lua]
+----
 -- PROXY API
 
 -- define home component (oncreate and ondestroy are called for each player entering/leaving a slot)
@@ -746,41 +738,29 @@ vRP.accessHome(user_id, home, number)
 -- get players in the specified home slot
 -- return map of user_id -> player source or nil if the slot is unavailable
 vRP.getHomeSlotPlayers(stype, sid)
-```
+----
 
-##### Basic components
+===== Basic components
 
-###### Chest
-
-`chest`
-A home chest.
-
-```lua
+[horizontal]
+Chest:: `chest` A home chest.
++
+--
+[source,lua]
+----
 _config = {
   weight = 200
 }
-```
-
-###### Wardrobe
-
-`wardrobe`
-Save your character customization in the wardrobe, so you don't need to customize/pay clothes in skinshop again.
-
-###### Game table
-
-`gametable`
-* Bet with other peoples.
-
-###### Item transformer
-
-`itemtr`
-Set the config as any item transformer structure configuration.
-
-###### Radio
-
-`radio`
-
-```lua
+----
+--
+Wardrobe:: `wardrobe` Save your character customization in the wardrobe, so you don't need to customize/pay clothes in skinshop again.
+Game table:: `gametable` Bet with other peoples.
+Item transformer:: `itemtr` Set the config as any item transformer structure configuration.
+Radio:: `radio`
++
+--
+[source,lua]
+----
 _config = {
   stations = { -- map of name -> audio source url
     ["station 1"] = "url",
@@ -788,11 +768,13 @@ _config = {
   },
   position = {x,y,z} -- optional: define a different position for the audio source (placed 1 meter above the component by default)
 }
-```
+----
+--
 
-#### Mission
+==== Mission
 
-```lua
+[source,lua]
+----
 -- PROXY API
 
 -- start a mission for a player
@@ -814,17 +796,20 @@ vRP.stopMission(player)
 
 -- check if the player has a mission
 vRP.hasMission(player)
-```
+----
 
-#### GUI
+==== GUI
 
-Controls for the menu generated by the API are the cellphone controls (LEFT,RIGHT,UP,DOWN,CANCEL,SELECT and OPEN to open the main menu).
-Don't forget to change the key to open the phone for something different than UP. You can also use the middle mouse button by default.
+Controls for the menu are by default the cellphone controls (LEFT,RIGHT,UP,DOWN,CANCEL,SELECT and OPEN to open the main menu).
 
+CAUTION: Don't forget to change the key to open the phone for something different than UP. You can also use the middle mouse button by default.
+
+TIP: You can change the controls in `cfg/client.lua`. +
 You can customize the GUI css in `cfg/gui.lua`.
 
 
-```lua
+[source,lua]
+----
 -- PROXY API
 
 -- HOW TO: building a dynamic menu
@@ -925,22 +910,23 @@ vRP.removeDiv(name)
 -- background: image url (800x150)
 -- content: announce html content
 vRP.announce(background,content)
+----
 
-```
-
-##### Extending menus
+===== Extending menus
 
 Some menus can be built/extended by any resources with menu builders.
 
-List of known menu names you can extend, each line is `name`: description (data properties):
-* `main`: main menu (player)
-* `police`: police menu (player)
-* `admin`: admin menu (player)
-* `vehicle`: vehicle menu (user_id, player, vname)
-* `phone`: phone menu, no properties, builders are called one time after server launch
-* `static:<name>`: any static menu, replace `<name>` by the static menu name (player)
+.List of known menu names you can extend, each line is `description (data properties)`:
+[horizontal]
+main:: main menu (player)
+police:: police menu (player)
+admin:: admin menu (player)
+vehicle:: vehicle menu (user_id, player, vname)
+phone:: phone menu, no properties, builders are called one time after server launch
+static:<name>:: any static menu, replace `<name>` by the static menu name (player)
 
-```lua
+[source,lua]
+----
 -- PROXY API
 
 -- register a menu builder function
@@ -954,11 +940,12 @@ vRP.registerMenuBuilder(name, builder)
 --- data: custom data table
 -- return built choices
 vRP.buildMenu(name, data)
-```
+----
 
-#### Audio
+==== Audio
 
-```lua
+[source,lua]
+----
 -- TUNNEL CLIENT API
 
 -- play audio source (once)
@@ -978,8 +965,8 @@ vRP.setAudioSource(name, url, volume, x, y, z, max_dist)
 
 -- remove named audio source
 vRP.removeAudioSource(name)
-```
-##### Notes
+----
+===== Notes
 
 * it uses the Web Audio API of CEF
 * CEF used by FiveM doesn't have mp3/m3u support, so only direct links to ogg/vorbis/(maybe opus) stream will work (for radio stream)
@@ -988,19 +975,23 @@ vRP.removeAudioSource(name)
 * punctual audio sources will not play if the player is `2*max_dist` far away
 * persistent audio sources will pause themselves when the player is `2*max_dist` far away, and play again when inside this radius (save the bandwidth for radio streams or big music files)
 
-#### VoIP
+==== VoIP
 
 The VoIP system of vRP is designed using WebRTC and a p2p architecture. It allows to create things like voice chat with spatialization, group radio with audio effects (ex: police radio) or phone calls. It is an experimental feature.
 
-Check `cfg/client.lua` and `cfg/gui.lua` to configure the VoIP (to also replace the internal voice chat if wanted).
+NOTE: Check `cfg/client.lua` and `cfg/gui.lua` to configure the VoIP (to also replace the internal voice chat if wanted).
 You will need to setup a STUN/TURN server to have WebRTC working properly.
 
-You can use [coturn](https://github.com/coturn/coturn) which should be available on most platforms/distributions and is a STUN and TURN server.
+TIP: You can use https://github.com/coturn/coturn[coturn] which should be available on most platforms/distributions and is a STUN and TURN server.
 
-Basic example:
+.Basic example
+====
 * launch turnserver: `turnserver -a -u user:password -r "myserver"`
 * configure iceServers
-```lua
+* {blank}
++
+[source,lua]
+----
 cfg.voip_peer_configuration = {
   iceServers = {
     {
@@ -1010,9 +1001,11 @@ cfg.voip_peer_configuration = {
     }
   }
 }
-```
+----
+====
 
-```lua
+[source,lua]
+----
 -- TUNNEL CLIENT API
 
 -- request connection to another player for a specific channel
@@ -1050,13 +1043,14 @@ vRP.setVoiceState(channel, player, active)
 ------ freq = 1700, Q = 3, type = "bandpass" (idea for radio effect)
 ----- gain => { gain: ... }
 vRP.configureVoice(channel, config)
-```
+----
 
 
 
-#### Map
+==== Map
 
-```lua
+[source,lua]
+----
 -- PROXY API
 
 -- create/update a player area (will trigger enter and leave callbacks)
@@ -1106,11 +1100,12 @@ vRP.setNamedMarker(name,x,y,z,sx,sy,sz,r,g,b,a,visible_distance)
 -- remove a named marker
 vRP.removeNamedMarker(name)
 
-```
+----
 
-#### Misc
+==== Misc
 
-```lua
+[source,lua]
+----
 -- PROXY API
 
 -- remove the player uniform (cloakroom)
@@ -1119,16 +1114,17 @@ vRP.removeCloak(player)
 -- TUNNEL SERVER API
 
 -- TUNNEL CLIENT API
-```
+----
 
 
-### Libs
+=== Libs
 
-#### utils
+==== utils
 
-`lib/utils` define global tools required by vRP and vRP extensions.
+`lib/utils` defines global tools required by vRP and vRP extensions.
 
-```lua
+[source,lua]
+----
 -- load a lua resource file as module
 -- rsc: resource name
 -- path: lua file path without extension
@@ -1140,18 +1136,18 @@ async()
 
 -- CLIENT and SERVER globals
 -- booleans to known the side of the script
-```
+----
 
-Any function making usage of `async()` require a Citizen thread if not already in one. Citizen will throw an error if you're not in one.
+WARNING: Any function making usage of `async()` require a Citizen thread if not already in one. Citizen will throw an error if you're not in one.
 
-#### Proxy
+==== Proxy
 
 The proxy lib is used to call other resources functions through a proxy event.
 
-Ex:
-
-resource1.lua
-```lua
+====
+.resource1.lua
+[source,lua]
+----
 local Proxy = module("vrp", "lib/Proxy")
 
 Resource1 = {}
@@ -1161,29 +1157,33 @@ function Resource1.test(a,b)
   print("resource1 TEST "..a..","..b)
   return a+b,a*b -- return two values
 end
-```
-resource2.lua
-```lua
+----
+
+.resource2.lua
+[source,lua]
+----
 local Proxy = module("vrp", "lib/Proxy")
 
 Resource1 = Proxy.getInterface("resource1")
 
 local rvalue1, rvalue2 = Resource1.test(13,42)
 print("resource2 TEST rvalues = "..rvalue1..","..rvalue2)
-```
+----
+====
 
-The notation is **Interface.function(...)**.
+The notation is `Interface.function(...)`.
 
-Good practice is to get the interface once and set it as a global, but if you want to get multiple times the same interface from the same resource, you need to specify a unique identifier (the name of the resource + a unique id for each one). 
+TIP: Good practice is to get the interface once and set it as a global, but if you want to get multiple times the same interface from the same resource, you need to specify a unique identifier (the name of the resource + a unique id for each one). 
 
-#### Tunnel
+==== Tunnel
 
 The idea behind tunnels is to easily access any declared server function from any client resource, and to access any declared client function from any server resource.
 
-Example of two-way resource communication:
-
-Server-side myrsc:
-```lua
+.Example of two-way resource communication
+====
+.Server-side myrsc:
+[source,lua]
+----
 local Tunnel = module("vrp", "lib/Tunnel")
 
 -- build the server-side interface
@@ -1200,10 +1200,11 @@ clientaccess = Tunnel.getInterface("myrsc")
 
 -- (later, in a player spawn event) teleport the player to 0,0,0
 clientaccess.teleport(source,0,0,0)
-```
+----
 
-Client-side myrsc: 
-```lua
+.Client-side myrsc: 
+[source,lua]
+----
 
 -- build the client-side interface
 clientdef = {} -- you can add function to clientdef later in other client scripts
@@ -1234,11 +1235,12 @@ serveraccess = Tunnel.getInterface("myrsc")
 -- call test on server and print the returned value (in an async context)
 local r = serveraccess.test("my client message")
 print(r) -- true
-```
+----
 
 Now if we want to use the same teleport function in another resource:
 
-```lua
+[source,lua]
+----
 local Tunnel = module("lib/Tunnel")
 
 -- get the client-side access of myrsc
@@ -1246,24 +1248,29 @@ myrsc_access = Tunnel.getInterface("myrsc","myotherrsc")
 
 -- (later, in a player spawn event) teleport the player to 0,0,0
 myrsc_access.teleport(source,0,0,0)
-```
+----
+====
 
 This way resources can easily use other resources client/server API.
 
-The notation is **Interface.function(dest, ...)**.
+The notation is `Interface.function(dest, ...)`.
 
-Good practice is to get the interface once and set it as a global, but if you want to get multiple times the same interface from the same resource, you need to specify a unique identifier (the name of the resource + a unique id for each one). 
+TIP: Good practice is to get the interface once and set it as a global, but if you want to get multiple times the same interface from the same resource, you need to specify a unique identifier (the name of the resource + a unique id for each one). 
 
-Tunnel and Proxy are blocking calls in the current coroutine until the values are returned, to bypass this behaviour, especially for the Tunnel to optimize speed (ping latency of each call), use `_` as prefix for the function name (Proxy/Tunnel interfaces should not have functions starting with `_`). This will discard the returned values, but if you still need them, you can make normal calls in a new Citizen thread with `Citizen.CreateThreadNow` or `async` to have non-blocking code.
+NOTE: Tunnel and Proxy are blocking calls in the current coroutine until the values are returned, to bypass this behaviour, especially for the Tunnel to optimize speed (ping latency of each call), use `_` as prefix for the function name (Proxy/Tunnel interfaces should not have functions starting with `_`). This will discard the returned values, but if you still need them, you can make normal calls in a new Citizen thread with `Citizen.CreateThreadNow` or `async` to have non-blocking code.
 
-Also remember that Citizen event handlers (used by Proxy and Tunnel) seem to not work while loading the resource, to use the Proxy at loading time, you will need to delay it with `Citizen.CreateThread` or a `SetTimeout`.
+WARNING: Also remember that Citizen event handlers (used by Proxy and Tunnel) seem to not work while loading the resource, to use the Proxy at loading time, you will need to delay it with `Citizen.CreateThread` or a `SetTimeout`.
 
-#### Database
+==== Database
 
-SQL queries are managed by DB drivers, you can use the default vRP driver `vrp_mysql` or use a custom one (`vrp_mysql` has crappy code).
-DB drivers will register themselves (as resources) with a specific name to use in `cfg/base.lua`. Since there is no guarantee about when the driver will be registered, all queries will be cached until that moment. So `[vRP] DB driver "driver_name" not initialized yet (X prepares cached, Y queries cached).`  is not an error, but a warning that the driver is not registered yet and will stop being outputted if the driver is loaded (a message will also say that the driver is loaded).
+SQL queries are managed by DB drivers, you can use the default vRP driver `vrp_mysql` or use a custom one (`vrp_mysql` has crappy code, see https://github.com/ImagicTheCat/vRP-db-drivers[alternatives]).
 
-```lua
+DB drivers will register themselves (as resources) with a specific name to use in `cfg/base.lua`. Since there is no guarantee about when the driver will be registered, all queries will be cached until that moment. 
+
+NOTE: `[vRP] DB driver "driver_name" not initialized yet (X prepares cached, Y queries cached).`  is not an error, but a warning that the driver is not registered yet and will stop being outputted if the driver is loaded (a message will also say that the driver is loaded).
+
+[source,lua]
+----
 -- API (PROXY)
 
 -- register a DB driver
@@ -1298,10 +1305,11 @@ vRP.execute(name, params)
 
 -- shortcut for vRP.query with "scalar"
 vRP.scalar(name, params)
+----
 
-
--- examples
-
+====
+[source,lua]
+----
 -- execute the command after a while, get all banned users
 local rows, affected = vRP.query("vRP/myrsc_getbans", {banned = true}) -- in async context
 -- rows: rows as a list
@@ -1313,4 +1321,5 @@ local rows, affected = vRP.query("vRP/myrsc_getbans", {banned = false}) -- in as
 -- rows: rows as a list
 -- affected: number of rows affected (when updating things, etc)
 -- display banned users
-```
+----
+====
