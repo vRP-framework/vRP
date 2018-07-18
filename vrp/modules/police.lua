@@ -328,7 +328,7 @@ local choice_seize_weapons = {function(player, choice)
     local nuser_id = vRP.getUserId(nplayer)
     if nuser_id and vRP.hasPermission(nuser_id, "police.seizable") then
       if vRPclient.isHandcuffed(nplayer) then  -- check handcuffed
-        local weapons = vRPclient.getWeapons(nplayer)
+        local weapons = vRPclient.replaceWeapons(nplayer, {})
         for k,v in pairs(weapons) do -- display seized weapons
           -- vRPclient._notify(player,lang.police.menu.seize.seized({k,v.ammo}))
           -- convert weapons to parametric weapon items
@@ -338,8 +338,6 @@ local choice_seize_weapons = {function(player, choice)
           end
         end
 
-        -- clear all weapons
-        vRPclient._giveWeapons(nplayer,{},true)
         vRPclient._notify(nplayer,lang.police.menu.seize.weapons.seized())
       else
         vRPclient._notify(player,lang.police.not_handcuffed())
@@ -478,7 +476,7 @@ end, lang.police.menu.fine.description()}
 local choice_store_weapons = {function(player, choice)
   local user_id = vRP.getUserId(player)
   if user_id then
-    local weapons = vRPclient.getWeapons(player)
+    local weapons = vRPclient.replaceWeapons(player, {})
     for k,v in pairs(weapons) do
       -- convert weapons to parametric weapon items
       vRP.giveInventoryItem(user_id, "wbody|"..k, 1, true)
@@ -486,9 +484,6 @@ local choice_store_weapons = {function(player, choice)
         vRP.giveInventoryItem(user_id, "wammo|"..k, v.ammo, true)
       end
     end
-
-    -- clear all weapons
-    vRPclient._giveWeapons(player,{},true)
   end
 end, lang.police.menu.store_weapons.description()}
 

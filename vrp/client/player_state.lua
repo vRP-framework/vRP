@@ -104,6 +104,14 @@ function tvRP.getWeapons()
   return weapons
 end
 
+-- replace weapons (combination of getWeapons and giveWeapons)
+-- return previous weapons
+function tvRP.replaceWeapons(weapons)
+  local old_weapons = tvRP.getWeapons()
+  tvRP.giveWeapons(weapons, true)
+  return old_weapons
+end
+
 function tvRP.giveWeapons(weapons,clear_before)
   local player = GetPlayerPed(-1)
 
