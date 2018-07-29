@@ -61,6 +61,8 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * admin: tp to marker
 * police research per veh type
 * vehicle ownership rework
+* blips/markers invisiblity option rework
+* clients<->server scheme for VoIP
 * props, NPC
 
 == NOTES
