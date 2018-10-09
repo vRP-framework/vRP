@@ -53,17 +53,18 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * database SQL/MySQL "driver" system to interface to any MySQL resources
 * proxy for easy inter-resource developement, tunnel for easy server/clients communication
 
-== TODO LIST
+== TODO list
 * home stuff (home garage,etc)
 * vehicle customization
 * drop weapon/save weapon components
 * police pc: add custom police records
 * admin: tp to marker
-* police research per veh type
-* vehicle ownership rework
 * blips/markers invisiblity option rework
 * clients<->server scheme for VoIP
 * props, NPC
+* multi-character (CData)
+* multi-server (SData)
+* no more Proxy API, vRP extension with script loading
 
 == NOTES
 === Homes
