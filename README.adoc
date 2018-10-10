@@ -65,6 +65,8 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * multi-character (CData)
 * multi-server (SData)
 * no more Proxy API, vRP extension with script loading
+* properly stacked menu, list instead of a map, all menus created using builder
+* OOP
 
 == NOTES
 === Homes
