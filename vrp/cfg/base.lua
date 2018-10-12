@@ -10,6 +10,8 @@ cfg.db = {
   password = "password"
 }
 
+cfg.server_id = "main" -- identify the server (ex: in database)
+
 cfg.save_interval = 60 -- seconds
 cfg.whitelist = false -- enable/disable whitelist
 

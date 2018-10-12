@@ -185,10 +185,11 @@ CREATE TABLE IF NOT EXISTS vrp_character_data(
   CONSTRAINT fk_character_data_characters FOREIGN KEY(character_id) REFERENCES vrp_characters(id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS vrp_srv_data(
+CREATE TABLE IF NOT EXISTS vrp_server_data(
+  id VARCHAR(100),
   dkey VARCHAR(100),
   dvalue TEXT,
-  CONSTRAINT pk_srv_data PRIMARY KEY(dkey)
+  CONSTRAINT pk_server_data PRIMARY KEY(id, dkey)
 );
 ]])
 
@@ -202,8 +203,8 @@ vRP.prepare("vRP/set_characterdata","REPLACE INTO vrp_character_data(character_i
 vRP.prepare("vRP/get_characterdata","SELECT dvalue FROM vrp_character_data WHERE character_id = @character_id AND dkey = @key")
 
 
-vRP.prepare("vRP/set_srvdata","REPLACE INTO vrp_srv_data(dkey,dvalue) VALUES(@key,@value)")
-vRP.prepare("vRP/get_srvdata","SELECT dvalue FROM vrp_srv_data WHERE dkey = @key")
+vRP.prepare("vRP/set_serverdata","REPLACE INTO vrp_server_data(id,dkey,dvalue) VALUES(@id,@key,@value)")
+vRP.prepare("vRP/get_serverdata","SELECT dvalue FROM vrp_server_data WHERE id = @id AND dkey = @key")
 
 vRP.prepare("vRP/get_banned","SELECT banned FROM vrp_users WHERE id = @user_id")
 vRP.prepare("vRP/set_banned","UPDATE vrp_users SET banned = @banned WHERE id = @user_id")
@@ -271,7 +272,7 @@ function vRP.getPlayerName(player)
 end
 
 --- sql
-function vRP.isBanned(user_id, cbr)
+function vRP.isBanned(user_id)
   local rows = vRP.query("vRP/get_banned", {user_id = user_id})
   if #rows > 0 then
     return rows[1].banned
@@ -286,7 +287,7 @@ function vRP.setBanned(user_id,banned)
 end
 
 --- sql
-function vRP.isWhitelisted(user_id, cbr)
+function vRP.isWhitelisted(user_id)
   local rows = vRP.query("vRP/get_whitelisted", {user_id = user_id})
   if #rows > 0 then
     return rows[1].whitelisted
@@ -301,7 +302,7 @@ function vRP.setWhitelisted(user_id,whitelisted)
 end
 
 --- sql
-function vRP.getLastLogin(user_id, cbr)
+function vRP.getLastLogin(user_id)
   local rows = vRP.query("vRP/get_last_login", {user_id = user_id})
   if #rows > 0 then
     return rows[1].last_login
@@ -314,7 +315,7 @@ function vRP.setUData(user_id,key,value)
   vRP.execute("vRP/set_userdata", {user_id = user_id, key = key, value = value})
 end
 
-function vRP.getUData(user_id,key,cbr)
+function vRP.getUData(user_id,key)
   local rows = vRP.query("vRP/get_userdata", {user_id = user_id, key = key})
   if #rows > 0 then
     return rows[1].dvalue
@@ -327,7 +328,7 @@ function vRP.setCData(character_id,key,value)
   vRP.execute("vRP/set_characterdata", {character_id = character_id, key = key, value = value})
 end
 
-function vRP.getCData(character_id,key,cbr)
+function vRP.getCData(character_id,key)
   local rows = vRP.query("vRP/get_characterdata", {character_id = character_id, key = key})
   if #rows > 0 then
     return rows[1].dvalue
@@ -336,12 +337,16 @@ function vRP.getCData(character_id,key,cbr)
   end
 end
 
-function vRP.setSData(key,value)
-  vRP.execute("vRP/set_srvdata", {key = key, value = value})
+function vRP.setSData(key,value,id)
+  if not id then id = config.server_id end
+
+  vRP.execute("vRP/set_srvdata", {key = key, value = value, id = id})
 end
 
-function vRP.getSData(key, cbr)
-  local rows = vRP.query("vRP/get_srvdata", {key = key})
+function vRP.getSData(key,id)
+  if not id then id = config.server_id end
+
+  local rows = vRP.query("vRP/get_srvdata", {key = key, id = id})
   if #rows > 0 then
     return rows[1].dvalue
   else
