@@ -1,9 +1,9 @@
-local Proxy = module("lib/Proxy")
-local Tunnel = module("lib/Tunnel")
-local Luang = module("lib/Luang")
+local Luaoop = module("vrp", "lib/Luaoop")
+class = Luaoop.class
 Debug = module("lib/Debug")
 
-local config = module("cfg/base")
+local Proxy = module("lib/Proxy")
+local Tunnel = module("lib/Tunnel")
 
 vRP = {}
 Proxy.addInterface("vRP",vRP)
@@ -11,142 +11,11 @@ Proxy.addInterface("vRP",vRP)
 tvRP = {}
 Tunnel.bindInterface("vRP",tvRP) -- listening for client tunnel
 
--- load language 
-local Lang = Luang()
-Lang:loadLocale(config.lang, module("cfg/lang/"..config.lang) or {})
-vRP.lang = Lang.lang[config.lang]
-
 -- init
 vRPclient = Tunnel.getInterface("vRP") -- server -> client tunnel
 
-vRP.users = {} -- will store logged users (id) by first identifier
-vRP.rusers = {} -- store the opposite of users
-vRP.user_tables = {} -- user data tables (logger storage, saved to database)
-vRP.user_tmp_tables = {} -- user tmp data tables (logger storage, not saved)
-vRP.user_sources = {} -- user sources 
-
--- db/SQL API
-local db_drivers = {}
-local db_driver
-local cached_prepares = {}
-local cached_queries = {}
-local prepared_queries = {}
-local db_initialized = false
-
--- register a DB driver
---- name: unique name for the driver
---- on_init(cfg): called when the driver is initialized (connection), should return true on success
----- cfg: db config
---- on_prepare(name, query): should prepare the query (@param notation)
---- on_query(name, params, mode): should execute the prepared query
----- params: map of parameters
----- mode: 
------ "query": should return rows, affected
------ "execute": should return affected
------ "scalar": should return a scalar
-function vRP.registerDBDriver(name, on_init, on_prepare, on_query)
-  if not db_drivers[name] then
-    db_drivers[name] = {on_init, on_prepare, on_query}
-
-    if name == config.db.driver then -- use/init driver
-      db_driver = db_drivers[name] -- set driver
-
-      local ok = on_init(config.db)
-      if ok then
-        print("[vRP] Connected to DB using driver \""..name.."\".")
-        db_initialized = true
-        -- execute cached prepares
-        for _,prepare in pairs(cached_prepares) do
-          on_prepare(table.unpack(prepare, 1, table.maxn(prepare)))
-        end
-
-        -- execute cached queries
-        for _,query in pairs(cached_queries) do
-          async(function()
-            query[2](on_query(table.unpack(query[1], 1, table.maxn(query[1]))))
-          end)
-        end
-
-        cached_prepares = nil
-        cached_queries = nil
-      else
-        error("[vRP] Connection to DB failed using driver \""..name.."\".")
-      end
-    end
-  else
-    error("[vRP] DB driver \""..name.."\" already registered.")
-  end
-end
-
--- prepare a query
---- name: unique name for the query
---- query: SQL string with @params notation
-function vRP.prepare(name, query)
-  if Debug.active then
-    Debug.log("prepare "..name.." = \""..query.."\"")
-  end
-
-  prepared_queries[name] = true
-
-  if db_initialized then -- direct call
-    db_driver[2](name, query)
-  else
-    table.insert(cached_prepares, {name, query})
-  end
-end
-
--- execute a query
---- name: unique name of the query
---- params: map of parameters
---- mode: default is "query"
----- "query": should return rows (list of map of parameter => value), affected
----- "execute": should return affected
----- "scalar": should return a scalar
-function vRP.query(name, params, mode)
-  if not prepared_queries[name] then
-    error("[vRP] query "..name.." doesn't exist.")
-  end
-
-  if not mode then mode = "query" end
-
-  if Debug.active then
-    Debug.log("query "..name.." ("..mode..") params = "..json.encode(params or {}))
-  end
-
-  if db_initialized then -- direct call
-    return db_driver[3](name, params or {}, mode)
-  else -- async call, wait query result
-    local r = async()
-    table.insert(cached_queries, {{name, params or {}, mode}, r})
-    return r:wait()
-  end
-end
-
--- shortcut for vRP.query with "execute"
-function vRP.execute(name, params)
-  return vRP.query(name, params, "execute")
-end
-
--- shortcut for vRP.query with "scalar"
-function vRP.scalar(name, params)
-  return vRP.query(name, params, "scalar")
-end
-
--- DB driver error/warning
-
-if not config.db or not config.db.driver then
-  error("[vRP] Missing DB config driver.")
-end
-
-Citizen.CreateThread(function()
-  while not db_initialized do
-    print("[vRP] DB driver \""..config.db.driver.."\" not initialized yet ("..#cached_prepares.." prepares cached, "..#cached_queries.." queries cached).")
-    Citizen.Wait(5000)
-  end
-end)
-
 -- queries
-vRP.prepare("vRP/base_tables",[[
+vRP:prepare("vRP/base_tables",[[
 CREATE TABLE IF NOT EXISTS vrp_users(
   id INTEGER AUTO_INCREMENT,
   last_login VARCHAR(255),
@@ -193,166 +62,31 @@ CREATE TABLE IF NOT EXISTS vrp_server_data(
 );
 ]])
 
-vRP.prepare("vRP/create_user","INSERT INTO vrp_users(whitelisted,banned) VALUES(false,false); SELECT LAST_INSERT_ID() AS id")
-vRP.prepare("vRP/add_identifier","INSERT INTO vrp_user_ids(identifier,user_id) VALUES(@identifier,@user_id)")
-vRP.prepare("vRP/userid_byidentifier","SELECT user_id FROM vrp_user_ids WHERE identifier = @identifier")
+vRP:prepare("vRP/create_user","INSERT INTO vrp_users(whitelisted,banned) VALUES(false,false); SELECT LAST_INSERT_ID() AS id")
+vRP:prepare("vRP/add_identifier","INSERT INTO vrp_user_ids(identifier,user_id) VALUES(@identifier,@user_id)")
+vRP:prepare("vRP/userid_byidentifier","SELECT user_id FROM vrp_user_ids WHERE identifier = @identifier")
 
-vRP.prepare("vRP/set_userdata","REPLACE INTO vrp_user_data(user_id,dkey,dvalue) VALUES(@user_id,@key,@value)")
-vRP.prepare("vRP/get_userdata","SELECT dvalue FROM vrp_user_data WHERE user_id = @user_id AND dkey = @key")
-vRP.prepare("vRP/set_characterdata","REPLACE INTO vrp_character_data(character_id,dkey,dvalue) VALUES(@character_id,@key,@value)")
-vRP.prepare("vRP/get_characterdata","SELECT dvalue FROM vrp_character_data WHERE character_id = @character_id AND dkey = @key")
+vRP:prepare("vRP/set_userdata","REPLACE INTO vrp_user_data(user_id,dkey,dvalue) VALUES(@user_id,@key,@value)")
+vRP:prepare("vRP/get_userdata","SELECT dvalue FROM vrp_user_data WHERE user_id = @user_id AND dkey = @key")
+vRP:prepare("vRP/set_characterdata","REPLACE INTO vrp_character_data(character_id,dkey,dvalue) VALUES(@character_id,@key,@value)")
+vRP:prepare("vRP/get_characterdata","SELECT dvalue FROM vrp_character_data WHERE character_id = @character_id AND dkey = @key")
 
 
-vRP.prepare("vRP/set_serverdata","REPLACE INTO vrp_server_data(id,dkey,dvalue) VALUES(@id,@key,@value)")
-vRP.prepare("vRP/get_serverdata","SELECT dvalue FROM vrp_server_data WHERE id = @id AND dkey = @key")
+vRP:prepare("vRP/set_serverdata","REPLACE INTO vrp_server_data(id,dkey,dvalue) VALUES(@id,@key,@value)")
+vRP:prepare("vRP/get_serverdata","SELECT dvalue FROM vrp_server_data WHERE id = @id AND dkey = @key")
 
-vRP.prepare("vRP/get_banned","SELECT banned FROM vrp_users WHERE id = @user_id")
-vRP.prepare("vRP/set_banned","UPDATE vrp_users SET banned = @banned WHERE id = @user_id")
-vRP.prepare("vRP/get_whitelisted","SELECT whitelisted FROM vrp_users WHERE id = @user_id")
-vRP.prepare("vRP/set_whitelisted","UPDATE vrp_users SET whitelisted = @whitelisted WHERE id = @user_id")
-vRP.prepare("vRP/set_last_login","UPDATE vrp_users SET last_login = @last_login WHERE id = @user_id")
-vRP.prepare("vRP/get_last_login","SELECT last_login FROM vrp_users WHERE id = @user_id")
+vRP:prepare("vRP/get_banned","SELECT banned FROM vrp_users WHERE id = @user_id")
+vRP:prepare("vRP/set_banned","UPDATE vrp_users SET banned = @banned WHERE id = @user_id")
+vRP:prepare("vRP/get_whitelisted","SELECT whitelisted FROM vrp_users WHERE id = @user_id")
+vRP:prepare("vRP/set_whitelisted","UPDATE vrp_users SET whitelisted = @whitelisted WHERE id = @user_id")
+vRP:prepare("vRP/set_last_login","UPDATE vrp_users SET last_login = @last_login WHERE id = @user_id")
+vRP:prepare("vRP/get_last_login","SELECT last_login FROM vrp_users WHERE id = @user_id")
 
 -- init tables
 print("[vRP] init base tables")
 async(function()
-  vRP.execute("vRP/base_tables")
+  vRP:execute("vRP/base_tables")
 end)
-
--- identification system
-
---- sql.
--- return user id or nil in case of error (if not found, will create it)
-function vRP.getUserIdByIdentifiers(ids)
-  if ids and #ids then
-    -- search identifiers
-    for i=1,#ids do
-      if not config.ignore_ip_identifier or (string.find(ids[i], "ip:") == nil) then  -- ignore ip identifier
-        local rows = vRP.query("vRP/userid_byidentifier", {identifier = ids[i]})
-        if #rows > 0 then  -- found
-          return rows[1].user_id
-        end
-      end
-    end
-
-    -- no ids found, create user
-    local rows, affected = vRP.query("vRP/create_user", {})
-
-    if #rows > 0 then
-      local user_id = rows[1].id
-      -- add identifiers
-      for l,w in pairs(ids) do
-        if not config.ignore_ip_identifier or (string.find(w, "ip:") == nil) then  -- ignore ip identifier
-          vRP.execute("vRP/add_identifier", {user_id = user_id, identifier = w})
-        end
-      end
-
-      return user_id
-    end
-  end
-end
-
--- return identification string for the source (used for non vRP identifications, for rejected players)
-function vRP.getSourceIdKey(source)
-  local ids = GetPlayerIdentifiers(source)
-  local idk = "idk_"
-  for k,v in pairs(ids) do
-    idk = idk..v
-  end
-
-  return idk
-end
-
-function vRP.getPlayerEndpoint(player)
-  return GetPlayerEP(player) or "0.0.0.0"
-end
-
-function vRP.getPlayerName(player)
-  return GetPlayerName(player) or "unknown"
-end
-
---- sql
-function vRP.isBanned(user_id)
-  local rows = vRP.query("vRP/get_banned", {user_id = user_id})
-  if #rows > 0 then
-    return rows[1].banned
-  else
-    return false
-  end
-end
-
---- sql
-function vRP.setBanned(user_id,banned)
-  vRP.execute("vRP/set_banned", {user_id = user_id, banned = banned})
-end
-
---- sql
-function vRP.isWhitelisted(user_id)
-  local rows = vRP.query("vRP/get_whitelisted", {user_id = user_id})
-  if #rows > 0 then
-    return rows[1].whitelisted
-  else
-    return false
-  end
-end
-
---- sql
-function vRP.setWhitelisted(user_id,whitelisted)
-  vRP.execute("vRP/set_whitelisted", {user_id = user_id, whitelisted = whitelisted})
-end
-
---- sql
-function vRP.getLastLogin(user_id)
-  local rows = vRP.query("vRP/get_last_login", {user_id = user_id})
-  if #rows > 0 then
-    return rows[1].last_login
-  else
-    return ""
-  end
-end
-
-function vRP.setUData(user_id,key,value)
-  vRP.execute("vRP/set_userdata", {user_id = user_id, key = key, value = value})
-end
-
-function vRP.getUData(user_id,key)
-  local rows = vRP.query("vRP/get_userdata", {user_id = user_id, key = key})
-  if #rows > 0 then
-    return rows[1].dvalue
-  else
-    return ""
-  end
-end
-
-function vRP.setCData(character_id,key,value)
-  vRP.execute("vRP/set_characterdata", {character_id = character_id, key = key, value = value})
-end
-
-function vRP.getCData(character_id,key)
-  local rows = vRP.query("vRP/get_characterdata", {character_id = character_id, key = key})
-  if #rows > 0 then
-    return rows[1].dvalue
-  else
-    return ""
-  end
-end
-
-function vRP.setSData(key,value,id)
-  if not id then id = config.server_id end
-
-  vRP.execute("vRP/set_srvdata", {key = key, value = value, id = id})
-end
-
-function vRP.getSData(key,id)
-  if not id then id = config.server_id end
-
-  local rows = vRP.query("vRP/get_srvdata", {key = key, id = id})
-  if #rows > 0 then
-    return rows[1].dvalue
-  else
-    return ""
-  end
-end
 
 -- return user data table for vRP internal persistant connected user storage
 function vRP.getUserDataTable(user_id)
