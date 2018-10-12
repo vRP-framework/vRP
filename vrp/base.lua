@@ -1,12 +1,15 @@
 local Luaoop = module("vrp", "lib/Luaoop")
 class = Luaoop.class
-Debug = module("lib/Debug")
-
 local Proxy = module("lib/Proxy")
 local Tunnel = module("lib/Tunnel")
 
-vRP = {}
-Proxy.addInterface("vRP",vRP)
+Debug = module("lib/Debug")
+local cvRP = module("vrp", "vRP")
+
+vRP = cvRP() -- instantiate
+
+pvRP = {}
+Proxy.addInterface("vRP",pvRP)
 
 tvRP = {}
 Tunnel.bindInterface("vRP",tvRP) -- listening for client tunnel
@@ -88,245 +91,17 @@ async(function()
   vRP:execute("vRP/base_tables")
 end)
 
--- return user data table for vRP internal persistant connected user storage
-function vRP.getUserDataTable(user_id)
-  return vRP.user_tables[user_id]
-end
-
-function vRP.getUserTmpTable(user_id)
-  return vRP.user_tmp_tables[user_id]
-end
-
--- return the player spawn count (0 = not spawned, 1 = first spawn, ...)
-function vRP.getSpawns(user_id)
-  local tmp = vRP.getUserTmpTable(user_id)
-  if tmp then
-    return tmp.spawns or 0
-  end
-
-  return 0
-end
-
-function vRP.getUserId(source)
-  if source ~= nil then
-    local ids = GetPlayerIdentifiers(source)
-    if ids ~= nil and #ids > 0 then
-      return vRP.users[ids[1]]
-    end
-  end
-
-  return nil
-end
-
--- return map of user_id -> player source
-function vRP.getUsers()
-  local users = {}
-  for k,v in pairs(vRP.user_sources) do
-    users[k] = v
-  end
-
-  return users
-end
-
--- return source or nil
-function vRP.getUserSource(user_id)
-  return vRP.user_sources[user_id]
-end
-
-function vRP.ban(source,reason)
-  local user_id = vRP.getUserId(source)
-
-  if user_id then
-    vRP.setBanned(user_id,true)
-    vRP.kick(source,"[Banned] "..reason)
-  end
-end
-
-function vRP.kick(source,reason)
-  DropPlayer(source,reason)
-end
-
--- drop vRP player/user (internal usage)
-function vRP.dropPlayer(source)
-  local user_id = vRP.getUserId(source)
-  local endpoint = vRP.getPlayerEndpoint(source)
-
-  -- remove player from connected clients
-  vRPclient._removePlayer(-1, source)
-
-  if user_id then
-    TriggerEvent("vRP:playerLeave", user_id, source)
-
-    -- save user data table
-    vRP.setUData(user_id,"vRP:datatable",json.encode(vRP.getUserDataTable(user_id)))
-
-    print("[vRP] "..endpoint.." disconnected (user_id = "..user_id..")")
-    vRP.users[vRP.rusers[user_id]] = nil
-    vRP.rusers[user_id] = nil
-    vRP.user_tables[user_id] = nil
-    vRP.user_tmp_tables[user_id] = nil
-    vRP.user_sources[user_id] = nil
-  end
-end
-
--- tasks
-
-function task_save_datatables()
-  SetTimeout(config.save_interval*1000, task_save_datatables)
-  TriggerEvent("vRP:save")
-
-  Debug.log("save datatables")
-  for k,v in pairs(vRP.user_tables) do
-    vRP.setUData(k,"vRP:datatable",json.encode(v))
-  end
-end
-
-async(function()
-  task_save_datatables()
-end)
-
--- ping timeout
-function task_timeout()
-  local users = vRP.getUsers()
-  for k,v in pairs(users) do
-    if GetPlayerPing(v) <= 0 then
-      vRP.kick(v,"[vRP] Ping timeout.")
-      vRP.dropPlayer(v)
-    end
-  end
-
-  SetTimeout(30000, task_timeout)
-end
-task_timeout()
-
 -- handlers
 
-AddEventHandler("playerConnecting",function(name,setMessage, deferrals)
-  deferrals.defer()
-
-  local source = source
-  Debug.log("playerConnecting "..name)
-  local ids = GetPlayerIdentifiers(source)
-
-  if ids ~= nil and #ids > 0 then
-    deferrals.update("[vRP] Checking identifiers...")
-    local user_id = vRP.getUserIdByIdentifiers(ids)
-    -- if user_id ~= nil and vRP.rusers[user_id] == nil then -- check user validity and if not already connected (old way, disabled until playerDropped is sure to be called)
-    if user_id then -- check user validity 
-      deferrals.update("[vRP] Checking banned...")
-      if not vRP.isBanned(user_id) then
-        deferrals.update("[vRP] Checking whitelisted...")
-        if not config.whitelist or vRP.isWhitelisted(user_id) then
-          if vRP.rusers[user_id] == nil then -- not present on the server, init
-            -- load user data table
-            deferrals.update("[vRP] Loading datatable...")
-            local sdata = vRP.getUData(user_id, "vRP:datatable")
-
-            -- init entries
-            vRP.users[ids[1]] = user_id
-            vRP.rusers[user_id] = ids[1]
-            vRP.user_tables[user_id] = {}
-            vRP.user_tmp_tables[user_id] = {}
-            vRP.user_sources[user_id] = source
-
-            local data = json.decode(sdata)
-            if type(data) == "table" then vRP.user_tables[user_id] = data end
-
-            -- init user tmp table
-            local tmpdata = vRP.getUserTmpTable(user_id)
-
-            deferrals.update("[vRP] Getting last login...")
-            local last_login = vRP.getLastLogin(user_id)
-            tmpdata.last_login = last_login or ""
-            tmpdata.spawns = 0
-
-            -- set last login
-            local ep = vRP.getPlayerEndpoint(source)
-            local last_login_stamp = os.date("%H:%M:%S %d/%m/%Y")
-            vRP.execute("vRP/set_last_login", {user_id = user_id, last_login = last_login_stamp})
-
-            -- trigger join
-            print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") joined (user_id = "..user_id..")")
-            TriggerEvent("vRP:playerJoin", user_id, source, name, tmpdata.last_login)
-            deferrals.done()
-          else -- already connected
-            print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") re-joined (user_id = "..user_id..")")
-            -- reset first spawn
-            local tmpdata = vRP.getUserTmpTable(user_id)
-            tmpdata.spawns = 0
-
-            TriggerEvent("vRP:playerRejoin", user_id, source, name)
-            deferrals.done()
-          end
-
-        else
-          print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: not whitelisted (user_id = "..user_id..")")
-          Citizen.Wait(1000)
-          deferrals.done("[vRP] Not whitelisted (user_id = "..user_id..").")
-        end
-      else
-        print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: banned (user_id = "..user_id..")")
-        Citizen.Wait(1000)
-        deferrals.done("[vRP] Banned (user_id = "..user_id..").")
-      end
-    else
-      print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: identification error")
-      Citizen.Wait(1000)
-      deferrals.done("[vRP] Identification error.")
-    end
-  else
-    print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: missing identifiers")
-    Citizen.Wait(1000)
-    deferrals.done("[vRP] Missing identifiers.")
-  end
+AddEventHandler("playerConnecting",function(name, setMessage, deferrals)
+  vRP:onPlayerConnecting(source, name, setMessage, deferrals)
 end)
 
 AddEventHandler("playerDropped",function(reason)
-  local source = source
-  Debug.log("playerDropped "..source)
-
-  vRP.dropPlayer(source)
+  vRP:onPlayerDropped(source)
 end)
 
 RegisterServerEvent("vRPcli:playerSpawned")
 AddEventHandler("vRPcli:playerSpawned", function()
-  Debug.log("playerSpawned "..source)
-  -- register user sources and then set first spawn to false
-  local user_id = vRP.getUserId(source)
-  local player = source
-  if user_id then
-    vRP.user_sources[user_id] = source
-    local tmp = vRP.getUserTmpTable(user_id)
-    tmp.spawns = tmp.spawns+1
-    local first_spawn = (tmp.spawns == 1)
-
-    if first_spawn then
-      -- first spawn, reference player
-      -- send players to new player
-      for k,v in pairs(vRP.user_sources) do
-        vRPclient._addPlayer(source,v)
-      end
-      -- send new player to all players
-      vRPclient._addPlayer(-1,source)
-
-      -- set client tunnel delay at first spawn
-      Tunnel.setDestDelay(player, config.load_delay)
-
-      -- show loading
-      vRPclient._setProgressBar(player, "vRP:loading", "botright", "Loading...", 0,0,0, 100)
-
-      SetTimeout(2000, function() 
-        SetTimeout(config.load_duration*1000, function() -- set client delay to normal delay
-          Tunnel.setDestDelay(player, config.global_delay)
-          vRPclient._removeProgressBar(player,"vRP:loading")
-        end)
-      end)
-    end
-
-    SetTimeout(2000, function() -- trigger spawn event
-      TriggerEvent("vRP:playerSpawn",user_id,player,first_spawn)
-    end)
-  end
+  vRP:onPlayerSpawned(source)
 end)
-
-RegisterServerEvent("vRP:playerDied")

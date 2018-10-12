@@ -5,15 +5,9 @@ local vRP = class("vRP")
 
 -- STATIC
 
--- return identification string for the source (used for non vRP identifications, for rejected players)
+-- return identification string for a specific source
 function vRP.getSourceIdKey(source)
-  local ids = GetPlayerIdentifiers(source)
-  local idk = "idk_"
-  for k,v in pairs(ids) do
-    idk = idk..v
-  end
-
-  return idk
+  return table.concat(GetPlayerIdentifiers(source) or {}, ";")
 end
 
 function vRP.getPlayerEndpoint(player)
@@ -35,11 +29,9 @@ function vRP:__construct()
   self.luang:loadLocale(self.cfg.lang, module("cfg/lang/"..self.cfg.lang) or {})
   self.lang = self.luang.lang[self.cfg.lang]
 
-  self.users = {} -- will store logged users (id) by first identifier
-  self.rusers = {} -- store the opposite of users
-  self.user_tables = {} -- user data tables (logger storage, saved to database)
-  self.user_tmp_tables = {} -- user tmp data tables (logger storage, not saved)
-  self.user_sources = {} -- user sources 
+  self.users = {} -- map of id => User
+  self.pending_users = {} -- pending user source update (first spawn), map of ids key => user
+  self.users_by_source = {} -- map of source => User
 
   -- db/SQL API
   self.db_drivers = {}
@@ -62,6 +54,19 @@ function vRP:__construct()
       Citizen.Wait(5000)
     end
   end)
+
+  -- other tasks
+  local function task_save()
+    SetTimeout(self.cfg.save_interval*1000, task_save)
+    self:save()
+  end
+  task_save()
+
+  local function task_timeout()
+    SetTimeout(30000, task_timeout)
+    self:checkTimeout()
+  end
+  task_timeout()
 end
 
 -- register a DB driver
@@ -271,6 +276,197 @@ function vRP:getSData(key,id)
   else
     return ""
   end
+end
+
+-- drop vRP player/user (internal usage)
+function vRP:dropPlayer(source)
+  local ids_key = vRP.getSourceIdKey(source)
+  local user = self.users_by_source[source]
+  local pending = false
+  if not user then -- pending user check
+    user = self.pending_users[ids_key]
+    pending = true
+  end
+
+  if user then
+    -- remove player from connected clients
+    vRPclient._removePlayer(-1, user.source)
+
+--    TriggerEvent("vRP:playerLeave", user_id, source)
+
+    -- save user data table
+    self:setUData(user_id,"vRP:datatable",json.encode(user.data))
+
+    print("[vRP] "..user.endpoint.." disconnected (user_id = "..user.id..")")
+    vRP.users[user.id] = nil
+    vRP.user_sources[user.source] = nil
+
+    if pending then
+      vRP.pending_users[ids_key] = nil
+    end
+  end
+end
+
+function vRP:ban(user,reason)
+  self:setBanned(user.id,true)
+  self:kick(user.source, "[Banned] "..reason)
+end
+
+function vRP:kick(source,reason)
+  DropPlayer(source,reason)
+end
+
+function vRP:save()
+  --TriggerEvent("vRP:save")
+
+  Debug.log("save datatables")
+  for k,user in pairs(self.users) do
+    self:setUData(user.id,"vRP:datatable",json.encode(user.data))
+  end
+end
+
+function vRP:checkTimeout()
+  for k,user in pairs(self.users) do
+    if GetPlayerPing(user.source) <= 0 then
+      self:kick(user.source,"[vRP] Ping timeout.")
+      self:dropPlayer(user.source)
+    end
+  end
+end
+
+-- events
+
+function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
+  deferrals.defer()
+
+  Debug.log("playerConnecting "..name)
+  local ids = GetPlayerIdentifiers(source)
+
+  if ids ~= nil and #ids > 0 then
+    deferrals.update("[vRP] Checking identifiers...")
+
+    local user_id = self:getUserIdByIdentifiers(ids)
+    -- if user_id ~= nil and vRP.rusers[user_id] == nil then -- check user validity and if not already connected (old way, disabled until playerDropped is sure to be called)
+    if user_id then -- check user validity 
+      deferrals.update("[vRP] Checking banned...")
+      if not self:isBanned(user_id) then
+        deferrals.update("[vRP] Checking whitelisted...")
+        if not self.cfg.whitelist or self:isWhitelisted(user_id) then
+          if not self.users[user_id] then -- not present on the server, init user
+            -- load user data table
+            deferrals.update("[vRP] Loading datatable...")
+            local sdata = self:getUData(user_id, "vRP:datatable")
+
+            local user = User(self, source, user_id)
+            self.users[user_id] = user
+            self.users_by_source[source] = user
+            self.pending_users[table.concat(ids, ";")] = user
+
+            local data = json.decode(sdata)
+            if type(data) == "table" then user.data = data end
+
+            deferrals.update("[vRP] Getting last login...")
+            user.last_login = vRP:getLastLogin(user.id) or ""
+            user.spawns = 0
+            user.name = name
+
+            -- set endpoint
+            local ep = vRP.getPlayerEndpoint(source)
+            user.endpoint = ep
+
+            -- set last login
+            local last_login_stamp = os.date("%H:%M:%S %d/%m/%Y")
+            self:execute("vRP/set_last_login", {user_id = user.id, last_login = last_login_stamp})
+
+            -- trigger join
+            print("[vRP] "..user.name.." ("..user.endpoint..") joined (user_id = "..user.id..")")
+--            TriggerEvent("vRP:playerJoin", user.id, source, name, tmpdata.last_login)
+            deferrals.done()
+          else -- already connected
+            print("[vRP] "..user.name.." ("..user.endpoint..") re-joined (user_id = "..user.id..")")
+            -- reset first spawn
+            user.spawns = 0
+
+--            TriggerEvent("vRP:playerRejoin", user_id, source, name)
+            deferrals.done()
+          end
+
+        else
+          print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: not whitelisted (user_id = "..user_id..")")
+          Citizen.Wait(1000)
+          deferrals.done("[vRP] Not whitelisted (user_id = "..user_id..").")
+        end
+      else
+        print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: banned (user_id = "..user_id..")")
+        Citizen.Wait(1000)
+        deferrals.done("[vRP] Banned (user_id = "..user_id..").")
+      end
+    else
+      print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: identification error")
+      Citizen.Wait(1000)
+      deferrals.done("[vRP] Identification error.")
+    end
+  else
+    print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: missing identifiers")
+    Citizen.Wait(1000)
+    deferrals.done("[vRP] Missing identifiers.")
+  end
+end
+
+function vRP:onPlayerSpawned(source)
+  Debug.log("playerSpawned "..source)
+
+  local ids_key = vRP.getSourceIdKey(source)
+  local user = self.users_by_source[source]
+  local pending = false
+  if not user then -- pending user check
+    user = self.pending_users[ids_key]
+    pending = true
+  end
+
+  if user then
+    if pending then 
+      self.users_by_source[user.source] = nil -- remove old entry
+      user.source = source -- update source
+      self.users_by_source[source] = user -- new entry
+      self.pending_users[ids_key] = nil -- remove from pending
+    end
+
+    user.spawns = user.spawns+1
+    local first_spawn = (user.spawns == 1)
+
+    if first_spawn then
+      -- first spawn, reference player
+      -- send players to new player
+      for k,v in pairs(self.users) do
+        vRPclient._addPlayer(source,v.source)
+      end
+      -- send new player to all players
+      vRPclient._addPlayer(-1,user.source)
+
+      -- set client tunnel delay at first spawn
+      --Tunnel.setDestDelay(player, config.load_delay)
+
+      -- show loading
+      vRPclient._setProgressBar(user.source, "vRP:loading", "botright", "Loading...", 0,0,0, 100)
+
+      SetTimeout(2000, function() 
+        SetTimeout(self.cfg.load_duration*1000, function() -- set client delay to normal delay
+          --Tunnel.setDestDelay(player, config.global_delay)
+          vRPclient._removeProgressBar(user.source,"vRP:loading")
+        end)
+      end)
+    end
+
+    SetTimeout(2000, function() -- trigger spawn event
+      --TriggerEvent("vRP:playerSpawn",user_id,player,first_spawn)
+    end)
+  end
+end
+
+function vRP:onPlayerDropped(source)
+  Debug.log("playerDropped "..source)
+  self:dropPlayer(source)
 end
 
 return vRP
