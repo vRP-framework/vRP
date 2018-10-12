@@ -210,6 +210,13 @@ vRP.setUData(user_id,key,value)
 -- return nil if data not found
 vRP.getUData(user_id,key)
 
+-- set character data (textual data)
+vRP.setCData(character_id,key,value)
+
+-- get character data (textual data)
+-- return nil if data not found
+vRP.getCData(character_id,key)
+
 -- set server data (textual data)
 vRP.setSData(key,value)
 

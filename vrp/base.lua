@@ -162,12 +162,27 @@ CREATE TABLE IF NOT EXISTS vrp_user_ids(
   CONSTRAINT fk_user_ids_users FOREIGN KEY(user_id) REFERENCES vrp_users(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS vrp_characters(
+  id INTEGER AUTO_INCREMENT,
+  user_id INTEGER,
+  CONSTRAINT pk_characters PRIMARY KEY(user_id),
+  CONSTRAINT fk_characters_users FOREING KEY(user_id) REFERENCES vrp_users(id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS vrp_user_data(
   user_id INTEGER,
   dkey VARCHAR(100),
   dvalue TEXT,
   CONSTRAINT pk_user_data PRIMARY KEY(user_id,dkey),
   CONSTRAINT fk_user_data_users FOREIGN KEY(user_id) REFERENCES vrp_users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS vrp_character_data(
+  character_id INTEGER,
+  dkey VARCHAR(100),
+  dvalue TEXT,
+  CONSTRAINT pk_character_data PRIMARY KEY(character_id,dkey),
+  CONSTRAINT fk_character_data_characters FOREIGN KEY(character_id) REFERENCES vrp_characters(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS vrp_srv_data(
@@ -183,6 +198,9 @@ vRP.prepare("vRP/userid_byidentifier","SELECT user_id FROM vrp_user_ids WHERE id
 
 vRP.prepare("vRP/set_userdata","REPLACE INTO vrp_user_data(user_id,dkey,dvalue) VALUES(@user_id,@key,@value)")
 vRP.prepare("vRP/get_userdata","SELECT dvalue FROM vrp_user_data WHERE user_id = @user_id AND dkey = @key")
+vRP.prepare("vRP/set_characterdata","REPLACE INTO vrp_character_data(character_id,dkey,dvalue) VALUES(@character_id,@key,@value)")
+vRP.prepare("vRP/get_characterdata","SELECT dvalue FROM vrp_character_data WHERE character_id = @character_id AND dkey = @key")
+
 
 vRP.prepare("vRP/set_srvdata","REPLACE INTO vrp_srv_data(dkey,dvalue) VALUES(@key,@value)")
 vRP.prepare("vRP/get_srvdata","SELECT dvalue FROM vrp_srv_data WHERE dkey = @key")
@@ -298,6 +316,19 @@ end
 
 function vRP.getUData(user_id,key,cbr)
   local rows = vRP.query("vRP/get_userdata", {user_id = user_id, key = key})
+  if #rows > 0 then
+    return rows[1].dvalue
+  else
+    return ""
+  end
+end
+
+function vRP.setCData(character_id,key,value)
+  vRP.execute("vRP/set_characterdata", {character_id = character_id, key = key, value = value})
+end
+
+function vRP.getCData(character_id,key,cbr)
+  local rows = vRP.query("vRP/get_characterdata", {character_id = character_id, key = key})
   if #rows > 0 then
     return rows[1].dvalue
   else
