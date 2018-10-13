@@ -7,6 +7,7 @@ ui_page "gui/index.html"
 server_scripts{ 
   "lib/utils.lua",
   "base.lua",
+  --[[
   "modules/gui.lua",
   "modules/group.lua",
   "modules/admin.lua",
@@ -35,11 +36,13 @@ server_scripts{
   "modules/basic_skinshop.lua",
   "modules/cloakroom.lua",
   "modules/basic_radio.lua"
+  --]]
 }
 
 -- client scripts
 client_scripts{
   "lib/utils.lua",
+  --[[
   "client/base.lua",
   "client/iplloader.lua",
   "client/gui.lua",
@@ -52,14 +55,15 @@ client_scripts{
   "client/admin.lua",
   "client/basic_phone.lua",
   "client/basic_radio.lua"
+  --]]
 }
 
 -- client files
 files{
+  "lib/Luaoop.lua",
   "lib/Tunnel.lua",
   "lib/Proxy.lua",
   "lib/Debug.lua",
-  "lib/Luaseq.lua",
   "lib/Tools.lua",
   "cfg/client.lua",
   "gui/index.html",

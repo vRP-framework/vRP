@@ -36,8 +36,8 @@ CREATE TABLE IF NOT EXISTS vrp_user_ids(
 CREATE TABLE IF NOT EXISTS vrp_characters(
   id INTEGER AUTO_INCREMENT,
   user_id INTEGER,
-  CONSTRAINT pk_characters PRIMARY KEY(user_id),
-  CONSTRAINT fk_characters_users FOREING KEY(user_id) REFERENCES vrp_users(id) ON DELETE CASCADE
+  CONSTRAINT pk_characters PRIMARY KEY(id),
+  CONSTRAINT fk_characters_users FOREIGN KEY(user_id) REFERENCES vrp_users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS vrp_user_data(

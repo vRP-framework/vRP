@@ -119,7 +119,12 @@ function class.is(t, classdef)
     local luaoop
     if mtable then luaoop = mtable.luaoop end
 
-    if luaoop and luaoop.types then
+    if luaoop then
+      -- build class if not built
+      if not luaoop.types and not luaoop.type then
+        class.build(t)
+      end
+
       if not classdef then
         return not luaoop.type
       else
@@ -139,7 +144,12 @@ function class.types(t)
     local luaoop
     if mtable then luaoop = mtable.luaoop end
 
-    if luaoop and luaoop.types then
+    if luaoop then
+      -- build class if not built
+      if not luaoop.types and not luaoop.type then
+        class.build(t)
+      end
+
       local types = {}
       for k,v in pairs(luaoop.types) do
         types[k] = v

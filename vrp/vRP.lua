@@ -26,6 +26,13 @@ end
 --- "execute": should return affected
 --- "scalar": should return a scalar
 function vRP.DBDriver:onQuery(name, params, mode)
+  if mode == "query" then
+    return {}, 0
+  elseif mode == "execute" then
+    return 0
+  elseif mode == "scalar" then
+    return 0
+  end
 end
 
 -- STATIC
@@ -119,15 +126,16 @@ end
 -- db_driver: DBDriver class
 function vRP:registerDBDriver(db_driver)
   if class.is(db_driver, vRP.DBDriver) then
-    if not self.db_drivers[class.name(db_driver)] then
+    local name = class.name(db_driver)
+    if not self.db_drivers[name] then
       self.db_drivers[name] = db_driver
 
-      if class.name(db_driver) == self.cfg.db.driver then -- use/init driver
+      if name == self.cfg.db.driver then -- use/init driver
         self.db_driver = self.db_drivers[name]() -- init driver
 
         local ok = self.db_driver:onInit(self.cfg.db)
         if ok then
-          print("[vRP] Connected to DB using driver \""..class.name(self.db_driver).."\".")
+          print("[vRP] Connected to DB using driver \""..name.."\".")
           self.db_initialized = true
           -- execute cached prepares
           for _,prepare in pairs(self.cached_prepares) do
@@ -144,11 +152,11 @@ function vRP:registerDBDriver(db_driver)
           self.cached_prepares = nil
           self.cached_queries = nil
         else
-          error("[vRP] Connection to DB failed using driver \""..class.name(db_driver).."\".")
+          error("[vRP] Connection to DB failed using driver \""..name.."\".")
         end
       end
     else
-      error("[vRP] DB driver \""..class.name(db_driver).."\" already registered.")
+      error("[vRP] DB driver \""..name.."\" already registered.")
     end
   else
     error("[vRP] Not a DBDriver class.")
