@@ -6,16 +6,15 @@ local Tunnel = module("lib/Tunnel")
 Debug = module("lib/Debug")
 local cvRP = module("vrp", "vRP")
 
-vRP = cvRP() -- instantiate
+vRP = cvRP() -- instantiate vRP
 
 pvRP = {}
+-- load script in vRP context
+function pvRP.loadScript(resource, path)
+  module(resource, path)
+end
+
 Proxy.addInterface("vRP",pvRP)
-
-tvRP = {}
-Tunnel.bindInterface("vRP",tvRP) -- listening for client tunnel
-
--- init
-vRPclient = Tunnel.getInterface("vRP") -- server -> client tunnel
 
 -- queries
 vRP:prepare("vRP/base_tables",[[

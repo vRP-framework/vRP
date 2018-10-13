@@ -1,7 +1,32 @@
 local Luang = module("vrp", "lib/Luang")
-local User = module("vrp", "User")
+local User
 
 local vRP = class("vRP")
+
+-- SUBCLASSES
+
+vRP.Extension = class("vRP.Extension")
+
+vRP.DBDriver = class("vRP.DBDriver")
+
+-- called when the driver is initialized (connection), should return true on success
+-- db_cfg: cfg/base.lua .db config
+function vRP.DBDriver:onInit(db_cfg)
+  return false
+end
+
+-- should prepare the query (@param notation)
+function vRP.DBDriver:onPrepare(name, query)
+end
+
+-- should execute the prepared query
+-- params: map of parameters
+-- mode: 
+--- "query": should return rows, affected
+--- "execute": should return affected
+--- "scalar": should return a scalar
+function vRP.DBDriver:onQuery(name, params, mode)
+end
 
 -- STATIC
 
@@ -32,6 +57,9 @@ function vRP:__construct()
   self.users = {} -- map of id => User
   self.pending_users = {} -- pending user source update (first spawn), map of ids key => user
   self.users_by_source = {} -- map of source => User
+
+  -- extensions
+  self.EXT = {}
 
   -- db/SQL API
   self.db_drivers = {}
@@ -69,48 +97,61 @@ function vRP:__construct()
   task_timeout()
 end
 
--- register a DB driver
---- name: unique name for the driver
---- on_init(cfg): called when the driver is initialized (connection), should return true on success
----- cfg: db config
---- on_prepare(name, query): should prepare the query (@param notation)
---- on_query(name, params, mode): should execute the prepared query
----- params: map of parameters
----- mode: 
------ "query": should return rows, affected
------ "execute": should return affected
------ "scalar": should return a scalar
-function vRP:registerDBDriver(name, on_init, on_prepare, on_query)
-  if not self.db_drivers[name] then
-    self.db_drivers[name] = {on_init, on_prepare, on_query}
+-- register an extension
+-- extension: Extension class
+function vRP:registerExtension(extension)
+  if class.is(extension, vRP.Extension) then
+    if not self.EXT[class.name(extension)] then
+      -- instantiate
+      local ext = extension()
+      self.EXT[class.name(extension)] = ext
 
-    if name == self.cfg.db.driver then -- use/init driver
-      self.db_driver = self.db_drivers[name] -- set driver
-
-      local ok = on_init(self.cfg.db)
-      if ok then
-        print("[vRP] Connected to DB using driver \""..name.."\".")
-        self.db_initialized = true
-        -- execute cached prepares
-        for _,prepare in pairs(self.cached_prepares) do
-          on_prepare(table.unpack(prepare, 1, table.maxn(prepare)))
-        end
-
-        -- execute cached queries
-        for _,query in pairs(self.cached_queries) do
-          async(function()
-            query[2](on_query(table.unpack(query[1], 1, table.maxn(query[1]))))
-          end)
-        end
-
-        self.cached_prepares = nil
-        self.cached_queries = nil
-      else
-        error("[vRP] Connection to DB failed using driver \""..name.."\".")
-      end
+      print("[vRP] Extension "..class.name(ext).." loaded.")
+    else
+      error("[vRP] An extension named "..class.name(extension).." is already registered.")
     end
   else
-    error("[vRP] DB driver \""..name.."\" already registered.")
+    error("[vRP] Not an Extension class.")
+  end
+end
+
+-- register a DB driver
+-- db_driver: DBDriver class
+function vRP:registerDBDriver(db_driver)
+  if class.is(db_driver, vRP.DBDriver) then
+    if not self.db_drivers[class.name(db_driver)] then
+      self.db_drivers[name] = db_driver
+
+      if class.name(db_driver) == self.cfg.db.driver then -- use/init driver
+        self.db_driver = self.db_drivers[name]() -- init driver
+
+        local ok = self.db_driver:onInit(self.cfg.db)
+        if ok then
+          print("[vRP] Connected to DB using driver \""..class.name(self.db_driver).."\".")
+          self.db_initialized = true
+          -- execute cached prepares
+          for _,prepare in pairs(self.cached_prepares) do
+            self.db_driver:onPrepare(table.unpack(prepare, 1, table.maxn(prepare)))
+          end
+
+          -- execute cached queries
+          for _,query in pairs(self.cached_queries) do
+            async(function()
+              query[2](self.db_driver:onQuery(table.unpack(query[1], 1, table.maxn(query[1]))))
+            end)
+          end
+
+          self.cached_prepares = nil
+          self.cached_queries = nil
+        else
+          error("[vRP] Connection to DB failed using driver \""..class.name(db_driver).."\".")
+        end
+      end
+    else
+      error("[vRP] DB driver \""..class.name(db_driver).."\" already registered.")
+    end
+  else
+    error("[vRP] Not a DBDriver class.")
   end
 end
 
@@ -125,7 +166,7 @@ function vRP:prepare(name, query)
   self.prepared_queries[name] = true
 
   if self.db_initialized then -- direct call
-    self.db_driver[2](name, query)
+    self.db_driver:onPrepare(name, query)
   else
     table.insert(self.cached_prepares, {name, query})
   end
@@ -150,7 +191,7 @@ function vRP:query(name, params, mode)
   end
 
   if self.db_initialized then -- direct call
-    return self.db_driver[3](name, params or {}, mode)
+    return self.db_driver:onQuery(name, params or {}, mode)
   else -- async call, wait query result
     local r = async()
     table.insert(self.cached_queries, {{name, params or {}, mode}, r})
@@ -357,7 +398,10 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
             deferrals.update("[vRP] Loading datatable...")
             local sdata = self:getUData(user_id, "vRP:datatable")
 
-            local user = User(self, source, user_id)
+            -- User class deferred loading
+            if not User then User = module("vrp", "User") end
+
+            local user = User(source, user_id)
             self.users[user_id] = user
             self.users_by_source[source] = user
             self.pending_users[table.concat(ids, ";")] = user
