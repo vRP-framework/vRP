@@ -98,7 +98,9 @@ function vRPShared:triggerEvent(name, ...)
   local exts = self.ext_listeners[name]
   if exts then
     for ext,func in pairs(exts) do
-      func(ext, ...)
+      async(function()
+        func(ext, ...)
+      end)
     end
   end
 end
