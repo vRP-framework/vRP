@@ -47,6 +47,14 @@ function vRPShared.Extension:__construct()
   self.remote = Tunnel.getInterface("vRP.EXT."..class.name(self))
 end
 
+function vRPShared.Extension:log(msg)
+  vRP:log(msg, class.name(self))
+end
+
+function vRPShared.Extension:error(msg)
+  vRP:error(msg, class.name(self))
+end
+
 -- METHODS
 
 function vRPShared:__construct()
@@ -77,12 +85,12 @@ function vRPShared:registerExtension(extension)
         end
       end
 
-      print("[vRP] Extension "..class.name(ext).." loaded.")
+      self:log("Extension "..class.name(ext).." loaded.")
     else
-      error("[vRP] An extension named "..class.name(extension).." is already registered.")
+      self:error("An extension named "..class.name(extension).." is already registered.")
     end
   else
-    error("[vRP] Not an Extension class.")
+    self:error("Not an Extension class.")
   end
 end
 
@@ -92,6 +100,26 @@ function vRPShared:triggerEvent(name, ...)
     for ext,func in pairs(exts) do
       func(ext, ...)
     end
+  end
+end
+
+-- msg: log message
+-- suffix: optional category, string
+function vRPShared:log(msg, suffix)
+  if suffix then
+    print("[vRP:"..suffix.."] "..msg)
+  else
+    print("[vRP] "..msg)
+  end
+end
+
+-- msg: error message
+-- suffix: optional category, string
+function vRPShared:error(msg, suffix)
+  if suffix then
+    error("[vRP:"..suffix.."] "..msg)
+  else
+    error("[vRP] "..msg)
   end
 end
 

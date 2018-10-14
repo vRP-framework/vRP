@@ -86,7 +86,6 @@ vRP:prepare("vRP/set_last_login","UPDATE vrp_users SET last_login = @last_login 
 vRP:prepare("vRP/get_last_login","SELECT last_login FROM vrp_users WHERE id = @user_id")
 
 -- init tables
-print("[vRP] init base tables")
 async(function()
   vRP:execute("vRP/base_tables")
 end)

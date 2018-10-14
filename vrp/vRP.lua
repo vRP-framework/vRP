@@ -78,13 +78,13 @@ function vRP:__construct()
   -- DB driver error/warning
 
   if not self.cfg.db or not self.cfg.db.driver then
-    error("[vRP] Missing DB config driver.")
+    self:error("Missing DB config driver.")
   end
 
   -- DB driver check thread
   Citizen.CreateThread(function()
     while not self.db_initialized do
-      print("[vRP] DB driver \""..self.cfg.db.driver.."\" not initialized yet ("..#self.cached_prepares.." prepares cached, "..#self.cached_queries.." queries cached).")
+      self:log("DB driver \""..self.cfg.db.driver.."\" not initialized yet ("..#self.cached_prepares.." prepares cached, "..#self.cached_queries.." queries cached).")
       Citizen.Wait(5000)
     end
   end)
@@ -116,7 +116,7 @@ function vRP:registerDBDriver(db_driver)
 
         local ok = self.db_driver:onInit(self.cfg.db)
         if ok then
-          print("[vRP] Connected to DB using driver \""..name.."\".")
+          self:log("Connected to DB using driver \""..name.."\".")
           self.db_initialized = true
           -- execute cached prepares
           for _,prepare in pairs(self.cached_prepares) do
@@ -133,14 +133,14 @@ function vRP:registerDBDriver(db_driver)
           self.cached_prepares = nil
           self.cached_queries = nil
         else
-          error("[vRP] Connection to DB failed using driver \""..name.."\".")
+          self:error("Connection to DB failed using driver \""..name.."\".")
         end
       end
     else
-      error("[vRP] DB driver \""..name.."\" already registered.")
+      self:error("DB driver \""..name.."\" already registered.")
     end
   else
-    error("[vRP] Not a DBDriver class.")
+    self:error("Not a DBDriver class.")
   end
 end
 
@@ -170,7 +170,7 @@ end
 ---- "scalar": should return a scalar
 function vRP:query(name, params, mode)
   if not self.prepared_queries[name] then
-    error("[vRP] query "..name.." doesn't exist.")
+    self:error("query "..name.." doesn't exist.")
   end
 
   if not mode then mode = "query" end
@@ -327,7 +327,7 @@ function vRP:dropPlayer(source)
     -- save user data table
     self:setUData(user.id,"vRP:datatable",json.encode(user.data))
 
-    print("[vRP] "..user.endpoint.." disconnected (user_id = "..user.id..")")
+    self:log(user.endpoint.." disconnected (user_id = "..user.id..")")
     vRP.users[user.id] = nil
     vRP.user_sources[user.source] = nil
 
@@ -373,18 +373,18 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
   local ids = GetPlayerIdentifiers(source)
 
   if ids ~= nil and #ids > 0 then
-    deferrals.update("[vRP] Checking identifiers...")
+    deferrals.update("Checking identifiers...")
 
     local user_id = self:getUserIdByIdentifiers(ids)
     -- if user_id ~= nil and vRP.rusers[user_id] == nil then -- check user validity and if not already connected (old way, disabled until playerDropped is sure to be called)
     if user_id then -- check user validity 
-      deferrals.update("[vRP] Checking banned...")
+      deferrals.update("Checking banned...")
       if not self:isBanned(user_id) then
-        deferrals.update("[vRP] Checking whitelisted...")
+        deferrals.update("Checking whitelisted...")
         if not self.cfg.whitelist or self:isWhitelisted(user_id) then
           if not self.users[user_id] then -- not present on the server, init user
             -- load user data table
-            deferrals.update("[vRP] Loading datatable...")
+            deferrals.update("Loading datatable...")
             local sdata = self:getUData(user_id, "vRP:datatable")
 
             -- User class deferred loading
@@ -398,7 +398,7 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
             local data = json.decode(sdata)
             if type(data) == "table" then user.data = data end
 
-            deferrals.update("[vRP] Getting last login...")
+            deferrals.update("Getting last login...")
             user.last_login = self:getLastLogin(user.id) or ""
             user.spawns = 0
             user.name = name
@@ -412,11 +412,11 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
             self:execute("vRP/set_last_login", {user_id = user.id, last_login = last_login_stamp})
 
             -- trigger join
-            print("[vRP] "..user.name.." ("..user.endpoint..") joined (user_id = "..user.id..")")
+            self:log(user.name.." ("..user.endpoint..") joined (user_id = "..user.id..")")
             self:triggerEvent("playerJoin", user)
             deferrals.done()
           else -- already connected
-            print("[vRP] "..user.name.." ("..user.endpoint..") re-joined (user_id = "..user.id..")")
+            self:log(user.name.." ("..user.endpoint..") re-joined (user_id = "..user.id..")")
             -- reset first spawn
             user.spawns = 0
 
@@ -425,24 +425,24 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
           end
 
         else
-          print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: not whitelisted (user_id = "..user_id..")")
+          self:log(name.." ("..vRP.getPlayerEndpoint(source)..") rejected: not whitelisted (user_id = "..user_id..")")
           Citizen.Wait(1000)
-          deferrals.done("[vRP] Not whitelisted (user_id = "..user_id..").")
+          deferrals.done("Not whitelisted (user_id = "..user_id..").")
         end
       else
-        print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: banned (user_id = "..user_id..")")
+        self:log(name.." ("..vRP.getPlayerEndpoint(source)..") rejected: banned (user_id = "..user_id..")")
         Citizen.Wait(1000)
-        deferrals.done("[vRP] Banned (user_id = "..user_id..").")
+        deferrals.done("Banned (user_id = "..user_id..").")
       end
     else
-      print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: identification error")
+      self:log(name.." ("..vRP.getPlayerEndpoint(source)..") rejected: identification error")
       Citizen.Wait(1000)
-      deferrals.done("[vRP] Identification error.")
+      deferrals.done("Identification error.")
     end
   else
-    print("[vRP] "..name.." ("..vRP.getPlayerEndpoint(source)..") rejected: missing identifiers")
+    self:log(name.." ("..vRP.getPlayerEndpoint(source)..") rejected: missing identifiers")
     Citizen.Wait(1000)
-    deferrals.done("[vRP] Missing identifiers.")
+    deferrals.done("Missing identifiers.")
   end
 end
 
