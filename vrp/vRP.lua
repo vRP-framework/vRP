@@ -1,11 +1,11 @@
 local Luang = module("vrp", "lib/Luang")
 local User
+local vRPShared = module("vrp", "vRPShared")
 
-local vRP = class("vRP")
+-- Server vRP
+local vRP = class("vRP", vRPShared)
 
 -- SUBCLASSES
-
-vRP.Extension = class("vRP.Extension")
 
 vRP.DBDriver = class("vRP.DBDriver")
 
@@ -53,6 +53,8 @@ end
 -- METHODS
 
 function vRP:__construct()
+  vRPShared.__construct(self)
+
   -- load config
   self.cfg = module("vrp", "cfg/base")
 
@@ -64,9 +66,6 @@ function vRP:__construct()
   self.users = {} -- map of id => User
   self.pending_users = {} -- pending user source update (first spawn), map of ids key => user
   self.users_by_source = {} -- map of source => User
-
-  -- extensions
-  self.EXT = {}
 
   -- db/SQL API
   self.db_drivers = {}
@@ -102,24 +101,6 @@ function vRP:__construct()
     self:checkTimeout()
   end
   task_timeout()
-end
-
--- register an extension
--- extension: Extension class
-function vRP:registerExtension(extension)
-  if class.is(extension, vRP.Extension) then
-    if not self.EXT[class.name(extension)] then
-      -- instantiate
-      local ext = extension()
-      self.EXT[class.name(extension)] = ext
-
-      print("[vRP] Extension "..class.name(ext).." loaded.")
-    else
-      error("[vRP] An extension named "..class.name(extension).." is already registered.")
-    end
-  else
-    error("[vRP] Not an Extension class.")
-  end
 end
 
 -- register a DB driver
@@ -272,7 +253,7 @@ function vRP:isWhitelisted(user_id)
 end
 
 function vRP:setWhitelisted(user_id,whitelisted)
-  vRP:execute("vRP/set_whitelisted", {user_id = user_id, whitelisted = whitelisted})
+  self:execute("vRP/set_whitelisted", {user_id = user_id, whitelisted = whitelisted})
 end
 
 function vRP:getLastLogin(user_id)
@@ -313,13 +294,13 @@ end
 function vRP:setSData(key,value,id)
   if not id then id = config.server_id end
 
-  self:execute("vRP/set_srvdata", {key = key, value = value, id = id})
+  self:execute("vRP/set_serverdata", {key = key, value = value, id = id})
 end
 
 function vRP:getSData(key,id)
   if not id then id = self.cfg.server_id end
 
-  local rows = self:query("vRP/get_srvdata", {key = key, id = id})
+  local rows = self:query("vRP/get_serverdata", {key = key, id = id})
   if #rows > 0 then
     return rows[1].dvalue
   else
@@ -339,12 +320,12 @@ function vRP:dropPlayer(source)
 
   if user then
     -- remove player from connected clients
-    vRPclient._removePlayer(-1, user.source)
+    self.EXT.Base.remote._removePlayer(-1, user.source)
 
---    TriggerEvent("vRP:playerLeave", user_id, source)
+    self:triggerEvent("playerLeave", user)
 
     -- save user data table
-    self:setUData(user_id,"vRP:datatable",json.encode(user.data))
+    self:setUData(user.id,"vRP:datatable",json.encode(user.data))
 
     print("[vRP] "..user.endpoint.." disconnected (user_id = "..user.id..")")
     vRP.users[user.id] = nil
@@ -366,7 +347,7 @@ function vRP:kick(source,reason)
 end
 
 function vRP:save()
-  --TriggerEvent("vRP:save")
+  self:triggerEvent("save")
 
   Debug.log("save datatables")
   for k,user in pairs(self.users) do
@@ -418,7 +399,7 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
             if type(data) == "table" then user.data = data end
 
             deferrals.update("[vRP] Getting last login...")
-            user.last_login = vRP:getLastLogin(user.id) or ""
+            user.last_login = self:getLastLogin(user.id) or ""
             user.spawns = 0
             user.name = name
 
@@ -432,14 +413,14 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
 
             -- trigger join
             print("[vRP] "..user.name.." ("..user.endpoint..") joined (user_id = "..user.id..")")
---            TriggerEvent("vRP:playerJoin", user.id, source, name, tmpdata.last_login)
+            self:triggerEvent("playerJoin", user)
             deferrals.done()
           else -- already connected
             print("[vRP] "..user.name.." ("..user.endpoint..") re-joined (user_id = "..user.id..")")
             -- reset first spawn
             user.spawns = 0
 
---            TriggerEvent("vRP:playerRejoin", user_id, source, name)
+            self:triggerEvent("playerRejoin", user, name)
             deferrals.done()
           end
 
@@ -491,27 +472,27 @@ function vRP:onPlayerSpawned(source)
       -- first spawn, reference player
       -- send players to new player
       for k,v in pairs(self.users) do
-        vRPclient._addPlayer(source,v.source)
+        self.EXT.Base.remote._addPlayer(source,v.source)
       end
       -- send new player to all players
-      vRPclient._addPlayer(-1,user.source)
+      self.EXT.Base.remote._addPlayer(-1,user.source)
 
       -- set client tunnel delay at first spawn
-      --Tunnel.setDestDelay(player, config.load_delay)
+      Tunnel.setDestDelay(source, self.cfg.load_delay)
 
       -- show loading
-      vRPclient._setProgressBar(user.source, "vRP:loading", "botright", "Loading...", 0,0,0, 100)
+--      vRPclient._setProgressBar(user.source, "vRP:loading", "botright", "Loading...", 0,0,0, 100)
 
       SetTimeout(2000, function() 
         SetTimeout(self.cfg.load_duration*1000, function() -- set client delay to normal delay
-          --Tunnel.setDestDelay(player, config.global_delay)
-          vRPclient._removeProgressBar(user.source,"vRP:loading")
+          Tunnel.setDestDelay(source, self.cfg.global_delay)
+--          vRPclient._removeProgressBar(user.source,"vRP:loading")
         end)
       end)
     end
 
     SetTimeout(2000, function() -- trigger spawn event
-      --TriggerEvent("vRP:playerSpawn",user_id,player,first_spawn)
+      self:triggerEvent("playerSpawn", user)
     end)
   end
 end

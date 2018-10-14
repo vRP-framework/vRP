@@ -10,7 +10,7 @@ end
 
 -- User class
 
-local User = class("User", extensions)
+local User = class("User", table.unpack(extensions))
 
 function User:__construct(source, id)
   self.source = source

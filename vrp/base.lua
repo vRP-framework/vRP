@@ -1,11 +1,12 @@
+-- init vRP server context
+
 local Luaoop = module("vrp", "lib/Luaoop")
 class = Luaoop.class
-local Proxy = module("lib/Proxy")
-local Tunnel = module("lib/Tunnel")
-
+Proxy = module("lib/Proxy")
+Tunnel = module("lib/Tunnel")
 Debug = module("lib/Debug")
-local cvRP = module("vrp", "vRP")
 
+local cvRP = module("vrp", "vRP")
 vRP = cvRP() -- instantiate vRP
 
 pvRP = {}
@@ -14,7 +15,7 @@ function pvRP.loadScript(resource, path)
   module(resource, path)
 end
 
-Proxy.addInterface("vRP",pvRP)
+Proxy.addInterface("vRP", pvRP)
 
 -- queries
 vRP:prepare("vRP/base_tables",[[
@@ -104,3 +105,9 @@ RegisterServerEvent("vRPcli:playerSpawned")
 AddEventHandler("vRPcli:playerSpawned", function()
   vRP:onPlayerSpawned(source)
 end)
+
+-- Base extension
+
+local Base = class("Base", vRP.Extension)
+
+vRP:registerExtension(Base)

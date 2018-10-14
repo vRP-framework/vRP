@@ -42,8 +42,8 @@ server_scripts{
 -- client scripts
 client_scripts{
   "lib/utils.lua",
-  --[[
   "client/base.lua",
+  --[[
   "client/iplloader.lua",
   "client/gui.lua",
   "client/player_state.lua",
@@ -65,6 +65,8 @@ files{
   "lib/Proxy.lua",
   "lib/Debug.lua",
   "lib/Tools.lua",
+  "client/vRP.lua",
+  "vRPShared.lua",
   "cfg/client.lua",
   "gui/index.html",
   "gui/design.css",
