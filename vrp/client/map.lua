@@ -187,7 +187,7 @@ end
 -- locked: boolean
 -- doorswing: -1 to 1
 function Map:setStateOfClosestDoor(doordef, locked, doorswing)
-  local x,y,z = tvRP.getPosition()
+  local x,y,z = vRP.EXT.Base:getPosition()
   local hash = doordef.modelhash
   if hash == nil then
     hash = GetHashKey(doordef.model)

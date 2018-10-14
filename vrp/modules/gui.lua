@@ -2,110 +2,145 @@ local Tools = module("lib/Tools")
 
 local cfg = module("cfg/gui")
 
--- MENU
+-- Menu
+local Menu = class("Menu")
 
-local menu_ids = Tools.newIDGenerator()
-local client_menus = {}
-local rclient_menus = {}
+function Menu:__construct()
+  self.title = "menu"
+  self.css = {} -- {.top, .header_color}
+  self.options = {}
 
--- open dynamic menu to client
--- menudef: .name and choices as key/{callback,description} (optional element html description) 
--- menudef optional: .css{ .top, .header_color }
-function vRP.openMenu(source,menudef)
-  local menudata = {}
-  menudata.choices = {}
+-- .onclose(user) will be called when the menu is closed
+end
 
-  -- send menudata to client
-  -- choices
-  for k,v in pairs(menudef) do
-    if k ~= "name" and k ~= "onclose" and k ~= "css" then
-      table.insert(menudata.choices,{k,v[2]})
-    end
+-- add option
+-- title: option title
+-- action(user, value, mod): select callback
+--- value: option value
+--- mod: action modulation
+---- -1: left
+---- 0: valid
+---- 1: right
+-- description: (optional) option description, a string or a callback
+--- callback(user, value): should return a string or nil
+-- value: (optional) option value
+function Menu:addOption(title, action, description, value)
+  table.insert(self.options, {title, action, description, value})
+end
+
+
+-- Extension
+
+local GUI = class("GUI", vRP.Extension)
+
+-- SUBCLASS
+
+GUI.User = class("User")
+
+function GUI.User:__construct()
+  self.menu = nil -- current menu
+  self.menu_stack = {} -- stack of {name, data}
+  self.request_ids = Tools.newIDGenerator()
+  self.requests = {}
+end
+
+-- open menu (build and open menu)
+function GUI.User:openMenu(name, data)
+  -- copy data
+  local cdata = {}
+  for k,v in pairs(cdata) do
+    cdata[k] = v
   end
 
-  -- sort choices per entry name
-  table.sort(menudata.choices, function(a,b)
-    return string.upper(a[1]) < string.upper(b[1])
-  end)
-  
-  -- name
-  menudata.name = menudef.name or "Menu"
-  menudata.css = menudef.css or {}
+  -- add user property
+  data.user = self
 
-  -- set new id
-  menudata.id = menu_ids:gen() 
+  -- build menu
+  local menu = vRP.EXT.GUI:buildMenu(name, data)
 
-  -- add client menu
-  client_menus[menudata.id] = {def = menudef, source = source}
-  rclient_menus[source] = menudata.id
+  -- prepare network data
+  local data = {
+    options = {},
+    title = menu.title,
+    css = menu.css
+  }
 
-  -- openmenu
-  vRPclient._openMenuData(source, menudata)
+  -- titles
+  for k,v in pairs(menu.options) do
+    data.options[k] = title
+  end
+
+  -- add to stack, mark as current
+  table.insert(self.menu_stack, {name, data})
+  self.menu = menu
+
+  -- open client menu
+  vRP.EXT.GUI.remote._openMenu(self.source, data)
 end
 
--- force close player menu
-function vRP.closeMenu(source)
-  vRPclient._closeMenu(source)
+-- force close current menu
+function GUI.User:closeMenu()
+  vRP.EXT.GUI.remote._closeMenu(self.source)
 end
-
--- PROMPT
-
-local prompts = {}
 
 -- prompt textual (and multiline) information from player
 -- return entered text
-function vRP.prompt(source,title,default_text)
+function GUI.User:prompt(title, default_text)
   local r = async()
-  prompts[source] = r
+  self.prompt_r = r
 
-  vRPclient._prompt(source, title,default_text)
+  vRP.EXT.GUI._prompt(self.source, title, default_text)
 
   return r:wait()
 end
 
 -- REQUEST
 
-local request_ids = Tools.newIDGenerator()
-local requests = {}
-
 -- ask something to a player with a limited amount of time to answer (yes|no request)
 -- time: request duration in seconds
 -- return true (yes) or false (no)
-function vRP.request(source,text,time)
+function GUI.User:request(text, time)
   local r = async()
 
-  local id = request_ids:gen()
-  local request = {source = source, cb_ok = r, done = false}
+  local id = self.request_ids:gen()
+  local request = {r = r, done = false}
   requests[id] = request
 
-  vRPclient.request(source,id,text,time) -- send request to client
+  vRP.EXT.GUI.remote._request(self.source,id,text,time) -- send request to client
 
   -- end request with a timeout if not already ended
   SetTimeout(time*1000,function()
     if not request.done then
-      request.cb_ok(false) -- negative response
-      request_ids:free(id)
-      requests[id] = nil
+      request.r(false) -- negative response
+      self.request_ids:free(id)
+      self.requests[id] = nil
     end
   end)
 
   return r:wait()
 end
 
+-- METHODS
+
+function GUI:__construct()
+  vRP.Extension.__construct(self)
+
+  self.menu_builders = {}
+end
+
+-- MENU
 
 -- GENERIC MENU BUILDER
 
-local menu_builders = {}
-
 -- register a menu builder function
---- name: menu type name
---- builder(add_choices, data) (callback, with custom data table)
----- add_choices(choices) (callback to call once to add the built choices to the menu)
-function vRP.registerMenuBuilder(name, builder)
-  local mbuilders = menu_builders[name]
+-- name: menu type name
+-- builder(menu, data): callback to modify the menu
+--- data: passed data to build the menu
+function GUI:registerMenuBuilder(name, builder)
+  local mbuilders = self.menu_builders[name]
   if not mbuilders then
     mbuilders = {}
-    menu_builders[name] = mbuilders
+    self.menu_builders[name] = mbuilders
   end
 
   table.insert(mbuilders, builder)
@@ -114,71 +149,45 @@ end
 -- build a menu
 --- name: menu name type
 --- data: custom data table
--- return built choices
-function vRP.buildMenu(name, data)
-  local r = async()
+-- return built menu
+function GUI:buildMenu(name, data)
+  local menu = Menu()
+  menu.title = "<"..name..">"
 
-  -- the task will return the built choices even if they aren't complete
-  local choices = {}
+  local mbuilders = self.menu_builders[name]
 
-  local mbuilders = menu_builders[name]
   if mbuilders then
-    local count = #mbuilders
-
-    for k,v in pairs(mbuilders) do -- trigger builders
-      -- get back the built choices
-      local done = false
-      local function add_choices(bchoices)
-        if not done then -- prevent a builder to add things more than once
-          done = true
-
-          if bchoices then
-            for k,v in pairs(bchoices) do
-              choices[k] = v
-            end
-          end
-
-          count = count-1
-          if count == 0 then -- end of build
-            r(choices)
-          end
-        end
-      end
-
-      v(add_choices, data) -- trigger
+    for _,builder in ipairs(mbuilders) do -- trigger builders
+      builder(menu, data)
     end
-
-    return r:wait()
   end
 
-  return {}
+  return menu
 end
 
--- MAIN MENU
+-- TUNNEL
+GUI.tunnel = {}
 
--- open the player main menu
-function vRP.openMainMenu(source)
-  local menudata = vRP.buildMenu("main", {player = source})
-  menudata.name = "Main menu"
-  menudata.css = {top="75px",header_color="rgba(0,125,255,0.75)"}
-  vRP.openMenu(source,menudata) -- open the generated menu
-end
+function GUI.tunnel:closeMenu()
+  local user = vRP.users_by_source[source]
 
--- SERVER TUNNEL API
+  if user then
+    if user.menu then
+      if user.menu.onclose then
+        user.menu.onclose(user)
+      end
+    local menu = client_menus[id]
+    if menu and menu.source == source then
 
-function tvRP.closeMenu(id)
-  local source = source
-  local menu = client_menus[id]
-  if menu and menu.source == source then
+      -- call callback
+      if menu.def.onclose then
+        menu.def.onclose(source)
+      end
 
-    -- call callback
-    if menu.def.onclose then
-      menu.def.onclose(source)
+      menu_ids:free(id)
+      client_menus[id] = nil
+      rclient_menus[source] = nil
     end
-
-    menu_ids:free(id)
-    client_menus[id] = nil
-    rclient_menus[source] = nil
   end
 end
 
