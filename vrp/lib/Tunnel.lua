@@ -48,7 +48,7 @@ local function tunnel_resolve(itable,key)
     local dest = nil
     if SERVER then
       dest = args[1]
-      args = {table.unpack(args, 2, table.maxn(args))}
+      args = {table.unpack(args, 2, table_maxn(args))}
       if dest >= 0 and not no_wait then -- return values not supported for multiple dests (-1)
         r = async()
       end
@@ -112,7 +112,7 @@ local function tunnel_resolve(itable,key)
       if profile then -- debug
         local rets = {r:wait()}
         Debug.pend(profile)
-        return table.unpack(rets, 1, table.maxn(rets))
+        return table.unpack(rets, 1, table_maxn(rets))
       else
         return r:wait()
       end
@@ -140,7 +140,7 @@ function Tunnel.bindInterface(name,interface)
 
     local rets = {}
     if type(f) == "function" then -- call bound function
-      rets = {f(table.unpack(args, 1, table.maxn(args)))}
+      rets = {f(table.unpack(args, 1, table_maxn(args)))}
       -- CancelEvent() -- cancel event doesn't seem to cancel the event for the other handlers, but if it does, uncomment this
     end
 
@@ -181,7 +181,7 @@ function Tunnel.getInterface(name,identifier)
       callbacks[rid] = nil
 
       -- call
-      callback(table.unpack(args, 1, table.maxn(args)))
+      callback(table.unpack(args, 1, table_maxn(args)))
     end
   end)
 

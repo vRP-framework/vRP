@@ -5,7 +5,7 @@
 SERVER = not IsVehicleEngineStarting
 CLIENT = not SERVER
 
-function table.maxn(t)
+function table_maxn(t)
   local max = 0
   for k,v in pairs(t) do
     local n = tonumber(k)
@@ -69,7 +69,7 @@ local function wait(self)
     rets = self.r 
   end
 
-  return table.unpack(rets, 1, table.maxn(rets))
+  return table.unpack(rets, 1, table_maxn(rets))
 end
 
 local function areturn(self, ...)
@@ -88,6 +88,14 @@ function async(func)
       return setmetatable({ wait = wait, p = promise.new() }, { __call = areturn })
     end
   end
+end
+
+local function hex_conv(c)
+  return string.format('%02X', string.byte(c))
+end
+
+function tohex(str)
+  return string.gsub(str, '.', hex_conv)
 end
 
 function parseInt(v)

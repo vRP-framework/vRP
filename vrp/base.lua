@@ -69,13 +69,13 @@ vRP:prepare("vRP/create_user","INSERT INTO vrp_users(whitelisted,banned) VALUES(
 vRP:prepare("vRP/add_identifier","INSERT INTO vrp_user_ids(identifier,user_id) VALUES(@identifier,@user_id)")
 vRP:prepare("vRP/userid_byidentifier","SELECT user_id FROM vrp_user_ids WHERE identifier = @identifier")
 
-vRP:prepare("vRP/set_userdata","REPLACE INTO vrp_user_data(user_id,dkey,dvalue) VALUES(@user_id,@key,@value)")
+vRP:prepare("vRP/set_userdata","REPLACE INTO vrp_user_data(user_id,dkey,dvalue) VALUES(@user_id,@key,UNHEX(@value))")
 vRP:prepare("vRP/get_userdata","SELECT dvalue FROM vrp_user_data WHERE user_id = @user_id AND dkey = @key")
-vRP:prepare("vRP/set_characterdata","REPLACE INTO vrp_character_data(character_id,dkey,dvalue) VALUES(@character_id,@key,@value)")
+vRP:prepare("vRP/set_characterdata","REPLACE INTO vrp_character_data(character_id,dkey,dvalue) VALUES(@character_id,@key,UNHEX(@value))")
 vRP:prepare("vRP/get_characterdata","SELECT dvalue FROM vrp_character_data WHERE character_id = @character_id AND dkey = @key")
 
 
-vRP:prepare("vRP/set_serverdata","REPLACE INTO vrp_server_data(id,dkey,dvalue) VALUES(@id,@key,@value)")
+vRP:prepare("vRP/set_serverdata","REPLACE INTO vrp_server_data(id,dkey,dvalue) VALUES(@id,@key,UNHEX(@value))")
 vRP:prepare("vRP/get_serverdata","SELECT dvalue FROM vrp_server_data WHERE id = @id AND dkey = @key")
 
 vRP:prepare("vRP/get_banned","SELECT banned FROM vrp_users WHERE id = @user_id")

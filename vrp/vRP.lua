@@ -119,13 +119,13 @@ function vRP:registerDBDriver(db_driver)
           self.db_initialized = true
           -- execute cached prepares
           for _,prepare in pairs(self.cached_prepares) do
-            self.db_driver:onPrepare(table.unpack(prepare, 1, table.maxn(prepare)))
+            self.db_driver:onPrepare(table.unpack(prepare, 1, table_maxn(prepare)))
           end
 
           -- execute cached queries
           for _,query in pairs(self.cached_queries) do
             async(function()
-              query[2](self.db_driver:onQuery(table.unpack(query[1], 1, table.maxn(query[1]))))
+              query[2](self.db_driver:onQuery(table.unpack(query[1], 1, table_maxn(query[1]))))
             end)
           end
 
@@ -264,8 +264,9 @@ function vRP:getLastLogin(user_id)
   end
 end
 
+-- value: binary string
 function vRP:setUData(user_id,key,value)
-  self:execute("vRP/set_userdata", {user_id = user_id, key = key, value = value})
+  self:execute("vRP/set_userdata", {user_id = user_id, key = key, value = tohex(value)})
 end
 
 function vRP:getUData(user_id,key)
@@ -277,8 +278,9 @@ function vRP:getUData(user_id,key)
   end
 end
 
+-- value: binary string
 function vRP:setCData(character_id,key,value)
-  self:execute("vRP/set_characterdata", {character_id = character_id, key = key, value = value})
+  self:execute("vRP/set_characterdata", {character_id = character_id, key = key, value = tohex(value)})
 end
 
 function vRP:getCData(character_id,key)
@@ -290,10 +292,11 @@ function vRP:getCData(character_id,key)
   end
 end
 
+-- value: binary string
 function vRP:setSData(key,value,id)
   if not id then id = config.server_id end
 
-  self:execute("vRP/set_serverdata", {key = key, value = value, id = id})
+  self:execute("vRP/set_serverdata", {key = key, value = tohex(value), id = id})
 end
 
 function vRP:getSData(key,id)
@@ -324,7 +327,7 @@ function vRP:dropPlayer(source)
     self:triggerEvent("playerLeave", user)
 
     -- save user data table
-    self:setUData(user.id,"vRP:datatable",json.encode(user.data))
+    self:setUData(user.id,"vRP:datatable", msgpack.pack(user.data))
 
     self:log(user.endpoint.." disconnected (user_id = "..user.id..")")
     vRP.users[user.id] = nil
@@ -350,7 +353,7 @@ function vRP:save()
 
   Debug.log("save datatables")
   for k,user in pairs(self.users) do
-    self:setUData(user.id,"vRP:datatable",json.encode(user.data))
+    self:setUData(user.id, "vRP:datatable", msgpack.pack(user.data))
   end
 end
 
@@ -394,7 +397,7 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
             self.users_by_source[source] = user
             self.pending_users[table.concat(ids, ";")] = user
 
-            local data = json.decode(sdata)
+            local data = msgpack.unpack(sdata)
             if type(data) == "table" then user.data = data end
 
             deferrals.update("Getting last login...")

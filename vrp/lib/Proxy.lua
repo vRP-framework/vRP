@@ -47,7 +47,7 @@ local function proxy_resolve(itable,key)
       if Debug.active then -- debug
         local rets = {r:wait()}
         Debug.pend(profile)
-        return table.unpack(rets, 1, table.maxn(rets))
+        return table.unpack(rets, 1, table_maxn(rets))
       else
         return r:wait()
       end
@@ -69,7 +69,7 @@ function Proxy.addInterface(name, itable)
 
     local rets = {}
     if type(f) == "function" then
-      rets = {f(table.unpack(args, 1, table.maxn(args)))}
+      rets = {f(table.unpack(args, 1, table_maxn(args)))}
       -- CancelEvent() -- cancel event doesn't seem to cancel the event for the other handlers, but if it does, uncomment this
     else
       print("error: proxy call "..name..":"..member.." not found")
@@ -103,7 +103,7 @@ function Proxy.getInterface(name, identifier)
       callbacks[rid] = nil
 
       -- call
-      callback(table.unpack(rets, 1, table.maxn(rets)))
+      callback(table.unpack(rets, 1, table_maxn(rets)))
     end
 
   end)
