@@ -97,9 +97,11 @@ end
 function vRPShared:triggerEvent(name, ...)
   local exts = self.ext_listeners[name]
   if exts then
+    local params = {...}
+
     for ext,func in pairs(exts) do
       async(function()
-        func(ext, ...)
+        func(ext, table.unpack(params, 1,table_maxn(params)))
       end)
     end
   end

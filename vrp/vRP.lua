@@ -397,8 +397,10 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
             self.users_by_source[source] = user
             self.pending_users[table.concat(ids, ";")] = user
 
-            local data = msgpack.unpack(sdata)
-            if type(data) == "table" then user.data = data end
+            if sdata then
+              local data = msgpack.unpack(sdata)
+              if type(data) == "table" then user.data = data end
+            end
 
             deferrals.update("Getting last login...")
             user.last_login = self:getLastLogin(user.id) or ""
@@ -494,7 +496,7 @@ function vRP:onPlayerSpawned(source)
     end
 
     SetTimeout(2000, function() -- trigger spawn event
-      self:triggerEvent("playerSpawn", user)
+      self:triggerEvent("playerSpawn", user, first_spawn)
     end)
   end
 end

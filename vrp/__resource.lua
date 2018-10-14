@@ -7,13 +7,13 @@ ui_page "gui/index.html"
 server_scripts{ 
   "lib/utils.lua",
   "base.lua",
+  "modules/map.lua",
   --[[
   "modules/gui.lua",
   "modules/group.lua",
   "modules/admin.lua",
   "modules/survival.lua",
   "modules/player_state.lua",
-  "modules/map.lua",
   "modules/money.lua",
   "modules/inventory.lua",
   "modules/identity.lua",
@@ -43,12 +43,12 @@ server_scripts{
 client_scripts{
   "lib/utils.lua",
   "client/base.lua",
+  "client/map.lua",
   --[[
   "client/iplloader.lua",
   "client/gui.lua",
   "client/player_state.lua",
   "client/survival.lua",
-  "client/map.lua",
   "client/identity.lua",
   "client/basic_garage.lua",
   "client/police.lua",
