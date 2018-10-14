@@ -8,7 +8,7 @@ Proxy = module("vrp", "lib/Proxy")
 local cvRP = module("vrp", "client/vRP")
 vRP = cvRP() -- instantiate vRP
 
-pvRP = {}
+local pvRP = {}
 -- load script in vRP context
 function pvRP.loadScript(resource, path)
   module(resource, path)
@@ -59,7 +59,7 @@ function Base:__construct()
           if IsThisModelACar(hash) or IsThisModelAHeli(hash) or IsThisModelAPlane(hash) then
             proximity = vRP.cfg.voice_proximity_vehicle
           end
-        elseif self.tunnel.isInside(self) then
+        elseif self:isInside() then
           proximity = vRP.cfg.voice_proximity_inside
         end
 
@@ -83,39 +83,31 @@ function Base:__construct()
   self.anim_ids = Tools.newIDGenerator()
 end
 
-function Base.tunnel:setUserId(user_id)
-  self.user_id = user_id
-end
-
-function Base.tunnel:getUserId()
-  return self.user_id
-end
-
-function Base.tunnel:teleport(x,y,z)
-  self.tunnel.unjail(self) -- force unjail before a teleportation
+function Base:teleport(x,y,z)
+  self:unjail() -- force unjail before a teleportation
   SetEntityCoords(GetPlayerPed(-1), x+0.0001, y+0.0001, z+0.0001, 1,0,0,1)
-  vRP.EXT.PlayerState._updatePos(x,y,z)
+  vRP.EXT.PlayerState:updatePos(x,y,z)
 end
 
 -- return x,y,z
-function Base.tunnel:getPosition()
+function Base:getPosition()
   local x,y,z = table.unpack(GetEntityCoords(GetPlayerPed(-1),true))
   return x,y,z
 end
 
 -- return false if in exterior, true if inside a building
-function Base.tunnel:isInside()
-  local x,y,z = self.tunnel.getPosition(self)
+function Base:isInside()
+  local x,y,z = self:getPosition()
   return not (GetInteriorAtCoords(x,y,z) == 0)
 end
 
 -- return vx,vy,vz
-function Base.tunnel:getSpeed()
+function Base:getSpeed()
   local vx,vy,vz = table.unpack(GetEntityVelocity(GetPlayerPed(-1)))
   return math.sqrt(vx*vx+vy*vy+vz*vz)
 end
 
-function Base.tunnel:getCamDirection()
+function Base:getCamDirection()
   local heading = GetGameplayCamRelativeHeading()+GetEntityHeading(GetPlayerPed(-1))
   local pitch = GetGameplayCamRelativePitch()
 
@@ -134,24 +126,12 @@ function Base.tunnel:getCamDirection()
   return x,y,z
 end
 
-function Base.tunnel:addPlayer(player)
-  self.players[player] = true
-end
-
-function Base.tunnel:removePlayer(player)
-  self.players[player] = nil
-end
-
-function Base.tunnel:getPlayers()
-  return self.players
-end
-
-function Base.tunnel:getNearestPlayers(radius)
+function Base:getNearestPlayers(radius)
   local r = {}
 
   local ped = GetPlayerPed(i)
   local pid = PlayerId()
-  local px,py,pz = self.tunnel.getPosition(self)
+  local px,py,pz = self:getPosition()
 
   --[[
   for i=0,GetNumberOfPlayers()-1 do
@@ -183,10 +163,10 @@ function Base.tunnel:getNearestPlayers(radius)
   return r
 end
 
-function Base.tunnel:getNearestPlayer(radius)
+function Base:getNearestPlayer(radius)
   local p = nil
 
-  local players = self.tunnel.getNearestPlayers(self, radius)
+  local players = self:getNearestPlayers(radius)
   local min = radius+10.0
   for k,v in pairs(players) do
     if v < min then
@@ -198,13 +178,13 @@ function Base.tunnel:getNearestPlayer(radius)
   return p
 end
 
-function Base.tunnel:notify(msg)
+function Base:notify(msg)
   SetNotificationTextEntry("STRING")
   AddTextComponentString(msg)
   DrawNotification(true, false)
 end
 
-function Base.tunnel:notifyPicture(icon, type, sender, title, text)
+function Base:notifyPicture(icon, type, sender, title, text)
   SetNotificationTextEntry("STRING")
   AddTextComponentString(text)
   SetNotificationMessage(icon, icon, true, type, sender, title, text)
@@ -216,7 +196,7 @@ end
 -- play a screen effect
 -- name, see https://wiki.fivem.net/wiki/Screen_Effects
 -- duration: in seconds, if -1, will play until stopScreenEffect is called
-function Base.tunnel:playScreenEffect(name, duration)
+function Base:playScreenEffect(name, duration)
   if duration < 0 then -- loop
     StartScreenEffect(name, 0, true)
   else
@@ -231,7 +211,7 @@ end
 
 -- stop a screen effect
 -- name, see https://wiki.fivem.net/wiki/Screen_Effects
-function Base.tunnel:stopScreenEffect(name)
+function Base:stopScreenEffect(name)
   StopScreenEffect(name)
 end
 
@@ -243,19 +223,19 @@ end
 -- upper: true, only upper body, false, full animation
 -- seq: list of animations as {dict,anim_name,loops} (loops is the number of loops, default 1) or a task def (properties: task, play_exit)
 -- looping: if true, will infinitely loop the first element of the sequence until stopAnim is called
-function Base.tunnel:playAnim(upper, seq, looping)
+function Base:playAnim(upper, seq, looping)
   if seq.task then -- is a task (cf https://github.com/ImagicTheCat/vRP/pull/118)
-    self.tunnel.stopAnim(self, true)
+    self:stopAnim(true)
 
     local ped = GetPlayerPed(-1)
     if seq.task == "PROP_HUMAN_SEAT_CHAIR_MP_PLAYER" then -- special case, sit in a chair
-      local x,y,z = self.tunnel.getPosition(self)
+      local x,y,z = self:getPosition()
       TaskStartScenarioAtPosition(ped, seq.task, x, y, z-1, GetEntityHeading(ped), 0, 0, false)
     else
       TaskStartScenarioInPlace(ped, seq.task, 0, not seq.play_exit)
     end
   else -- a regular animation sequence
-    self.tunnel.stopAnim(self, upper)
+    self:stopAnim(self, upper)
 
     local flags = 0
     if upper then flags = flags+48 end
@@ -312,7 +292,7 @@ end
 
 -- stop animation (new version)
 -- upper: true, stop the upper animation, false, stop full animations
-function Base.tunnel:stopAnim(upper)
+function Base:stopAnim(upper)
   self.anims = {} -- stop all sequences
   if upper then
     ClearPedSecondaryTask(GetPlayerPed(-1))
@@ -324,7 +304,7 @@ end
 -- RAGDOLL
 
 -- set player ragdoll flag (true or false)
-function Base.tunnel:setRagdoll(flag)
+function Base:setRagdoll(flag)
   self.ragdoll = flag
 end
 
@@ -334,14 +314,48 @@ end
 -- https://wiki.gtanet.work/index.php?title=FrontEndSoundlist
 
 -- play sound at a specific position
-function Base.tunnel:playSpatializedSound(dict,name,x,y,z,range)
+function Base:playSpatializedSound(dict,name,x,y,z,range)
   PlaySoundFromCoord(-1,name,x+0.0001,y+0.0001,z+0.0001,dict,0,range+0.0001,0)
 end
 
 -- play sound
-function Base.tunnel:playSound(dict,name)
+function Base:playSound(dict,name)
   PlaySound(-1,name,dict,0,0,1)
 end
+
+-- TUNNEL
+
+function Base.tunnel:setUserId(user_id)
+  self.user_id = user_id
+end
+
+function Base.tunnel:getUserId()
+  return self.user_id
+end
+
+function Base.tunnel:addPlayer(player)
+  self.players[player] = true
+end
+
+function Base.tunnel:removePlayer(player)
+  self.players[player] = nil
+end
+
+Base.tunnel.teleport = Base.teleport
+Base.tunnel.getPosition = Base.getPosition
+Base.tunnel.isInside = Base.isInside
+Base.tunnel.getSpeed = Base.getSpeed
+Base.tunnel.getNearestPlayers = Base.getNearestPlayers
+Base.tunnel.getNearestPlayer = Base.getNearestPlayer
+Base.tunnel.notify = Base.notify
+Base.tunnel.notifyPicture = Base.notifyPicture
+Base.tunnel.playScreenEffect = Base.playScreenEffect
+Base.tunnel.stopScreenEffect = Base.stopScreenEffect
+Base.tunnel.playAnim = Base.playAnim
+Base.tunnel.stopAnim = Base.stopAnim
+Base.tunnel.setRagdoll = Base.setRagdoll
+Base.tunnel.playSpatializedSound = Base.playSpatializedSound
+Base.tunnel.playSound = Base.playSound
 
 --[[
 -- not working

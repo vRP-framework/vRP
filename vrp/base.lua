@@ -9,7 +9,7 @@ Debug = module("lib/Debug")
 local cvRP = module("vrp", "vRP")
 vRP = cvRP() -- instantiate vRP
 
-pvRP = {}
+local pvRP = {}
 -- load script in vRP context
 function pvRP.loadScript(resource, path)
   module(resource, path)

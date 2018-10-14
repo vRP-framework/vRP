@@ -1,5 +1,4 @@
 local Luang = module("vrp", "lib/Luang")
-local User
 local vRPShared = module("vrp", "vRPShared")
 
 -- Server vRP
@@ -388,9 +387,9 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
             local sdata = self:getUData(user_id, "vRP:datatable")
 
             -- User class deferred loading
-            if not User then User = module("vrp", "User") end
+            if not self.User then self.User = module("vrp", "User") end
 
-            local user = User(source, user_id)
+            local user = self.User(source, user_id)
             self.users[user_id] = user
             self.users_by_source[source] = user
             self.pending_users[table.concat(ids, ";")] = user
