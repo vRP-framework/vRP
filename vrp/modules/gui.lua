@@ -1,11 +1,14 @@
-local Tools = module("lib/Tools")
+local Tools = module("vrp", "lib/Tools")
+local EventDispatcher = module("vrp", "lib/EventDispatcher")
 
 local cfg = module("cfg/gui")
 
 -- Menu
-local Menu = class("Menu")
+local Menu = class("Menu", EventDispatcher)
 
 function Menu:__construct(name, title, data)
+  EventDispatcher.__construct(self)
+
   self.title = title
   self.name = name
   self.data = data
@@ -21,9 +24,7 @@ function Menu:triggerClose()
     self.closed = true
 
     -- trigger close event
-    for _,cb in ipairs(self.close_callbacks) do
-      cb()
-    end
+    self:triggerEvent("close", self)
   end
 end
 
@@ -44,15 +45,9 @@ end
 ---- 1: right
 -- description: (optional) option description, a string or a callback
 --- callback(menu, value): should return a string or nil
--- value: (optional) option value
+-- value: (optional) option value, option index by default
 function Menu:addOption(title, action, description, value)
-  table.insert(self.options, {title, action, description, value})
-end
-
--- listen close event
--- callback(menu): called before the menu is removed
-function Menu:onClose(callback)
-  table.insert(self.close_callbacks, callback)
+  table.insert(self.options, {title, action, description, value or #self.options+1})
 end
 
 -- Extension
@@ -79,6 +74,7 @@ end
 
 -- open menu (build and open menu)
 -- data: (optional)
+-- return menu
 function GUI.User:openMenu(name, data)
   -- copy data
   local cdata = {}
@@ -125,6 +121,8 @@ function GUI.User:openMenu(name, data)
     local prev_menu = self.menu_stack[size-1]
     prev_menu:triggerClose()
   end
+
+  return menu
 end
 
 -- close menu
@@ -132,8 +130,9 @@ end
 function GUI.User:closeMenu(menu)
   if not menu then menu = self:getCurrentMenu() end
 
-  if menu then
+  if menu and self.menu_stack[menu.stack_index] == menu then -- valid menu
     menu:triggerClose() -- close event
+    menu:triggerEvent("remove", menu) -- remove event
 
     local current = (menu.stack_index == #self.menu_stack)
     if current then -- current client menu, close event
@@ -357,3 +356,5 @@ end
 function GUI.tunnel:signalVoicePeer(player, data)
   self.remote._signalVoicePeer(player, source, data)
 end
+
+vRP:registerExtension(GUI)

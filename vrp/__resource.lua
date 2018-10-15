@@ -8,8 +8,8 @@ server_scripts{
   "lib/utils.lua",
   "base.lua",
   "modules/map.lua",
-  --[[
   "modules/gui.lua",
+  --[[
   "modules/group.lua",
   "modules/admin.lua",
   "modules/survival.lua",
@@ -44,9 +44,9 @@ client_scripts{
   "lib/utils.lua",
   "client/base.lua",
   "client/map.lua",
+  "client/gui.lua",
   --[[
   "client/iplloader.lua",
-  "client/gui.lua",
   "client/player_state.lua",
   "client/survival.lua",
   "client/identity.lua",

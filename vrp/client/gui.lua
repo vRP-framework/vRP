@@ -464,5 +464,4 @@ RegisterNUICallback("audio",function(data,cb)
   end
 end)
 
-
-
+vRP:registerExtension(GUI)

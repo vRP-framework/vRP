@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS vrp_characters(
 CREATE TABLE IF NOT EXISTS vrp_user_data(
   user_id INTEGER,
   dkey VARCHAR(100),
-  dvalue TEXT,
+  dvalue BLOB,
   CONSTRAINT pk_user_data PRIMARY KEY(user_id,dkey),
   CONSTRAINT fk_user_data_users FOREIGN KEY(user_id) REFERENCES vrp_users(id) ON DELETE CASCADE
 );
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS vrp_user_data(
 CREATE TABLE IF NOT EXISTS vrp_character_data(
   character_id INTEGER,
   dkey VARCHAR(100),
-  dvalue TEXT,
+  dvalue BLOB,
   CONSTRAINT pk_character_data PRIMARY KEY(character_id,dkey),
   CONSTRAINT fk_character_data_characters FOREIGN KEY(character_id) REFERENCES vrp_characters(id) ON DELETE CASCADE
 );
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS vrp_character_data(
 CREATE TABLE IF NOT EXISTS vrp_server_data(
   id VARCHAR(100),
   dkey VARCHAR(100),
-  dvalue TEXT,
+  dvalue BLOB,
   CONSTRAINT pk_server_data PRIMARY KEY(id, dkey)
 );
 ]])
