@@ -9,8 +9,8 @@ server_scripts{
   "base.lua",
   "modules/map.lua",
   "modules/gui.lua",
-  --[[
   "modules/group.lua",
+  --[[
   "modules/admin.lua",
   "modules/survival.lua",
   "modules/player_state.lua",

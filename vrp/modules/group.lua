@@ -1,67 +1,48 @@
 
--- this module describe the group/permission system
+-- this module define the group/permission system (per character)
 
--- group functions are used on connected players only
 -- multiple groups can be set to the same player, but the gtype config option can be used to set some groups as unique
 
--- api
+local Group = class("Group", vRP.Extension)
 
-local cfg = module("cfg/groups")
-local groups = cfg.groups
-local users = cfg.users
-local selectors = cfg.selectors
+-- SUBCLASS
 
--- return group title
-function vRP.getGroupTitle(group)
-  local g = groups[group]
+Group.User = class("User")
 
-  if g and g._config and g._config.title then
-    return g._config.title
-  end
-
-  return group
+function Group.User:hasGroup(name)
+  return self.cdata.groups[name] ~= nil
 end
 
--- get groups keys of a connected user
-function vRP.getUserGroups(user_id)
-  local data = vRP.getUserDataTable(user_id)
-  if data then 
-    if data.groups == nil then
-      data.groups = {} -- init groups
-    end
-
-    return data.groups
-  else
-    return {}
-  end
+function Group.User:getGroups()
+  return self.cdata.groups
 end
 
--- add a group to a connected user
-function vRP.addUserGroup(user_id,group)
-  if not vRP.hasGroup(user_id,group) then
-    local user_groups = vRP.getUserGroups(user_id)
-    local ngroup = groups[group]
+function Group.User:addGroup(name)
+  if not self:hasGroup(name) then
+    local groups = self:getGroups()
+    local cfg = vRP.EXT.Group.cfg
+
+    local ngroup = cfg.groups[name]
     if ngroup then
       if ngroup._config and ngroup._config.gtype ~= nil then 
         -- copy group list to prevent iteration while removing
-        local _user_groups = {}
-        for k,v in pairs(user_groups) do
-          _user_groups[k] = v
+        local _groups = {}
+        for k,v in pairs(groups) do
+          _groups[k] = v
         end
 
-        for k,v in pairs(_user_groups) do -- remove all groups with the same gtype
-          local kgroup = groups[k]
+        for k,v in pairs(_groups) do -- remove all groups with the same gtype
+          local kgroup = cfg.groups[k]
           if kgroup and kgroup._config and ngroup._config and kgroup._config.gtype == ngroup._config.gtype then
-            vRP.removeUserGroup(user_id,k)
+            self:removeGroup(k)
           end
         end
       end
 
       -- add group
-      user_groups[group] = true
-      local player = vRP.getUserSource(user_id)
-      if ngroup._config and ngroup._config.onjoin and player ~= nil then
-        ngroup._config.onjoin(player) -- call join callback
+      groups[name] = true
+      if ngroup._config and ngroup._config.onjoin then
+        ngroup._config.onjoin(self) -- call join callback
       end
 
       -- trigger join event
@@ -69,58 +50,19 @@ function vRP.addUserGroup(user_id,group)
       if ngroup._config then
         gtype = ngroup._config.gtype 
       end
-      TriggerEvent("vRP:playerJoinGroup", user_id, group, gtype)
+
+      vRP:triggerEvent("playerJoinGroup", self, name, gtype)
     end
   end
 end
 
--- get user group by type
--- return group name or an empty string
-function vRP.getUserGroupByType(user_id,gtype)
-  local user_groups = vRP.getUserGroups(user_id)
-  for k,v in pairs(user_groups) do
-    local kgroup = groups[k]
-    if kgroup then
-      if kgroup._config and kgroup._config.gtype and kgroup._config.gtype == gtype then
-        return k
-      end
-    end
-  end
+function Group.User:removeGroup(name)
+  local groups = self:getGroups()
 
-  return ""
-end
-
--- return list of connected users by group
-function vRP.getUsersByGroup(group)
-  local users = {}
-
-  for k,v in pairs(vRP.rusers) do
-    if vRP.hasGroup(tonumber(k),group) then table.insert(users, tonumber(k)) end
-  end
-
-  return users
-end
-
--- return list of connected users by permission
-function vRP.getUsersByPermission(perm)
-  local users = {}
-
-  for k,v in pairs(vRP.rusers) do
-    if vRP.hasPermission(tonumber(k),perm) then table.insert(users, tonumber(k)) end
-  end
-
-  return users
-end
-
--- remove a group from a connected user
-function vRP.removeUserGroup(user_id,group)
-  local user_groups = vRP.getUserGroups(user_id)
-  local groupdef = groups[group]
+  local cfg = vRP.EXT.Group.cfg
+  local groupdef = cfg.groups[group]
   if groupdef and groupdef._config and groupdef._config.onleave then
-    local source = vRP.getUserSource(user_id)
-    if source then
-      groupdef._config.onleave(source) -- call leave callback
-    end
+    groupdef._config.onleave(self) -- call leave callback
   end
 
   -- trigger leave event
@@ -128,54 +70,33 @@ function vRP.removeUserGroup(user_id,group)
   if groupdef._config then
     gtype = groupdef._config.gtype 
   end
-  TriggerEvent("vRP:playerLeaveGroup", user_id, group, gtype)
+  vRP:triggerEvent("playerLeaveGroup", self, name, gtype)
 
-  user_groups[group] = nil -- remove reference
+  groups[name] = nil -- remove reference
 end
 
--- check if the user has a specific group
-function vRP.hasGroup(user_id,group)
-  local user_groups = vRP.getUserGroups(user_id)
-  return (user_groups[group] ~= nil)
-end
+-- get user group by type
+-- return group name or nil
+function Group.User:getGroupByType(gtype)
+  local groups = self:getGroups()
+  local cfg = vRP.EXT.Group.cfg
 
-local func_perms = {}
-
--- register a special permission function
--- name: name of the permission -> "!name.[...]"
--- callback(user_id, parts) 
---- parts: parts (strings) of the permissions, ex "!name.param1.param2" -> ["name", "param1", "param2"]
---- should return true or false/nil
-function vRP.registerPermissionFunction(name, callback)
-  func_perms[name] = callback
-end
-
--- register not fperm (negate another fperm)
-vRP.registerPermissionFunction("not", function(user_id, parts)
-  return not vRP.hasPermission(user_id, "!"..table.concat(parts, ".", 2))
-end)
-
-vRP.registerPermissionFunction("is", function(user_id, parts)
-  local param = parts[2]
-  if param == "inside" then
-    local player = vRP.getUserSource(user_id)
-    if player then
-      return vRPclient.isInside(player)
-    end
-  elseif param == "invehicle" then
-    local player = vRP.getUserSource(user_id)
-    if player then
-      return vRPclient.isInVehicle(player)
+  for k,v in pairs(groups) do
+    local kgroup = cfg.groups[k]
+    if kgroup then
+      if kgroup._config and kgroup._config.gtype and kgroup._config.gtype == gtype then
+        return k
+      end
     end
   end
-end)
+end
 
 -- check if the user has a specific permission
-function vRP.hasPermission(user_id, perm)
-  local user_groups = vRP.getUserGroups(user_id)
+function Group.User:hasPermission(perm)
 
   local fchar = string.sub(perm,1,1)
 
+  --[[
   if fchar == "@" then -- special aptitude permission
     local _perm = string.sub(perm,2,string.len(perm))
     local parts = splitString(_perm,".")
@@ -219,39 +140,39 @@ function vRP.hasPermission(user_id, perm)
         if amount == n then return true end
       end
     end
-  elseif fchar == "!" then -- special function permission
+    --]]
+  if fchar == "!" then -- special function permission
     local _perm = string.sub(perm,2,string.len(perm))
-    local parts = splitString(_perm,".")
-    if #parts > 0 then
-      local fperm = func_perms[parts[1]]
+    local params = splitString(_perm,".")
+    if #params > 0 then
+      local fperm = vRP.EXT.Group.func_perms[params[1]]
       if fperm then
-        return fperm(user_id, parts) or false
+        return fperm(self, params) or false
       else
         return false
       end
     end
   else -- regular plain permission
+    local cfg = vRP.EXT.Group.cfg
+    local groups = self:getGroups()
+
     -- precheck negative permission
     local nperm = "-"..perm
-    for k,v in pairs(user_groups) do
-      if v then -- prevent issues with deleted entry
-        local group = groups[k]
-        if group then
-          for l,w in pairs(group) do -- for each group permission
-            if l ~= "_config" and w == nperm then return false end
-          end
+    for name in pairs(groups) do
+      local group = cfg.groups[name]
+      if group then
+        for l,w in pairs(group) do -- for each group permission
+          if l ~= "_config" and w == nperm then return false end
         end
       end
     end
 
     -- check if the permission exists
-    for k,v in pairs(user_groups) do
-      if v then -- prevent issues with deleted entry
-        local group = groups[k]
-        if group then
-          for l,w in pairs(group) do -- for each group permission
-            if l ~= "_config" and w == perm then return true end
-          end
+    for name in pairs(groups) do
+      local group = cfg.groups[name]
+      if group then
+        for l,w in pairs(group) do -- for each group permission
+          if l ~= "_config" and w == perm then return true end
         end
       end
     end
@@ -261,9 +182,9 @@ function vRP.hasPermission(user_id, perm)
 end
 
 -- check if the user has a specific list of permissions (all of them)
-function vRP.hasPermissions(user_id, perms)
-  for k,v in pairs(perms) do
-    if not vRP.hasPermission(user_id, v) then
+function Group.User:hasPermissions(perms)
+  for _,perm in pairs(perms) do
+    if not self:hasPermission(perm) then
       return false
     end
   end
@@ -271,7 +192,109 @@ function vRP.hasPermissions(user_id, perms)
   return true
 end
 
+-- METHODS
 
+function Group:__construct()
+  vRP.Extension.__construct(self)
+
+  self.cfg = module("cfg/groups")
+  self.func_perms = {}
+
+  -- register not fperm (negate another fperm)
+  self:registerPermissionFunction("not", function(user, params)
+    return not user:hasPermission("!"..table.concat(params, ".", 2))
+  end)
+
+  --[[
+  vRP.registerPermissionFunction("is", function(user_id, parts)
+    local param = parts[2]
+    if param == "inside" then
+      local player = vRP.getUserSource(user_id)
+      if player then
+        return vRPclient.isInside(player)
+      end
+    elseif param == "invehicle" then
+      local player = vRP.getUserSource(user_id)
+      if player then
+        return vRPclient.isInVehicle(player)
+      end
+    end
+  end)
+  --]]
+end
+
+-- return list users by group
+function Group:getUsersByGroup(name)
+  local users = {}
+
+  for _,user in pairs(vRP.users) do
+    if user:hasGroup(name) then 
+      table.insert(users, user) 
+    end
+  end
+
+  return users
+end
+
+-- return list users by permission
+function Group:getUsersByPermission(perm)
+  local users = {}
+
+  for _,user in pairs(vRP.users) do
+    if user:hasPermission(perm) then 
+      table.insert(users, user) 
+    end
+  end
+
+  return users
+end
+
+
+-- register a special permission function
+-- name: name of the permission -> "!name.[...]"
+-- callback(user, params) 
+--- params: params (strings) of the permissions, ex "!name.param1.param2" -> ["name", "param1", "param2"]
+--- should return true or false/nil
+function Group:registerPermissionFunction(name, callback)
+  self.func_perms[name] = callback
+end
+
+-- EVENT
+
+Group.event = {}
+
+function Group.event:playerSpawn(user)
+  -- call group onspawn callback at spawn
+  local groups = user:getGroups()
+
+  for name in pairs(groups) do
+    local group = self.cfg.groups[name]
+    if group and group._config and group._config.onspawn then
+      group._config.onspawn(user)
+    end
+  end
+end
+
+function Group.event:loadCharacter(user)
+  if not user.cdata.groups then -- init groups table
+    user.cdata.groups = {}
+  end
+
+  -- add config user forced groups
+  local groups = self.cfg.users[user.id]
+  if groups then
+    for _,group in pairs(groups) do
+      user:addGroup(group)
+    end
+  end
+
+  -- add default group user
+  user:addGroup("user")
+end
+
+vRP:registerExtension(Group)
+
+--[[
 -- GROUP SELECTORS
 
 -- build menus
@@ -343,24 +366,6 @@ AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
     -- add selectors 
     build_client_selectors(source)
 
-    -- add groups on user join 
-    local user = users[user_id]
-    if user then
-      for k,v in pairs(user) do
-        vRP.addUserGroup(user_id,v)
-      end
-    end
-
-    -- add default group user
-    vRP.addUserGroup(user_id,"user")
-  end
-
-  -- call group onspawn callback at spawn
-  local user_groups = vRP.getUserGroups(user_id)
-  for k,v in pairs(user_groups) do
-    local group = groups[k]
-    if group and group._config and group._config.onspawn then
-      group._config.onspawn(source)
-    end
-  end
 end)
+
+--]]

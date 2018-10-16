@@ -5,14 +5,13 @@ local cfg = {}
 -- _config property:
 --- title (optional): group display name
 --- gtype (optional): used to have only one group with the same gtype per player (example: a job gtype to only have one job)
---- onspawn (optional): function(player) (called when the player spawn with the group)
---- onjoin (optional): function(player) (called when the player join the group)
---- onleave (optional): function(player) (called when the player leave the group)
---- (you have direct access to vRP and vRPclient, the tunnel to client, in the config callbacks)
+--- onspawn (optional): function(user) (called when the character spawn with the group)
+--- onjoin (optional): function(user) (called when the character join the group)
+--- onleave (optional): function(user) (called when the character leave the group)
 
 cfg.groups = {
   ["superadmin"] = {
-    _config = {onspawn = function(player) vRPclient._notify(player,"You are superadmin.") end},
+    _config = {onspawn = function(user) vRP.EXT.Base.remote._notify(user.source, "You are superadmin.") end},
     "player.group.add",
     "player.group.remove",
     "player.givemoney",
@@ -50,9 +49,9 @@ cfg.groups = {
     _config = {
       title = "Police",
       gtype = "job",
-      onjoin = function(player) vRPclient._setCop(player,true) end,
-      onspawn = function(player) vRPclient._setCop(player,true) end,
-      onleave = function(player) vRPclient._setCop(player,false) end
+      onjoin = function(user) vRP.EXT.Police.remote._setCop(user.source,true) end,
+      onspawn = function(user) vRP.EXT.Police.remote._setCop(user.source,true) end,
+      onleave = function(user) vRP.EXT.Police.remote._setCop(user.source,false) end
     },
     "police.menu",
     "police.cloakroom",

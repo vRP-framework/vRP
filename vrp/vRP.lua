@@ -285,7 +285,7 @@ end
 
 -- value: binary string
 function vRP:setSData(key,value,id)
-  if not id then id = config.server_id end
+  if not id then id = self.cfg.server_id end
 
   self:execute("vRP/set_serverdata", {key = key, value = tohex(value), id = id})
 end
