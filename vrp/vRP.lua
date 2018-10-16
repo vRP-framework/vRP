@@ -255,15 +255,6 @@ function vRP:setWhitelisted(user_id,whitelisted)
   self:execute("vRP/set_whitelisted", {user_id = user_id, whitelisted = whitelisted})
 end
 
-function vRP:getLastLogin(user_id)
-  local rows = self:query("vRP/get_last_login", {user_id = user_id})
-  if #rows > 0 then
-    return rows[1].last_login
-  else
-    return ""
-  end
-end
-
 -- value: binary string
 function vRP:setUData(user_id,key,value)
   self:execute("vRP/set_userdata", {user_id = user_id, key = key, value = tohex(value)})
@@ -324,10 +315,11 @@ function vRP:dropPlayer(source)
     -- remove player from connected clients
     self.EXT.Base.remote._removePlayer(-1, user.source)
 
+    self:triggerEvent("unloadCharacter", user)
     self:triggerEvent("playerLeave", user)
 
-    -- save user data table
-    self:setUData(user.id,"vRP:datatable", msgpack.pack(user.data))
+    -- save user
+    user:save()
 
     self:log(user.name.." ("..user.endpoint..") disconnected (user_id = "..user.id..")")
     self.users[user.id] = nil
@@ -351,9 +343,9 @@ end
 function vRP:save()
   self:triggerEvent("save")
 
-  Debug.log("save datatables")
+  Debug.log("save users")
   for k,user in pairs(self.users) do
-    self:setUData(user.id, "vRP:datatable", msgpack.pack(user.data))
+    user:save()
   end
 end
 
@@ -386,7 +378,7 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
         if not self.cfg.whitelist or self:isWhitelisted(user_id) then
           if not self.users[user_id] then -- not present on the server, init user
             -- load user data table
-            deferrals.update("Loading datatable...")
+            deferrals.update("Loading user...")
             local sdata = self:getUData(user_id, "vRP:datatable")
 
             -- User class deferred loading
@@ -397,13 +389,6 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
             self.users_by_source[source] = user
             self.pending_users[table.concat(ids, ";")] = user
 
-            if sdata and string.len(sdata) > 0 then
-              local data = msgpack.unpack(sdata)
-              if type(data) == "table" then user.data = data end
-            end
-
-            deferrals.update("Getting last login...")
-            user.last_login = self:getLastLogin(user.id) or ""
             user.spawns = 0
             user.name = name
 
@@ -411,9 +396,24 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
             local ep = vRP.getPlayerEndpoint(source)
             user.endpoint = ep
 
-            -- set last login
-            local last_login_stamp = os.date("%H:%M:%S %d/%m/%Y")
-            self:execute("vRP/set_last_login", {user_id = user.id, last_login = last_login_stamp})
+            if sdata and string.len(sdata) > 0 then
+              local data = msgpack.unpack(sdata)
+              if type(data) == "table" then user.data = data end
+            end
+
+            deferrals.update("Loading character...")
+            if not user:useCharacter(user.data.current_character or 0) then -- use last used character
+              local characters = user:getCharacters()
+              if #characters > 0 then -- use existing character
+                user:useCharacter(characters[1])
+              else -- use new character
+                local cid = user:createCharacter()
+                user:useCharacter(cid)
+              end
+            end
+
+            user.last_login = user.data.last_login or ""
+            user.data.last_login = os.date("%H:%M:%S %d/%m/%Y")
 
             -- trigger join
             self:log(user.name.." ("..user.endpoint..") joined (user_id = "..user.id..")")
@@ -482,14 +482,14 @@ function vRP:onPlayerSpawned(source)
       self.EXT.Base.remote._addPlayer(-1,user.source)
 
       -- set client tunnel delay at first spawn
-      Tunnel.setDestDelay(source, self.cfg.load_delay)
+      Tunnel.setDestDelay(user.source, self.cfg.load_delay)
 
       -- show loading
 --      vRPclient._setProgressBar(user.source, "vRP:loading", "botright", "Loading...", 0,0,0, 100)
 
       SetTimeout(2000, function() 
         SetTimeout(self.cfg.load_duration*1000, function() -- set client delay to normal delay
-          Tunnel.setDestDelay(source, self.cfg.global_delay)
+          Tunnel.setDestDelay(user.source, self.cfg.global_delay)
 --          vRPclient._removeProgressBar(user.source,"vRP:loading")
         end)
       end)

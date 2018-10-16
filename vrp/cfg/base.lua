@@ -22,6 +22,8 @@ cfg.global_delay = 0 -- milliseconds, delay the tunnel communication when not in
 
 cfg.ping_timeout = 5 -- number of minutes after a client should be kicked if not sending pings
 
+cfg.max_characters = 5 -- maximum number of characters per user
+
 -- identify users only with steam or ros identifiers (solve same ip issue, recommended)
 -- if enabled, steam auth should be forced in the FiveM server config
 cfg.ignore_ip_identifier = true

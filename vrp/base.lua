@@ -21,7 +21,6 @@ Proxy.addInterface("vRP", pvRP)
 vRP:prepare("vRP/base_tables",[[
 CREATE TABLE IF NOT EXISTS vrp_users(
   id INTEGER AUTO_INCREMENT,
-  last_login VARCHAR(255),
   whitelisted BOOLEAN,
   banned BOOLEAN,
   CONSTRAINT pk_user PRIMARY KEY(id)
@@ -66,6 +65,12 @@ CREATE TABLE IF NOT EXISTS vrp_server_data(
 ]])
 
 vRP:prepare("vRP/create_user","INSERT INTO vrp_users(whitelisted,banned) VALUES(false,false); SELECT LAST_INSERT_ID() AS id")
+
+vRP:prepare("vRP/create_character", "INSERT INTO vrp_characters(user_id) VALUES(@user_id); SELECT LAST_INSERT_ID() AS id")
+vRP:prepare("vRP/delete_character", "DELETE FROM vrp_characters WHERE id = @id AND user_id = @user_id")
+vRP:prepare("vRP/get_characters", "SELECT id FROM vrp_characters WHERE user_id = @user_id")
+vRP:prepare("vRP/check_character", "SELECT id FROM vrp_characters WHERE id = @id AND user_id = @user_id")
+
 vRP:prepare("vRP/add_identifier","INSERT INTO vrp_user_ids(identifier,user_id) VALUES(@identifier,@user_id)")
 vRP:prepare("vRP/userid_byidentifier","SELECT user_id FROM vrp_user_ids WHERE identifier = @identifier")
 
@@ -82,8 +87,6 @@ vRP:prepare("vRP/get_banned","SELECT banned FROM vrp_users WHERE id = @user_id")
 vRP:prepare("vRP/set_banned","UPDATE vrp_users SET banned = @banned WHERE id = @user_id")
 vRP:prepare("vRP/get_whitelisted","SELECT whitelisted FROM vrp_users WHERE id = @user_id")
 vRP:prepare("vRP/set_whitelisted","UPDATE vrp_users SET whitelisted = @whitelisted WHERE id = @user_id")
-vRP:prepare("vRP/set_last_login","UPDATE vrp_users SET last_login = @last_login WHERE id = @user_id")
-vRP:prepare("vRP/get_last_login","SELECT last_login FROM vrp_users WHERE id = @user_id")
 
 -- init tables
 async(function()
