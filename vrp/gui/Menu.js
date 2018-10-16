@@ -1,15 +1,14 @@
 
 //events
-// .onValid(choice)
-// .onClose()
+// .onValid(option_index)
 
 function Menu()
 {
-  this.name = "Menu";
-  this.choices = [];
+  this.title = "Menu";
+  this.options = [];
   this.opened = false;
   this.selected = -1;
-  this.el_choices = [];
+  this.el_options = [];
 
   this.div_desc = document.createElement("div");
   this.div_desc.classList.add("menu_description");
@@ -18,11 +17,11 @@ function Menu()
   this.div.classList.add("menu");
 
   this.div_header = document.createElement("h1");
-  this.div_choices = document.createElement("div");
-  this.div_choices.classList.add("choices");
+  this.div_options = document.createElement("div");
+  this.div_options.classList.add("options");
 
   this.div.appendChild(this.div_header);
-  this.div.appendChild(this.div_choices);
+  this.div.appendChild(this.div_options);
 
   document.body.appendChild(this.div);
   document.body.appendChild(this.div_desc);
@@ -37,7 +36,7 @@ Menu.prototype.updateState = function()
   $.post("http://vrp/menu_state",JSON.stringify({opened: this.opened}));
 }
 
-Menu.prototype.open = function(name,choices) //menu name and choices as [name,desc] array
+Menu.prototype.open = function(data) 
 {
   this.close();
   this.opened = true;
@@ -45,23 +44,29 @@ Menu.prototype.open = function(name,choices) //menu name and choices as [name,de
 
   this.div.style.display = "block";
 
-  this.name = name;
-  this.choices = choices;
+  this.title = data.title;
+  this.options = data.options;
 
-  this.div_choices.innerHTML = "";
-  this.el_choices = [];
-  for(var i = 0; i < this.choices.length; i++){
+  this.div_options.innerHTML = "";
+  this.el_options = [];
+  for(var i = 0; i < this.options.length; i++){
     var el = document.createElement("div");
-    el.innerHTML = this.choices[i][0];
+    el.innerHTML = this.options[i][0];
 
-    this.el_choices.push(el);
-    this.div_choices.appendChild(el);
+    this.el_options.push(el);
+    this.div_options.appendChild(el);
   }
 
-  //build dom
-  this.div_header.innerHTML = name;
+  //customize menu
+  if(data.css.top)
+    this.div.style.top = data.css.top;
+  if(data.css.header_color)
+    this.div_header.style.backgroundColor = data.css.header_color;
 
-  this.div_choices.style.height = (this.div.offsetHeight-this.div_choices.offsetTop)+"px";
+  //build dom
+  this.div_header.innerHTML = this.title;
+
+  this.div_options.style.height = (this.div.offsetHeight-this.div_options.offsetTop)+"px";
 
   this.setSelected(0);
 }
@@ -69,34 +74,34 @@ Menu.prototype.open = function(name,choices) //menu name and choices as [name,de
 Menu.prototype.setSelected = function(i)
 {
   //check validity
-  if(this.selected >= 0 && this.selected < this.el_choices.length){
+  if(this.selected >= 0 && this.selected < this.el_options.length){
     //remove previous selected class
-    this.el_choices[this.selected].classList.remove("selected");
+    this.el_options[this.selected].classList.remove("selected");
     //hide desc
     this.div_desc.style.display = "none";
   }
 
   this.selected = i;
   if(this.selected < 0)
-    this.selected = this.choices.length-1;
-  else if(this.selected >= this.choices.length)
+    this.selected = this.options.length-1;
+  else if(this.selected >= this.options.length)
     this.selected = 0;
 
   //check validity
-  if(this.selected >= 0 && this.selected < this.el_choices.length){
+  if(this.selected >= 0 && this.selected < this.el_options.length){
     //add selected class
-    this.el_choices[this.selected].classList.add("selected");
+    this.el_options[this.selected].classList.add("selected");
 
     //scroll to selected
-    var scrollto = $(this.el_choices[this.selected])
-    var container = $(this.div_choices)
+    var scrollto = $(this.el_options[this.selected])
+    var container = $(this.div_options)
     if(scrollto.offset().top < container.offset().top || scrollto.offset().top + scrollto.height() >= container.offset().top+container.height())
       container.scrollTop(scrollto.offset().top - container.offset().top + container.scrollTop());
 
     //show desc if exists
-    var choice = this.choices[this.selected];
-    if(choice.length > 1){
-      this.div_desc.innerHTML = choice[1];
+    var option = this.options[this.selected];
+    if(option.length > 1){
+      this.div_desc.innerHTML = option[1];
       this.div_desc.style.display = "block";
 
       this.div_desc.style.left = (this.div.offsetLeft+this.div.offsetWidth)+"px";
@@ -110,13 +115,11 @@ Menu.prototype.close = function()
   if(this.opened){
     this.opened = false;
     this.updateState();
-    this.choices = [];
-    this.name = "Menu";
+    this.options = [];
+    this.title = "Menu";
 
     this.div.style.display = "none";
     this.div_desc.style.display = "none";
-
-    if(this.onClose) this.onClose();
   }
 }
 
@@ -134,8 +137,8 @@ Menu.prototype.moveDown = function()
 
 Menu.prototype.valid = function(mod)
 {
-  if(this.selected >= 0 && this.selected < this.choices.length){
+  if(this.selected >= 0 && this.selected < this.options.length){
     if(this.onValid && this.opened)
-      this.onValid(this.choices[this.selected][0], mod)
+      this.onValid(this.selected, mod)
   }
 }

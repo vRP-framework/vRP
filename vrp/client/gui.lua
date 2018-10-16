@@ -71,7 +71,7 @@ function GUI:__construct()
   -- task: detect players near, give positions to AudioEngine
   Citizen.CreateThread(function()
     local n = 0
-    local ns = math.ceil(vRP.cfg.voip_interval/listener_wait) -- connect/disconnect every x milliseconds
+    local ns = math.ceil(vRP.cfg.voip_interval/self.listener_wait) -- connect/disconnect every x milliseconds
 
     while true do
       Citizen.Wait(self.listener_wait)
@@ -124,10 +124,15 @@ function GUI:__construct()
       if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.left)) then SendNUIMessage({act="event",event="LEFT"}) end
       if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.right)) then SendNUIMessage({act="event",event="RIGHT"}) end
       if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.select)) then SendNUIMessage({act="event",event="SELECT"}) end
-      if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.cancel)) then SendNUIMessage({act="event",event="CANCEL"}) end
+      if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.cancel)) then 
+        self.remote._closeMenu()
+        SendNUIMessage({act="event",event="CANCEL"}) 
+      end
 
       -- open general menu
-      if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.open)) and (not vRP.EXT.PlayerState:isInComa() or not vRP.cfg.coma_disable_menu) and (not vRP.EXT.Police:isHandcuffed() or not vRP.cfg.handcuff_disable_menu) and not self.menu_state.opened then self.remote._openMainMenu() end
+      if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.open)) and ((vRP.EXT.PlayerState and not vRP.EXT.PlayerState:isInComa() or true) or not vRP.cfg.coma_disable_menu) and ((vRP.EXT.Police and not vRP.EXT.Police:isHandcuffed() or true) or not vRP.cfg.handcuff_disable_menu) and not self.menu_state.opened then 
+        self.remote._openMainMenu() 
+      end
 
       -- F5,F6 (default: control michael, control franklin)
       if IsControlJustPressed(table.unpack(vRP.cfg.controls.request.yes)) then SendNUIMessage({act="event",event="F5"}) end
@@ -368,11 +373,12 @@ end
 
 -- TUNNEL
 
+GUI.tunnel = {}
+
 -- MENU
 
-
 function GUI.tunnel:openMenu(menudata)
-  SendNUIMessage({act="open_menu", menudata = data})
+  SendNUIMessage({act="open_menu", menudata = menudata})
 end
 
 function GUI.tunnel:closeMenu()
@@ -393,12 +399,28 @@ function GUI.tunnel:request(id,text,time)
   vRP.EXT.Base:playSound("HUD_MINI_GAME_SOUNDSET","5_SEC_WARNING")
 end
 
+GUI.tunnel.setPeerConfiguration = GUI.setPeerConfiguration
+GUI.tunnel.signalVoicePeer = GUI.signalVoicePeer
+GUI.tunnel.announce = GUI.announce
+GUI.tunnel.setProgressBar = GUI.setProgressBar
+GUI.tunnel.setProgressBarValue = GUI.setProgressBarValue
+GUI.tunnel.setProgressBarText = GUI.setProgressBarText
+GUI.tunnel.removeProgressBar = GUI.removeProgressBar
+GUI.tunnel.setDiv = GUI.setDiv
+GUI.tunnel.setDivCss = GUI.setDivCss
+GUI.tunnel.setDivContent = GUI.setDivContent
+GUI.tunnel.divExecuteJS = GUI.divExecuteJS
+GUI.tunnel.removeDiv = GUI.removeDiv
+GUI.tunnel.playAudioSource = GUI.playAudioSource
+GUI.tunnel.setAudioSource = GUI.setAudioSource
+GUI.tunnel.removeAudioSource = GUI.removeAudioSource
+
+-- NUI
+
 -- gui menu events
 RegisterNUICallback("menu",function(data,cb)
-  if data.act == "close" then
-    vRPserver._closeMenu(data.id)
-  elseif data.act == "valid" then
-    vRPserver._validMenuChoice(data.id,data.choice,data.mod)
+  if data.act == "valid" then
+    vRP.EXT.GUI.remote._triggerMenuOption(data.option+1,data.mod)
   end
 end)
 
@@ -424,7 +446,7 @@ end)
 
 -- init
 RegisterNUICallback("init",function(data,cb) -- NUI initialized
-  SendNUIMessage({act="cfg",cfg=cfg.gui}) -- send cfg
+  SendNUIMessage({act="cfg",cfg=vRP.cfg.gui}) -- send cfg
   TriggerEvent("vRP:NUIready")
 end)
 

@@ -23,13 +23,11 @@ window.addEventListener("load",function(){
 
   requestmgr.onResponse = function(id,ok){ $.post("http://vrp/request",JSON.stringify({act: "response", id: id, ok: ok})); }
   wprompt.onClose = function(){ $.post("http://vrp/prompt",JSON.stringify({act: "close", result: wprompt.result})); }
-  dynamic_menu.onClose = function(){ $.post("http://vrp/menu",JSON.stringify({act: "close", id: dynamic_menu.id})); }
-  dynamic_menu.onValid = function(choice,mod){ $.post("http://vrp/menu",JSON.stringify({act: "valid", id: dynamic_menu.id, choice: choice, mod: mod})); }
+  dynamic_menu.onValid = function(choice,mod){ $.post("http://vrp/menu",JSON.stringify({act: "valid", option: option, mod: mod})); }
 
   //init
   $.post("http://vrp/init",""); 
 
-  var current_menu = dynamic_menu;
   var pbars = {}
   var divs = {}
 
@@ -55,21 +53,11 @@ window.addEventListener("load",function(){
         $(document.body).show();
     }
     else if(data.act == "open_menu"){ //OPEN DYNAMIC MENU
-      current_menu.close();
-      dynamic_menu.open(data.menudata.name,data.menudata.choices);
-      dynamic_menu.id = data.menudata.id;
+      dynamic_menu.open(data.menudata);
 
-      //customize menu
-      var css = data.menudata.css
-      if(css.top)
-        dynamic_menu.div.style.top = css.top;
-      if(css.header_color)
-        dynamic_menu.div_header.style.backgroundColor = css.header_color;
-
-      current_menu = dynamic_menu;
     }
     else if(data.act == "close_menu"){ //CLOSE MENU
-      current_menu.close();
+      dynamic_menu.close();
     }
     // PROGRESS BAR
     else if(data.act == "set_pbar"){
@@ -170,30 +158,27 @@ window.addEventListener("load",function(){
     else if(data.act == "event"){ //EVENTS
       if(data.event == "UP"){
         if(!wprompt.opened)
-          current_menu.moveUp();
+          dynamic_menu.moveUp();
       }
       else if(data.event == "DOWN"){
         if(!wprompt.opened)
-          current_menu.moveDown();
+          dynamic_menu.moveDown();
       }
       else if(data.event == "LEFT"){
         if(!wprompt.opened)
-          current_menu.valid(-1);
+          dynamic_menu.valid(-1);
       }
       else if(data.event == "RIGHT"){
         if(!wprompt.opened)
-          current_menu.valid(1);
+          dynamic_menu.valid(1);
       }
       else if(data.event == "SELECT"){
         if(!wprompt.opened)
-          current_menu.valid(0);
+          dynamic_menu.valid(0);
       }
       else if(data.event == "CANCEL"){
         if(wprompt.opened)
           wprompt.close();
-        else
-          current_menu.close();
-
       }
       else if(data.event == "F5"){
         requestmgr.respond(true);

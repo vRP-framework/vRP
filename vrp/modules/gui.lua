@@ -1,4 +1,5 @@
 local Tools = module("vrp", "lib/Tools")
+local htmlEntities = module("vrp", "lib/htmlEntities")
 local EventDispatcher = module("vrp", "lib/EventDispatcher")
 
 local cfg = module("cfg/gui")
@@ -83,10 +84,10 @@ function GUI.User:openMenu(name, data)
   end
 
   -- add user property
-  data.user = self
+  cdata.user = self
 
   -- build menu
-  local menu = vRP.EXT.GUI:buildMenu(name, data)
+  local menu = vRP.EXT.GUI:buildMenu(name, cdata)
 
   -- prepare network data
   local netdata = {
@@ -201,6 +202,7 @@ end
 function GUI:__construct()
   vRP.Extension.__construct(self)
 
+  self.cfg = module("vrp", "cfg/gui")
   self.menu_builders = {}
 end
 
@@ -226,7 +228,7 @@ end
 --- data: custom data table
 -- return built menu
 function GUI:buildMenu(name, data)
-  local menu = Menu(name, "<"..name..">", data)
+  local menu = Menu(name, htmlEntities.encode("<"..name..">"), data)
 
   local mbuilders = self.menu_builders[name]
 
@@ -301,7 +303,7 @@ function GUI.tunnel:closeMenu()
   end
 end
 
-function GUI.tunnel:validMenuChoice(id, mod)
+function GUI.tunnel:triggerMenuOption(id, mod)
   local user = vRP.users_by_source[source]
 
   if user then

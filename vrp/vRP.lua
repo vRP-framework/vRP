@@ -329,12 +329,12 @@ function vRP:dropPlayer(source)
     -- save user data table
     self:setUData(user.id,"vRP:datatable", msgpack.pack(user.data))
 
-    self:log(user.endpoint.." disconnected (user_id = "..user.id..")")
-    vRP.users[user.id] = nil
-    vRP.user_sources[user.source] = nil
+    self:log(user.name.." ("..user.endpoint..") disconnected (user_id = "..user.id..")")
+    self.users[user.id] = nil
+    self.users_by_source[user.source] = nil
 
     if pending then
-      vRP.pending_users[ids_key] = nil
+      self.pending_users[ids_key] = nil
     end
   end
 end
@@ -397,7 +397,7 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
             self.users_by_source[source] = user
             self.pending_users[table.concat(ids, ";")] = user
 
-            if sdata then
+            if sdata and string.len(sdata) > 0 then
               local data = msgpack.unpack(sdata)
               if type(data) == "table" then user.data = data end
             end
