@@ -62,6 +62,13 @@ CREATE TABLE IF NOT EXISTS vrp_server_data(
   dvalue BLOB,
   CONSTRAINT pk_server_data PRIMARY KEY(id, dkey)
 );
+
+CREATE TABLE IF NOT EXISTS vrp_global_data(
+  dkey VARCHAR(100),
+  dvalue BLOB,
+  CONSTRAINT pk_global_data PRIMARY KEY(dkey)
+);
+
 ]])
 
 vRP:prepare("vRP/create_user","INSERT INTO vrp_users(whitelisted,banned) VALUES(false,false); SELECT LAST_INSERT_ID() AS id")
@@ -82,6 +89,10 @@ vRP:prepare("vRP/get_characterdata","SELECT dvalue FROM vrp_character_data WHERE
 
 vRP:prepare("vRP/set_serverdata","REPLACE INTO vrp_server_data(id,dkey,dvalue) VALUES(@id,@key,UNHEX(@value))")
 vRP:prepare("vRP/get_serverdata","SELECT dvalue FROM vrp_server_data WHERE id = @id AND dkey = @key")
+
+vRP:prepare("vRP/set_globaldata","REPLACE INTO vrp_global_data(dkey,dvalue) VALUES(@key,UNHEX(@value))")
+vRP:prepare("vRP/get_globaldata","SELECT dvalue FROM vrp_global_data WHERE dkey = @key")
+
 
 vRP:prepare("vRP/get_banned","SELECT banned FROM vrp_users WHERE id = @user_id")
 vRP:prepare("vRP/set_banned","UPDATE vrp_users SET banned = @banned WHERE id = @user_id")

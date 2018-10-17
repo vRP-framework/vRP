@@ -255,6 +255,7 @@ function vRP:setWhitelisted(user_id,whitelisted)
   self:execute("vRP/set_whitelisted", {user_id = user_id, whitelisted = whitelisted})
 end
 
+-- user data
 -- value: binary string
 function vRP:setUData(user_id,key,value)
   self:execute("vRP/set_userdata", {user_id = user_id, key = key, value = tohex(value)})
@@ -269,6 +270,7 @@ function vRP:getUData(user_id,key)
   end
 end
 
+-- character data
 -- value: binary string
 function vRP:setCData(character_id,key,value)
   self:execute("vRP/set_characterdata", {character_id = character_id, key = key, value = tohex(value)})
@@ -283,6 +285,7 @@ function vRP:getCData(character_id,key)
   end
 end
 
+-- server data
 -- value: binary string
 function vRP:setSData(key,value,id)
   if not id then id = self.cfg.server_id end
@@ -294,6 +297,21 @@ function vRP:getSData(key,id)
   if not id then id = self.cfg.server_id end
 
   local rows = self:query("vRP/get_serverdata", {key = key, id = id})
+  if #rows > 0 then
+    return rows[1].dvalue
+  else
+    return ""
+  end
+end
+
+-- global data
+-- value: binary string
+function vRP:setGData(key,value)
+  self:execute("vRP/set_globaldata", {key = key, value = tohex(value)})
+end
+
+function vRP:getGData(key)
+  local rows = self:query("vRP/get_globaldata", {key = key})
   if #rows > 0 then
     return rows[1].dvalue
   else
