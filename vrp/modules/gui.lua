@@ -51,8 +51,13 @@ end
 -- description: (optional) option description, a string or a callback
 --- callback(menu, value): should return a string or nil
 -- value: (optional) option value, option index by default
-function Menu:addOption(title, action, description, value)
-  table.insert(self.options, {title, action, description, value or #self.options+1})
+-- index: (optional) by default the option is added at the end, but an index can be used to insert the option
+function Menu:addOption(title, action, description, value, index)
+  if index then
+    table.insert(self.options, index, {title, action, description, value or #self.options+1})
+  else
+    table.insert(self.options, {title, action, description, value or #self.options+1})
+  end
 end
 
 -- Extension
@@ -181,7 +186,7 @@ function GUI.User:request(text, time)
 
   local id = self.request_ids:gen()
   local request = {r = r, done = false}
-  requests[id] = request
+  self.requests[id] = request
 
   vRP.EXT.GUI.remote._request(self.source,id,text,time) -- send request to client
 
@@ -323,9 +328,10 @@ function GUI.tunnel:promptResult(text)
       text = ""
     end
 
-    if user.prompt_r then
-      user.prompt_r(text)
+    local r = user.prompt_r
+    if r then
       user.prompt_r = nil
+      r(text)
     end
   end
 end

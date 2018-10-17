@@ -4,6 +4,8 @@ local Admin = class("Admin", vRP.Extension)
 -- METHODS
 
 function Admin:__construct()
+  vRP.Extension.__construct(self)
+
   self.noclip = false
   self.noclip_speed = 1.0
 

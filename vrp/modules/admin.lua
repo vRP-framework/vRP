@@ -51,19 +51,21 @@ local function m_list(menu)
       local content = ""
       for id,user in pairs(vRP.users) do
 --        local identity = vRP.getUserIdentity(k)
-        content = content.."<br />"..k.." => <span class=\"pseudo\">"..user.name.."</span> <span class=\"endpoint\">"..user.endpoint.."</span>"
+        content = content.."<br />"..user.id.." => <span class=\"pseudo\">"..user.name.."</span> <span class=\"endpoint\">"..user.endpoint.."</span>"
         if identity then
           content = content.." <span class=\"name\">"..htmlEntities.encode(identity.firstname).." "..htmlEntities.encode(identity.name).."</span> <span class=\"reg\">"..identity.registration.."</span> <span class=\"phone\">"..identity.phone.."</span>"
         end
       end
 
       menu.player_list = function(menu)
-        menu.player_list = nil
         menu:unlisten("close", menu.player_list)
+        menu.player_list = nil
         GUI.remote._removeDiv(user.source, "user_list")
       end
 
       GUI.remote._setDiv(user.source, "user_list", m_list_css, content)
+
+      menu:listen("close", menu.player_list)
     end
   end
 end
@@ -114,7 +116,7 @@ local function m_removegroup(menu)
       local group = user:prompt("Group to remove: ","")
       if group then
         tuser:removeGroup(group)
-        vRP.EXT.Base.remote._notify(player, group.." removed from user "..id)
+        vRP.EXT.Base.remote._notify(user.source, group.." removed from user "..id)
       end
     end
   end
@@ -340,20 +342,11 @@ function Admin:__construct()
     menu.css.top = "75px"
     menu.css.header_color = "rgba(200,0,0,0.75)"
 
+    if user:hasPermission("player.calladmin") then
+      menu:addOption("Call admin", m_calladmin)
+    end
     if user:hasPermission("player.list") then
       menu:addOption("User list", m_list, "Show/hide user list.")
-    end
-    if user:hasPermission("player.whitelist") then
-      menu:addOption("Whitelist user", m_whitelist)
-    end
-    if user:hasPermission("player.group.add") then
-      menu:addOption("Add group", m_addgroup)
-    end
-    if user:hasPermission("player.group.remove") then
-      menu:addOption("Remove group", m_removegroup)
-    end
-    if user:hasPermission("player.unwhitelist") then
-      menu:addOption("Un-whitelist user", m_unwhitelist)
     end
     if user:hasPermission("player.kick") then
       menu:addOption("Kick", m_kick)
@@ -364,20 +357,17 @@ function Admin:__construct()
     if user:hasPermission("player.unban") then
       menu:addOption("Unban", m_unban)
     end
-    if user:hasPermission("player.noclip") then
-      menu:addOption("Noclip", m_noclip)
+    if user:hasPermission("player.whitelist") then
+      menu:addOption("Whitelist user", m_whitelist)
     end
-    if user:hasPermission("player.custom_emote") then
-      menu:addOption("Custom emote", m_emote)
+    if user:hasPermission("player.unwhitelist") then
+      menu:addOption("Un-whitelist user", m_unwhitelist)
     end
-    if user:hasPermission("player.custom_sound") then
-      menu:addOption("Custom sound", m_sound)
+    if user:hasPermission("player.group.add") then
+      menu:addOption("Add group", m_addgroup)
     end
-    if user:hasPermission("player.custom_sound") then
-      menu:addOption("Custom audiosource", m_audiosource)
-    end
-    if user:hasPermission("player.coords") then
-      menu:addOption("Coords", m_coords)
+    if user:hasPermission("player.group.remove") then
+      menu:addOption("Remove group", m_removegroup)
     end
     if user:hasPermission("player.tptome") then
       menu:addOption("TpToMe", m_tptome)
@@ -388,17 +378,29 @@ function Admin:__construct()
     if user:hasPermission("player.tpto") then
       menu:addOption("TpToCoords", m_tptocoords)
     end
+    if user:hasPermission("player.noclip") then
+      menu:addOption("Noclip", m_noclip)
+    end
+    if user:hasPermission("player.coords") then
+      menu:addOption("Coords", m_coords)
+    end
     if user:hasPermission("player.givemoney") then
       menu:addOption("Give money", m_givemoney)
     end
     if user:hasPermission("player.giveitem") then
       menu:addOption("Give item", m_giveitem)
     end
+    if user:hasPermission("player.custom_emote") then
+      menu:addOption("Custom emote", m_emote)
+    end
+    if user:hasPermission("player.custom_sound") then
+      menu:addOption("Custom sound", m_sound)
+    end
+    if user:hasPermission("player.custom_sound") then
+      menu:addOption("Custom audiosource", m_audiosource)
+    end
     if user:hasPermission("player.display_custom") then
       menu:addOption("Display customization", m_display_custom)
-    end
-    if user:hasPermission("player.calladmin") then
-      menu:addOption("Call admin", m_calladmin)
     end
   end)
 

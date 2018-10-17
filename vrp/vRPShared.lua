@@ -25,7 +25,7 @@ function vRPShared.Extension:__construct()
     self.tunnel_interface = {}
     for k,v in pairs(self.tunnel) do
       self.tunnel_interface[k] = function(...)
-        v(self, ...)
+        return v(self, ...)
       end
     end
 
@@ -36,7 +36,7 @@ function vRPShared.Extension:__construct()
     self.proxy_interface = {}
     for k,v in pairs(self.proxy) do
       self.proxy_interface[k] = function(...)
-        v(self, ...)
+        return v(self, ...)
       end
     end
 

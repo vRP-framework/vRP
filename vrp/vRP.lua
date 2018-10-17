@@ -333,7 +333,7 @@ end
 
 function vRP:ban(user,reason)
   self:setBanned(user.id,true)
-  self:kick(user.source, "[Banned] "..reason)
+  self:kick(user, "[Banned] "..reason)
 end
 
 function vRP:kick(user,reason)
@@ -352,7 +352,7 @@ end
 function vRP:checkTimeout()
   for k,user in pairs(self.users) do
     if GetPlayerPing(user.source) <= 0 then
-      self:kick(user.source,"[vRP] Ping timeout.")
+      self:kick(user,"[vRP] Ping timeout.")
       self:dropPlayer(user.source)
     end
   end

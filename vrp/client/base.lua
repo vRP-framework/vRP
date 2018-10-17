@@ -84,9 +84,9 @@ function Base:__construct()
 end
 
 function Base:teleport(x,y,z)
-  self:unjail() -- force unjail before a teleportation
+--  vRP.EXT.Police:unjail() -- force unjail before a teleportation
   SetEntityCoords(GetPlayerPed(-1), x+0.0001, y+0.0001, z+0.0001, 1,0,0,1)
-  vRP.EXT.PlayerState:updatePos(x,y,z)
+--  vRP.EXT.PlayerState:updatePos(x,y,z)
 end
 
 -- return x,y,z
