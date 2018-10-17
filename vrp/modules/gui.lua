@@ -17,7 +17,7 @@ function Menu:__construct(user, name, title, data)
   self.title = title
   self.name = name
   self.data = data -- build data (should not be modified afterwards)
-  self.css = {} -- {.top, .header_color}
+  self.css = {} -- {.header_color}
   self.options = {}
 
   self.closed = false

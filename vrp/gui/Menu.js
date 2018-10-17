@@ -58,8 +58,6 @@ Menu.prototype.open = function(data)
   }
 
   //customize menu
-  if(data.css.top)
-    this.div.style.top = data.css.top;
   if(data.css.header_color)
     this.div_header.style.backgroundColor = data.css.header_color;
 

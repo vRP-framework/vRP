@@ -339,7 +339,6 @@ function Admin:__construct()
     local user = menu.user
 
     menu.title = "Admin"
-    menu.css.top = "75px"
     menu.css.header_color = "rgba(200,0,0,0.75)"
 
     if user:hasPermission("player.calladmin") then

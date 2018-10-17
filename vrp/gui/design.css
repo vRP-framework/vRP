@@ -25,6 +25,7 @@ html, body {
   height: 50%;
   position: absolute;
   font-weight: bold;
+  top: 75px;
 }
 
 .menu_description{

@@ -12,51 +12,51 @@ end
 
 PlayerState.event = {}
 
-function PlayerState.event:characterLoad(user)
-    -- cascade load customization then weapons
-    if not user.cdata.customization then
-      user.cdata.customization = self.cfg.default_customization
-    end
+function PlayerState.event:playerSpawn(user, first_spawn)
+  -- cascade load customization then weapons
+  if not user.cdata.customization then
+    user.cdata.customization = self.cfg.default_customization
+  end
 
-    if not user.cdata.position and self.cfg.spawn_enabled then
-      local x = self.cfg.spawn_position[1]+math.random()*self.cfg.spawn_radius*2-self.cfg.spawn_radius
-      local y = self.cfg.spawn_position[2]+math.random()*self.cfg.spawn_radius*2-self.cfg.spawn_radius
-      local z = self.cfg.spawn_position[3]+math.random()*self.cfg.spawn_radius*2-self.cfg.spawn_radius
-      user.cdata.position = {x=x,y=y,z=z}
-    end
+  if not user.cdata.position and self.cfg.spawn_enabled then
+    local x = self.cfg.spawn_position[1]+math.random()*self.cfg.spawn_radius*2-self.cfg.spawn_radius
+    local y = self.cfg.spawn_position[2]+math.random()*self.cfg.spawn_radius*2-self.cfg.spawn_radius
+    local z = self.cfg.spawn_position[3]+math.random()*self.cfg.spawn_radius*2-self.cfg.spawn_radius
+    user.cdata.position = {x=x,y=y,z=z}
+  end
 
-    if user.cdata.position then -- teleport to saved pos
-      vRP.EXT.Base.remote.teleport(user.source,user.cdata.position.x,user.cdata.position.y,user.cdata.position.z)
-    end
+  if user.cdata.position then -- teleport to saved pos
+    vRP.EXT.Base.remote.teleport(user.source,user.cdata.position.x,user.cdata.position.y,user.cdata.position.z)
+  end
 
-    if user.cdata.customization then
-      self.remote.setCustomization(user.source,user.cdata.customization) 
+  if user.cdata.customization then
+    self.remote.setCustomization(user.source,user.cdata.customization) 
 
-      if user.cdata.weapons then -- load saved weapons
-        self.remote.giveWeapons(user.source,user.cdata.weapons,true)
-
-        --[[
-        if user.cdata.health then -- set health
-          self.remote.setHealth(user.source,user.cdata.health)
-          SetTimeout(5000, function() -- check coma, kill if in coma
-            if self.remote.isInComa(user.source) then
-              self.remote.killComa(user.source)
-            end
-          end)
-        end
-        --]]
-      end
-    else
-      if user.cdata.weapons then -- load saved weapons
-        self.remote.giveWeapons(user.source,user.cdata.weapons,true)
-      end
+    if user.cdata.weapons then -- load saved weapons
+      self.remote.giveWeapons(user.source,user.cdata.weapons,true)
 
       --[[
-      if user.cdata.health then
+      if user.cdata.health then -- set health
         self.remote.setHealth(user.source,user.cdata.health)
+        SetTimeout(5000, function() -- check coma, kill if in coma
+          if self.remote.isInComa(user.source) then
+            self.remote.killComa(user.source)
+          end
+        end)
       end
       --]]
     end
+  else
+    if user.cdata.weapons then -- load saved weapons
+      self.remote.giveWeapons(user.source,user.cdata.weapons,true)
+    end
+
+    --[[
+    if user.cdata.health then
+      self.remote.setHealth(user.source,user.cdata.health)
+    end
+    --]]
+  end
 
     --[[
   else -- not first spawn (player died), don't load weapons, empty wallet, empty inventory
@@ -106,7 +106,7 @@ function PlayerState.tunnel:updatePos(x,y,z)
   local user = vRP.users_by_source[source]
   if user then
 --    if  then -- don't save position if inside home slot
-      user.cdata.position = {x,y,z}
+      user.cdata.position = {x=x,y=y,z=z}
 --    end
   end
 end
