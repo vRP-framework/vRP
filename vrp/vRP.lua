@@ -483,10 +483,12 @@ function vRP:onPlayerSpawned(source)
 
       -- set client tunnel delay at first spawn
       Tunnel.setDestDelay(user.source, self.cfg.load_delay)
+      self:triggerEvent("playerDelay", user, true)
 
       SetTimeout(2000, function() 
         SetTimeout(self.cfg.load_duration*1000, function() -- set client delay to normal delay
           Tunnel.setDestDelay(user.source, self.cfg.global_delay)
+          self:triggerEvent("playerDelay", user, false)
         end)
       end)
     end
