@@ -5,14 +5,18 @@ local EventDispatcher = module("vrp", "lib/EventDispatcher")
 local cfg = module("cfg/gui")
 
 -- Menu
+-- dispatcher events:
+--- close(menu)
+--- remove(menu)
 local Menu = class("Menu", EventDispatcher)
 
-function Menu:__construct(name, title, data)
+function Menu:__construct(user, name, title, data)
   EventDispatcher.__construct(self)
 
+  self.user = user
   self.title = title
   self.name = name
-  self.data = data
+  self.data = data -- build data (should not be modified afterwards)
   self.css = {} -- {.top, .header_color}
   self.options = {}
 
@@ -74,20 +78,11 @@ function GUI.User:getCurrentMenu()
 end
 
 -- open menu (build and open menu)
--- data: (optional)
+-- data: (optional) must not be modified afterwards 
 -- return menu
 function GUI.User:openMenu(name, data)
-  -- copy data
-  local cdata = {}
-  for k,v in pairs(data or {}) do
-    cdata[k] = v
-  end
-
-  -- add user property
-  cdata.user = self
-
   -- build menu
-  local menu = vRP.EXT.GUI:buildMenu(name, cdata)
+  local menu = vRP.EXT.GUI:buildMenu(self, name, data or {})
 
   -- prepare network data
   local netdata = {
@@ -151,12 +146,17 @@ function GUI.User:closeMenu(menu)
 
     -- re-open previous menu
     if current then
-      local size = #self.menu_stack
-      if size > 0 then
-        local prev_menu = self.menu_stack[size]
-        self:openMenu(prev_menu.name, prev_menu.data)
-      end
+      self:actualizeMenu()
     end
+  end
+end
+
+-- close and re-open current menu
+function GUI.User:actualizeMenu()
+  local menu = self:getCurrentMenu()
+  if menu then
+    self:closeMenu(menu)
+    self:openMenu(menu.name, menu.data)
   end
 end
 
@@ -166,7 +166,7 @@ function GUI.User:prompt(title, default_text)
   local r = async()
   self.prompt_r = r
 
-  vRP.EXT.GUI._prompt(self.source, title, default_text)
+  vRP.EXT.GUI.remote._prompt(self.source, title, default_text)
 
   return r:wait()
 end
@@ -225,10 +225,10 @@ end
 
 -- build a menu
 --- name: menu name type
---- data: custom data table
+--- data: custom data table (must not be modified afterwards)
 -- return built menu
-function GUI:buildMenu(name, data)
-  local menu = Menu(name, htmlEntities.encode("<"..name..">"), data)
+function GUI:buildMenu(user, name, data)
+  local menu = Menu(user, name, htmlEntities.encode("<"..name..">"), data)
 
   local mbuilders = self.menu_builders[name]
 
@@ -323,9 +323,9 @@ function GUI.tunnel:promptResult(text)
       text = ""
     end
 
-    if self.prompt_r then
-      self.prompt_r(text)
-      self.prompt_r = nil
+    if user.prompt_r then
+      user.prompt_r(text)
+      user.prompt_r = nil
     end
   end
 end

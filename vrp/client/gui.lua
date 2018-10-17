@@ -37,7 +37,7 @@ function GUI:__construct()
   if vRP.cfg.vrp_voip then -- setup voip world channel
     -- world channel behavior
     self:registerVoiceCallbacks("world", function(player)
-      print("(vRPvoice-world) requested by "..player)
+      self:log("(vRPvoice-world) requested by "..player)
 
       -- check connection distance
 
@@ -55,11 +55,11 @@ function GUI:__construct()
       end
     end,
     function(player, is_origin)
-      print("(vRPvoice-world) connected to "..player)
+      self:log("(vRPvoice-world) connected to "..player)
       self:setVoiceState("world", nil, self.speaking)
     end,
     function(player)
-      print("(vRPvoice-world) disconnected from "..player)
+      self:log("(vRPvoice-world) disconnected from "..player)
     end)
 
     AddEventHandler("vRP:NUIready", function()
@@ -294,7 +294,7 @@ function GUI:registerVoiceCallbacks(channel, on_offer, on_connect, on_disconnect
   if not self.channel_callbacks[channel] then
     self.channel_callbacks[channel] = {on_offer, on_connect, on_disconnect}
   else
-    print("[vRP] VoIP channel callbacks for <"..channel.."> already registered.")
+    self:log("[vRP] VoIP channel callbacks for <"..channel.."> already registered.")
   end
 end
 
@@ -431,7 +431,6 @@ end)
 -- gui prompt event
 RegisterNUICallback("prompt",function(data,cb)
   if data.act == "close" then
-    SetNuiFocus(false)
     SetNuiFocus(false)
     vRP.EXT.GUI.remote._promptResult(data.result)
   end

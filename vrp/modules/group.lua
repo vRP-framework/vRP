@@ -223,7 +223,7 @@ function Group:__construct()
   --]]
 end
 
--- return list users by group
+-- return users list
 function Group:getUsersByGroup(name)
   local users = {}
 
@@ -236,7 +236,7 @@ function Group:getUsersByGroup(name)
   return users
 end
 
--- return list users by permission
+-- return users list
 function Group:getUsersByPermission(perm)
   local users = {}
 

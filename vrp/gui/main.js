@@ -23,7 +23,7 @@ window.addEventListener("load",function(){
 
   requestmgr.onResponse = function(id,ok){ $.post("http://vrp/request",JSON.stringify({act: "response", id: id, ok: ok})); }
   wprompt.onClose = function(){ $.post("http://vrp/prompt",JSON.stringify({act: "close", result: wprompt.result})); }
-  dynamic_menu.onValid = function(choice,mod){ $.post("http://vrp/menu",JSON.stringify({act: "valid", option: option, mod: mod})); }
+  dynamic_menu.onValid = function(option,mod){ $.post("http://vrp/menu",JSON.stringify({act: "valid", option: option, mod: mod})); }
 
   //init
   $.post("http://vrp/init",""); 

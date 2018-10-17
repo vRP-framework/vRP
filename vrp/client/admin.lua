@@ -1,11 +1,52 @@
 
-local noclip = false
-local noclip_speed = 1.0
+local Admin = class("Admin", vRP.Extension)
 
-function tvRP.toggleNoclip()
-  noclip = not noclip
+-- METHODS
+
+function Admin:__construct()
+  self.noclip = false
+  self.noclip_speed = 1.0
+
+  -- noclip task
+  Citizen.CreateThread(function()
+    local Base = vRP.EXT.Base
+
+    while true do
+      Citizen.Wait(0)
+      if self.noclip then
+        local ped = GetPlayerPed(-1)
+        local x,y,z = Base:getPosition()
+        local dx,dy,dz = Base:getCamDirection()
+        local speed = self.noclip_speed
+
+        -- reset velocity
+        SetEntityVelocity(ped, 0.0001, 0.0001, 0.0001)
+
+        -- forward
+        if IsControlPressed(0,32) then -- MOVE UP
+          x = x+speed*dx
+          y = y+speed*dy
+          z = z+speed*dz
+        end
+
+        -- backward
+        if IsControlPressed(0,269) then -- MOVE DOWN
+          x = x-speed*dx
+          y = y-speed*dy
+          z = z-speed*dz
+        end
+
+        SetEntityCoordsNoOffset(ped,x,y,z,true,true,true)
+      end
+    end
+  end)
+end
+
+function Admin:toggleNoclip()
+  self.noclip = not self.noclip
+
   local ped = GetPlayerPed(-1)
-  if noclip then -- set
+  if self.noclip then -- set
     SetEntityInvincible(ped, true)
     SetEntityVisible(ped, false, false)
   else -- unset
@@ -14,38 +55,9 @@ function tvRP.toggleNoclip()
   end
 end
 
-function tvRP.isNoclip()
-  return noclip
-end
+-- TUNNEL
 
--- noclip/invisibility
-Citizen.CreateThread(function()
-  while true do
-    Citizen.Wait(0)
-    if noclip then
-      local ped = GetPlayerPed(-1)
-      local x,y,z = tvRP.getPosition()
-      local dx,dy,dz = tvRP.getCamDirection()
-      local speed = noclip_speed
+Admin.tunnel = {}
+Admin.tunnel.toggleNoclip = Admin.toggleNoclip
 
-      -- reset velocity
-      SetEntityVelocity(ped, 0.0001, 0.0001, 0.0001)
-
-      -- forward
-      if IsControlPressed(0,32) then -- MOVE UP
-        x = x+speed*dx
-        y = y+speed*dy
-        z = z+speed*dz
-      end
-
-      -- backward
-      if IsControlPressed(0,269) then -- MOVE DOWN
-        x = x-speed*dx
-        y = y-speed*dy
-        z = z-speed*dz
-      end
-
-      SetEntityCoordsNoOffset(ped,x,y,z,true,true,true)
-    end
-  end
-end)
+vRP:registerExtension(Admin)

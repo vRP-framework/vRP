@@ -10,8 +10,8 @@ server_scripts{
   "modules/map.lua",
   "modules/gui.lua",
   "modules/group.lua",
-  --[[
   "modules/admin.lua",
+  --[[
   "modules/survival.lua",
   "modules/player_state.lua",
   "modules/money.lua",
@@ -45,6 +45,7 @@ client_scripts{
   "client/base.lua",
   "client/map.lua",
   "client/gui.lua",
+  "client/admin.lua",
   --[[
   "client/iplloader.lua",
   "client/player_state.lua",
@@ -52,7 +53,6 @@ client_scripts{
   "client/identity.lua",
   "client/basic_garage.lua",
   "client/police.lua",
-  "client/admin.lua",
   "client/basic_phone.lua",
   "client/basic_radio.lua"
   --]]

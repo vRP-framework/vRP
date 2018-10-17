@@ -336,8 +336,8 @@ function vRP:ban(user,reason)
   self:kick(user.source, "[Banned] "..reason)
 end
 
-function vRP:kick(source,reason)
-  DropPlayer(source,reason)
+function vRP:kick(user,reason)
+  DropPlayer(user.source,reason)
 end
 
 function vRP:save()

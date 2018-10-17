@@ -45,21 +45,21 @@ html, body {
   padding: 6px;
 }
 
-.choices{
+.options{
   overflow-y: scroll;
   overflow-x: hidden;
 }
 
-.choices::-webkit-scrollbar{ 
+.options::-webkit-scrollbar{ 
   display: none; 
 }
 
-.choices > div{
+.options > div{
   padding: 6px;
   font-size: 1.3em;
 }
 
-.choices .selected{
+.options .selected{
   background-color: rgba(255,255,255,0.90);
   color: black;
 }
