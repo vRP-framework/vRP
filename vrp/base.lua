@@ -108,8 +108,23 @@ AddEventHandler("vRPcli:playerSpawned", function()
   vRP:onPlayerSpawned(source)
 end)
 
+local lang = vRP.lang
+
 -- Base extension
 
 local Base = class("Base", vRP.Extension)
+
+-- EVENT
+
+Base.event = {}
+
+function Base.event:playerSpawn(user, first_spawn)
+  -- notify last login
+  if user.last_login then
+    SetTimeout(15000,function()
+      self.remote._notify(user.source,lang.common.welcome({user.last_login}))
+    end)
+  end
+end
 
 vRP:registerExtension(Base)

@@ -64,14 +64,13 @@ function User:useCharacter(id)
   if #rows > 0 then
     -- unload character
     if self.cid then 
-      vRP:triggerEvent("unloadCharacter", self)
+      vRP:triggerEvent("characterUnload", self)
 
       vRP:setCData(self.cid, "vRP:datatable", msgpack.pack(self.cdata))
     end
 
     self.cid = id
     self.data.current_character = id
-    self.spawns = 0
 
     -- load character
     self.cdata = {}
@@ -80,7 +79,7 @@ function User:useCharacter(id)
       self.cdata = msgpack.unpack(sdata)
     end
 
-    vRP:triggerEvent("loadCharacter", self)
+    vRP:triggerEvent("characterLoad", self)
 
     return true
   end

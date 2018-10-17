@@ -82,7 +82,7 @@ end
 
 local function m_unwhitelist(menu)
   local user = menu.user
-  if vRP:hasPermission("player.unwhitelist") then
+  if user:hasPermission("player.unwhitelist") then
     local id = user:prompt("User id to un-whitelist: ","")
     id = parseInt(id)
     vRP:setWhitelisted(id,false)

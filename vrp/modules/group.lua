@@ -275,7 +275,7 @@ function Group.event:playerSpawn(user)
   end
 end
 
-function Group.event:loadCharacter(user)
+function Group.event:characterLoad(user)
   if not user.cdata.groups then -- init groups table
     user.cdata.groups = {}
   end

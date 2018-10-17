@@ -1,31 +1,9 @@
 
--- periodic player state update
+local PlayerState = class("PlayerState", vRP.Extension)
 
-local state_ready = false
+-- STATIC
 
-function tvRP.playerStateReady(state)
-  state_ready = state
-end
-
-Citizen.CreateThread(function()
-  while true do
-    Citizen.Wait(30000)
-
-    if IsPlayerPlaying(PlayerId()) and state_ready then
-      local x,y,z = table.unpack(GetEntityCoords(GetPlayerPed(-1),true))
-
-      vRPserver._updatePos(x,y,z)
-      vRPserver._updateHealth(tvRP.getHealth())
-      vRPserver._updateWeapons(tvRP.getWeapons())
-      vRPserver._updateCustomization(tvRP.getCustomization())
-    end
-  end
-end)
-
--- WEAPONS
-
--- def
-local weapon_types = {
+PlayerState.weapon_types = {
   "WEAPON_KNIFE",
   "WEAPON_STUNGUN",
   "WEAPON_FLASHLIGHT",
@@ -75,17 +53,38 @@ local weapon_types = {
   "WEAPON_FLARE"
 }
 
-function tvRP.getWeaponTypes()
-  return weapon_types
+-- METHODS
+
+function PlayerState:__construct()
+  vRP.Extension.__construct(self)
+
+  self.state_ready = false
+
+  -- update task
+  Citizen.CreateThread(function()
+    while true do
+      Citizen.Wait(30000)
+
+      if IsPlayerPlaying(PlayerId()) and self.state_ready then
+        local x,y,z = table.unpack(GetEntityCoords(GetPlayerPed(-1),true))
+
+        self.remote._updatePos(x,y,z)
+        self.remote._updateWeapons(self:getWeapons())
+        self.remote._updateCustomization(self:getCustomization())
+      end
+    end
+  end)
 end
 
-function tvRP.getWeapons()
+-- WEAPONS
+
+function PlayerState:getWeapons()
   local player = GetPlayerPed(-1)
 
   local ammo_types = {} -- remember ammo type to not duplicate ammo amount
 
   local weapons = {}
-  for k,v in pairs(weapon_types) do
+  for k,v in pairs(PlayerState.weapon_types) do
     local hash = GetHashKey(v)
     if HasPedGotWeapon(player,hash) then
       local weapon = {}
@@ -106,13 +105,13 @@ end
 
 -- replace weapons (combination of getWeapons and giveWeapons)
 -- return previous weapons
-function tvRP.replaceWeapons(weapons)
-  local old_weapons = tvRP.getWeapons()
-  tvRP.giveWeapons(weapons, true)
+function PlayerState:replaceWeapons(weapons)
+  local old_weapons = self:getWeapons()
+  self:giveWeapons(weapons, true)
   return old_weapons
 end
 
-function tvRP.giveWeapons(weapons,clear_before)
+function PlayerState:giveWeapons(weapons, clear_before)
   local player = GetPlayerPed(-1)
 
   -- give weapons to player
@@ -130,7 +129,7 @@ function tvRP.giveWeapons(weapons,clear_before)
 end
 
 -- set player armour (0-100)
-function tvRP.setArmour(amount)
+function PlayerState:setArmour(amount)
   SetPedArmour(GetPlayerPed(-1), amount)
 end
 
@@ -152,7 +151,7 @@ local function parse_part(key)
   end
 end
 
-function tvRP.getDrawables(part)
+function PlayerState:getDrawables(part)
   local isprop, index = parse_part(part)
   if isprop then
     return GetNumberOfPedPropDrawableVariations(GetPlayerPed(-1),index)
@@ -161,7 +160,7 @@ function tvRP.getDrawables(part)
   end
 end
 
-function tvRP.getDrawableTextures(part,drawable)
+function PlayerState:getDrawableTextures(part,drawable)
   local isprop, index = parse_part(part)
   if isprop then
     return GetNumberOfPedPropTextureVariations(GetPlayerPed(-1),index,drawable)
@@ -170,7 +169,7 @@ function tvRP.getDrawableTextures(part,drawable)
   end
 end
 
-function tvRP.getCustomization()
+function PlayerState:getCustomization()
   local ped = GetPlayerPed(-1)
 
   local custom = {}
@@ -191,7 +190,7 @@ function tvRP.getCustomization()
 end
 
 -- partial customization (only what is set is changed)
-function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] components or props (p0...) plus .modelhash or .model
+function PlayerState:setCustomization(custom) -- indexed [drawable,texture,palette] components or props (p0...) plus .modelhash or .model
   local r = async()
 
   Citizen.CreateThread(function() -- new thread
@@ -215,11 +214,11 @@ function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] com
 
         if HasModelLoaded(mhash) then
           -- changing player model remove weapons and armour, so save it
-          local weapons = tvRP.getWeapons()
+          local weapons = self:getWeapons()
           local armour = GetPedArmour(ped)
           SetPlayerModel(PlayerId(), mhash)
-          tvRP.giveWeapons(weapons,true)
-          tvRP.setArmour(armour)
+          self:giveWeapons(weapons,true)
+          self:setArmour(armour)
           SetModelAsNoLongerNeeded(mhash)
         end
       end
@@ -249,6 +248,23 @@ function tvRP.setCustomization(custom) -- indexed [drawable,texture,palette] com
   return r:wait()
 end
 
+
+-- TUNNEL
+PlayerState.tunnel = {}
+
+function PlayerState.tunnel:setStateReady(state)
+  self.state_ready = state
+end
+
+PlayerState.tunnel.getWeapons = PlayerState.getWeapons
+PlayerState.tunnel.replaceWeapons = PlayerState.replaceWeapons
+PlayerState.tunnel.giveWeapons = PlayerState.giveWeapons
+PlayerState.tunnel.setArmour = PlayerState.setArmour
+PlayerState.tunnel.getDrawables = PlayerState.getDrawables
+PlayerState.tunnel.getDrawableTextures = PlayerState.getDrawableTextures
+PlayerState.tunnel.getCustomization = PlayerState.getCustomization
+PlayerState.tunnel.setCustomization = PlayerState.setCustomization
+
 -- fix invisible players by resetting customization every minutes
 --[[
 Citizen.CreateThread(function()
@@ -263,3 +279,5 @@ Citizen.CreateThread(function()
   end
 end)
 --]]
+
+vRP:registerExtension(PlayerState)

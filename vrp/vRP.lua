@@ -315,7 +315,7 @@ function vRP:dropPlayer(source)
     -- remove player from connected clients
     self.EXT.Base.remote._removePlayer(-1, user.source)
 
-    self:triggerEvent("unloadCharacter", user)
+    self:triggerEvent("characterUnload", user)
     self:triggerEvent("playerLeave", user)
 
     -- save user
@@ -484,13 +484,9 @@ function vRP:onPlayerSpawned(source)
       -- set client tunnel delay at first spawn
       Tunnel.setDestDelay(user.source, self.cfg.load_delay)
 
-      -- show loading
---      vRPclient._setProgressBar(user.source, "vRP:loading", "botright", "Loading...", 0,0,0, 100)
-
       SetTimeout(2000, function() 
         SetTimeout(self.cfg.load_duration*1000, function() -- set client delay to normal delay
           Tunnel.setDestDelay(user.source, self.cfg.global_delay)
---          vRPclient._removeProgressBar(user.source,"vRP:loading")
         end)
       end)
     end

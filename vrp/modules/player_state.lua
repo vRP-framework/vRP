@@ -1,58 +1,64 @@
-local cfg = module("cfg/player_state")
-local lang = vRP.lang
+local PlayerState = class("PlayerState", vRP.Extension)
 
--- client -> server events
-AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
-  local player = source
-  local data = vRP.getUserDataTable(user_id)
-  local tmpdata = vRP.getUserTmpTable(user_id)
+-- METHODS
 
-  if first_spawn then -- first spawn
+function PlayerState:__construct()
+  vRP.Extension.__construct(self)
+
+  self.cfg = module("vrp", "cfg/player_state")
+end
+
+-- EVENT
+
+PlayerState.event = {}
+
+function PlayerState.event:characterLoad(user)
     -- cascade load customization then weapons
-    if data.customization == nil then
-      data.customization = cfg.default_customization
+    if not user.cdata.customization then
+      user.cdata.customization = self.cfg.default_customization
     end
 
-    if not data.position and cfg.spawn_enabled then
-      local x = cfg.spawn_position[1]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
-      local y = cfg.spawn_position[2]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
-      local z = cfg.spawn_position[3]+math.random()*cfg.spawn_radius*2-cfg.spawn_radius
-      data.position = {x=x,y=y,z=z}
+    if not user.cdata.position and self.cfg.spawn_enabled then
+      local x = self.cfg.spawn_position[1]+math.random()*self.cfg.spawn_radius*2-self.cfg.spawn_radius
+      local y = self.cfg.spawn_position[2]+math.random()*self.cfg.spawn_radius*2-self.cfg.spawn_radius
+      local z = self.cfg.spawn_position[3]+math.random()*self.cfg.spawn_radius*2-self.cfg.spawn_radius
+      user.cdata.position = {x=x,y=y,z=z}
     end
 
-    if data.position then -- teleport to saved pos
-      vRPclient.teleport(source,data.position.x,data.position.y,data.position.z)
+    if user.cdata.position then -- teleport to saved pos
+      vRP.EXT.Base.remote.teleport(user.source,user.cdata.position.x,user.cdata.position.y,user.cdata.position.z)
     end
 
-    if data.customization then
-      vRPclient.setCustomization(source,data.customization) 
-      if data.weapons then -- load saved weapons
-        vRPclient.giveWeapons(source,data.weapons,true)
+    if user.cdata.customization then
+      self.remote.setCustomization(user.source,user.cdata.customization) 
 
-        if data.health then -- set health
-          vRPclient.setHealth(source,data.health)
+      if user.cdata.weapons then -- load saved weapons
+        self.remote.giveWeapons(user.source,user.cdata.weapons,true)
+
+        --[[
+        if user.cdata.health then -- set health
+          self.remote.setHealth(user.source,user.cdata.health)
           SetTimeout(5000, function() -- check coma, kill if in coma
-            if vRPclient.isInComa(player) then
-              vRPclient.killComa(player)
+            if self.remote.isInComa(user.source) then
+              self.remote.killComa(user.source)
             end
           end)
         end
+        --]]
       end
     else
-      if data.weapons then -- load saved weapons
-        vRPclient.giveWeapons(source,data.weapons,true)
+      if user.cdata.weapons then -- load saved weapons
+        self.remote.giveWeapons(user.source,user.cdata.weapons,true)
       end
 
-      if data.health then
-        vRPclient.setHealth(source,data.health)
+      --[[
+      if user.cdata.health then
+        self.remote.setHealth(user.source,user.cdata.health)
       end
+      --]]
     end
 
-
-    -- notify last login
-    SetTimeout(15000,function()
-      vRPclient._notify(player,lang.common.welcome({tmpdata.last_login}))
-    end)
+    --[[
   else -- not first spawn (player died), don't load weapons, empty wallet, empty inventory
     vRP.setHunger(user_id,0)
     vRP.setThirst(user_id,0)
@@ -84,49 +90,39 @@ AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
       vRPclient._setCustomization(source,data.customization)
     end
   end
+  --]]
 
-  vRPclient._playerStateReady(source, true)
-end)
+  self.remote._setStateReady(user.source, true)
+end
 
--- updates
+function PlayerState.event:characterUnload(user)
+  self.remote._setStateReady(user.source, false)
+end
 
-function tvRP.updatePos(x,y,z)
-  local user_id = vRP.getUserId(source)
-  if user_id then
-    local data = vRP.getUserDataTable(user_id)
-    local tmp = vRP.getUserTmpTable(user_id)
-    if data and (not tmp or not tmp.home_stype) then -- don't save position if inside home slot
-      data.position = {x = tonumber(x), y = tonumber(y), z = tonumber(z)}
-    end
+-- TUNNEL
+PlayerState.tunnel = {}
+
+function PlayerState.tunnel:updatePos(x,y,z)
+  local user = vRP.users_by_source[source]
+  if user then
+--    if  then -- don't save position if inside home slot
+      user.cdata.position = {x,y,z}
+--    end
   end
 end
 
-function tvRP.updateWeapons(weapons)
-  local user_id = vRP.getUserId(source)
-  if user_id then
-    local data = vRP.getUserDataTable(user_id)
-    if data then
-      data.weapons = weapons
-    end
+function PlayerState.tunnel:updateWeapons(weapons)
+  local user = vRP.users_by_source[source]
+  if user then
+    user.cdata.weapons = weapons
   end
 end
 
-function tvRP.updateCustomization(customization)
-  local user_id = vRP.getUserId(source)
-  if user_id then
-    local data = vRP.getUserDataTable(user_id)
-    if data then
-      data.customization = customization
-    end
+function PlayerState.tunnel:updateCustomization(customization)
+  local user = vRP.users_by_source[source]
+  if user then
+    user.cdata.customization = customization
   end
 end
 
-function tvRP.updateHealth(health)
-  local user_id = vRP.getUserId(source)
-  if user_id then
-    local data = vRP.getUserDataTable(user_id)
-    if data then
-      data.health = health
-    end
-  end
-end
+vRP:registerExtension(PlayerState)
