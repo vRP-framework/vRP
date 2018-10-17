@@ -12,6 +12,7 @@ server_scripts{
   "modules/group.lua",
   "modules/admin.lua",
   "modules/player_state.lua",
+  "modules/emotes.lua",
   --[[
   "modules/survival.lua",
   "modules/money.lua",
@@ -19,7 +20,6 @@ server_scripts{
   "modules/identity.lua",
   "modules/business.lua",
   "modules/item_transformer.lua",
-  "modules/emotes.lua",
   "modules/police.lua",
   "modules/home.lua",
   "modules/home_components.lua",
