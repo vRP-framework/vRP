@@ -16,7 +16,7 @@ end
 Identity.tunnel = {}
 
 function Identity.tunnel:setRegistrationNumber(registration)
-  registration_number = registration
+  self.registration_number = registration
 end
 
 Identity.tunnel.getRegistrationNumber = Identity.getRegistrationNumber
