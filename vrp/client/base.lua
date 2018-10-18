@@ -19,15 +19,32 @@ Proxy.addInterface("vRP", pvRP)
 -- events
 
 AddEventHandler("playerSpawned",function()
+  vRP:triggerEvent("playerSpawn")
   TriggerServerEvent("vRPcli:playerSpawned")
 end)
 
-AddEventHandler("onPlayerDied",function(player,reason)
-  TriggerServerEvent("vRPcli:playerDied")
-end)
+-- dead event task
+Citizen.CreateThread(function()
+  local was_dead = false
 
-AddEventHandler("onPlayerKilled",function(player,killer,reason)
-  TriggerServerEvent("vRPcli:playerDied")
+  while true do
+    Citizen.Wait(0)
+
+    local player = PlayerId()
+    if NetworkIsPlayerActive(player) then
+      local ped = PlayerPedId()
+
+      local dead = IsPedFatallyInjured(ped)
+
+      if not was_dead and dead then
+        was_dead = true
+        vRP:triggerEvent("playerDeath")
+        TriggerServerEvent("vRPcli:playerDied")
+      end
+
+      was_dead = dead
+    end
+  end
 end)
 
 -- Base extension
@@ -86,7 +103,7 @@ end
 function Base:teleport(x,y,z)
 --  vRP.EXT.Police:unjail() -- force unjail before a teleportation
   SetEntityCoords(GetPlayerPed(-1), x+0.0001, y+0.0001, z+0.0001, 1,0,0,1)
---  vRP.EXT.PlayerState:updatePos(x,y,z)
+  vRP:triggerEvent("playerTeleport")
 end
 
 -- return x,y,z

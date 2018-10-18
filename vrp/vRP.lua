@@ -522,4 +522,12 @@ function vRP:onPlayerDropped(source)
   self:dropPlayer(source)
 end
 
+function vRP:onPlayerDied(source)
+  Debug.log("playerDied "..source)
+  local user = self.users_by_source[source]
+  if user then
+    self:triggerEvent("playerDeath", user)
+  end
+end
+
 return vRP

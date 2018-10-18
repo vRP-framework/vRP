@@ -59,18 +59,23 @@ function PlayerState:__construct()
   vRP.Extension.__construct(self)
 
   self.state_ready = false
+  self.save_interval = 10
 
   -- update task
   Citizen.CreateThread(function()
     while true do
-      Citizen.Wait(30000)
+      Citizen.Wait(self.save_interval*1000)
 
-      if IsPlayerPlaying(PlayerId()) and self.state_ready then
-        local x,y,z = table.unpack(GetEntityCoords(GetPlayerPed(-1),true))
+      if self.state_ready then
+        local x,y,z = vRP.EXT.Base:getPosition()
 
-        self.remote._updatePos(x,y,z)
-        self.remote._updateWeapons(self:getWeapons())
-        self.remote._updateCustomization(self:getCustomization())
+        self.remote._update({
+          position = {x=x,y=y,z=z},
+          weapons = self:getWeapons(),
+          customization = self:getCustomization(),
+          health = self:getHealth(),
+          armour = self:getArmour()
+        })
       end
     end
   end)
@@ -131,6 +136,18 @@ end
 -- set player armour (0-100)
 function PlayerState:setArmour(amount)
   SetPedArmour(GetPlayerPed(-1), amount)
+end
+
+function PlayerState:getArmour()
+  return GetPedArmour(GetPlayerPed(-1))
+end
+
+function PlayerState:setHealth(amount)
+  SetEntityHealth(GetPlayerPed(-1), amount)
+end
+
+function PlayerState:getHealth()
+  return GetEntityHealth(GetPlayerPed(-1), amount)
 end
 
 --[[
@@ -213,12 +230,22 @@ function PlayerState:setCustomization(custom) -- indexed [drawable,texture,palet
         end
 
         if HasModelLoaded(mhash) then
-          -- changing player model remove weapons and armour, so save it
+          -- changing player model remove weapons, armour and health, so save it
+
+          vRP:triggerEvent("playerModelSave")
+
           local weapons = self:getWeapons()
-          local armour = GetPedArmour(ped)
+          local armour = self:getArmour()
+          local health = self:getHealth()
+
           SetPlayerModel(PlayerId(), mhash)
+
           self:giveWeapons(weapons,true)
           self:setArmour(armour)
+          self:setHealth(health)
+
+          vRP:triggerEvent("playerModelRestore")
+
           SetModelAsNoLongerNeeded(mhash)
         end
       end
@@ -248,6 +275,9 @@ function PlayerState:setCustomization(custom) -- indexed [drawable,texture,palet
   return r:wait()
 end
 
+-- EVENT
+
+PlayerState.event = {}
 
 -- TUNNEL
 PlayerState.tunnel = {}
@@ -256,10 +286,17 @@ function PlayerState.tunnel:setStateReady(state)
   self.state_ready = state
 end
 
+function PlayerState.tunnel:setSaveInterval(value)
+  self.save_interval = value
+end
+
 PlayerState.tunnel.getWeapons = PlayerState.getWeapons
 PlayerState.tunnel.replaceWeapons = PlayerState.replaceWeapons
 PlayerState.tunnel.giveWeapons = PlayerState.giveWeapons
 PlayerState.tunnel.setArmour = PlayerState.setArmour
+PlayerState.tunnel.getArmour = PlayerState.getArmour
+PlayerState.tunnel.setHealth = PlayerState.setHealth
+PlayerState.tunnel.getHealth = PlayerState.getHealth
 PlayerState.tunnel.getDrawables = PlayerState.getDrawables
 PlayerState.tunnel.getDrawableTextures = PlayerState.getDrawableTextures
 PlayerState.tunnel.getCustomization = PlayerState.getCustomization

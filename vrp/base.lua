@@ -119,6 +119,11 @@ AddEventHandler("vRPcli:playerSpawned", function()
   vRP:onPlayerSpawned(source)
 end)
 
+RegisterServerEvent("vRPcli:playerDied")
+AddEventHandler("vRPcli:playerDied", function()
+  vRP:onPlayerDied(source)
+end)
+
 local lang = vRP.lang
 
 -- Base extension
