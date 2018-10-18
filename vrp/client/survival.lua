@@ -1,156 +1,174 @@
--- api
+local Survival = class("Survival", vRP.Extension)
 
-function tvRP.varyHealth(variation)
+function Survival:__construct()
+  vRP.Extension.__construct(self)
+
+  self.in_coma = false
+  self.coma_left = vRP.cfg.coma_duration*60
+
+  -- task: impact water and food when the player is running, etc (every 5 seconds)
+  Citizen.CreateThread(function()
+    local it = 0
+
+    -- consumption for one minute
+    local twater = 0
+    local tfood = 0
+
+    while true do
+      Citizen.Wait(5000)
+
+      if IsPlayerPlaying(PlayerId()) then
+        local ped = GetPlayerPed(-1)
+
+        local water = 0
+        local food = 0
+
+        -- on foot, increase water/food in function of velocity
+        if IsPedOnFoot(ped) and not vRP.EXT.Admin.noclip then
+          local factor = math.min(vRP.EXT.Base:getSpeed(),10)
+
+          water = water+0.01*factor
+          food = food+0.005*factor
+        end
+
+        -- in melee combat, increase
+        if IsPedInMeleeCombat(ped) then
+          water = water+0.1
+          food = food+0.05
+        end
+
+        -- injured, hurt, increase
+        if IsPedHurt(ped) or IsPedInjured(ped) then
+          water = water+0.02
+          food = food+0.01
+        end
+
+        twater = twater+water/12
+        tfood = tfood+food/12
+
+        it = it+1
+        if it >= 12 then
+          it = 0
+          self.remote._consume(twater, tfood)
+          twater = 0
+          tfood = 0
+        end
+      end
+    end
+  end)
+
+  -- coma task
+  Citizen.CreateThread(function() 
+    while true do
+      Citizen.Wait(0)
+      local ped = GetPlayerPed(-1)
+      
+      local health = GetEntityHealth(ped)
+      if health <= vRP.cfg.coma_threshold and self.coma_left > 0 then
+        if not self.in_coma then -- go to coma state
+          if IsEntityDead(ped) then -- if dead, resurrect
+            local x,y,z = vRP.EXT.Base:getPosition()
+            NetworkResurrectLocalPlayer(x, y, z, true, true, false)
+            Citizen.Wait(0)
+          end
+
+          -- coma state
+          self.in_coma = true
+
+          SetEntityHealth(ped, vRP.cfg.coma_threshold)
+          SetEntityInvincible(ped,true)
+          vRP.EXT.Base:playScreenEffect(vRP.cfg.coma_effect,-1)
+          --tvRP.ejectVehicle()
+          vRP.EXT.Base:setRagdoll(true)
+
+          vRP:triggerEvent("playerComaState", self.in_coma)
+        else -- in coma
+          -- maintain life
+          if health < vRP.cfg.coma_threshold then 
+            SetEntityHealth(ped, vRP.cfg.coma_threshold) 
+          end
+        end
+      else
+        if self.in_coma then -- get out of coma state
+          self.in_coma = false
+          SetEntityInvincible(ped,false)
+          vRP.EXT.Base:setRagdoll(false)
+          vRP.EXT.Base:stopScreenEffect(vRP.cfg.coma_effect)
+
+          if self.coma_left <= 0 then -- get out of coma by death
+            SetEntityHealth(ped, 0)
+          end
+
+          SetTimeout(5000, function()  -- able to be in coma again after coma death after 5 seconds
+            self.coma_left = vRP.cfg.coma_duration*60
+          end)
+
+          vRP:triggerEvent("playerComaState", self.in_coma)
+        end
+      end
+    end
+  end)
+
+ -- coma decrease task
+  Citizen.CreateThread(function()
+    while true do 
+      Citizen.Wait(1000)
+      if self.in_coma then
+        self.coma_left = self.coma_left-1
+      end
+    end
+  end)
+
+  -- disable health regen task, conflicts with coma system
+  Citizen.CreateThread(function() 
+    while true do
+      Citizen.Wait(100)
+
+      -- prevent health regen
+      SetPlayerHealthRechargeMultiplier(PlayerId(), 0)
+    end
+  end)
+end
+
+function Survival:varyHealth(variation)
   local ped = GetPlayerPed(-1)
 
   local n = math.floor(GetEntityHealth(ped)+variation)
   SetEntityHealth(ped,n)
 end
 
-function tvRP.getHealth()
-  return GetEntityHealth(GetPlayerPed(-1))
-end
-
-function tvRP.setHealth(health)
-  local n = math.floor(health)
-  SetEntityHealth(GetPlayerPed(-1),n)
-end
-
-function tvRP.setFriendlyFire(flag)
+function Survival:setFriendlyFire(flag)
   NetworkSetFriendlyFireOption(flag)
   SetCanAttackFriendly(GetPlayerPed(-1), flag, flag)
 end
 
-function tvRP.setPolice(flag)
+function Survival:setPolice(flag)
   local player = PlayerId()
   SetPoliceIgnorePlayer(player, not flag)
   SetDispatchCopsForPlayer(player, flag)
 end
 
--- impact thirst and hunger when the player is running (every 5 seconds)
-Citizen.CreateThread(function()
-  while true do
-    Citizen.Wait(5000)
-
-    if IsPlayerPlaying(PlayerId()) then
-      local ped = GetPlayerPed(-1)
-
-      -- variations for one minute
-      local vthirst = 0
-      local vhunger = 0
-
-      -- on foot, increase thirst/hunger in function of velocity
-      if IsPedOnFoot(ped) and not tvRP.isNoclip() then
-        local factor = math.min(tvRP.getSpeed(),10)
-
-        vthirst = vthirst+1*factor
-        vhunger = vhunger+0.5*factor
-      end
-
-      -- in melee combat, increase
-      if IsPedInMeleeCombat(ped) then
-        vthirst = vthirst+10
-        vhunger = vhunger+5
-      end
-
-      -- injured, hurt, increase
-      if IsPedHurt(ped) or IsPedInjured(ped) then
-        vthirst = vthirst+2
-        vhunger = vhunger+1
-      end
-
-      -- do variation
-      if vthirst ~= 0 then
-        vRPserver._varyThirst(vthirst/12.0)
-      end
-
-      if vhunger ~= 0 then
-        vRPserver._varyHunger(vhunger/12.0)
-      end
-    end
-  end
-end)
-
 -- COMA SYSTEM
 
-local in_coma = false
-local coma_left = cfg.coma_duration*60
-
-Citizen.CreateThread(function() -- coma thread
-  while true do
-    Citizen.Wait(0)
-    local ped = GetPlayerPed(-1)
-    
-    local health = GetEntityHealth(ped)
-    if health <= cfg.coma_threshold and coma_left > 0 then
-      if not in_coma then -- go to coma state
-        if IsEntityDead(ped) then -- if dead, resurrect
-          local x,y,z = tvRP.getPosition()
-          NetworkResurrectLocalPlayer(x, y, z, true, true, false)
-          Citizen.Wait(0)
-        end
-
-        -- coma state
-        in_coma = true
-
-        vRPserver._updateHealth(cfg.coma_threshold) -- force health update
-
-        SetEntityHealth(ped, cfg.coma_threshold)
-        SetEntityInvincible(ped,true)
-        tvRP.playScreenEffect(cfg.coma_effect,-1)
-        tvRP.ejectVehicle()
-        tvRP.setRagdoll(true)
-      else -- in coma
-        -- maintain life
-        if health < cfg.coma_threshold then 
-          SetEntityHealth(ped, cfg.coma_threshold) 
-        end
-      end
-    else
-      if in_coma then -- get out of coma state
-        in_coma = false
-        SetEntityInvincible(ped,false)
-        tvRP.setRagdoll(false)
-        tvRP.stopScreenEffect(cfg.coma_effect)
-
-        if coma_left <= 0 then -- get out of coma by death
-          SetEntityHealth(ped, 0)
-        end
-
-        SetTimeout(5000, function()  -- able to be in coma again after coma death after 5 seconds
-          coma_left = cfg.coma_duration*60
-        end)
-      end
-    end
-  end
-end)
-
-function tvRP.isInComa()
-  return in_coma
+function Survival:isInComa()
+  return self.in_coma
 end
 
 -- kill the player if in coma
-function tvRP.killComa()
-  if in_coma then
-    coma_left = 0
+function Survival:killComa()
+  if self.in_coma then
+    self.coma_left = 0
   end
 end
 
-Citizen.CreateThread(function() -- coma decrease thread
-  while true do 
-    Citizen.Wait(1000)
-    if in_coma then
-      coma_left = coma_left-1
-    end
-  end
-end)
+-- TUNNEL
 
-Citizen.CreateThread(function() -- disable health regen, conflicts with coma system
-  while true do
-    Citizen.Wait(100)
-    -- prevent health regen
-    SetPlayerHealthRechargeMultiplier(PlayerId(), 0)
-  end
-end)
+Survival.tunnel = {}
 
+Survival.tunnel.isInComa = Survival.isInComa
+Survival.tunnel.killComa = Survival.killComa
+Survival.tunnel.setFriendlyFire = Survival.setFriendlyFire
+Survival.tunnel.setPolice = Survival.setPolice
+Survival.tunnel.varyHealth = Survival.varyHealth
 
+vRP:registerExtension(Survival)

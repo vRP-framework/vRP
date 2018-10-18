@@ -95,7 +95,7 @@ ProgressBar.prototype.frame = function(time)
   this.disp_value += (this.value - this.disp_value)*0.2;
 
   //update inner bar
-  this.div_inner.style.width = Math.round(this.div.offsetWidth*this.disp_value/100.0)+"px";
+  this.div_inner.style.width = Math.round(this.div.offsetWidth*this.disp_value)+"px";
 }
 
 ProgressBar.prototype.addDom = function()

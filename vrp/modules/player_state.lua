@@ -18,11 +18,12 @@ function PlayerState.event:playerSpawn(user, first_spawn)
   end
   self.remote._setStateReady(user.source, false)
 
-  -- cascade load customization then weapons
+  -- default customization
   if not user.cdata.state.customization then
     user.cdata.state.customization = self.cfg.default_customization
   end
 
+  -- default position
   if not user.cdata.state.position and self.cfg.spawn_enabled then
     local x = self.cfg.spawn_position[1]+math.random()*self.cfg.spawn_radius*2-self.cfg.spawn_radius
     local y = self.cfg.spawn_position[2]+math.random()*self.cfg.spawn_radius*2-self.cfg.spawn_radius
@@ -34,19 +35,19 @@ function PlayerState.event:playerSpawn(user, first_spawn)
     vRP.EXT.Base.remote.teleport(user.source,user.cdata.state.position.x,user.cdata.state.position.y,user.cdata.state.position.z)
   end
 
-  if user.cdata.state.customization then
+  if user.cdata.state.customization then -- customization
     self.remote.setCustomization(user.source,user.cdata.state.customization) 
   end
 
-  if user.cdata.state.weapons then -- load saved weapons
+  if user.cdata.state.weapons then -- weapons
     self.remote.giveWeapons(user.source,user.cdata.state.weapons,true)
   end
 
-  if user.cdata.state.health then
+  if user.cdata.state.health then -- health
     self.remote.setHealth(user.source,user.cdata.state.health)
   end
 
-  if user.cdata.state.armour then
+  if user.cdata.state.armour then -- armour
     self.remote.setArmour(user.source,user.cdata.state.armour)
   end
 

@@ -13,8 +13,8 @@ server_scripts{
   "modules/admin.lua",
   "modules/player_state.lua",
   "modules/emotes.lua",
-  --[[
   "modules/survival.lua",
+  --[[
   "modules/money.lua",
   "modules/inventory.lua",
   "modules/identity.lua",
@@ -47,9 +47,9 @@ client_scripts{
   "client/gui.lua",
   "client/admin.lua",
   "client/player_state.lua",
+  "client/survival.lua",
   --[[
   "client/iplloader.lua",
-  "client/survival.lua",
   "client/identity.lua",
   "client/basic_garage.lua",
   "client/police.lua",

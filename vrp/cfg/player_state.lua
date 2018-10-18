@@ -6,7 +6,7 @@ cfg.spawn_enabled = true -- set to false to disable the feature
 cfg.spawn_position = {1854.21, 3685.51, 34.2671}
 cfg.spawn_radius = 1
 
-cfg.save_interval = 10 -- seconds
+cfg.save_interval = 15 -- seconds
 
 -- customization set when spawning for the first time
 -- see https://wiki.fivem.net/wiki/Peds

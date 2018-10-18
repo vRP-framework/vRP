@@ -59,7 +59,7 @@ function PlayerState:__construct()
   vRP.Extension.__construct(self)
 
   self.state_ready = false
-  self.save_interval = 10
+  self.save_interval = 30
 
   -- update task
   Citizen.CreateThread(function()

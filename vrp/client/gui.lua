@@ -143,7 +143,7 @@ function GUI:__construct()
       if pause_menu and not self.paused then
         self.paused = true
         vRP:triggerEvent("pauseChange", self.paused)
-      elseif not pause_menu and paused then
+      elseif not pause_menu and self.paused then
         self.paused = false
         vRP:triggerEvent("pauseChange", self.paused)
       end
@@ -180,6 +180,7 @@ end
 -- PROGRESS BAR
 
 -- create/update a progress bar
+-- value: 0-1
 function GUI:setProgressBar(name,anchor,text,r,g,b,value)
   local pbar = {name=name,anchor=anchor,text=text,r=r,g=g,b=b,value=value}
 
@@ -189,7 +190,7 @@ function GUI:setProgressBar(name,anchor,text,r,g,b,value)
   SendNUIMessage({act="set_pbar",pbar = pbar})
 end
 
--- set progress bar value in percent
+-- set progress bar value 0-1
 function GUI:setProgressBarValue(name,value)
   SendNUIMessage({act="set_pbar_val", name = name, value = value})
 end
