@@ -88,9 +88,9 @@ function Map.tunnel:leaveArea(name)
 
   if user then
     local area = user.map_areas[name] 
-    if area and not area.inside then -- trigger enter callback
+    if area and area.inside then -- trigger enter callback
       area.inside = false
-      if area.enter then
+      if area.leave then
         area.leave(user,name)
       end
     end

@@ -35,14 +35,14 @@ end
 
 function Menu:triggerOption(id, mod)
   local option = self.options[id]
-  if option then
+  if option and option[2] then
     option[2](self, option[4], mod)
   end
 end
 
 -- add option
 -- title: option title
--- action(menu, value, mod): select callback
+-- action(menu, value, mod): (optional) select callback
 --- value: option value
 --- mod: action modulation
 ---- -1: left
