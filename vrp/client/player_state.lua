@@ -143,11 +143,11 @@ function PlayerState:getArmour()
 end
 
 function PlayerState:setHealth(amount)
-  SetEntityHealth(GetPlayerPed(-1), amount)
+  SetEntityHealth(GetPlayerPed(-1), math.floor(amount))
 end
 
 function PlayerState:getHealth()
-  return GetEntityHealth(GetPlayerPed(-1), amount)
+  return GetEntityHealth(GetPlayerPed(-1))
 end
 
 --[[
