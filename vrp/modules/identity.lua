@@ -74,7 +74,7 @@ function Identity:__construct()
         local age = user:prompt(lang.cityhall.identity.prompt_age(),"")
         age = parseInt(age)
         if age >= 16 and age <= 150 then
-          if --[[ vRP.tryPayment(user_id,cfg.new_identity_cost) --]] true then
+          if user:tryPayment(self.cfg.new_identity_cost) then
             local registration = self:generateRegistrationNumber()
             local phone = self:generatePhoneNumber()
 

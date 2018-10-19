@@ -15,8 +15,8 @@ server_scripts{
   "modules/emotes.lua",
   "modules/survival.lua",
   "modules/identity.lua",
-  --[[
   "modules/money.lua",
+  --[[
   "modules/inventory.lua",
   "modules/business.lua",
   "modules/item_transformer.lua",

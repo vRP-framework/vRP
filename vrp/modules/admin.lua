@@ -234,7 +234,7 @@ local function m_givemoney(menu)
   local user = menu.user
   if user:hasPermission("player.givemoney") then 
     local amount = parseInt(user:prompt("Amount:",""))
-    -- vRP.giveMoney(user_id, amount)
+    user:giveWallet(amount)
   end
 end
 
