@@ -10,6 +10,8 @@ cfg.sms_size = 500
 -- duration of a sms position marker (in seconds)
 cfg.smspos_duration = 300
 
+cfg.clear_phone_on_death = true
+
 -- phone sounds (playAudioSource)
 cfg.dialing_sound = "sounds/phone_dialing.ogg" -- loop
 cfg.ringing_sound = "sounds/phone_ringing.ogg" -- loop

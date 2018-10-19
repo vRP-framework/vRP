@@ -62,10 +62,6 @@ function GUI:__construct()
       self:log("(vRPvoice-world) disconnected from "..player)
     end)
 
-    AddEventHandler("vRP:NUIready", function()
-      -- world channel config
-      self:configureVoice("world", vRP.cfg.world_voice_config)
-    end)
   end
 
   -- task: detect players near, give positions to AudioEngine
@@ -372,6 +368,13 @@ function GUI.event:pauseChange(paused)
   SendNUIMessage({act="pause_change", paused=paused})
 end
 
+function GUI.event:NUIready()
+  if vRP.cfg.vrp_voip then
+    -- world channel config
+    self:configureVoice("world", vRP.cfg.world_voice_config)
+  end
+end
+
 -- TUNNEL
 
 GUI.tunnel = {}
@@ -448,7 +451,7 @@ end)
 -- init
 RegisterNUICallback("init",function(data,cb) -- NUI initialized
   SendNUIMessage({act="cfg",cfg=vRP.cfg.gui}) -- send cfg
-  TriggerEvent("vRP:NUIready")
+  vRP:triggerEvent("NUIready")
 end)
 
 -- VoIP

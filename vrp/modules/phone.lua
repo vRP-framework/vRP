@@ -15,20 +15,22 @@ Phone.User = class("User")
 function Phone.User:sendSMS(phone, msg)
   local cfg = vRP.EXT.Phone.cfg
 
-  if string.len(msg) > cfg.sms_size then -- clamp sms
-    sms = string.sub(msg,1,cfg.sms_size)
-  end
+  if string.len(msg) > 0 then
+    if string.len(msg) > cfg.sms_size then -- clamp sms
+      sms = string.sub(msg,1,cfg.sms_size)
+    end
 
-  local cid, uid = vRP.EXT.Identity:getByPhone(phone)
-  if cid then
-    local tuser = vRP.users[uid]
-    if tuser and tuser.cid == cid then
-      local from = tuser:getPhoneDirectoryName(self.identity.phone).." ("..self.identity.phone..")"
+    local cid, uid = vRP.EXT.Identity:getByPhone(phone)
+    if cid then
+      local tuser = vRP.users[uid]
+      if tuser and tuser.cid == cid then
+        local from = tuser:getPhoneDirectoryName(self.identity.phone).." ("..self.identity.phone..")"
 
-      vRP.EXT.Base.remote._notify(tuser.source,lang.phone.sms.notify({from, msg}))
-      vRP.EXT.GUI.remote._playAudioSource(tuser.source, cfg.sms_sound, 0.5)
-      tuser:addSMS(self.identity.phone, msg)
-      return true
+        vRP.EXT.Base.remote._notify(tuser.source,lang.phone.sms.notify({from, msg}))
+        vRP.EXT.GUI.remote._playAudioSource(tuser.source, cfg.sms_sound, 0.5)
+        tuser:addSMS(self.identity.phone, msg)
+        return true
+      end
     end
   end
 end
@@ -43,7 +45,7 @@ end
 
 -- get directory name by number for a specific user
 function Phone.User:getPhoneDirectoryName(phone)
-  return self.phone_directory[phone] or "unknown"
+  return self.cdata.phone_directory[phone] or "unknown"
 end
 
 -- call from a user to a phone number
@@ -118,32 +120,42 @@ end
 -- menu: phone directory entry
 local function menu_phone_directory_entry(self)
   local function m_remove(menu) -- remove directory entry
-    phone_directory[name] = nil
-    vRP.closeMenu(player) -- close entry menu (removed)
+    local user = menu.user
+    user.cdata.phone_directory[menu.data.phone] = nil
+    user:closeMenu(menu) -- close entry menu (removed)
   end
 
   local function m_sendsms(menu) -- send sms to directory entry
-    local msg = vRP.prompt(player,lang.phone.directory.sendsms.prompt({cfg.sms_size}),"")
-    msg = sanitizeString(msg,sanitizes.text[1],sanitizes.text[2])
-    if vRP.sendSMS(user_id, phone, msg) then
-      vRPclient._notify(player,lang.phone.directory.sendsms.sent({phone}))
+    local user = menu.user
+    local phone = menu.data.phone
+
+    local msg = user:prompt(lang.phone.directory.sendsms.prompt({self.cfg.sms_size}),"")
+    msg = sanitizeString(msg,self.sanitizes.text[1],self.sanitizes.text[2])
+    if user:sendSMS(phone, msg) then
+      vRP.EXT.Base.remote._notify(user.source,lang.phone.directory.sendsms.sent({phone}))
     else
-      vRPclient._notify(player,lang.phone.directory.sendsms.not_sent({phone}))
+      vRP.EXT.Base.remote._notify(user.source,lang.phone.directory.sendsms.not_sent({phone}))
     end
   end
 
   local function m_sendpos(menu) -- send current position to directory entry
-    local x,y,z = vRPclient.getPosition(player)
-    if vRP.sendSMSPos(user_id, phone, x,y,z) then
-      vRPclient._notify(player,lang.phone.directory.sendsms.sent({phone}))
+    local user = menu.user
+    local phone = menu.data.phone
+
+    local x,y,z = vRP.EXT.Base.remote.getPosition(user.source)
+    if user:sendSMSPos(phone, x,y,z) then
+      vRP.EXT.Base.remote._notify(user.source,lang.phone.directory.sendsms.sent({phone}))
     else
-      vRPclient._notify(player,lang.phone.directory.sendsms.not_sent({phone}))
+      vRP.EXT.Base.remote._notify(user.source,lang.phone.directory.sendsms.not_sent({phone}))
     end
   end
 
   local function m_call(menu) -- call player
-    if not vRP.phoneCall(user_id, phone) then
-      vRPclient._notify(player,lang.phone.directory.call.not_reached({phone}))
+    local user = menu.user
+    local phone = menu.data.phone
+
+    if not user:phoneCall(phone) then
+      vRP.EXT.Base.remote._notify(user.source,lang.phone.directory.call.not_reached({phone}))
     end
   end
 
@@ -161,15 +173,18 @@ end
 -- menu: phone directory
 local function menu_phone_directory(self)
   local function m_add(menu) -- add to directory
-    local phone = vRP.prompt(player,lang.phone.directory.add.prompt_number(),"")
-    local name = vRP.prompt(player,lang.phone.directory.add.prompt_name(),"")
-    name = sanitizeString(tostring(name),sanitizes.text[1],sanitizes.text[2])
-    phone = sanitizeString(tostring(phone),sanitizes.text[1],sanitizes.text[2])
-    if #name > 0 and #phone > 0 then
-      phone_directory[name] = phone -- set entry
-      vRPclient._notify(player, lang.phone.directory.add.added())
+    local user = menu.user
+
+    local phone = user:prompt(lang.phone.directory.add.prompt_number(),"")
+    local name = user:prompt(lang.phone.directory.add.prompt_name(),"")
+    name = sanitizeString(tostring(name),self.sanitizes.text[1],self.sanitizes.text[2])
+    phone = sanitizeString(tostring(phone),self.sanitizes.text[1],self.sanitizes.text[2])
+    if string.len(name) > 0 and string.len(phone) > 0 and string.len(name) <= 75 and string.len(phone) <= 75 then
+      user.cdata.phone_directory[phone] = name -- set entry
+      vRP.EXT.Base.remote._notify(user.source, lang.phone.directory.add.added())
+      user:actualizeMenu()
     else
-      vRPclient._notify(player, lang.common.invalid_value())
+      vRP.EXT.Base.remote._notify(user.source, lang.common.invalid_value())
     end
   end
 
@@ -183,8 +198,8 @@ local function menu_phone_directory(self)
 
     menu:addOption(lang.phone.directory.add.title(), m_add)
 
-    for phone, name in pairs(menu.user.phone_directory) do -- add directory entries
-      menu:addOption(htmlEntities.encode(name), m_entry, nil, phone)
+    for phone, name in pairs(menu.user.cdata.phone_directory) do -- add directory entries
+      menu:addOption(htmlEntities.encode(name), m_entry, htmlEntities.encode(phone), phone)
     end
   end)
 end
@@ -192,15 +207,16 @@ end
 -- menu: phone sms
 local function menu_phone_sms(self)
   local function m_respond(menu, value)
+    local user = menu.user
     local phone = value
 
     -- answer to sms
-    local msg = vRP.prompt(player,lang.phone.directory.sendsms.prompt({cfg.sms_size}),"")
-    msg = sanitizeString(msg,sanitizes.text[1],sanitizes.text[2])
-    if vRP.sendSMS(user_id, phone, msg) then
-      vRPclient._notify(player,lang.phone.directory.sendsms.sent({phone}))
+    local msg = user:prompt(lang.phone.directory.sendsms.prompt({self.cfg.sms_size}),"")
+    msg = sanitizeString(msg,self.sanitizes.text[1],self.sanitizes.text[2])
+    if user:sendSMS(phone, msg) then
+      vRP.EXT.Base.remote._notify(user.source,lang.phone.directory.sendsms.sent({phone}))
     else
-      vRPclient._notify(player,lang.phone.directory.sendsms.not_sent({phone}))
+      vRP.EXT.Base.remote._notify(user.source,lang.phone.directory.sendsms.not_sent({phone}))
     end
   end
 
@@ -220,14 +236,16 @@ end
 
 -- menu: phone service
 local function menu_phone_service(self)
-  local function m_alert(menu, value) -- alert a service
-    local service = value
+  local function m_service(menu, value) -- alert a service
+    local user = menu.user
+    local service_name = value
+    local service = self.cfg.services[service_name]
 
-    local x,y,z = vRPclient.getPosition(player)
-    local msg = vRP.prompt(player,lang.phone.service.prompt(),"")
-    msg = sanitizeString(msg,sanitizes.text[1],sanitizes.text[2])
-    vRPclient._notify(player,service.notify) -- notify player
-    vRP.sendServiceAlert(player,choice,x,y,z,msg) -- send service alert (call request)
+    local x,y,z = vRP.EXT.Base.remote.getPosition(user.source)
+    local msg = user:prompt(lang.phone.service.prompt(),"")
+    msg = sanitizeString(msg,self.sanitizes.text[1],self.sanitizes.text[2])
+    vRP.EXT.Base.remote._notify(user.source,service.notify) -- notify player
+    self:sendServiceAlert(user,service_name,x,y,z,msg) -- send service alert (call request)
   end
 
   vRP.EXT.GUI:registerMenuBuilder("phone.service", function(menu)
@@ -235,7 +253,7 @@ local function menu_phone_service(self)
     menu.css.header_color="rgba(0,125,255,0.75)"
 
     for k,service in pairs(self.cfg.services) do
-      menu:addOption(k, m_alert, nil, service)
+      menu:addOption(k, m_service, nil, k)
     end
   end)
 end
@@ -243,53 +261,42 @@ end
 -- menu: phone announce
 local function menu_phone_announce(self)
   -- build announce menu
-  local announce_menu = {name=lang.phone.announce.title(),css={top="75px",header_color="rgba(0,125,255,0.75)"}}
 
-  -- nest menu
-  announce_menu.onclose = function(player) vRP.openMenu(player, phone_menu) end
+  local function m_announce(menu, value) -- alert a announce
+    local user = menu.user
+    local announce = value
 
-  local function ch_announce_alert(player,choice) -- alert a announce
-    local announce = announces[choice]
-    local user_id = vRP.getUserId(player)
-    if announce and user_id then
-      if not announce.permission or vRP.hasPermission(user_id,announce.permission) then
-        local msg = vRP.prompt(player,lang.phone.announce.prompt(),"")
-        msg = sanitizeString(msg,sanitizes.text[1],sanitizes.text[2])
-        if string.len(msg) > 10 and string.len(msg) < 1000 then
-          if announce.price <= 0 or vRP.tryPayment(user_id, announce.price) then -- try to pay the announce
-            vRPclient._notify(player, lang.money.paid({announce.price}))
+    if not announce.permission or user:hasPermission(announce.permission) then
+      local msg = user:prompt(lang.phone.announce.prompt(),"")
+      msg = sanitizeString(msg,self.sanitizes.text[1],self.sanitizes.text[2])
+      if string.len(msg) > 10 and string.len(msg) < 1000 then
+        if announce.price <= 0 or user:tryPayment(announce.price) then -- try to pay the announce
+          vRP.EXT.Base.remote._notify(user.source, lang.money.paid({announce.price}))
 
-            msg = htmlEntities.encode(msg)
-            msg = string.gsub(msg, "\n", "<br />") -- allow returns
+          msg = htmlEntities.encode(msg)
+          msg = string.gsub(msg, "\n", "<br />") -- allow returns
 
-            -- send announce to all
-            local users = vRP.getUsers()
-            for k,v in pairs(users) do
-              vRPclient._announce(v,announce.image,msg)
-            end
-          else
-            vRPclient._notify(player, lang.money.not_enough())
-          end
+          -- send announce to all
+          vRP.EXT.GUI.remote._announce(-1,announce.image,msg)
         else
-          vRPclient._notify(player, lang.common.invalid_value())
+          vRP.EXT.Base.remote._notify(user.source, lang.money.not_enough())
         end
       else
-        vRPclient._notify(player, lang.common.not_allowed())
+        vRP.EXT.Base.remote._notify(user.source, lang.common.invalid_value())
       end
+    else
+      vRP.EXT.Base.remote._notify(user.source, lang.common.not_allowed())
     end
   end
 
-  for k,v in pairs(announces) do
-    announce_menu[k] = {ch_announce_alert,lang.phone.announce.item_desc({v.price,v.description or ""})}
-  end
+  vRP.EXT.GUI:registerMenuBuilder("phone.announce", function(menu)
+    menu.title = lang.phone.announce.title()
+    menu.css.header_color="rgba(0,125,255,0.75)"
 
-  local function ch_announce(player, choice)
-    vRP.openMenu(player,announce_menu)
-  end
-
-  local function ch_hangup(player, choice)
-    vRPclient._phoneHangUp(player)
-  end
+    for k,announce in pairs(self.cfg.announces) do
+      menu:addOption(k, m_announce, lang.phone.announce.item_desc({announce.price,announce.description or ""}), announce)
+    end
+  end)
 end
 
 -- menu: phone
@@ -306,9 +313,23 @@ local function menu_phone(self)
     menu.user:openMenu("phone.service")
   end
 
+  local function m_announce(menu)
+    menu.user:openMenu("phone.announce")
+  end
+
+  local function m_hangup(menu)
+    self.remote._hangUp(menu.user.source)
+  end
+
   vRP.EXT.GUI:registerMenuBuilder("phone", function(menu)
     menu.title = lang.phone.title()
     menu.css.header_color = "rgba(0,125,255,0.75)"
+
+    menu:addOption(lang.phone.directory.title(), m_directory,lang.phone.directory.description())
+    menu:addOption(lang.phone.sms.title(), m_sms,lang.phone.sms.description())
+    menu:addOption(lang.phone.service.title(), m_service,lang.phone.service.description())
+    menu:addOption(lang.phone.announce.title(), m_announce,lang.phone.announce.description())
+    menu:addOption(lang.phone.hangup.title(), m_hangup,lang.phone.hangup.description())
   end)
 end
 
@@ -320,25 +341,24 @@ function Phone:__construct()
   self.cfg = module("cfg/phone")
   self.sanitizes = module("cfg/sanitizes")
 
-  -- directory menu
+  -- menu builders
 
+  menu_phone_directory_entry(self)
+  menu_phone_directory(self)
+  menu_phone_announce(self)
+  menu_phone_service(self)
+  menu_phone_sms(self)
+  menu_phone(self)
 
-  phone_menu[lang.phone.directory.title()] = {ch_directory,lang.phone.directory.description()}
-  phone_menu[lang.phone.sms.title()] = {ch_sms,lang.phone.sms.description()}
-  phone_menu[lang.phone.service.title()] = {ch_service,lang.phone.service.description()}
-  phone_menu[lang.phone.announce.title()] = {ch_announce,lang.phone.announce.description()}
-  phone_menu[lang.phone.hangup.title()] = {ch_hangup,lang.phone.hangup.description()}
+  -- phone in main menu
 
-  -- add phone menu to main menu
+  local function m_phone(menu)
+    menu.user:openMenu("phone")
+  end
 
-  vRP.registerMenuBuilder("main", function(add, data)
-    local player = data.player
-    local choices = {}
-    choices[lang.phone.title()] = {function() vRP.openMenu(player,phone_menu) end}
-
-    local user_id = vRP.getUserId(player)
-    if user_id and vRP.hasPermission(user_id, "player.phone") then
-      add(choices)
+  vRP.EXT.GUI:registerMenuBuilder("main", function(menu)
+    if menu.user:hasPermission("player.phone") then
+      menu:addOption(lang.phone.title(), m_phone)
     end
   end)
 end
@@ -389,4 +409,24 @@ function Phone:sendServiceAlert(sender, service_name,x,y,z,msg)
   end
 end
 
+-- EVENT
+Phone.event = {}
 
+function Phone.event:characterLoad(user)
+  if not user.phone_sms then
+    user.phone_sms = {}
+  end
+
+  if not user.cdata.phone_directory then
+    user.cdata.phone_directory = {}
+  end
+end
+
+function Phone.event:playerDeath(user)
+  if self.cfg.clear_phone_on_death then
+    user.phone_sms = {}
+    user.cdata.phone_directory = {}
+  end
+end
+
+vRP:registerExtension(Phone)

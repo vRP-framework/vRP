@@ -17,6 +17,7 @@ server_scripts{
   "modules/identity.lua",
   "modules/money.lua",
   "modules/atm.lua",
+  "modules/phone.lua",
   --[[
   "modules/inventory.lua",
   "modules/business.lua",
@@ -28,7 +29,6 @@ server_scripts{
   "modules/aptitude.lua",
 
   -- basic implementations
-  "modules/basic_phone.lua",
   "modules/basic_market.lua",
   "modules/basic_gunshop.lua",
   "modules/basic_garage.lua",
@@ -49,11 +49,11 @@ client_scripts{
   "client/player_state.lua",
   "client/survival.lua",
   "client/identity.lua",
+  "client/phone.lua",
   --[[
   "client/iplloader.lua",
   "client/basic_garage.lua",
   "client/police.lua",
-  "client/basic_phone.lua",
   "client/basic_radio.lua"
   --]]
 }
