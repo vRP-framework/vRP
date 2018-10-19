@@ -35,15 +35,7 @@ function Menu:serializeNet()
 
   -- titles
   for k,v in pairs(self.options) do
-    -- compute description
-    local desc = v[3]
-    if type(desc) == "function" then
-      desc = desc(self, v[4])
-    elseif not desc then
-      desc = ""
-    end
-
-    data.options[k] = {v[1], desc} -- title, description
+    data.options[k] = {v[1], v[3]} -- title, description
   end
 
   return data
@@ -66,22 +58,22 @@ function Menu:triggerOption(id, mod)
 end
 
 -- add option
--- title: option title
+-- title: option title (html)
 -- action(menu, value, mod): (optional) select callback
 --- value: option value
 --- mod: action modulation
 ---- -1: left
 ---- 0: valid
 ---- 1: right
--- description: (optional) option description, a string or a callback
+-- description: (optional) option description (html)
 --- callback(menu, value): should return a string or nil
--- value: (optional) option value, option index by default
+-- value: (optional) option value, can be anything, is option index by default
 -- index: (optional) by default the option is added at the end, but an index can be used to insert the option
 function Menu:addOption(title, action, description, value, index)
   if index then
-    table.insert(self.options, index, {title, action, description, value or #self.options+1})
+    table.insert(self.options, index, {title, action, description or "", value or #self.options+1})
   else
-    table.insert(self.options, {title, action, description, value or #self.options+1})
+    table.insert(self.options, {title, action, description or "", value or #self.options+1})
   end
 end
 
