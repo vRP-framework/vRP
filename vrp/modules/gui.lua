@@ -10,18 +10,43 @@ local cfg = module("cfg/gui")
 --- remove(menu)
 local Menu = class("Menu", EventDispatcher)
 
-function Menu:__construct(user, name, title, data)
+function Menu:__construct(user, name, data)
   EventDispatcher.__construct(self)
 
   self.user = user
-  self.title = title
   self.name = name
   self.data = data -- build data (should not be modified afterwards)
-  self.css = {} -- {.header_color}
-  self.options = {}
+end
 
+function Menu:initialize()
+  self.title = htmlEntities.encode("<"..self.name..">")
+  self.options = {}
+  self.css = {} -- {.header_color}
   self.closed = false
-  self.close_callbacks = {}
+end
+
+function Menu:serializeNet()
+  -- prepare network data
+  local data = {
+    options = {},
+    title = self.title,
+    css = self.css
+  }
+
+  -- titles
+  for k,v in pairs(self.options) do
+    -- compute description
+    local desc = v[3]
+    if type(desc) == "function" then
+      desc = desc(self, v[4])
+    elseif not desc then
+      desc = ""
+    end
+
+    data.options[k] = {v[1], desc} -- title, description
+  end
+
+  return data
 end
 
 function Menu:triggerClose()
@@ -86,35 +111,18 @@ end
 -- data: (optional) must not be modified afterwards 
 -- return menu
 function GUI.User:openMenu(name, data)
+  local menu = Menu(self, name, data or {})
+
   -- build menu
-  local menu = vRP.EXT.GUI:buildMenu(self, name, data or {})
-
-  -- prepare network data
-  local netdata = {
-    options = {},
-    title = menu.title,
-    css = menu.css
-  }
-
-  -- titles
-  for k,v in pairs(menu.options) do
-    -- compute description
-    local desc = v[3]
-    if type(desc) == "function" then
-      desc = desc(self, v[4])
-    elseif not desc then
-      desc = ""
-    end
-
-    netdata.options[k] = {v[1], desc} -- title, description
-  end
+  menu:initialize()
+  vRP.EXT.GUI:buildMenu(menu)
 
   -- add to stack, mark as current
   table.insert(self.menu_stack, menu)
   menu.stack_index = #self.menu_stack
 
   -- open client menu
-  vRP.EXT.GUI.remote._openMenu(self.source, netdata)
+  vRP.EXT.GUI.remote._openMenu(self.source, menu:serializeNet())
 
   -- trigger close on previous menu if exists
   local size = #self.menu_stack
@@ -156,12 +164,14 @@ function GUI.User:closeMenu(menu)
   end
 end
 
--- close and re-open current menu
+-- close and rebuild current menu (no remove)
 function GUI.User:actualizeMenu()
   local menu = self:getMenu()
   if menu then
-    self:closeMenu(menu)
-    self:openMenu(menu.name, menu.data)
+    menu:triggerClose()
+    menu:initialize()
+    vRP.EXT.GUI:buildMenu(menu)
+    vRP.EXT.GUI.remote._openMenu(self.source, menu:serializeNet())
   end
 end
 
@@ -229,21 +239,14 @@ function GUI:registerMenuBuilder(name, builder)
 end
 
 -- build a menu
---- name: menu name type
---- data: custom data table (must not be modified afterwards)
--- return built menu
-function GUI:buildMenu(user, name, data)
-  local menu = Menu(user, name, htmlEntities.encode("<"..name..">"), data)
-
-  local mbuilders = self.menu_builders[name]
+function GUI:buildMenu(menu)
+  local mbuilders = self.menu_builders[menu.name]
 
   if mbuilders then
     for _,builder in ipairs(mbuilders) do -- trigger builders
       builder(menu)
     end
   end
-
-  return menu
 end
 
 -- EVENT
