@@ -75,7 +75,7 @@ function GUI.User:__construct()
 end
 
 -- return current menu or nil
-function GUI.User:getCurrentMenu()
+function GUI.User:getMenu()
   local size = #self.menu_stack 
   if size > 0 then
     return self.menu_stack[size]
@@ -129,7 +129,7 @@ end
 -- close menu
 -- menu: (optional) menu to close, if nil, will close the current menu
 function GUI.User:closeMenu(menu)
-  if not menu then menu = self:getCurrentMenu() end
+  if not menu then menu = self:getMenu() end
 
   if menu and self.menu_stack[menu.stack_index] == menu then -- valid menu
     menu:triggerClose() -- close event
@@ -158,7 +158,7 @@ end
 
 -- close and re-open current menu
 function GUI.User:actualizeMenu()
-  local menu = self:getCurrentMenu()
+  local menu = self:getMenu()
   if menu then
     self:closeMenu(menu)
     self:openMenu(menu.name, menu.data)
@@ -312,7 +312,7 @@ function GUI.tunnel:triggerMenuOption(id, mod)
   local user = vRP.users_by_source[source]
 
   if user then
-    local menu = user:getCurrentMenu()
+    local menu = user:getMenu()
     if menu then
       menu:triggerOption(id, tonumber(mod))
     end

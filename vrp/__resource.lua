@@ -16,6 +16,7 @@ server_scripts{
   "modules/survival.lua",
   "modules/identity.lua",
   "modules/money.lua",
+  "modules/atm.lua",
   --[[
   "modules/inventory.lua",
   "modules/business.lua",
@@ -28,7 +29,6 @@ server_scripts{
 
   -- basic implementations
   "modules/basic_phone.lua",
-  "modules/basic_atm.lua",
   "modules/basic_market.lua",
   "modules/basic_gunshop.lua",
   "modules/basic_garage.lua",
