@@ -6,7 +6,7 @@ function EventDispatcher:__construct()
   self.event_listeners = {}
 end
 
--- listen event
+-- listen event for a specific callback
 function EventDispatcher:listen(name, callback)
   local listeners = self.event_listeners[name]
   if not listeners then -- create

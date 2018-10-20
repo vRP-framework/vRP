@@ -18,8 +18,8 @@ server_scripts{
   "modules/money.lua",
   "modules/atm.lua",
   "modules/phone.lua",
-  --[[
   "modules/inventory.lua",
+  --[[
   "modules/business.lua",
   "modules/item_transformer.lua",
   "modules/police.lua",

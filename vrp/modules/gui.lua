@@ -100,7 +100,7 @@ function GUI.User:getMenu()
 end
 
 -- open menu (build and open menu)
--- data: (optional) must not be modified afterwards 
+-- data: (optional) menu build data 
 -- return menu
 function GUI.User:openMenu(name, data)
   local menu = Menu(self, name, data or {})

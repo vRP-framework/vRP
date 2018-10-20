@@ -15,50 +15,66 @@ function Inventory.User:getInventory()
   return self.cdata.inventory
 end
 
-function Inventory.User:giveItem(fullid,amount,no_notify)
+-- try to give an item
+-- dry: if passed/true, will not affect
+-- return true on success or false
+function Inventory.User:tryGiveItem(fullid,amount,dry,no_notify)
   if amount > 0 then
     local inventory = self:getInventory()
+    local citem = vRP.EXT.Inventory:computeItem(fullid)
+    if citem then
+      local i_amount = inventory[fullid] or 0
 
-    local i_amount = inventory[fullid] or 0
-    inventory[fullid] = i_amount+amount
+      -- weight check
+      local new_weight = self:getInventoryWeight()+citem.weight*amount
+      if new_weight <= self:getInventoryMaxWeight() then
+        if not dry then
+          inventory[fullid] = i_amount+amount
 
-    -- notify
-    if not no_notify then
-      local citem = vRP.EXT.Inventory:computeItem(fullid)
-      if citem then
-        vRP.EXT.Base.remote._notify(self.source,lang.inventory.give.received({citem.name,amount}))
+          -- notify
+          if not no_notify then
+            vRP.EXT.Base.remote._notify(self.source,lang.inventory.give.received({citem.name,amount}))
+          end
+        end
+
+        return true
       end
     end
   end
+
+  return false
 end
 
--- try to get an item from inventory
+-- try to take an item from inventory
+-- dry: if passed/true, will not affect
 -- return true on success or false
-function Inventory.User:tryGetItem(fullid,amount,no_notify)
+function Inventory.User:tryTakeItem(fullid,amount,dry,no_notify)
   if amount > 0 then
     local inventory = self:getInventory()
 
     local i_amount = inventory[fullid] or 0
     if i_amount >= amount then -- add to entry
-      local new_amount = i_amount-amount
-      if new_amount > 0 then
-        inventory[fullid] = new_amount
-      else
-        inventory[fullid] = nil
-      end
+      if not dry then
+        local new_amount = i_amount-amount
+        if new_amount > 0 then
+          inventory[fullid] = new_amount
+        else
+          inventory[fullid] = nil
+        end
 
-      -- notify
-      if no_notify then
-        local citem = vRP.EXT.Inventory:computeItem(fullid)
-        if citem then
-          vRP.EXT.Base.remote._notify(self.source,lang.inventory.give.given({citem.name,amount}))
+        -- notify
+        if no_notify then
+          local citem = vRP.EXT.Inventory:computeItem(fullid)
+          if citem then
+            vRP.EXT.Base.remote._notify(self.source,lang.inventory.give.given({citem.name,amount}))
+          end
         end
       end
 
       return true
     else
       -- notify
-      if no_notify then
+      if not dry and no_notify then
         local citem = vRP.EXT.Inventory:computeItem(fullid)
         if citem then
           vRP.EXT.Base.remote._notify(self.source,lang.inventory.missing({citem.name,amount-i_amount}))
@@ -93,6 +109,19 @@ function Inventory.User:clearInventory()
   self.cdata.inventory = {}
 end
 
+-- open a chest by identifier
+-- cb_close(id): called when the chest is closed (optional)
+-- cb_in(chest_id, fullid, amount): called when an item is added (optional)
+-- cb_out(chest_id, fullid, amount): called when an item is taken (optional)
+function Inventory.User:openChest(id, max_weight, cb_close, cb_in, cb_out)
+  if not vRP.EXT.Inventory.chests[id] then -- not already loaded
+    local chest = vRP.EXT.Inventory:loadChest(id)
+    self:openMenu("chest", {id = id, chest = chest, max_weight = max_weight, cb_close = cb_close, cb_in = cb_in, cb_out = cb_out})
+  else
+    vRP.EXT.Base.remote._notify(self.source, lang.inventory.chest.already_opened())
+  end
+end
+
 -- STATIC
 
 -- PRIVATE METHODS
@@ -114,11 +143,10 @@ local function menu_inventory_item(self)
       -- prompt number
       local amount = parseInt(user:prompt(lang.inventory.give.prompt({user:getItemAmount(fullid)}),""))
 
-      -- weight check
-      local new_weight = nuser:getInventoryWeight()+citem.weight*amount
-      if new_weight <= nuser:getInventoryMaxWeight() then
-        if user:tryGetItem(fullid,amount) then
-          nuser:giveItem(fullid,amount)
+      if nuser:tryGiveItem(fullid,amount,true) then
+        if user:tryTakeItem(fullid,amount,true) then
+          user:tryTakeItem(fullid, amount)
+          nuser:tryGiveItem(fullid, amount)
           user:actualizeMenu()
 
           vRP.EXT.Base.remote._playAnim(user.source,true,{{"mp_common","givetake1_a",1}},false)
@@ -142,7 +170,7 @@ local function menu_inventory_item(self)
 
     -- prompt number
     local amount = parseInt(user:prompt(lang.inventory.trash.prompt({user:getItemAmount(fullid)}),""))
-    if user:tryGetItem(fullid,amount,true) then
+    if user:tryGetItem(fullid,amount,false,true) then
       user:actualizeMenu()
       vRP.EXT.Base.remote._notify(user.source,lang.inventory.trash.done({citem.name,amount}))
       vRP.EXT.Base.remote._playAnim(user.source,true,{{"pickup_object","pickup_low",1}},false)
@@ -155,7 +183,7 @@ local function menu_inventory_item(self)
     menu.css.header_color="rgba(0,125,255,0.75)"
 
     local user = menu.user
-    local citem = self:computeItem(menu.data.fullid)
+    local citem = self:cogetInventoryWeight()
     if citem then
       menu.title = htmlEntities.encode(citem.name.." ("..user:getItemAmount(menu.data.fullid)..")")
     end
@@ -193,12 +221,141 @@ local function menu_inventory(self)
     local inventory = user:getInventory()
 
     -- add each item to the menu
-    for fullid, amount in pairs(data.inventory) do 
+    for fullid, amount in pairs(user:getInventory()) do 
       local citem = self:computeItem(fullid)
       if citem then
         menu:addOption(htmlEntities.encode(citem.name), m_item, lang.inventory.iteminfo({amount,citem.description, string.format("%.2f",citem.weight)}), fullid)
       end
     end
+  end)
+end
+
+-- menu: chest take
+local function menu_chest_take(self)
+  local function m_take(menu, fullid)
+    local user = menu.user
+    local chest = menu.data.chest
+
+    local i_amount = chest[fullid] or 0
+    local amount = parseInt(user:prompt(lang.inventory.chest.take.prompt({i_amount}), ""))
+    if amount >= 0 and amount <= i_amount then
+      if user:tryGiveItem(fullid, amount) then
+        local new_amount = i_amount-amount
+
+        if new_amount > 0 then
+          chest[fullid] = new_amount
+        else
+          chest[fullid] = nil
+        end
+
+        if menu.data.cb_out then menu.data.cb_out(menu.data.id, fullid, amount) end
+
+        user:actualizeMenu()
+      else
+        vRP.EXT.Base.remote._notify(user.source,lang.inventory.full())
+      end
+    else
+      vRP.EXT.Base.remote._notify(user.source,lang.common.invalid_value())
+    end
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("chest.take", function(menu)
+    menu.title = lang.inventory.chest.take.title()
+    menu.css.header_color = "rgba(0,255,125,0.75)"
+
+    -- add weight info
+    local weight = self:computeItemsWeight(menu.data.chest)
+    local hue = math.floor(math.max(125*(1-weight/menu.data.max_weight), 0))
+    menu:addOption("<div class=\"dprogressbar\" data-value=\""..string.format("%.2f",weight/menu.data.max_weight).."\" data-color=\"hsl("..hue..",100%,50%)\" data-bgcolor=\"hsl("..hue..",100%,25%)\" style=\"height: 12px; border: 3px solid black;\"></div>", nil, lang.inventory.info_weight({string.format("%.2f",weight),menu.data.max_weight}))
+
+    -- add chest items
+    for fullid,amount in pairs(menu.data.chest) do
+      local citem = self:computeItem(fullid)
+      menu:addOption(htmlEntities.encode(citem.name), m_take, lang.inventory.iteminfo({amount,citem.description,string.format("%.2f", citem.weight)}), fullid)
+    end
+  end)
+end
+
+-- menu: chest put
+local function menu_chest_put(self)
+  local function m_put(menu, fullid)
+    local user = menu.user
+    local chest = menu.data.chest
+
+    local citem = self:computeItem(fullid)
+
+    if citem then
+      local i_amount = user:getItemAmount(fullid)
+      local amount = parseInt(user:prompt(lang.inventory.chest.put.prompt({i_amount}), ""))
+      if amount >= 0 and amount <= i_amount and user:tryTakeItem(fullid, amount, true) then
+        local new_amount = chest[fullid]+amount
+
+        -- chest weight check
+        local new_weight = self:computeItemsWeight(chest)+citem.weight*amount
+        if new_weight <= menu.data.max_weight then
+          if new_amount > 0 then
+            chest[fullid] = new_amount
+          else
+            chest[fullid] = nil
+          end
+
+          if menu.data.cb_in then menu.data.cb_in(menu.data.id, fullid, amount) end
+
+          user:tryTakeItem(fullid, amount)
+          user:actualizeMenu()
+        else
+          vRP.EXT.Base.remote._notify(user.source,lang.inventory.chest.full())
+        end
+      else
+        vRP.EXT.Base.remote._notify(user.source,lang.common.invalid_value())
+      end
+    end
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("chest.put", function(menu)
+    menu.title = lang.inventory.chest.put.title()
+    menu.css.header_color = "rgba(0,255,125,0.75)"
+
+    -- add weight info
+    local weight = menu.user:getInventoryWeight()
+    local max_weight = menu.user:getInventoryMaxWeight()
+    local hue = math.floor(math.max(125*(1-weight/max_weight), 0))
+    menu:addOption("<div class=\"dprogressbar\" data-value=\""..string.format("%.2f",weight/max_weight).."\" data-color=\"hsl("..hue..",100%,50%)\" data-bgcolor=\"hsl("..hue..",100%,25%)\" style=\"height: 12px; border: 3px solid black;\"></div>", nil, lang.inventory.info_weight({string.format("%.2f",weight),max_weight}))
+
+    -- add user items
+    for fullid,amount in pairs(menu.user:getInventory()) do
+      local citem = self:computeItem(fullid)
+      menu:addOption(htmlEntities.encode(citem.name), m_put, lang.inventory.iteminfo({amount,citem.description,string.format("%.2f", citem.weight)}), fullid)
+    end
+  end)
+end
+
+-- menu: chest
+local function menu_chest(self)
+  local function m_take(menu)
+    menu.user:openMenu("chest.take", menu.data) -- pass menu chest data
+  end
+
+  local function m_put(menu)
+    menu.user:openMenu("chest.put", menu.data) -- pass menu chest data
+  end
+
+  local function e_remove(menu)
+    if menu.data.cb_close then
+      menu.data.cb_close(menu.data.id)
+    end
+
+    self:unloadChest(menu.data.id)
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("chest", function(menu)
+    menu.title = lang.inventory.chest.title()
+    menu.css.header_color="rgba(0,255,125,0.75)"
+
+    menu:addOption(lang.inventory.chest.take.title(), m_take)
+    menu:addOption(lang.inventory.chest.put.title(), m_put)
+
+    menu:listen("remove", e_remove)
   end)
 end
 
@@ -208,12 +365,18 @@ function Inventory:__construct()
   vRP.Extension.__construct(self)
 
   self.cfg = module("cfg/inventory")
-  self.items = {}
+  self.items = {} -- item definitions
+  self.computed_items = {} -- computed item definitions
+
+  self.chests = {}
 
   -- menu
 
   menu_inventory_item(self)
   menu_inventory(self)
+  menu_chest(self)
+  menu_chest_take(self)
+  menu_chest_put(self)
 
   local function m_inventory(menu)
     menu.user:openMenu("inventory")
@@ -242,61 +405,98 @@ function Inventory:parseItem(fullid)
   return splitString(fullid,"|")
 end
 
+-- compute item definition (cached)
 -- return computed item or nil
--- computed item
+-- computed item {}
 --- name
 --- description
 --- weight
 --- menu_builder: can be nil
 --- args: parametric args
 function Inventory:computeItem(fullid)
-  local args = self:parseItem(fullid)
-  local item = self.items[args[1]]
-  if item then
-    -- name
-    local name
-    if type(item.name) == "string" then
-      name = item.name
-    elseif item.name then
-      name = item.name(args)
+  local citem = self.computed_items[fullid]
+
+  if not citem then -- compute
+    local args = self:parseItem(fullid)
+    local item = self.items[args[1]]
+    if item then
+      -- name
+      local name
+      if type(item.name) == "string" then
+        name = item.name
+      elseif item.name then
+        name = item.name(args)
+      end
+
+      if not name then name = fullid end
+
+      -- description
+      local desc
+      if type(item.description) == "string" then
+        desc = item.description
+      elseif item.description then
+        desc = item.description(args)
+      end
+
+      if not desc then desc = "" end
+
+      -- weight
+      local weight
+      if type(item.weight) == "number" then
+        weight = item.weight
+      elseif item.weight then
+        weight = item.weight(args)
+      end
+
+      if not weight then weight = 0 end
+
+      citem = {name=name, description=desc, weight=weight, menu_builder = item.menu_builder, args = args}
+      self.computed_items[fullid] = citem
     end
-
-    if not name then name = fullid end
-
-    -- description
-    local desc
-    if type(item.description) == "string" then
-      desc = item.description
-    elseif item.description then
-      desc = item.description(args)
-    end
-
-    if not desc then desc = "" end
-
-    -- weight
-    local weight
-    if type(item.weight) == "number" then
-      weight = item.weight
-    elseif item.weight then
-      weight = item.weight(args)
-    end
-
-    if not weight then weight = 0 end
-
-    return {name=name, description=desc, weight=weight, menu_builder = item.menu_builder, args = args}
   end
+
+  return citem
 end
 
 -- compute weight of a list of items (in inventory/chest format)
 function Inventory:computeItemsWeight(items)
   local weight = 0
 
-  for fullid, item in pairs(items) do
+  for fullid, amount in pairs(items) do
     local citem = self:computeItem(fullid)
-    weight = weight+(citem and citem.weight or 0)*item.amount
+    weight = weight+(citem and citem.weight or 0)*amount
   end
 
   return weight
+end
+
+-- load global chest
+-- id: identifier (string)
+-- return chest
+function Inventory:loadChest(id)
+  local chest = self.chests[id]
+  if not chest then
+    local sdata = vRP:getGData("vRP:chest:"..id)
+    if sdata then
+      chest = msgpack.unpack(sdata)
+    end
+
+    if not chest then chest = {} end
+
+    self.chests[id] = chest
+  end
+
+  return chest
+end
+
+-- unload global chest
+-- id: identifier (string)
+function Inventory:unloadChest(id)
+  local chest = self.chests[id]
+  if chest then
+    vRP:setGData("vRP:chest:"..id, msgpack.pack(chest))
+    self.chests[id] = nil
+  end
 end
 
 -- EVENT
@@ -308,183 +508,7 @@ function Inventory.event:characterLoad(user)
   end
 end
 
--- INVENTORY MENU
-
--- open player inventory
-function vRP.openInventory(source)
-  local user_id = vRP.getUserId(source)
-
-  if user_id then
-    local data = vRP.getUserDataTable(user_id)
-    if data then
-    end
-  end
-end
-
--- CHEST SYSTEM
-
-local chests = {}
-
--- build a menu from a list of items and bind a callback(idname)
-local function build_itemlist_menu(name, items, cb)
-  local menu = {name=name, css={top="75px",header_color="rgba(0,255,125,0.75)"}}
-
-  local kitems = {}
-
-  -- choice callback
-  local choose = function(player,choice)
-    local idname = kitems[choice]
-    if idname then
-      cb(idname)
-    end
-  end
-
-  -- add each item to the menu
-  for k,v in pairs(items) do 
-    local name,description,weight = vRP.getItemDefinition(k)
-    if name then
-      kitems[name] = k -- reference item by display name
-      menu[name] = {choose,lang.inventory.iteminfo({v.amount,description,string.format("%.2f", weight)})}
-    end
-  end
-
-  return menu
-end
-
--- open a chest by name
--- cb_close(): called when the chest is closed (optional)
--- cb_in(idname, amount): called when an item is added (optional)
--- cb_out(idname, amount): called when an item is taken (optional)
-function vRP.openChest(source, name, max_weight, cb_close, cb_in, cb_out)
-  local user_id = vRP.getUserId(source)
-  if user_id then
-    local data = vRP.getUserDataTable(user_id)
-    if data.inventory then
-      if not chests[name] then
-        local close_count = 0 -- used to know when the chest is closed (unlocked)
-
-        -- load chest
-        local chest = {max_weight = max_weight}
-        chests[name] = chest 
-        local cdata = vRP.getSData("chest:"..name)
-        chest.items = json.decode(cdata) or {} -- load items
-
-        -- open menu
-        local menu = {name=lang.inventory.chest.title(), css={top="75px",header_color="rgba(0,255,125,0.75)"}}
-        -- take
-        local cb_take = function(idname)
-          local citem = chest.items[idname]
-          local amount = vRP.prompt(source, lang.inventory.chest.take.prompt({citem.amount}), "")
-          amount = parseInt(amount)
-          if amount >= 0 and amount <= citem.amount then
-            -- take item
-
-            -- weight check
-            local new_weight = vRP.getInventoryWeight(user_id)+vRP.getItemWeight(idname)*amount
-            if new_weight <= vRP.getInventoryMaxWeight(user_id) then
-              vRP.giveInventoryItem(user_id, idname, amount, true)
-              citem.amount = citem.amount-amount
-
-              if citem.amount <= 0 then
-                chest.items[idname] = nil -- remove item entry
-              end
-
-              if cb_out then cb_out(idname,amount) end
-
-              -- actualize by closing
-              vRP.closeMenu(source)
-            else
-              vRPclient._notify(source,lang.inventory.full())
-            end
-          else
-            vRPclient._notify(source,lang.common.invalid_value())
-          end
-        end
-
-        local ch_take = function(player, choice)
-          local submenu = build_itemlist_menu(lang.inventory.chest.take.title(), chest.items, cb_take)
-          -- add weight info
-          local weight = vRP.computeItemsWeight(chest.items)
-          local hue = math.floor(math.max(125*(1-weight/max_weight), 0))
-          submenu["<div class=\"dprogressbar\" data-value=\""..string.format("%.2f",weight/max_weight).."\" data-color=\"hsl("..hue..",100%,50%)\" data-bgcolor=\"hsl("..hue..",100%,25%)\" style=\"height: 12px; border: 3px solid black;\"></div>"] = {function()end, lang.inventory.info_weight({string.format("%.2f",weight),max_weight})}
-
-
-          submenu.onclose = function()
-            close_count = close_count-1
-            vRP.openMenu(player, menu)
-          end
-          close_count = close_count+1
-          vRP.openMenu(player, submenu)
-        end
-
-
-        -- put
-        local cb_put = function(idname)
-          local amount = vRP.prompt(source, lang.inventory.chest.put.prompt({vRP.getInventoryItemAmount(user_id, idname)}), "")
-          amount = parseInt(amount)
-
-          -- weight check
-          local new_weight = vRP.computeItemsWeight(chest.items)+vRP.getItemWeight(idname)*amount
-          if new_weight <= max_weight then
-            if amount >= 0 and vRP.tryGetInventoryItem(user_id, idname, amount, true) then
-              local citem = chest.items[idname]
-
-              if citem ~= nil then
-                citem.amount = citem.amount+amount
-              else -- create item entry
-                chest.items[idname] = {amount=amount}
-              end
-
-              -- callback
-              if cb_in then cb_in(idname,amount) end
-
-              -- actualize by closing
-              vRP.closeMenu(source)
-            end
-          else
-            vRPclient._notify(source,lang.inventory.chest.full())
-          end
-        end
-
-        local ch_put = function(player, choice)
-          local submenu = build_itemlist_menu(lang.inventory.chest.put.title(), data.inventory, cb_put)
-          -- add weight info
-          local weight = vRP.computeItemsWeight(data.inventory)
-          local max_weight = vRP.getInventoryMaxWeight(user_id)
-          local hue = math.floor(math.max(125*(1-weight/max_weight), 0))
-          submenu["<div class=\"dprogressbar\" data-value=\""..string.format("%.2f",weight/max_weight).."\" data-color=\"hsl("..hue..",100%,50%)\" data-bgcolor=\"hsl("..hue..",100%,25%)\" style=\"height: 12px; border: 3px solid black;\"></div>"] = {function()end, lang.inventory.info_weight({string.format("%.2f",weight),max_weight})}
-
-          submenu.onclose = function() 
-            close_count = close_count-1
-            vRP.openMenu(player, menu) 
-          end
-          close_count = close_count+1
-          vRP.openMenu(player, submenu)
-        end
-
-
-        -- choices
-        menu[lang.inventory.chest.take.title()] = {ch_take}
-        menu[lang.inventory.chest.put.title()] = {ch_put}
-
-        menu.onclose = function()
-          if close_count == 0 then -- close chest
-            -- save chest items
-            vRP.setSData("chest:"..name, json.encode(chest.items))
-            chests[name] = nil
-            if cb_close then cb_close() end -- close callback
-          end
-        end
-
-        -- open menu
-        vRP.openMenu(source, menu)
-      else
-        vRPclient._notify(source,lang.inventory.chest.already_opened())
-      end
-    end
-  end
-end
-
+--[[
 -- STATIC CHESTS
 
 local function build_client_static_chests(source)
@@ -523,4 +547,6 @@ AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
   end
 end)
 
+--]]
 
+vRP:registerExtension(Inventory)

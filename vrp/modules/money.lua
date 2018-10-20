@@ -38,11 +38,14 @@ function Money.User:giveWallet(amount)
 end
 
 -- try a payment (with wallet)
+-- dry: if passed/true, will not affect
 -- return true if debited or false
-function Money.User:tryPayment(amount)
+function Money.User:tryPayment(amount, dry)
   local money = self:getWallet()
   if amount >= 0 and money >= amount then
-    self:setWallet(money-amount)
+    if not dry then
+      self:setWallet(money-amount)
+    end
     return true
   else
     return false
@@ -50,12 +53,15 @@ function Money.User:tryPayment(amount)
 end
 
 -- try a withdraw (from bank)
+-- dry: if passed/true, will not affect
 -- return true if withdrawn or false
-function Money.User:tryWithdraw(amount)
+function Money.User:tryWithdraw(amount, dry)
   local money = self:getBank()
   if amount >= 0 and money >= amount then
-    self:setBank(money-amount)
-    self:giveWallet(amount)
+    if not dry then
+      self:setBank(money-amount)
+      self:giveWallet(amount)
+    end
     return true
   else
     return false
@@ -63,10 +69,13 @@ function Money.User:tryWithdraw(amount)
 end
 
 -- try a deposit
+-- dry: if passed/true, will not affect
 -- return true if deposited or false
-function Money.User:tryDeposit(amount)
-  if self:tryPayment(amount) then
-    self:giveBank(amount)
+function Money.User:tryDeposit(amount, dry)
+  if self:tryPayment(amount, dry) then
+    if not dry then
+      self:giveBank(amount)
+    end
     return true
   else
     return false
@@ -74,14 +83,15 @@ function Money.User:tryDeposit(amount)
 end
 
 -- try full payment (wallet + bank to complete payment)
+-- dry: if passed/true, will not affect
 -- return true if debited or false
-function Money.User:tryFullPayment(amount)
+function Money.User:tryFullPayment(amount, dry)
   local money = self:getWallet()
   if money >= amount then -- enough, simple payment
-    return self:tryPayment(amount)
+    return self:tryPayment(amount, dry)
   else  -- not enough, withdraw -> payment
-    if self:tryWithdraw(amount-money) then -- withdraw to complete amount
-      return self:tryPayment(amount)
+    if self:tryWithdraw(amount-money, dry) then -- withdraw to complete amount
+      return self:tryPayment(amount, dry)
     end
   end
 
