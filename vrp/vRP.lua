@@ -439,6 +439,11 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
             deferrals.done()
           else -- already connected
             self:log(user.name.." ("..user.endpoint..") re-joined (user_id = "..user.id..")")
+
+            self.users_by_source[user.source] = nil -- remove old entry
+            user.source = source -- update source
+            self.users_by_source[source] = user -- new entry
+
             -- reset first spawn
             user.spawns = 0
 
