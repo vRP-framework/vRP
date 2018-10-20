@@ -69,6 +69,12 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * OOP
 * aptitude/item permissions using permission function
 
+== vRP 2 dev' phases
+* refactoring
+* improvements
+* documentation
+* client-side optimizations
+
 == NOTES
 === Homes
 
