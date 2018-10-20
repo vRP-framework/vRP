@@ -38,15 +38,17 @@ local m_list_css = [[
 }
 ]]
 
+local function m_list_close(menu)
+  vRP.EXT.GUI.remote._removeDiv(menu.user.source, "user_list")
+  menu.player_list = nil
+end
+
 local function m_list(menu)
   local user = menu.user
-  local GUI = vRP.EXT.GUI
 
   if user:hasPermission("player.list") then
     if menu.player_list then -- hide
-      menu:unlisten("close", menu.player_list)
-      menu.player_list = nil
-      GUI.remote._removeDiv(user.source, "user_list")
+      m_list_close(menu)
     else -- show
       local content = ""
       for id,user in pairs(vRP.users) do
@@ -57,15 +59,8 @@ local function m_list(menu)
         end
       end
 
-      menu.player_list = function(menu)
-        menu:unlisten("close", menu.player_list)
-        menu.player_list = nil
-        GUI.remote._removeDiv(user.source, "user_list")
-      end
-
-      GUI.remote._setDiv(user.source, "user_list", m_list_css, content)
-
-      menu:listen("close", menu.player_list)
+      vRP.EXT.GUI.remote._setDiv(user.source, "user_list", m_list_css, content)
+      menu.player_list = true
     end
   end
 end
@@ -346,6 +341,7 @@ function Admin:__construct()
     end
     if user:hasPermission("player.list") then
       menu:addOption("User list", m_list, "Show/hide user list.")
+      menu:listen("close", m_list_close)
     end
     if user:hasPermission("player.kick") then
       menu:addOption("Kick", m_kick)

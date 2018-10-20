@@ -19,6 +19,7 @@ server_scripts{
   "modules/atm.lua",
   "modules/phone.lua",
   "modules/inventory.lua",
+  "modules/aptitude.lua",
   --[[
   "modules/business.lua",
   "modules/item_transformer.lua",
@@ -26,7 +27,6 @@ server_scripts{
   "modules/home.lua",
   "modules/home_components.lua",
   "modules/mission.lua",
-  "modules/aptitude.lua",
 
   -- basic implementations
   "modules/basic_market.lua",

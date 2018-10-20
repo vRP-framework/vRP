@@ -1,8 +1,6 @@
 
--- define aptitude system (aka. education, skill system)
-
-local cfg = module("cfg/aptitudes")
 local lang = vRP.lang
+-- define aptitude system (AKA. education, skill system)
 
 -- exp notes:
 -- levels are defined by the amount of xp
@@ -10,74 +8,27 @@ local lang = vRP.lang
 -- total exp for a specific level, exp = step*lvl*(lvl+1)/2
 -- level for a specific exp amount, lvl = (sqrt(1+8*exp/step)-1)/2
 
-local exp_step = 5
+local Aptitude = class("Aptitude", vRP.Extension)
 
-local gaptitudes = {}
+-- SUBCLASS
 
-function vRP.defAptitudeGroup(group, title)
-  gaptitudes[group] = {_title = title}
-end
-
--- max_exp: -1 => infinite
-function vRP.defAptitude(group, aptitude, title, init_exp, max_exp)
-  local vgroup = gaptitudes[group]
-  if vgroup ~= nil then
-    vgroup[aptitude] = {title,init_exp,max_exp}
-  end
-end
-
-function vRP.getAptitudeDefinition(group, aptitude)
-  local vgroup = gaptitudes[group]
-  if vgroup ~= nil and aptitude ~= "_title" then
-    return vgroup[aptitude]
-  else
-    return nil
-  end
-end
-
-function vRP.getAptitudeGroupTitle(group)
-  if gaptitudes[group] ~= nil then
-    return gaptitudes[group]._title
-  else
-    return ""
-  end
-end
+Aptitude.User = class("User")
 
 -- return user aptitudes table
-function vRP.getUserAptitudes(user_id)
-  local data = vRP.getUserDataTable(user_id)
-  if data ~= nil then
-    if data.gaptitudes == nil then
-      data.gaptitudes = {}
-    end
-
-    -- init missing aptitudes
-    for k,v in pairs(gaptitudes) do
-      if data.gaptitudes[k] == nil then -- init group
-        data.gaptitudes[k] = {}
-      end
-
-      local group = data.gaptitudes[k]
-      for l,w in pairs(v) do
-        if l ~= "_title" and group[l] == nil then -- init aptitude exp
-          group[l] = w[2] -- init exp
-        end
-      end
-    end
-
-    return data.gaptitudes
-  else
-    return nil
-  end
+function Aptitude.User:getAptitudes()
+  return self.cdata.aptitudes
 end
 
-function vRP.varyExp(user_id, group, aptitude, amount)
-  local def = vRP.getAptitudeDefinition(group, aptitude)
-  local uaptitudes = vRP.getUserAptitudes(user_id)
-  if def ~= nil and uaptitudes ~= nil then
+function Aptitude.User:varyExp(group, aptitude, amount)
+  local Aptitude = vRP.EXT.Aptitude
+  local apt = Aptitude:getAptitude(group, aptitude)
+
+  if def then
+    local aptitudes = self:getAptitudes()
+
     -- apply variation
-    local exp = uaptitudes[group][aptitude]
-    local level = math.floor(vRP.expToLevel(exp)) -- save level before variation
+    local exp = aptitudes[group][aptitude]
+    local level = math.floor(Aptitude:expToLevel(exp)) -- save level before variation
 
     --- vary
     exp = exp+amount
@@ -85,110 +36,126 @@ function vRP.varyExp(user_id, group, aptitude, amount)
     if exp < 0 then exp = 0 
     elseif def[3] >= 0 and exp > def[3] then exp = def[3] end
 
-    uaptitudes[group][aptitude] = exp
+    aptitudes[group][aptitude] = exp
 
     -- info notify
-    local player = vRP.getUserSource(user_id)
-    if player ~= nil then
-      local group_title = vRP.getAptitudeGroupTitle(group)
-      local aptitude_title = def[1]
+    local group_title = Aptitude:getGroupTitle(group)
+    local aptitude_title = def[1]
 
-      --- exp
-      if amount < 0 then
-        vRPclient._notify(player,lang.aptitude.lose_exp({group_title,aptitude_title,-1*amount}))
-      elseif amount > 0 then
-        vRPclient._notify(player,lang.aptitude.earn_exp({group_title,aptitude_title,amount}))
-      end
-      --- level up/down
-      local new_level = math.floor(vRP.expToLevel(exp))
-      local diff = new_level-level
-      if diff < 0 then
-        vRPclient._notify(player,lang.aptitude.level_down({group_title,aptitude_title,new_level}))
-      elseif diff > 0 then
-        vRPclient._notify(player,lang.aptitude.level_up({group_title,aptitude_title,new_level}))
-      end
+    --- exp
+    if amount < 0 then
+      vRP.EXT.Base.remote._notify(self.source,lang.aptitude.lose_exp({group_title,aptitude_title,-1*amount}))
+    elseif amount > 0 then
+      vRP.EXT.Base.remote._notify(self.source,lang.aptitude.earn_exp({group_title,aptitude_title,amount}))
+    end
+    --- level up/down
+    local new_level = math.floor(Aptitude:expToLevel(exp))
+    local diff = new_level-level
+    if diff < 0 then
+      vRP.EXT.Base.remote._notify(self.source,lang.aptitude.level_down({group_title,aptitude_title,new_level}))
+    elseif diff > 0 then
+      vRP.EXT.Base.remote._notify(self.source,lang.aptitude.level_up({group_title,aptitude_title,new_level}))
     end
   end
 end
 
-function vRP.levelUp(user_id, group, aptitude)
-  local exp = vRP.getExp(user_id,group,aptitude)
-  local next_level = math.floor(vRP.expToLevel(exp))+1
-  local next_exp = vRP.levelToExp(next_level)
+function Aptitude.User:levelUp(group, aptitude)
+  local Aptitude = vRP.EXT.Aptitude
+
+  local exp = self:getExp(group,aptitude)
+  local next_level = math.floor(Aptitude:expToLevel(exp))+1
+  local next_exp = Aptitude:levelToExp(next_level)
   local add_exp = next_exp-exp
-  vRP.varyExp(user_id, group, aptitude, add_exp)
+  self:varyExp(group, aptitude, add_exp)
 end
 
-function vRP.levelDown(user_id, group, aptitude)
-  local exp = vRP.getExp(user_id,group,aptitude)
-  local prev_level = math.floor(vRP.expToLevel(exp))-1
-  local prev_exp = vRP.levelToExp(prev_level)
+function Aptitude.User:levelDown(group, aptitude)
+  local Aptitude = vRP.EXT.Aptitude
+
+  local exp = self:getExp(group,aptitude)
+  local prev_level = math.floor(Aptitude:expToLevel(exp))-1
+  local prev_exp = Aptitude:levelToExp(prev_level)
   local add_exp = prev_exp-exp
-  vRP.varyExp(user_id, group, aptitude, add_exp)
+  self:varyExp(group, aptitude, add_exp)
 end
 
-function vRP.getExp(user_id, group, aptitude)
-  local uaptitudes = vRP.getUserAptitudes(user_id)
-  if uaptitudes ~= nil then
-    local vgroup = uaptitudes[group]
-    if vgroup ~= nil then
-      return vgroup[aptitude] or 0
-    end
-  end
+function Aptitude.User:getExp(group, aptitude)
+  local aptitudes = self:getAptitudes()
 
-  return 0
-end
-
-function vRP.setExp(user_id, group, aptitude, amount)
-  local exp = vRP.getExp(user_id, group, aptitude)
-  vRP.varyExp(user_id, group, aptitude, amount-exp)
-end
-
--- return float
-function vRP.expToLevel(exp)
-  return (math.sqrt(1+8*exp/exp_step)-1)/2
-end
-
--- return integer
-function vRP.levelToExp(lvl)
-  return math.floor((exp_step*lvl*(lvl+1))/2)
-end
-
--- CONFIG
-
--- load config aptitudes
-for k,v in pairs(cfg.gaptitudes) do
-  vRP.defAptitudeGroup(k,v._title or "")
-  for l,w in pairs(v) do
-    if l ~= "_title" then
-      vRP.defAptitude(k,l,w[1],w[2],w[3])
-    end
+  local vgroup = aptitudes[group]
+  if vgroup then
+    return vgroup[aptitude]
   end
 end
 
--- MENU
+function Aptitude.User:setExp(group, aptitude, amount)
+  local exp = self:getExp(group, aptitude)
+  self:varyExp(group, aptitude, amount-exp)
+end
 
-local player_apts = {}
 
-local function ch_aptitude(player,choice)
-  -- display aptitudes
-  local user_id = vRP.getUserId(player)
-  if user_id then
-    if player_apts[player] then -- hide
-      player_apts[player] = nil
-      vRPclient._removeDiv(player,"user_aptitudes")
+-- METHODS
+
+function Aptitude:__construct()
+  vRP.Extension.__construct(self)
+
+  self.cfg = module("cfg/aptitudes") 
+  self.exp_step = 5
+
+  self.groups = {} -- aptitudes groups
+
+  -- load config aptitudes
+  for k,v in pairs(self.cfg.gaptitudes) do
+    self:defineGroup(k,v._title or "")
+    for l,w in pairs(v) do
+      if l ~= "_title" then
+        self:defineAptitude(k,l,w[1],w[2],w[3])
+      end
+    end
+  end
+
+  -- menu
+
+  local m_aptitude_css = [[
+.div_user_aptitudes{
+margin: auto;
+padding: 8px;
+width: 500px;
+margin-top: 80px;
+background: black;
+color: white;
+font-weight: bold;
+}
+
+.div_user_aptitudes .dprogressbar{
+width: 100%;
+height: 20px;
+}
+  ]]
+
+  local function m_aptitude_close(menu)
+    vRP.EXT.GUI.remote._removeDiv(menu.user.source, "user_aptitudes")
+    menu.aptitudes_opened = nil
+  end
+
+  local function m_aptitude(menu)
+    local user = menu.user
+
+    -- display aptitudes
+    if menu.aptitudes_opened then -- hide
+      m_aptitude_close(menu)
     else -- show
       local content = ""
-      local uaptitudes = vRP.getUserAptitudes(user_id)
-      for k,v in pairs(uaptitudes) do
+      local aptitudes = user:getAptitudes()
+      for k,v in pairs(aptitudes) do
         -- display group
-        content = content..lang.aptitude.display.group({vRP.getAptitudeGroupTitle(k)}).."<br />"
+        content = content..lang.aptitude.display.group({self:getGroupTitle(k)}).."<br />"
         for l,w in pairs(v) do
-          local def = vRP.getAptitudeDefinition(k,l)
+          local def = self:getAptitude(k,l)
           if def then
             -- display aptitude
-            local exp = uaptitudes[k][l]
-            local flvl = vRP.expToLevel(exp)
+            local exp = aptitudes[k][l]
+            local flvl = self:expToLevel(exp)
             local lvl = math.floor(flvl)
             local percent = math.floor((flvl-lvl)*100)
             content = content.."<div class=\"dprogressbar\" data-value=\""..(percent/100).."\" data-color=\"rgba(0,125,255,0.7)\" data-bgcolor=\"rgba(0,125,255,0.3)\">"..lang.aptitude.display.aptitude({def[1], exp, lvl, percent}).."</div>"
@@ -196,39 +163,80 @@ local function ch_aptitude(player,choice)
         end
       end
 
-      player_apts[player] = true
+      vRP.EXT.GUI.remote._setDiv(user.source,"user_aptitudes",m_aptitude_css, content)
+      menu.aptitudes_opened = true
+    end
+  end
 
-      local css = [[
-.div_user_aptitudes{
-  margin: auto;
-  padding: 8px;
-  width: 500px;
-  margin-top: 80px;
-  background: black;
-  color: white;
-  font-weight: bold;
-}
+  vRP.EXT.GUI:registerMenuBuilder("main", function(menu)
+    menu:addOption(lang.aptitude.title(), m_aptitude, lang.aptitude.description())
+    menu:listen("close", m_aptitude_close)
+  end)
+end
 
-.div_user_aptitudes .dprogressbar{
-  width: 100%;
-  height: 20px;
-}
-      ]]
+function Aptitude:defineGroup(group, title)
+  self.groups[group] = {_title = title}
+end
 
-      vRPclient._setDiv(player,"user_aptitudes",css, content)
+-- max_exp: -1 => infinite
+function Aptitude:defineAptitude(group, aptitude, title, init_exp, max_exp)
+  local vgroup = self.groups[group]
+  if vgroup then
+    vgroup[aptitude] = {title,init_exp,max_exp}
+  end
+end
+
+function Aptitude:getAptitude(group, aptitude)
+  local vgroup = self.groups[group]
+  if vgroup then
+    return vgroup[aptitude]
+  end
+end
+
+function Aptitude:getGroupTitle(group)
+  local vgroup = self.groups[group]
+  if vgroup then
+    return vgroup._title
+  else
+    return ""
+  end
+end
+
+-- return float
+function Aptitude:expToLevel(exp)
+  return (math.sqrt(1+8*exp/self.exp_step)-1)/2
+end
+
+-- return integer
+function Aptitude:levelToExp(lvl)
+  return math.floor((self.exp_step*lvl*(lvl+1))/2)
+end
+
+-- EVENT
+Aptitude.event = {}
+
+function Aptitude.event:characterLoad(user)
+  -- init aptitudes
+
+  if not user.cdata.aptitudes then
+    user.cdata.aptitudes = {}
+  end
+
+  local aptitudes = user.cdata.aptitudes
+
+  for gid,group in pairs(self.groups) do
+    if not aptitudes[gid] then -- each group
+      aptitudes[gid] = {}
+    end
+
+    local gaptitudes = aptitudes[gid]
+
+    for id,def in pairs(group) do -- each aptitude
+      if id ~= "_title" and not gaptitudes[id] then
+        gaptitudes[id] = def[2] -- init exp
+      end
     end
   end
 end
 
--- add choices to the menu
-vRP.registerMenuBuilder("main", function(add, data)
-  local user_id = vRP.getUserId(data.player)
-  if user_id then
-    local choices = {}
-    choices[lang.aptitude.title()] = {ch_aptitude,lang.aptitude.description()}
-
-    add(choices)
-  end
-end)
-
-
+vRP:registerExtension(Aptitude)
