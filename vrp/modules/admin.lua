@@ -234,16 +234,12 @@ local function m_givemoney(menu)
 end
 
 local function m_giveitem(menu)
-  --[[
-  local user_id = vRP.getUserId(player)
-  if user_id then
-    local idname = vRP.prompt(player,"Id name:","")
-    idname = idname or ""
-    local amount = vRP.prompt(player,"Amount:","")
-    amount = parseInt(amount)
-    vRP.giveInventoryItem(user_id, idname, amount,true)
+  local user = menu.user
+  local fullid = user:prompt("Full id:","") or ""
+  local amount = parseInt(user:prompt("Amount:",""))
+  if not user:tryGiveItem(fullid, amount) then
+    vRP.EXT.Base.remote._notify(user.source, "invalid item or inventory full")
   end
-  --]]
 end
 
 local function m_calladmin(menu)
@@ -277,23 +273,39 @@ local function m_calladmin(menu)
   end
 end
 
+local m_display_custom_css = [[
+.div_customization_display{ 
+  margin: auto; 
+  padding: 8px; 
+  width: 500px; 
+  margin-top: 80px; 
+  background: black; 
+  color: white; 
+  font-weight: bold;
+}
+]]
+
+local function m_display_custom_close(menu)
+  menu.custom_display = nil
+  vRP.EXT.GUI.remote._removeDiv(menu.user.source,"customization_display")
+end
+
 local function m_display_custom(menu)
   local user = menu.user
-  --[[
-  local custom = vRPclient.getCustomization(player)
-  if player_customs[player] then -- hide
-    player_customs[player] = nil
-    vRPclient._removeDiv(player,"customization")
+
+
+  if menu.custom_display then -- hide
+    m_display_custom_close(menu)
   else -- show
+    local custom = vRP.EXT.PlayerState.remote.getCustomization(user.source)
     local content = ""
     for k,v in pairs(custom) do
       content = content..k.." => "..json.encode(v).."<br />" 
     end
 
-    player_customs[player] = true
-    vRPclient._setDiv(player,"customization",".div_customization{ margin: auto; padding: 8px; width: 500px; margin-top: 80px; background: black; color: white; font-weight: bold; ", content)
+    menu.custom_display = true
+    vRP.EXT.GUI.remote._setDiv(user.source,"customization_display", m_display_custom_css, content)
   end
-  --]]
 end
 
 local function m_noclip(menu)
@@ -396,6 +408,7 @@ function Admin:__construct()
     end
     if user:hasPermission("player.display_custom") then
       menu:addOption("Display customization", m_display_custom)
+      menu:listen("close", m_display_custom_close)
     end
   end)
 
