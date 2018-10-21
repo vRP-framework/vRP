@@ -63,7 +63,7 @@ function Inventory.User:tryTakeItem(fullid,amount,dry,no_notify)
         end
 
         -- notify
-        if no_notify then
+        if not no_notify then
           local citem = vRP.EXT.Inventory:computeItem(fullid)
           if citem then
             vRP.EXT.Base.remote._notify(self.source,lang.inventory.give.given({citem.name,amount}))
@@ -74,7 +74,7 @@ function Inventory.User:tryTakeItem(fullid,amount,dry,no_notify)
       return true
     else
       -- notify
-      if not dry and no_notify then
+      if not dry and not no_notify then
         local citem = vRP.EXT.Inventory:computeItem(fullid)
         if citem then
           vRP.EXT.Base.remote._notify(self.source,lang.inventory.missing({citem.name,amount-i_amount}))
@@ -88,9 +88,7 @@ end
 
 -- get item amount in the inventory
 function Inventory.User:getItemAmount(fullid)
-  local data = vRP.getUserDataTable(user_id)
   local inventory = self:getInventory()
-
   return inventory[fullid] or 0
 end
 
@@ -147,7 +145,12 @@ local function menu_inventory_item(self)
         if user:tryTakeItem(fullid,amount,true) then
           user:tryTakeItem(fullid, amount)
           nuser:tryGiveItem(fullid, amount)
-          user:actualizeMenu()
+
+          if user:getItemAmount(fullid) > 0 then
+            user:actualizeMenu()
+          else
+            user:closeMenu(menu)
+          end
 
           vRP.EXT.Base.remote._playAnim(user.source,true,{{"mp_common","givetake1_a",1}},false)
           vRP.EXT.Base.remote._playAnim(nuser.source,true,{{"mp_common","givetake2_a",1}},false)
@@ -170,8 +173,13 @@ local function menu_inventory_item(self)
 
     -- prompt number
     local amount = parseInt(user:prompt(lang.inventory.trash.prompt({user:getItemAmount(fullid)}),""))
-    if user:tryGetItem(fullid,amount,false,true) then
-      user:actualizeMenu()
+    if user:tryTakeItem(fullid,amount,false,true) then
+      if user:getItemAmount(fullid) > 0 then
+        user:actualizeMenu()
+      else
+        user:closeMenu(menu)
+      end
+
       vRP.EXT.Base.remote._notify(user.source,lang.inventory.trash.done({citem.name,amount}))
       vRP.EXT.Base.remote._playAnim(user.source,true,{{"pickup_object","pickup_low",1}},false)
     else
@@ -183,7 +191,7 @@ local function menu_inventory_item(self)
     menu.css.header_color="rgba(0,125,255,0.75)"
 
     local user = menu.user
-    local citem = self:cogetInventoryWeight()
+    local citem = self:computeItem(menu.data.fullid)
     if citem then
       menu.title = htmlEntities.encode(citem.name.." ("..user:getItemAmount(menu.data.fullid)..")")
     end
@@ -365,6 +373,7 @@ function Inventory:__construct()
   vRP.Extension.__construct(self)
 
   self.cfg = module("cfg/inventory")
+
   self.items = {} -- item definitions
   self.computed_items = {} -- computed item definitions
 
@@ -385,6 +394,12 @@ function Inventory:__construct()
   vRP.EXT.GUI:registerMenuBuilder("main", function(menu)
     menu:addOption(lang.inventory.title(), m_inventory, lang.inventory.description())
   end)
+
+  -- define config items
+  local cfg_items = module("cfg/items")
+  for id,v in pairs(cfg_items.items) do
+    self:defineItem(id,v[1],v[2],v[3],v[4])
+  end
 end
 
 -- define an inventory item (parametric or plain text data)
