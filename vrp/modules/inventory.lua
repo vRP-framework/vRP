@@ -412,6 +412,12 @@ end
 -- genfunction are functions returning a correct value as: function(args, ...)
 -- where args is a list of {base_idname,args...}
 function Inventory:defineItem(id,name,description,menu_builder,weight)
+  if self.items[id] then
+    self:log("WARNING: re-defined item \""..id.."\"")
+  else
+    self:log("defined item \""..id.."\"")
+  end
+
   self.items[id] = {name=name,description=description,menu_builder=menu_builder,weight=weight}
 end
 
