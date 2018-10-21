@@ -69,6 +69,10 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * OOP
 * aptitude/item permissions using permission function
 * merge gunshop to market (market needs to be more customizable)
+* remove client-side config file, instead use .client property in server files, sent over the network
+* fragment some big modules like GUI
+* remove items package config files
+* lang client property sent over the network for client translations
 
 == vRP 2 dev' phases
 * refactoring
