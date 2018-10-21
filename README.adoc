@@ -68,6 +68,7 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * properly stacked menu, list instead of a map, all menus created using builder
 * OOP
 * aptitude/item permissions using permission function
+* merge gunshop to market (market needs to be more customizable)
 
 == vRP 2 dev' phases
 * refactoring

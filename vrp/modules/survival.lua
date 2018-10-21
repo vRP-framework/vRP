@@ -103,11 +103,13 @@ function Survival.event:playerSpawn(user, first_spawn)
     end
   end
 
-  SetTimeout(5000, function() -- check coma, kill if in coma
-    if self.remote.isInComa(user.source) then
-      self.remote._killComa(user.source)
-    end
-  end)
+end
+
+function Survival.event:playerStateLoaded(user)
+  -- check coma, kill if in coma
+  if self.remote.isInComa(user.source) then
+    self.remote._killComa(user.source)
+  end
 end
 
 function Survival.event:playerDeath(user)

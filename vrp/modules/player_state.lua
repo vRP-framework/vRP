@@ -52,6 +52,8 @@ function PlayerState.event:playerSpawn(user, first_spawn)
   end
 
   self.remote._setStateReady(user.source, true)
+
+  vRP:triggerEvent("playerStateLoaded", user)
 end
 
 function PlayerState.event:playerDeath(user)

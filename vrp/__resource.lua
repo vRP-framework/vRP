@@ -20,6 +20,7 @@ server_scripts{
   "modules/phone.lua",
   "modules/inventory.lua",
   "modules/aptitude.lua",
+  "modules/gunshop.lua",
   --[[
   "modules/business.lua",
   "modules/item_transformer.lua",
@@ -30,7 +31,6 @@ server_scripts{
 
   -- basic implementations
   "modules/basic_market.lua",
-  "modules/basic_gunshop.lua",
   "modules/basic_garage.lua",
   "modules/basic_items.lua",
   "modules/basic_skinshop.lua",
