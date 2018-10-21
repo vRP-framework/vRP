@@ -1,13 +1,13 @@
 local htmlEntities = module("vrp", "lib/htmlEntities")
 local lang = vRP.lang
 
--- a basic market implementation
+-- a basic item shop implementation
 
-local Market = class("Market", vRP.Extension)
+local Shop = class("Shop", vRP.Extension)
 
 -- PRIVATE METHODS
 
-local function menu_market(self)
+local function menu_shop(self)
   local function m_buy(menu, fullid)
     local user = menu.user
     local items = menu.data.items
@@ -16,7 +16,7 @@ local function menu_market(self)
     local price = items[fullid]
 
     if citem then
-      local amount = parseInt(user:prompt(lang.market.prompt({htmlEntities.encode(citem.name)}),""))
+      local amount = parseInt(user:prompt(lang.shop.prompt({htmlEntities.encode(citem.name)}),""))
       if amount > 0 then
         -- payment
         if user:tryPayment(amount*price,true) then
@@ -36,15 +36,17 @@ local function menu_market(self)
     end
   end
 
-  vRP.EXT.GUI:registerMenuBuilder("market", function(menu)
-    menu.title = lang.market.title({htmlEntities.encode(menu.data.type)})
+  vRP.EXT.GUI:registerMenuBuilder("shop", function(menu)
+    menu.title = lang.shop.title({htmlEntities.encode(menu.data.type)})
     menu.css.header_color = "rgba(0,255,125,0.75)"
 
     -- add items
     for fullid,price in pairs(menu.data.items) do
-      local citem = vRP.EXT.Inventory:computeItem(fullid)
-      if citem then
-        menu:addOption(htmlEntities.encode(citem.name), m_buy, lang.market.info({price,citem.description}), fullid)
+      if fullid ~= "_config" then
+        local citem = vRP.EXT.Inventory:computeItem(fullid)
+        if citem then
+          menu:addOption(htmlEntities.encode(citem.name), m_buy, lang.shop.info({price,citem.description}), fullid)
+        end
       end
     end
   end)
@@ -52,23 +54,23 @@ end
 
 -- METHODS
 
-function Market:__construct()
+function Shop:__construct()
   vRP.Extension.__construct(self)
 
-  self.cfg = module("cfg/markets")
-  self:log(#self.cfg.markets.." markets")
+  self.cfg = module("cfg/shops")
+  self:log(#self.cfg.shops.." shops")
 
-  menu_market(self)
+  menu_shop(self)
 end
 
 -- EVENT
-Market.event = {}
+Shop.event = {}
 
-function Market.event:playerSpawn(user, first_spawn)
+function Shop.event:playerSpawn(user, first_spawn)
   if first_spawn then
-    for k,v in pairs(self.cfg.markets) do
+    for k,v in pairs(self.cfg.shops) do
       local gtype,x,y,z = table.unpack(v)
-      local group = self.cfg.market_types[gtype]
+      local group = self.cfg.shop_types[gtype]
 
       if group then
         local gcfg = group._config
@@ -76,7 +78,7 @@ function Market.event:playerSpawn(user, first_spawn)
         local menu
         local function enter(user)
           if user:hasPermissions(gcfg.permissions or {}) then
-            user:openMenu("market", {type = gtype, items = group}) 
+            user:openMenu("shop", {type = gtype, items = group}) 
           end
         end
 
@@ -84,13 +86,13 @@ function Market.event:playerSpawn(user, first_spawn)
           user:closeMenu(menu)
         end
 
-        vRP.EXT.Map.remote._addBlip(user.source,x,y,z,gcfg.blipid,gcfg.blipcolor,lang.market.title({gtype}))
+        vRP.EXT.Map.remote._addBlip(user.source,x,y,z,gcfg.blipid,gcfg.blipcolor,lang.shop.title({gtype}))
         vRP.EXT.Map.remote._addMarker(user.source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
 
-        user:setArea("vRP:market:"..k,x,y,z,1,1.5,enter,leave)
+        user:setArea("vRP:shop:"..k,x,y,z,1,1.5,enter,leave)
       end
     end
   end
 end
 
-vRP:registerExtension(Market)
+vRP:registerExtension(Shop)

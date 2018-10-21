@@ -448,13 +448,8 @@ local lang = {
       description = "Réparer le véhicule le plus proche."
     }
   },
-  gunshop = {
-    title = "Magasin d'armes ({1})",
-    prompt_ammo = "Quantité de munition à acheter pour {1}:",
-    info = "<em>Arme: </em> {1} $<br /><em>Munition: </em> {2} $/u<br /><br />{3}"
-  },
-  market = {
-    title = "Supérette ({1})",
+  shop = {
+    title = "Magasin ({1})",
     prompt = "Quantité de {1} à acheter:",
     info = "{1} $<br /><br />{2}"
   },
