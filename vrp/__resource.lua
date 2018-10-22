@@ -22,13 +22,13 @@ server_scripts{
   "modules/aptitude.lua",
   "modules/shop.lua",
   "modules/skinshop.lua",
+  "modules/mission.lua",
   --[[
   "modules/business.lua",
   "modules/item_transformer.lua",
   "modules/police.lua",
   "modules/home.lua",
   "modules/home_components.lua",
-  "modules/mission.lua",
 
   -- basic implementations
   "modules/basic_garage.lua",
