@@ -90,7 +90,7 @@ function ATM.event:playerSpawn(user, first_spawn)
       vRP.EXT.Map.remote._addBlip(user.source,x,y,z,108,4,lang.atm.title())
       vRP.EXT.Map.remote._addMarker(user.source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
 
-      user:setArea("vRP:atm"..k,x,y,z,1,1.5,enter,leave)
+      user:setArea("vRP:atm:"..k,x,y,z,1,1.5,enter,leave)
     end
   end
 end

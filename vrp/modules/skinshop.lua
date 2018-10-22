@@ -154,7 +154,7 @@ function SkinShop.event:playerSpawn(user, first_spawn)
       vRP.EXT.Map.remote._addBlip(user.source,x,y,z,73,3,lang.skinshop.title())
       vRP.EXT.Map.remote._addMarker(user.source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
 
-      user:setArea("vRP:skinshop"..k,x,y,z,1,1.5,enter,leave)
+      user:setArea("vRP:skinshop:"..k,x,y,z,1,1.5,enter,leave)
     end
   end
 end

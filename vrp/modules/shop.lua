@@ -78,12 +78,14 @@ function Shop.event:playerSpawn(user, first_spawn)
         local menu
         local function enter(user)
           if user:hasPermissions(gcfg.permissions or {}) then
-            user:openMenu("shop", {type = gtype, items = group}) 
+            menu = user:openMenu("shop", {type = gtype, items = group}) 
           end
         end
 
         local function leave(user)
-          user:closeMenu(menu)
+          if menu then
+            user:closeMenu(menu)
+          end
         end
 
         vRP.EXT.Map.remote._addBlip(user.source,x,y,z,gcfg.blipid,gcfg.blipcolor,lang.shop.title({gtype}))
