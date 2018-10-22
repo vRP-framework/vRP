@@ -21,6 +21,7 @@ server_scripts{
   "modules/phone.lua",
   "modules/aptitude.lua",
   "modules/shop.lua",
+  "modules/skinshop.lua",
   --[[
   "modules/business.lua",
   "modules/item_transformer.lua",
@@ -31,7 +32,6 @@ server_scripts{
 
   -- basic implementations
   "modules/basic_garage.lua",
-  "modules/basic_skinshop.lua",
   "modules/cloakroom.lua",
   "modules/basic_radio.lua"
   --]]
