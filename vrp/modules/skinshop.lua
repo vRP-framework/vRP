@@ -108,7 +108,7 @@ local function menu_skinshop(self)
       local drawable = {0,0,0,0}
       local old_part = menu.old_custom[part]
       if old_part then
-        drawable[1], drawable[3] = old_part[1], old_part[3]
+        drawable[1], drawable[3] = old_part[1], old_part[2]
       end
 
       -- init max drawables and max textures
