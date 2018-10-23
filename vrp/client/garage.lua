@@ -1,39 +1,34 @@
--- decorators
-DecorRegister("vRP_owner", 3)
-DecorRegister("vRP_vmodel", 3)
 
-local veh_models = {}
-local vehicles = {}
+local Garage = class("Garage", vRP.Extension)
 
-function tvRP.setVehicleModelsIndex(index)
-  veh_models = index
+-- METHODS
 
-  -- generate bidirectional keys
-  for k,v in pairs(veh_models) do
-    veh_models[v] = k
-  end
+function Garage:__construct()
+  vRP.Extension.__construct(self)
+
+  -- init decorators
+  DecorRegister("vRP.owner", 3)
+
+  self.vehicles = {} -- map of vehicle model => veh id (owned vehicles)
+  self.hash_models = {} -- map of hash => model
 end
 
 -- veh: vehicle game id
--- return owner_user_id, vname (or nil if not managed by vRP)
-function tvRP.getVehicleInfos(veh)
-  if veh and DecorExistOn(veh, "vRP_owner") and DecorExistOn(veh, "vRP_vmodel") then
-    local user_id = DecorGetInt(veh, "vRP_owner")
-    local vmodel = DecorGetInt(veh, "vRP_vmodel")
-
-    local vname = veh_models[vmodel]
-    if vname then
-      return user_id, vname
+-- return owner character id and model or nil if not managed by vRP
+function Garage:getVehicleInfo(veh)
+  if veh and DecorExistOn(veh, "vRP.owner") then
+    local model = self.hash_models[GetEntityModel(veh)]
+    if model then
+      return DecorGetInt(veh, "vRP.owner"), model
     end
   end
 end
 
-function tvRP.spawnGarageVehicle(name,pos) -- one vehicle per vname/model allowed at the same time
-
-  local vehicle = vehicles[name]
-  if vehicle == nil then
+function Garage:spawnVehicle(model, pos) -- one vehicle per model allowed at the same time
+  local vehicle = self.vehicles[model]
+  if not vehicle then
     -- load vehicle model
-    local mhash = GetHashKey(name)
+    local mhash = GetHashKey(model)
 
     local i = 0
     while not HasModelLoaded(mhash) and i < 10000 do
@@ -44,42 +39,46 @@ function tvRP.spawnGarageVehicle(name,pos) -- one vehicle per vname/model allowe
 
     -- spawn car
     if HasModelLoaded(mhash) then
-      local x,y,z = tvRP.getPosition()
+      local x,y,z
       if pos then
         x,y,z = table.unpack(pos)
+      else
+        x,y,z = vRP.EXT.Base:getPosition()
       end
 
       local nveh = CreateVehicle(mhash, x,y,z+0.5, 0.0, true, false)
       SetVehicleOnGroundProperly(nveh)
       SetEntityInvincible(nveh,false)
       SetPedIntoVehicle(GetPlayerPed(-1),nveh,-1) -- put player inside
-      SetVehicleNumberPlateText(nveh, "P "..tvRP.getRegistrationNumber())
+      SetVehicleNumberPlateText(nveh, "P "..vRP.EXT.Identity:getRegistrationNumber())
       Citizen.InvokeNative(0xAD738C3085FE7E11, nveh, true, true) -- set as mission entity
       SetVehicleHasBeenOwnedByPlayer(nveh,true)
 
       -- set decorators
-      DecorSetInt(veh, "vRP_owner", tvRP.getUserId())
-      DecorSetInt(veh, "vRP_vmodel", veh_models[name])
+      DecorSetInt(veh, "vRP.owner", vRP.EXT.Base.id)
+      self.vehicles[model] = nveh -- mark as owned
 
-      vehicles[name] = {name,nveh} -- set current vehicule
+      vRP:triggerEvent("garageVehicleSpawn", model)
 
       SetModelAsNoLongerNeeded(mhash)
     end
   else
-    tvRP.notify("This vehicle is already out.")
+    vRP.EXT.Base:notify("This vehicle is already out.")
   end
 end
 
-function tvRP.despawnGarageVehicle(name)
-  local vehicle = vehicles[name]
-  if vehicle then
+function Garage:despawnVehicle(model)
+  local veh = self.vehicles[model]
+  if veh then
+    vRP:triggerEvent("garageVehicleStore", model)
+
     -- remove vehicle
-    SetVehicleHasBeenOwnedByPlayer(vehicle[2],false)
-    Citizen.InvokeNative(0xAD738C3085FE7E11, vehicle[2], false, true) -- set not as mission entity
-    SetVehicleAsNoLongerNeeded(Citizen.PointerValueIntInitialized(vehicle[2]))
-    Citizen.InvokeNative(0xEA386986E786A54F, Citizen.PointerValueIntInitialized(vehicle[2]))
-    vehicles[name] = nil
-    tvRP.notify("Vehicle stored.")
+    SetVehicleHasBeenOwnedByPlayer(veh,false)
+    Citizen.InvokeNative(0xAD738C3085FE7E11, veh, false, true) -- set not as mission entity
+    SetVehicleAsNoLongerNeeded(Citizen.PointerValueIntInitialized(veh))
+    Citizen.InvokeNative(0xEA386986E786A54F, Citizen.PointerValueIntInitialized(veh))
+    self.vehicles[model] = nil
+    vRP.EXT.Base:notify("Vehicle stored.")
   end
 end
 
@@ -101,8 +100,8 @@ end)
 
 -- (experimental) this function return the nearest vehicle
 -- (don't work with all vehicles, but aim to)
-function tvRP.getNearestVehicle(radius)
-  local x,y,z = tvRP.getPosition()
+function Garage:getNearestVehicle(radius)
+  local x,y,z = vRP.EXT.Base:getPosition()
   local ped = GetPlayerPed(-1)
   if IsPedSittingInAnyVehicle(ped) then
     return GetVehiclePedIsIn(ped, true)
@@ -119,35 +118,35 @@ function tvRP.getNearestVehicle(radius)
 end
 
 -- try to re-own the nearest vehicle
-function tvRP.tryOwnNearestVehicle(radius)
-  local veh = tvRP.getNearestVehicle(radius)
+function Garage:tryOwnNearestVehicle(radius)
+  local veh = self:getNearestVehicle(radius)
   if veh then
-    local user_id, vname = tvRP.getVehicleInfos(veh)
-    if user_id and user_id == tvRP.getUserId() then
-      if vehicles[vname] ~= veh then
-        vehicles[vname] = veh
+    local cid, model = self:getVehicleInfo(veh)
+    if cid and vRP.EXT.Base.cid == cid then
+      if not self.vehicles[model] then
+        self.vehicles[model] = veh
       end
     end
   end
 end
 
-function tvRP.fixeNearestVehicle(radius)
-  local veh = tvRP.getNearestVehicle(radius)
+function Garage:fixNearestVehicle(radius)
+  local veh = self:getNearestVehicle(radius)
   if IsEntityAVehicle(veh) then
     SetVehicleFixed(veh)
   end
 end
 
-function tvRP.replaceNearestVehicle(radius)
-  local veh = tvRP.getNearestVehicle(radius)
+function Garage:replaceNearestVehicle(radius)
+  local veh = self:getNearestVehicle(radius)
   if IsEntityAVehicle(veh) then
     SetVehicleOnGroundProperly(veh)
   end
 end
 
 -- try to get a vehicle at a specific position (using raycast)
-function tvRP.getVehicleAtPosition(x,y,z)
-  x = x+0.0001
+function Garage:getVehicleAtPosition(x,y,z)
+  x = x+0.000
   y = y+0.0001
   z = z+0.0001
 
@@ -156,15 +155,15 @@ function tvRP.getVehicleAtPosition(x,y,z)
   return ent
 end
 
--- return ok,name
-function tvRP.getNearestOwnedVehicle(radius)
-  tvRP.tryOwnNearestVehicle(radius) -- get back network lost vehicles
+-- return model or nil
+function Garage:getNearestOwnedVehicle(radius)
+  self:tryOwnNearestVehicle(radius) -- get back network lost vehicles
 
-  local px,py,pz = tvRP.getPosition()
+  local px,py,pz = vRP.EXT.Base:getPosition()
   local min_dist
   local min_k
-  for k,v in pairs(vehicles) do
-    local x,y,z = table.unpack(GetEntityCoords(v[2],true))
+  for k,veh in pairs(self.vehicles) do
+    local x,y,z = table.unpack(GetEntityCoords(veh,true))
     local dist = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
 
     if dist <= radius+0.0001 then
@@ -175,17 +174,13 @@ function tvRP.getNearestOwnedVehicle(radius)
     end
   end
 
-  if min_k then
-    return true,min_k
-  end
-
-  return false,""
+  return min_k
 end
 
 -- return ok,x,y,z
-function tvRP.getAnyOwnedVehiclePosition()
-  for k,v in pairs(vehicles) do
-    if IsEntityAVehicle(v[2]) then
+function Garage:getAnyOwnedVehiclePosition()
+  for model,veh in pairs(self.vehicles) do
+    if IsEntityAVehicle(veh) then
       local x,y,z = table.unpack(GetEntityCoords(v[2],true))
       return true,x,y,z
     end
@@ -194,28 +189,16 @@ function tvRP.getAnyOwnedVehiclePosition()
   return false,0,0,0
 end
 
--- return x,y,z
-function tvRP.getOwnedVehiclePosition(name)
-  local vehicle = vehicles[name]
-  local x,y,z = 0,0,0
-
-  if vehicle then
-    x,y,z = table.unpack(GetEntityCoords(vehicle[2],true))
-  end
-
-  return x,y,z
-end
-
--- return owned vehicle handle or nil if not found
-function tvRP.getOwnedVehicleHandle(name)
-  local vehicle = vehicles[name]
-  if vehicle then
-    return vehicle[2]
+-- return x,y,z or nil
+function Garage:getOwnedVehiclePosition(model)
+  local veh = self.vehicles[model]
+  if veh then
+    return table.unpack(GetEntityCoords(veh,true))
   end
 end
 
 -- eject the ped from the vehicle
-function tvRP.ejectVehicle()
+function Garage:ejectVehicle()
   local ped = GetPlayerPed(-1)
   if IsPedSittingInAnyVehicle(ped) then
     local veh = GetVehiclePedIsIn(ped,false)
@@ -223,11 +206,35 @@ function tvRP.ejectVehicle()
   end
 end
 
-function tvRP.isInVehicle()
+function Garage:isInVehicle()
   local ped = GetPlayerPed(-1)
   return IsPedSittingInAnyVehicle(ped) 
 end
 
+-- TUNNEL
+Garage.tunnel = {}
+
+function Garage.tunnel:registerModels(models)
+  -- generate models hashes
+  for model in pairs(models) do
+    local hash = GetHashKey(model)
+    if hash then
+      self.hash_models[hash] = model
+    end
+  end
+end
+
+Garage.tunnel.spawnVehicle = Garage.spawnVehicle
+Garage.tunnel.despawnVehicle = Garage.despawnVehicle
+Garage.tunnel.fixNearestVehicle = Garage.fixNearestVehicle
+Garage.tunnel.replaceNearestVehicle = Garage.replaceNearestVehicle
+Garage.tunnel.getNearestOwnedVehicle = Garage.getNearestOwnedVehicle
+Garage.tunnel.getAnyOwnedVehiclePosition = Garage.getAnyOwnedVehiclePosition
+Garage.tunnel.getOwnedVehiclePosition = Garage.getOwnedVehiclePosition
+Garage.tunnel.ejectVehicle = Garage.ejectVehicle
+Garage.tunnel.isInVehicle = Garage.isInVehicle
+
+--[[
 -- vehicle commands
 function tvRP.vc_openDoor(name, door_index)
   local vehicle = vehicles[name]
@@ -300,3 +307,7 @@ function tvRP.vc_toggleLock(name)
     end
   end
 end
+
+--]]
+
+vRP:registerExtension(Garage)

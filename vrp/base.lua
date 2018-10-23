@@ -134,6 +134,18 @@ local Base = class("Base", vRP.Extension)
 
 Base.event = {}
 
+function Base.event:playerJoin(user)
+  self.remote._setUserId(user.id)
+end
+
+function Base.event:playerRejoin(user)
+  self.remote._setUserId(user.id)
+end
+
+function Base.event:characterLoad(user)
+  self.remote._setCharacterId(user.cid)
+end
+
 function Base.event:playerSpawn(user, first_spawn)
   -- notify last login
   if user.last_login then

@@ -73,6 +73,7 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * fragment some big modules like GUI
 * remove items package config files
 * lang client property sent over the network for client translations
+* `namespace.foo.bar` instead of `namespace:foo:bar`
 
 == vRP 2 dev' phases
 * refactoring

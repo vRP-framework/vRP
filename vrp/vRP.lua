@@ -447,7 +447,7 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
             -- reset first spawn
             user.spawns = 0
 
-            self:triggerEvent("playerRejoin", user, name)
+            self:triggerEvent("playerRejoin", user)
             deferrals.done()
           end
 

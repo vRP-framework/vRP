@@ -9,6 +9,14 @@ local cfg = {}
 cfg.rent_factor = 0.1 -- 10% of the original price if a rent
 cfg.sell_factor = 0.75 -- sell for 75% of the original price
 
+-- default chest weight for vehicle trunks
+cfg.default_vehicle_chest_weight = 50
+
+-- define vehicle chest weight by model in lower case
+cfg.vehicle_chest_weights = {
+  ["monster"] = 250
+}
+
 cfg.garage_types = {
   ["compacts"]  = {
     _config = {blipid=50,blipcolor=4},

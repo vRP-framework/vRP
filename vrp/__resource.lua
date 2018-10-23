@@ -24,6 +24,7 @@ server_scripts{
   "modules/skinshop.lua",
   "modules/mission.lua",
   "modules/cloak.lua",
+  "modules/garage.lua",
   --[[
   "modules/business.lua",
   "modules/item_transformer.lua",
@@ -32,7 +33,6 @@ server_scripts{
   "modules/home_components.lua",
 
   -- basic implementations
-  "modules/basic_garage.lua",
   "modules/basic_radio.lua"
   --]]
 }
@@ -48,9 +48,9 @@ client_scripts{
   "client/survival.lua",
   "client/identity.lua",
   "client/phone.lua",
+  "client/garage.lua",
   --[[
   "client/iplloader.lua",
-  "client/basic_garage.lua",
   "client/police.lua",
   "client/basic_radio.lua"
   --]]

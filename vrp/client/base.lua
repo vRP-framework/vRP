@@ -342,12 +342,12 @@ end
 
 -- TUNNEL
 
-function Base.tunnel:setUserId(user_id)
-  self.user_id = user_id
+function Base.tunnel:setUserId(id)
+  self.id = id
 end
 
-function Base.tunnel:getUserId()
-  return self.user_id
+function Base.tunnel:setCharacterId(id)
+  self.cid = id
 end
 
 function Base.tunnel:addPlayer(player)
