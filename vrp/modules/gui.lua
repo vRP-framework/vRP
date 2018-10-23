@@ -53,13 +53,13 @@ end
 function Menu:triggerOption(id, mod)
   local option = self.options[id]
   if option and option[2] then
-    option[2](self, option[4], mod)
+    option[2](self, option[4], mod, id)
   end
 end
 
 -- add option
 -- title: option title (html)
--- action(menu, value, mod): (optional) select callback
+-- action(menu, value, mod, index): (optional) select callback
 --- value: option value
 --- mod: action modulation
 ---- -1: left
@@ -67,7 +67,7 @@ end
 ---- 1: right
 -- description: (optional) option description (html)
 --- callback(menu, value): should return a string or nil
--- value: (optional) option value, can be anything, is option index by default
+-- value: (optional) option value, can be anything, option index by default
 -- index: (optional) by default the option is added at the end, but an index can be used to insert the option
 function Menu:addOption(title, action, description, value, index)
   if index then
