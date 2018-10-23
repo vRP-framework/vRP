@@ -296,7 +296,7 @@ local function menu_chest_put(self)
       local i_amount = user:getItemAmount(fullid)
       local amount = parseInt(user:prompt(lang.inventory.chest.put.prompt({i_amount}), ""))
       if amount >= 0 and amount <= i_amount and user:tryTakeItem(fullid, amount, true) then
-        local new_amount = chest[fullid]+amount
+        local new_amount = (chest[fullid] or 0)+amount
 
         -- chest weight check
         local new_weight = self:computeItemsWeight(chest)+citem.weight*amount
@@ -496,7 +496,7 @@ function Inventory:loadChest(id)
   local chest = self.chests[id]
   if not chest then
     local sdata = vRP:getGData("vRP:chest:"..id)
-    if sdata then
+    if sdata and string.len(sdata) > 0 then
       chest = msgpack.unpack(sdata)
     end
 

@@ -74,6 +74,7 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * remove items package config files
 * lang client property sent over the network for client translations
 * `namespace.foo.bar` instead of `namespace:foo:bar`
+* better garage nearest vehicle search
 
 == vRP 2 dev' phases
 * refactoring

@@ -211,6 +211,80 @@ function Garage:isInVehicle()
   return IsPedSittingInAnyVehicle(ped) 
 end
 
+-- VEHICLE COMMANDS
+
+function Garage:vc_openDoor(model, door_index)
+  local vehicle = self.vehicles[model]
+  if vehicle then
+    SetVehicleDoorOpen(vehicle,door_index,0,false)
+  end
+end
+
+function Garage:vc_closeDoor(model, door_index)
+  local vehicle = self.vehicles[model]
+  if vehicle then
+    SetVehicleDoorShut(vehicle,door_index)
+  end
+end
+
+function Garage:vc_detachTrailer(model)
+  local vehicle = self.vehicles[model]
+  if vehicle then
+    DetachVehicleFromTrailer(vehicle)
+  end
+end
+
+function Garage:vc_detachTowTruck(model)
+  local vehicle = self.vehicles[model]
+  if vehicle then
+    local ent = GetEntityAttachedToTowTruck(vehicle)
+    if IsEntityAVehicle(ent) then
+      DetachVehicleFromTowTruck(vehicle,ent)
+    end
+  end
+end
+
+function Garage:vc_detachCargobob(model)
+  local vehicle = self.vehicles[model]
+  if vehicle then
+    local ent = GetVehicleAttachedToCargobob(vehicle)
+    if IsEntityAVehicle(ent) then
+      DetachVehicleFromCargobob(vehicle,ent)
+    end
+  end
+end
+
+function Garage:vc_toggleEngine(model)
+  local vehicle = self.vehicles[model]
+  if vehicle then
+    local running = Citizen.InvokeNative(0xAE31E7DF9B5B132E,vehicle) -- GetIsVehicleEngineRunning
+    SetVehicleEngineOn(vehicle,not running,true,true)
+    if running then
+      SetVehicleUndriveable(vehicle,true)
+    else
+      SetVehicleUndriveable(vehicle,false)
+    end
+  end
+end
+
+function Garage:vc_toggleLock(model)
+  local vehicle = self.vehicles[model]
+  if vehicle then
+    local veh = vehicle
+    local locked = GetVehicleDoorLockStatus(veh) >= 2
+    if locked then -- unlock
+      SetVehicleDoorsLockedForAllPlayers(veh, false)
+      SetVehicleDoorsLocked(veh,1)
+      SetVehicleDoorsLockedForPlayer(veh, PlayerId(), false)
+      vRP.EXT.Base:notify("Vehicle unlocked.")
+    else -- lock
+      SetVehicleDoorsLocked(veh,2)
+      SetVehicleDoorsLockedForAllPlayers(veh, true)
+      vRP.EXT.Base:notify("Vehicle locked.")
+    end
+  end
+end
+
 -- TUNNEL
 Garage.tunnel = {}
 
@@ -233,81 +307,12 @@ Garage.tunnel.getAnyOwnedVehiclePosition = Garage.getAnyOwnedVehiclePosition
 Garage.tunnel.getOwnedVehiclePosition = Garage.getOwnedVehiclePosition
 Garage.tunnel.ejectVehicle = Garage.ejectVehicle
 Garage.tunnel.isInVehicle = Garage.isInVehicle
-
---[[
--- vehicle commands
-function tvRP.vc_openDoor(name, door_index)
-  local vehicle = vehicles[name]
-  if vehicle then
-    SetVehicleDoorOpen(vehicle[2],door_index,0,false)
-  end
-end
-
-function tvRP.vc_closeDoor(name, door_index)
-  local vehicle = vehicles[name]
-  if vehicle then
-    SetVehicleDoorShut(vehicle[2],door_index)
-  end
-end
-
-function tvRP.vc_detachTrailer(name)
-  local vehicle = vehicles[name]
-  if vehicle then
-    DetachVehicleFromTrailer(vehicle[2])
-  end
-end
-
-function tvRP.vc_detachTowTruck(name)
-  local vehicle = vehicles[name]
-  if vehicle then
-    local ent = GetEntityAttachedToTowTruck(vehicle[2])
-    if IsEntityAVehicle(ent) then
-      DetachVehicleFromTowTruck(vehicle[2],ent)
-    end
-  end
-end
-
-function tvRP.vc_detachCargobob(name)
-  local vehicle = vehicles[name]
-  if vehicle then
-    local ent = GetVehicleAttachedToCargobob(vehicle[2])
-    if IsEntityAVehicle(ent) then
-      DetachVehicleFromCargobob(vehicle[2],ent)
-    end
-  end
-end
-
-function tvRP.vc_toggleEngine(name)
-  local vehicle = vehicles[name]
-  if vehicle then
-    local running = Citizen.InvokeNative(0xAE31E7DF9B5B132E,vehicle[2]) -- GetIsVehicleEngineRunning
-    SetVehicleEngineOn(vehicle[2],not running,true,true)
-    if running then
-      SetVehicleUndriveable(vehicle[2],true)
-    else
-      SetVehicleUndriveable(vehicle[2],false)
-    end
-  end
-end
-
-function tvRP.vc_toggleLock(name)
-  local vehicle = vehicles[name]
-  if vehicle then
-    local veh = vehicle[2]
-    local locked = GetVehicleDoorLockStatus(veh) >= 2
-    if locked then -- unlock
-      SetVehicleDoorsLockedForAllPlayers(veh, false)
-      SetVehicleDoorsLocked(veh,1)
-      SetVehicleDoorsLockedForPlayer(veh, PlayerId(), false)
-      tvRP.notify("Vehicle unlocked.")
-    else -- lock
-      SetVehicleDoorsLocked(veh,2)
-      SetVehicleDoorsLockedForAllPlayers(veh, true)
-      tvRP.notify("Vehicle locked.")
-    end
-  end
-end
-
---]]
+Garage.tunnel.vc_openDoor = Garage.vc_openDoor
+Garage.tunnel.vc_closeDoor = Garage.vc_closeDoor
+Garage.tunnel.vc_detachTrailer = Garage.vc_detachTrailer
+Garage.tunnel.vc_detachTowTruck = Garage.vc_detachTowTruck
+Garage.tunnel.vc_detachCargobob = Garage.vc_detachCargobob
+Garage.tunnel.vc_toggleEngine = Garage.vc_toggleEngine
+Garage.tunnel.vc_toggleLock = Garage.vc_toggleLock
 
 vRP:registerExtension(Garage)
