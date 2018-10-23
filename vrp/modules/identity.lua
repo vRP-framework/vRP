@@ -136,6 +136,18 @@ function Identity:__construct()
   end)
 end
 
+-- identity access (online and offline characters)
+-- return identity or nil
+function Identity:getIdentityByCharacterId(cid)
+  local user = vRP.users_by_cid[cid]
+  if user then
+    return user.identity
+  else
+    local rows = vRP:query("vRP/get_character_identity", {character_id = user.cid})
+    return rows[1]
+  end
+end
+
 -- return character_id, user_id or nil
 function Identity:getByRegistration(registration)
   local rows = vRP:query("vRP/get_characterbyreg", {registration = registration or ""})

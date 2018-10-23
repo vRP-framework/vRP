@@ -64,6 +64,7 @@ function User:useCharacter(id)
   if #rows > 0 then
     -- unload character
     if self.cid then 
+      vRP.users_by_cid[self.cid] = nil -- reference
       vRP:triggerEvent("characterUnload", self)
 
       vRP:setCData(self.cid, "vRP:datatable", msgpack.pack(self.cdata))
@@ -71,6 +72,7 @@ function User:useCharacter(id)
 
     self.cid = id
     self.data.current_character = id
+    vRP.users_by_cid[self.cid] = self -- reference
 
     -- load character
     self.cdata = {}

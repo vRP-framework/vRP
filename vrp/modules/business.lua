@@ -1,209 +1,232 @@
 
--- module describing business system (company, money laundering)
-
-local cfg = module("cfg/business")
 local htmlEntities = module("lib/htmlEntities")
 local lang = vRP.lang
 
-local sanitizes = module("cfg/sanitizes")
+-- module describing business system (company, money laundering)
+local Business = class("Business", vRP.Extension)
 
--- sql
-vRP.prepare("vRP/business_tables",[[
-CREATE TABLE IF NOT EXISTS vrp_user_business(
-  user_id INTEGER,
-  name VARCHAR(30),
-  description TEXT,
-  capital INTEGER,
-  laundered INTEGER,
-  reset_timestamp INTEGER,
-  CONSTRAINT pk_user_business PRIMARY KEY(user_id),
-  CONSTRAINT fk_user_business_users FOREIGN KEY(user_id) REFERENCES vrp_users(id) ON DELETE CASCADE
-);
-]])
+-- PRIVATE METHODS
 
-vRP.prepare("vRP/create_business","INSERT IGNORE INTO vrp_user_business(user_id,name,description,capital,laundered,reset_timestamp) VALUES(@user_id,@name,'',@capital,0,@time)")
-vRP.prepare("vRP/delete_business","DELETE FROM vrp_user_business WHERE user_id = @user_id")
-vRP.prepare("vRP/get_business","SELECT name,description,capital,laundered,reset_timestamp FROM vrp_user_business WHERE user_id = @user_id")
-vRP.prepare("vRP/add_capital","UPDATE vrp_user_business SET capital = capital + @capital WHERE user_id = @user_id")
-vRP.prepare("vRP/add_laundered","UPDATE vrp_user_business SET laundered = laundered + @laundered WHERE user_id = @user_id")
-vRP.prepare("vRP/get_business_page","SELECT user_id,name,description,capital FROM vrp_user_business ORDER BY capital DESC LIMIT @b,@n")
-vRP.prepare("vRP/reset_transfer","UPDATE vrp_user_business SET laundered = 0, reset_timestamp = @time WHERE user_id = @user_id")
-
--- init
-async(function()
-vRP.execute("vRP/business_tables")
-end)
-
--- api
-
--- return user business data or nil
-function vRP.getUserBusiness(user_id, cbr)
-  if user_id then
-    local rows = vRP.query("vRP/get_business", {user_id = user_id})
-    local business = rows[1]
-
-    -- when a business is fetched from the database, check for update of the laundered capital transfer capacity
-    if business and os.time() >= business.reset_timestamp+cfg.transfer_reset_interval*60 then
-      vRP.execute("vRP/reset_transfer", {user_id = user_id, time = os.time()})
-      business.laundered = 0
-    end
-
-    return business
+-- menu: commerce chamber directory
+local function menu_commerce_chamber_directory(self)
+  local function m_page(menu, page)
+    local user = menu.user
+    menu.data.page = page
+    user:actualizeMenu()
   end
-end
 
--- close the business of an user
-function vRP.closeBusiness(user_id)
-  vRP.execute("vRP/delete_business", {user_id = user_id})
-end
+  vRP.EXT.GUI:registerMenuBuilder("commerce_chamber.directory", function(menu)
+    local user = menu.user
+    local page = menu.data.page
+    if page < 0 then page = 0 end
 
--- business interaction
+    menu.title = lang.business.directory.title().." ("..page..")"
+    menu.css.header_color = "rgba(240,203,88,0.75)"
 
--- page start at 0
-local function open_business_directory(player,page) -- open business directory with pagination system
-  if page < 0 then page = 0 end
-
-  local menu = {name=lang.business.directory.title().." ("..page..")",css={top="75px",header_color="rgba(240,203,88,0.75)"}}
-
-  local rows = vRP.query("vRP/get_business_page", {b = page*10, n = 10})
-  local count = 0
-  for k,v in pairs(rows) do
-    count = count+1
-    local row = v
-
-    if row.user_id ~= nil then
+    local rows = vRP:query("vRP/get_business_page", {b = page*10, n = 10})
+    for _,row in ipairs(rows) do
       -- get owner identity
-      local identity = vRP.getUserIdentity(row.user_id)
+      local identity = vRP.EXT.Identity:getIdentityByCharacterId(row.character_id)
       if identity then
-        menu[htmlEntities.encode(row.name)] = {function()end, lang.business.directory.info({row.capital,htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.registration,identity.phone})}
-      end
-
-      -- check end, open menu
-      count = count-1
-      if count == 0 then
-        menu[lang.business.directory.dnext()] = {function() open_business_directory(player,page+1) end}
-        menu[lang.business.directory.dprev()] = {function() open_business_directory(player,page-1) end}
-
-        vRP.openMenu(player,menu)
+        menu:addOption(htmlEntities.encode(row.name), nil, lang.business.directory.info({row.capital,htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.registration,identity.phone}))
       end
     end
-  end
+
+    menu:addOption(lang.business.directory.dnext(), m_page, nil, page+1)
+    if page > 0 then
+      menu:addOption(lang.business.directory.dprev(), m_page, nil, page-1)
+    end
+  end)
 end
 
-local function business_enter(source)
-  local source = source
+-- menu: commerce chamber
+local function menu_commerce_chamber(self)
+  local function m_add_capital(menu)
+    local user = menu.user
 
-  local user_id = vRP.getUserId(source)
-  if user_id then
-    -- build business menu
-    local menu = {name=lang.business.title(),css={top="75px",header_color="rgba(240,203,88,0.75)"}}
+    local amount = parseInt(user:prompt(lang.business.addcapital.prompt(),""))
+    if amount > 0 then
+      if user:tryPayment(amount) then
+        vRP:execute("vRP/add_capital", {character_id = user.cid, capital = amount})
+        vRP.EXT.Base.remote._notify(user.source,lang.business.addcapital.added({amount}))
+        user:actualizeMenu()
+      else
+        vRP.EXT.Base.remote._notify(user.source,lang.money.not_enough())
+      end
+    else
+      vRP.EXT.Base.remote._notify(user.source,lang.common.invalid_value())
+    end
+  end
 
-    local business = vRP.getUserBusiness(user_id)
+  local function m_launder(menu)
+    local user = menu.user
+
+    local business = self:getBusinessByCharacterId(user.cid) -- update business data
+    -- compute launder capacity
+    local launder_left = math.min(business.capital-business.laundered,user:getItemAmount("dirty_money")) 
+    local amount = parseInt(user:prompt(lang.business.launder.prompt({launder_left}),""..launder_left))
+    if amount > 0 and amount <= launder_left then
+      if user:tryTakeItem("dirty_money",amount,nil,true) then
+        -- add laundered amount
+        vRP:execute("vRP/add_laundered", {character_id = user.cid, laundered = amount})
+        -- give laundered money
+        user:giveWallet(amount)
+        vRP.EXT.Base.remote._notify(user.source,lang.business.launder.laundered({amount}))
+        user:actualizeMenu()
+      else
+        vRP.EXT.Base.remote._notify(user.source,lang.business.launder.not_enough())
+      end
+    else
+      vRP.EXT.Base.remote._notify(user.source,lang.common.invalid_value())
+    end
+  end
+
+  local function m_open(menu)
+    local user = menu.user
+
+    local name = user:prompt(lang.business.open.prompt_name({30}),"")
+    if string.len(name) >= 2 and string.len(name) <= 30 then
+      name = sanitizeString(name, self.sanitizes.business_name[1], self.sanitizes.business_name[2])
+      local capital = parseInt(user:prompt(lang.business.open.prompt_capital({self.cfg.minimum_capital}),""..self.cfg.minimum_capital))
+      if capital >= self.cfg.minimum_capital then
+        if user:tryPayment(capital) then
+          vRP:execute("vRP/create_business", {
+            character_id = user.cid,
+            name = name,
+            capital = capital,
+            time = os.time()
+          })
+
+          vRP.EXT.Base.remote._notify(user.source,lang.business.open.created())
+          user:actualizeMenu()
+        else
+          vRP.EXT.Base.remote._notify(user.source,lang.money.not_enough())
+        end
+      else
+        vRP.EXT.Base.remote._notify(user.source,lang.common.invalid_value())
+      end
+    else
+      vRP.EXT.Base.remote._notify(user.source,lang.common.invalid_name())
+    end
+  end
+
+  local function m_directory(menu)
+    local smenu = menu.user:openMenu("commerce_chamber.directory", {page = 0})
+    menu:listen("remove", function(menu)
+      menu.user:closeMenu(smenu)
+    end)
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("commerce_chamber", function(menu)
+    menu.title = lang.business.title()
+    menu.css.header_color = "rgba(240,203,88,0.75)"
+
+    local user = menu.user
+
+    local business = self:getBusinessByCharacterId(user.cid)
     if business then -- have a business
       -- business info
-      menu[lang.business.info.title()] = {function(player,choice)
-      end, lang.business.info.info({htmlEntities.encode(business.name), business.capital, business.laundered})}
+      menu:addOption(lang.business.info.title(), nil, lang.business.info.info({htmlEntities.encode(business.name), business.capital, business.laundered}))
 
       -- add capital
-      menu[lang.business.addcapital.title()] = {function(player,choice)
-        local amount = vRP.prompt(player,lang.business.addcapital.prompt(),"")
-        amount = parseInt(amount)
-        if amount > 0 then
-          if vRP.tryPayment(user_id,amount) then
-            vRP.execute("vRP/add_capital", {user_id = user_id, capital = amount})
-            vRPclient._notify(player,lang.business.addcapital.added({amount}))
-          else
-            vRPclient._notify(player,lang.money.not_enough())
-          end
-        else
-          vRPclient._notify(player,lang.common.invalid_value())
-        end
-      end,lang.business.addcapital.description()}
+      menu:addOption(lang.business.addcapital.title(), m_add_capital, lang.business.addcapital.description())
 
       -- money laundered
-      menu[lang.business.launder.title()] = {function(player,choice)
-        local business = vRP.getUserBusiness(user_id) -- update business data
-        local launder_left = math.min(business.capital-business.laundered,vRP.getInventoryItemAmount(user_id,"dirty_money")) -- compute launder capacity
-        local amount = vRP.prompt(player,lang.business.launder.prompt({launder_left}),""..launder_left)
-        amount = parseInt(amount)
-        if amount > 0 and amount <= launder_left then
-          if vRP.tryGetInventoryItem(user_id,"dirty_money",amount,false) then
-            -- add laundered amount
-            vRP.execute("vRP/add_laundered", {user_id = user_id, laundered = amount})
-            -- give laundered money
-            vRP.giveMoney(user_id,amount)
-            vRPclient._notify(player,lang.business.launder.laundered({amount}))
-          else
-            vRPclient._notify(player,lang.business.launder.not_enough())
-          end
-        else
-          vRPclient._notify(player,lang.common.invalid_value())
-        end
-      end,lang.business.launder.description()}
+      menu:addOption(lang.business.launder.title(), m_launder, lang.business.launder.description())
     else -- doesn't have a business
-      menu[lang.business.open.title()] = {function(player,choice)
-        local name = vRP.prompt(player,lang.business.open.prompt_name({30}),"")
-        if string.len(name) >= 2 and string.len(name) <= 30 then
-          name = sanitizeString(name, sanitizes.business_name[1], sanitizes.business_name[2])
-          local capital = vRP.prompt(player,lang.business.open.prompt_capital({cfg.minimum_capital}),""..cfg.minimum_capital)
-          capital = parseInt(capital)
-          if capital >= cfg.minimum_capital then
-            if vRP.tryPayment(user_id,capital) then
-              vRP.execute("vRP/create_business", {
-                user_id = user_id,
-                name = name,
-                capital = capital,
-                time = os.time()
-              })
-
-              vRPclient._notify(player,lang.business.open.created())
-              vRP.closeMenu(player) -- close the menu to force update business info
-            else
-              vRPclient._notify(player,lang.money.not_enough())
-            end
-          else
-            vRPclient._notify(player,lang.common.invalid_value())
-          end
-        else
-          vRPclient._notify(player,lang.common.invalid_name())
-        end
-      end,lang.business.open.description({cfg.minimum_capital})}
+      menu:addOption(lang.business.open.title(), m_open, lang.business.open.description({self.cfg.minimum_capital}))
     end
 
     -- business list
-    menu[lang.business.directory.title()] = {function(player,choice)
-      open_business_directory(player,0)
-    end,lang.business.directory.description()}
+    menu:addOption(lang.business.directory.title(), m_directory, lang.business.directory.description())
+  end)
+end
 
-    -- open menu
-    vRP.openMenu(source,menu)
+-- METHODS
+
+function Business:__construct()
+  vRP.Extension.__construct(self)
+
+  self.cfg = module("cfg/business")
+  self.sanitizes = module("cfg/sanitizes")
+
+  self:log(#self.cfg.commerce_chambers.." commerce chambers")
+
+  async(function()
+    -- sql
+    vRP:prepare("vRP/business_tables",[[
+    CREATE TABLE IF NOT EXISTS vrp_character_business(
+      character_id INTEGER,
+      name VARCHAR(30),
+      description TEXT,
+      capital INTEGER,
+      laundered INTEGER,
+      reset_timestamp INTEGER,
+      CONSTRAINT pk_character_business PRIMARY KEY(character_id),
+      CONSTRAINT fk_character_business_characters FOREIGN KEY(character_id) REFERENCES vrp_characters(id) ON DELETE CASCADE
+    );
+    ]])
+
+    vRP:prepare("vRP/create_business","INSERT IGNORE INTO vrp_character_business(character_id,name,description,capital,laundered,reset_timestamp) VALUES(@character_id,@name,'',@capital,0,@time)")
+    vRP:prepare("vRP/delete_business","DELETE FROM vrp_character_business WHERE character_id = @character_id")
+    vRP:prepare("vRP/get_business","SELECT name,description,capital,laundered,reset_timestamp FROM vrp_character_business WHERE character_id = @character_id")
+    vRP:prepare("vRP/add_capital","UPDATE vrp_character_business SET capital = capital + @capital WHERE character_id = @character_id")
+    vRP:prepare("vRP/add_laundered","UPDATE vrp_character_business SET laundered = laundered + @laundered WHERE character_id = @character_id")
+    vRP:prepare("vRP/get_business_page","SELECT character_id,name,description,capital FROM vrp_character_business ORDER BY capital DESC LIMIT @b,@n")
+    vRP:prepare("vRP/reset_transfer","UPDATE vrp_character_business SET laundered = 0, reset_timestamp = @time WHERE character_id = @character_id")
+
+    -- init
+    vRP:execute("vRP/business_tables")
+  end)
+
+  menu_commerce_chamber_directory(self)
+  menu_commerce_chamber(self)
+end
+
+
+-- return character business data or nil
+function Business:getBusinessByCharacterId(character_id)
+  local rows = vRP:query("vRP/get_business", {character_id = character_id})
+  local business = rows[1]
+
+  -- when a business is fetched from the database, check for update of the laundered capital transfer capacity
+  if business and os.time() >= business.reset_timestamp+self.cfg.transfer_reset_interval*60 then
+    vRP:execute("vRP/reset_transfer", {character_id = character_id, time = os.time()})
+    business.laundered = 0
   end
+
+  return business
 end
 
-local function business_leave(source)
-  vRP.closeMenu(source)
+-- close the business of a character
+function Business:closeBusiness(character_id)
+  vRP.execute("vRP/delete_business", {character_id = character_id})
 end
 
-local function build_client_business(source) -- build the city hall area/marker/blip
-  local user_id = vRP.getUserId(source)
-  if user_id then
-    for k,v in pairs(cfg.commerce_chambers) do
+-- EVENT
+Business.event = {}
+
+function Business.event:playerSpawn(user, first_spawn)
+  if first_spawn then
+    for k,v in pairs(self.cfg.commerce_chambers) do
       local x,y,z = table.unpack(v)
 
-      vRPclient._addBlip(source,x,y,z,cfg.blip[1],cfg.blip[2],lang.business.title())
-      vRPclient._addMarker(source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+      local menu
+      local function enter(user)
+        menu = user:openMenu("commerce_chamber")
+      end
 
-      vRP.setArea(source,"vRP:business"..k,x,y,z,1,1.5,business_enter,business_leave)
+      local function leave(user)
+        if menu then
+          user:closeMenu(menu)
+        end
+      end
+
+      vRP.EXT.Map.remote._addBlip(user.source,x,y,z,self.cfg.blip[1],self.cfg.blip[2],lang.business.title())
+      vRP.EXT.Map.remote._addMarker(user.source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+      user:setArea("vRP:business:"..k,x,y,z,1,1.5,enter,leave)
     end
   end
 end
 
-
-AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
-  -- first spawn, build business
-  if first_spawn then
-    build_client_business(source)
-  end
-end)
-
-
+vRP:registerExtension(Business)

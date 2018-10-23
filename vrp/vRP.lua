@@ -65,6 +65,7 @@ function vRP:__construct()
   self.users = {} -- map of id => User
   self.pending_users = {} -- pending user source update (first spawn), map of ids key => user
   self.users_by_source = {} -- map of source => User
+  self.users_by_cid = {} -- map of character id => user
 
   -- db/SQL API
   self.db_drivers = {}
