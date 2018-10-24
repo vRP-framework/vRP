@@ -78,6 +78,8 @@ function PlayerState.tunnel:update(state)
     for k,v in pairs(state) do
       user.cdata.state[k] = v
     end
+
+    vRP:triggerEvent("playerStateUpdate", user, state)
   end
 end
 

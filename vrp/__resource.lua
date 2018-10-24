@@ -28,9 +28,9 @@ server_scripts{
   "modules/business.lua",
   "modules/item_transformer.lua",
   "modules/hidden_transformer.lua",
+  "modules/home.lua",
   --[[
   "modules/police.lua",
-  "modules/home.lua",
   "modules/home_components.lua",
 
   -- basic implementations

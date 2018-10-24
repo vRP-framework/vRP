@@ -11,23 +11,24 @@ end
 
 -- create/update a player area
 function Map.User:setArea(name,x,y,z,radius,height,cb_enter,cb_leave)
+  self:removeArea(name)
   self.map_areas[name] = {enter=cb_enter,leave=cb_leave}
   vRP.EXT.Map.remote._setArea(self.source,name,x,y,z,radius,height)
 end
 
 -- delete a player area
 function Map.User:removeArea(name)
-  -- delete remote area
-  vRP.EXT.Map.remote._removeArea(self.source,name)
-
   -- delete local area
   local area = self.map_areas[name] 
   if area then
+    -- delete remote area
+    vRP.EXT.Map.remote._removeArea(self.source,name)
+
     if area.inside and area.leave then
       area.leave(self, name)
     end
 
-    areas[name] = nil
+    self.map_areas[name] = nil
   end
 end
 

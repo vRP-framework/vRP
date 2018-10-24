@@ -120,8 +120,7 @@ function Identity:__construct()
   vRP.EXT.GUI:registerMenuBuilder("main", function(menu)
     -- generate identity content
     -- get address
-    --local address = vRP.getUserAddress(user_id)
-    local address
+    local address = vRP.EXT.Home:getAddress(menu.user.cid)
     local home = ""
     local number = ""
     if address then

@@ -1,429 +1,492 @@
 
--- this module describe the home system (experimental, a lot can happen and not being handled)
-
 local lang = vRP.lang
-local cfg = module("cfg/homes")
 
--- sql
+-- this module describe the home system 
 
-vRP.prepare("vRP/home_tables", [[
-CREATE TABLE IF NOT EXISTS vrp_user_homes(
-  user_id INTEGER,
-  home VARCHAR(100),
-  number INTEGER,
-  CONSTRAINT pk_user_homes PRIMARY KEY(user_id),
-  CONSTRAINT fk_user_homes_users FOREIGN KEY(user_id) REFERENCES vrp_users(id) ON DELETE CASCADE,
-  UNIQUE(home,number)
-);
-]])
+-- Component
+local Component = class("Home.Component")
 
-vRP.prepare("vRP/get_address","SELECT home, number FROM vrp_user_homes WHERE user_id = @user_id")
-vRP.prepare("vRP/get_home_owner","SELECT user_id FROM vrp_user_homes WHERE home = @home AND number = @number")
-vRP.prepare("vRP/rm_address","DELETE FROM vrp_user_homes WHERE user_id = @user_id")
-vRP.prepare("vRP/set_address","REPLACE INTO vrp_user_homes(user_id,home,number) VALUES(@user_id,@home,@number)")
+function Component:__construct(slot, id, index, cfg, x, y, z)
+  self.slot = slot
+  self.id = id
+  self.index = index
+  self.cfg = cfg
+  self.x = x
+  self.y = y
+  self.z = z
+end
 
--- init
-async(function()
-  vRP.execute("vRP/home_tables")
-end)
+-- called when the component is loaded for a specific slot
+function Component:load()
+end
 
--- api
+-- called when the component is unloaded from a specific slot
+function Component:unload()
+end
 
-local components = {}
+-- called when a player enter the slot
+function Component:enter(user)
+end
 
--- return user address (home and number) or nil
-function vRP.getUserAddress(user_id, cbr)
-  local rows = vRP.query("vRP/get_address", {user_id = user_id})
+-- called when a player leave the slot
+function Component:leave(user)
+end
+
+-- Slot
+local Slot = class("Slot")
+
+function Slot:__construct(type, id, owner_id, home, number)
+  self.type = type
+  self.id = id
+  self.owner_id = owner_id
+  self.home = home
+  self.number = number
+
+  self.users = {}
+  self.components = {} -- map of index => component
+end
+
+function Slot:isEmpty()
+  return not next(self.users)
+end
+
+function Slot:load()
+  -- load components
+  for i,cfg in pairs(vRP.EXT.Home.cfg.slot_types[self.type][self.id]) do
+    local id,x,y,z = table.unpack(cfg)
+
+    -- get component class
+    local ccomponent = vRP.EXT.Home.components[id]
+    if ccomponent then
+      -- instantiate component
+      local component = ccomponent(self, id, i, cfg._config or {}, x,y,z)
+      self.components[i] = component
+
+      component:load()
+    else
+      vRP.EXT.Home:log("WARNING: try to instantiate undefined component \""..id.."\"")
+    end
+  end
+end
+
+function Slot:unload()
+  -- unload components
+  for i,component in pairs(self.components) do
+    component:unload()
+    self.components[i] = nil
+  end
+end
+
+function Slot:enter(user)
+  self.users[user] = true
+
+  -- components enter
+  for i,component in pairs(self.components) do
+    component:enter(user)
+  end
+end
+
+function Slot:leave(user)
+  -- components leave
+  for i,component in pairs(self.components) do
+    component:leave(user)
+  end
+
+  -- teleport to home entry point (outside)
+  local home_cfg = vRP.EXT.Home.cfg.homes[self.home]
+  vRP.EXT.Base.remote._teleport(user.source, table.unpack(home_cfg.entry_point)) -- already an array of params (x,y,z)
+
+  self.users[user] = nil
+end
+
+-- Entry component
+
+local EntryComponent = class("entry", Component)
+
+function EntryComponent:enter(user)
+  local x,y,z = self.x, self.y, self.z
+  -- teleport to the slot entry point
+  vRP.EXT.Base.remote._teleport(user.source, self.x,self.y,self.z)
+
+  -- build entry
+
+  local menu
+  local function enter(user)
+    menu = user:openMenu("home", {slot = self.slot})
+  end
+
+  local function leave(user)
+    if menu then
+      user:closeMenu(menu)
+    end
+  end
+
+  vRP.EXT.Map.remote._setNamedMarker(user.source,"vRP:home:entry",x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+  user:setArea("vRP:home:entry",x,y,z,1,1.5,enter,leave)
+end
+
+function EntryComponent:leave(user)
+  vRP.EXT.Map.remote._removeNamedMarker(user.source, "vRP:home:entry")
+  user:removeArea("vRP:home:entry")
+end
+
+-- Extension
+
+local Home = class("Home", vRP.Extension)
+
+-- SUBCLASS
+
+-- Component
+
+Home.Component = Component
+
+-- User
+
+Home.User = class("User")
+
+-- access a home by address
+-- return true on success
+function Home.User:accessHome(home, number)
+  self:leaveHome()
+
+  local slot = vRP.EXT.Home:getSlotByAddress(home,number) -- get already loaded slot
+
+  if not slot then -- load slot
+    local home_cfg = vRP.EXT.Home.cfg.homes[home]
+
+    if home_cfg then
+      -- find free slot
+      local sid = vRP.EXT.Home:findFreeSlot(home_cfg.slot)
+      if sid then
+        local owner_id = vRP.EXT.Home:getByAddress(home,number)
+        if owner_id then
+          -- allocate slot
+          slot = Slot(home_cfg.slot, sid, owner_id, home, number)
+          vRP.EXT.Home.slots[home_cfg.slot][sid] = slot
+          slot:load()
+        end
+      end
+    end
+  end
+
+  if slot then 
+    slot:enter(self)
+    self.home_slot = slot
+    return true
+  end
+end
+
+function Home.User:leaveHome()
+  if self.home_slot then
+    self.home_slot:leave(self)
+
+    if self.home_slot:isEmpty() then -- free slot
+      self.home_slot:unload()
+      vRP.EXT.Home.slots[self.home_slot.type][self.home_slot.id] = nil
+    end
+
+    self.home_slot = nil
+  end
+end
+
+function Home.User:inHome()
+  return self.home_slot ~= nil
+end
+
+-- PRIVATE METHODS
+
+-- menu: home
+local function menu_home(self)
+  local function m_leave(menu)
+    menu.user:leaveHome()
+  end
+
+  local function m_ejectall(menu)
+    local slot = menu.data.slot
+
+    for user in pairs(slot.users) do
+      user:leaveHome()
+    end
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("home", function(menu)
+    local user = menu.user
+    local slot = menu.data.slot
+
+    menu.title = slot.home
+    menu.css.header_color = "rgba(0,255,125,0.75)"
+
+    menu:addOption(lang.home.slot.leave.title(), m_leave)
+
+    -- if owner
+    if slot.owner_id == user.cid then
+      menu:addOption(lang.home.slot.ejectall.title(), m_ejectall, lang.home.slot.ejectall.description())
+    end
+  end)
+end
+
+-- menu: home entry
+local function menu_home_entry(self)
+  local function m_intercom(menu)
+    local user = menu.user
+
+    local number = parseInt(user:prompt(lang.home.intercom.prompt(), ""))
+    local huser
+    local hcid = self:getByAddress(menu.data.name,number)
+    if hcid then huser = vRP.users_by_cid[hcid] end
+    if huser then
+      if huser == user then -- identify owner (direct home access)
+        if not user:accessHome(menu.data.name, number) then
+          vRP.EXT.Base.remote._notify(user.source,lang.home.intercom.not_available())
+        end
+      else -- try to access home by asking owner
+        local who = user:prompt(lang.home.intercom.prompt_who(),"")
+        vRP.EXT.Base.remote._notify(user.source,lang.home.intercom.asked())
+        -- request owner to open the door
+        if huser:request(lang.home.intercom.request({who}), 30) then
+          user:accessHome(menu.data.name, number)
+        else
+          vRP.EXT.Base.remote._notify(user.source,lang.home.intercom.refused())
+        end
+      end
+    else
+      vRP.EXT.Base.remote._notify(user.source,lang.common.not_found())
+    end
+  end
+
+  local function m_buy(menu)
+    local user = menu.user
+    local home_cfg = self.cfg.homes[menu.data.name]
+
+    local address = self:getAddress(user.cid)
+    if not address then -- check if not already have a home
+      local number = self:findFreeNumber(menu.data.name, home_cfg.max)
+        if number then
+          if user:tryPayment(home_cfg.buy_price) then
+            -- bought, set address
+            self:setAddress(user.cid, menu.data.name, number)
+            vRP.EXT.Base.remote._notify(user.source,lang.home.buy.bought())
+          else
+            vRP.EXT.Base.remote._notify(user.source,lang.money.not_enough())
+          end
+        else
+          vRP.EXT.Base.remote._notify(user.source,lang.home.buy.full())
+        end
+    else
+      vRP.EXT.Base.remote._notify(user.source,lang.home.buy.have_home())
+    end
+  end
+
+  local function m_sell(menu)
+    local user = menu.user
+    local home_cfg = self.cfg.homes[menu.data.name]
+
+    local address = self:getAddress(user.cid)
+    if address and address.home == menu.data.name then -- check have home
+      -- sold, give sell price, remove address
+      user:giveWallet(home_cfg.sell_price)
+      self:removeAddress(user.cid)
+      vRP.EXT.Base.remote._notify(user.source,lang.home.sell.sold())
+    else
+      vRP.EXT.Base.remote._notify(user.source,lang.home.sell.no_home())
+    end
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("home_entry", function(menu)
+    menu.title = menu.data.name
+    menu.css.header_color = "rgba(0,255,125,0.75)"
+
+    local home_cfg = self.cfg.homes[menu.data.name]
+
+    menu:addOption(lang.home.intercom.title(), m_intercom, lang.home.intercom.description())
+    menu:addOption(lang.home.buy.title(), m_buy, lang.home.buy.description({home_cfg.buy_price}))
+    menu:addOption(lang.home.sell.title(), m_sell, lang.home.sell.description({home_cfg.sell_price}))
+  end)
+end
+
+-- METHODS
+
+function Home:__construct()
+  vRP.Extension.__construct(self)
+
+  self.cfg = module("vrp", "cfg/homes") 
+
+  self.components = {}
+  self.slots = {} -- map of type => map of slot id => slot instance
+
+  -- init slot types
+  for stype in pairs(self.cfg.slot_types) do
+    self.slots[stype] = {}
+  end
+
+  async(function()
+    -- sql
+    vRP:prepare("vRP/home_tables", [[
+    CREATE TABLE IF NOT EXISTS vrp_character_homes(
+      character_id INTEGER,
+      home VARCHAR(100),
+      number INTEGER,
+      CONSTRAINT pk_character_homes PRIMARY KEY(character_id),
+      CONSTRAINT fk_character_homes_characters FOREIGN KEY(character_id) REFERENCES vrp_characters(id) ON DELETE CASCADE,
+      UNIQUE(home,number)
+    );
+    ]])
+
+    vRP:prepare("vRP/get_address","SELECT home, number FROM vrp_character_homes WHERE character_id = @character_id")
+    vRP:prepare("vRP/get_home_owner","SELECT character_id FROM vrp_character_homes WHERE home = @home AND number = @number")
+    vRP:prepare("vRP/rm_address","DELETE FROM vrp_character_homes WHERE character_id = @character_id")
+    vRP:prepare("vRP/set_address","REPLACE INTO vrp_character_homes(character_id,home,number) VALUES(@character_id,@home,@number)")
+
+    -- init
+    vRP:execute("vRP/home_tables")
+  end)
+
+  -- menu
+  menu_home_entry(self)
+  menu_home(self)
+
+  -- entry component
+  self:registerComponent(EntryComponent)
+end
+
+-- return character address (home and number) or nil
+function Home:getAddress(cid)
+  local rows = vRP:query("vRP/get_address", {character_id = cid})
   return rows[1]
 end
 
--- set user address
-function vRP.setUserAddress(user_id,home,number)
-  vRP.execute("vRP/set_address", {user_id = user_id, home = home, number = number})
+-- set character address
+function Home:setAddress(cid,home,number)
+  vRP:execute("vRP/set_address", {character_id = cid, home = home, number = number})
 end
 
--- remove user address
-function vRP.removeUserAddress(user_id)
-  vRP.execute("vRP/rm_address", {user_id = user_id})
+-- remove character address
+function Home:removeAddress(cid)
+  vRP:execute("vRP/rm_address", {character_id = cid})
 end
 
--- return user_id or nil
-function vRP.getUserByAddress(home,number,cbr)
-  local rows = vRP.query("vRP/get_home_owner", {home = home, number = number})
+-- return character id or nil
+function Home:getByAddress(home,number)
+  local rows = vRP:query("vRP/get_home_owner", {home = home, number = number})
   if #rows > 0 then
-    return rows[1].user_id
+    return rows[1].character_id
   end
 end
 
 -- find a free address number to buy
 -- return number or nil if no numbers availables
-function vRP.findFreeNumber(home,max,cbr)
+function Home:findFreeNumber(home,max)
   local i = 1
   while i <= max do
-    if not vRP.getUserByAddress(home,i) then
+    if not self:getByAddress(home,i) then
       return i
     end
     i = i+1
   end
 end
 
--- define home component (oncreate and ondestroy are called for each player entering/leaving a slot)
--- name: unique component id
--- oncreate(owner_id, slot_type, slot_id, cid, config, data, x, y, z, player)
--- ondestroy(owner_id, slot_type, slot_id, cid, config, data, x, y, z, player)
---- owner_id: user_id of house owner
---- slot_type: slot type name
---- slot_id: slot id for a specific type
---- cid: component id (for this slot)
---- config: component config
---- data: component datatable
---- x,y,z: component position
---- player: player joining/leaving the slot
-function vRP.defHomeComponent(name, oncreate, ondestroy)
-  components[name] = {oncreate,ondestroy}
-end
+-- register home component
+-- id: unique component identifier (string)
+-- component: Home.Component derived class
+function Home:registerComponent(component)
+  if class.is(component, Home.Component) then
+    local id = class.name(component)
+    if self.components[id] then
+      self:log("WARNING: re-registered component \""..id.."\"")
+    end
 
-function vRP.getHomeSlotPlayers(stype, sid)
+    self.components[id] = component
+  else
+    self:error("Not a Component class.")
+  end
 end
 
 -- SLOTS
 
--- used (or not) slots
-local uslots = {}
-for k,v in pairs(cfg.slot_types) do
-  uslots[k] = {}
-  for l,w in pairs(v) do
-    uslots[k][l] = {used=false}
+-- get slot instance
+-- return slot or nil
+function Home:getSlot(stype, sid)
+  local group = self.slots[stype]
+  if group then
+    return group[sid]
   end
 end
 
--- get players in the specified home slot
--- return map of user_id -> player source or nil if the slot is unavailable
-function vRP.getHomeSlotPlayers(stype, sid)
-  local slot = uslots[stype][sid]
-  if slot and slot.used then
-    return slot.players
-  end
-end
-
--- return slot id or nil if no slot available
-local function allocateSlot(stype)
-  local slots = cfg.slot_types[stype]
-  if slots then
-    local _uslots = uslots[stype]
-    -- search the first unused slot
-    for k,v in pairs(slots) do
-      if _uslots[k] and not _uslots[k].used then
-        _uslots[k].used = true -- set as used
-        return k  -- return slot id
-      end
-    end
-  end
-
-  return nil
-end
-
--- free a slot
-local function freeSlot(stype, id)
-  local slots = cfg.slot_types[stype]
-  if slots then
-    uslots[stype][id] = {used = false} -- reset as unused
-  end
-end
-
--- get in use address slot (not very optimized yet)
--- return slot_type, slot_id or nil,nil
-local function getAddressSlot(home_name,number)
-  for k,v in pairs(uslots) do
+-- get slot instance by address
+-- return slot or nil
+function Home:getSlotByAddress(home, number)
+  for k,v in pairs(self.slots) do
     for l,w in pairs(v) do
-      if w.home_name == home_name and tostring(w.home_number) == tostring(number) then
-        return k,l
-      end
-    end
-  end
-
-  return nil,nil
-end
-
--- builds
-
-local function is_empty(table)
-  for k,v in pairs(table) do
-    return false
-  end
-
-  return true
-end
-
--- leave slot
-local function leave_slot(user_id,player,stype,sid) -- called when a player leave a slot
-  print(user_id.." leave slot "..stype.." "..sid)
-  local slot = uslots[stype][sid]
-  local home = cfg.homes[slot.home_name]
-
-  -- record if inside a home slot
-  local tmp = vRP.getUserTmpTable(user_id)
-  if tmp then
-    tmp.home_stype = nil
-    tmp.home_sid = nil
-  end
-
-  -- teleport to home entry point (outside)
-  vRPclient._teleport(player, table.unpack(home.entry_point)) -- already an array of params (x,y,z)
-
-  -- uncount player
-  slot.players[user_id] = nil
-
-  -- destroy loaded components and special entry component
-  for k,v in pairs(cfg.slot_types[stype][sid]) do
-    local name,x,y,z = table.unpack(v)
-
-    if name == "entry" then
-      -- remove marker/area
-      local nid = "vRP:home:slot"..stype..sid
-      vRPclient._removeNamedMarker(player,nid)
-      vRP.removeArea(player,nid)
-    else
-      local component = components[v[1]]
-      if component then
-        local data = slot.components[k]
-        if not data then
-          data = {}
-          slot.components[k] = data
-        end
-
-        -- ondestroy(owner_id, slot_type, slot_id, cid, config, data, x, y, z, player)
-        component[2](slot.owner_id, stype, sid, k, v._config or {}, data, x, y, z, player)
-      end
-    end
-  end
-
-  if is_empty(slot.players) then -- free the slot
-    print("free slot "..stype.." "..sid)
-    freeSlot(stype,sid)
-  end
-end
-
--- enter slot
-local function enter_slot(user_id,player,stype,sid) -- called when a player enter a slot
-  print(user_id.." enter slot "..stype.." "..sid)
-  local slot = uslots[stype][sid]
-  local home = cfg.homes[slot.home_name]
-
-  -- record inside a home slot
-  local tmp = vRP.getUserTmpTable(user_id)
-  if tmp then
-    tmp.home_stype = stype
-    tmp.home_sid = sid
-  end
-
-  -- count
-  slot.players[user_id] = player
-
-  -- build the slot entry menu
-  local menu = {name=slot.home_name,css={top="75px",header_color="rgba(0,255,125,0.75)"}}
-  menu[lang.home.slot.leave.title()] = {function(player,choice) -- add leave choice
-    leave_slot(user_id,player,stype,sid)
-  end}
-
-  local address = vRP.getUserAddress(user_id)
-  -- check if owner
-  if address and address.home == slot.home_name and tostring(address.number) == slot.home_number then
-    menu[lang.home.slot.ejectall.title()] = {function(player,choice) -- add eject all choice
-      -- copy players before calling leave for each (iteration while removing)
-      local copy = {}
-      for k,v in pairs(slot.players) do
-        copy[k] = v
-      end
-
-      for k,v in pairs(copy) do
-        leave_slot(k,v,stype,sid)
-      end
-    end,lang.home.slot.ejectall.description()}
-  end
-
-  -- build the slot entry menu marker/area
-
-  local function entry_enter(player,area)
-    vRP.openMenu(player,menu)
-  end
-
-  local function entry_leave(player,area)
-    vRP.closeMenu(player)
-  end
-
-  -- build components and special entry component
-  for k,v in pairs(cfg.slot_types[stype][sid]) do
-    local name,x,y,z = table.unpack(v)
-
-    if name == "entry" then
-      -- teleport to the slot entry point
-      vRPclient._teleport(player, x,y,z) -- already an array of params (x,y,z)
-
-      local nid = "vRP:home:slot"..stype..sid
-      vRPclient._setNamedMarker(player,nid,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
-      vRP.setArea(player,nid,x,y,z,1,1.5,entry_enter,entry_leave)
-    else -- load regular component
-      local component = components[v[1]]
-      if component then
-        local data = slot.components[k]
-        if not data then
-          data = {}
-          slot.components[k] = data
-        end
-
-        -- oncreate(owner_id, slot_type, slot_id, cid, config, data, x, y, z, player)
-        component[1](slot.owner_id, stype, sid, k, v._config or {}, data, x, y, z, player)
+      if w.home_name == home and w.home_number == number then
+        return w
       end
     end
   end
 end
 
--- access a home by address
--- return true on success
-function vRP.accessHome(user_id, home, number)
-  local _home = cfg.homes[home]
-  local stype,slotid = getAddressSlot(home,number) -- get current address slot
-  local player = vRP.getUserSource(user_id)
-
-  local owner_id = vRP.getUserByAddress(home,number)
-  if _home ~= nil and player ~= nil then
-    if stype == nil then -- allocate a new slot
-      stype = _home.slot
-      slotid = allocateSlot(_home.slot)
-
-      if slotid ~= nil then -- allocated, set slot home infos
-        local slot = uslots[stype][slotid]
-        slot.home_name = home
-        slot.home_number = number
-        slot.owner_id = owner_id
-        slot.players = {} -- map user_id => player
-        slot.components = {} -- components data
+-- return sid or nil
+function Home:findFreeSlot(stype)
+  local group = self.slots[stype]
+  local group_cfg = self.cfg.slot_types[stype]
+  if group_cfg then
+    for sid in pairs(group_cfg) do
+      if not group[sid] then
+        return sid
       end
-    end
-
-    if slotid ~= nil then -- slot available
-      enter_slot(user_id,player,stype,slotid)
-      return true
     end
   end
 end
 
--- build the home entry menu
-local function build_entry_menu(user_id, home_name)
-  local home = cfg.homes[home_name]
-  local menu = {name=home_name,css={top="75px",header_color="rgba(0,255,125,0.75)"}}
+-- EVENT
+Home.event = {}
 
-  -- intercom, used to enter in a home
-  menu[lang.home.intercom.title()] = {function(player,choice)
-    local number = vRP.prompt(player, lang.home.intercom.prompt(), "")
-      number = parseInt(number)
-      local huser_id = vRP.getUserByAddress(home_name,number)
-        if huser_id then
-          if huser_id == user_id then -- identify owner (direct home access)
-            if not vRP.accessHome(user_id, home_name, number) then
-                vRPclient._notify(player,lang.home.intercom.not_available())
-              end
-          else -- try to access home by asking owner
-            local hplayer = vRP.getUserSource(huser_id)
-            if hplayer ~= nil then
-              local who = vRP.prompt(player,lang.home.intercom.prompt_who(),"")
-                vRPclient._notify(player,lang.home.intercom.asked())
-                -- request owner to open the door
-                if vRP.request(hplayer, lang.home.intercom.request({who}), 30) then
-                    vRP.accessHome(user_id, home_name, number)
-                  else
-                    vRPclient._notify(player,lang.home.intercom.refused())
-                  end
-            else
-              vRPclient._notify(player,lang.home.intercom.refused())
-            end
-          end
-        else
-          vRPclient._notify(player,lang.common.not_found())
-        end
-  end,lang.home.intercom.description()}
+function Home.event:playerSpawn(user, first_spawn)
+  if first_spawn then
+    -- build home entries
+    for name,cfg in pairs(self.cfg.homes) do
+      local x,y,z = table.unpack(cfg.entry_point)
 
-  menu[lang.home.buy.title()] = {function(player,choice)
-    local address = vRP.getUserAddress(user_id)
-      if not address then -- check if not already have a home
-        local number = vRP.findFreeNumber(home_name, home.max)
-          if number then
-            if vRP.tryPayment(user_id, home.buy_price) then
-              -- bought, set address
-              vRP.setUserAddress(user_id, home_name, number)
-
-              vRPclient._notify(player,lang.home.buy.bought())
-            else
-              vRPclient._notify(player,lang.money.not_enough())
-            end
-          else
-            vRPclient._notify(player,lang.home.buy.full())
-          end
-      else
-        vRPclient._notify(player,lang.home.buy.have_home())
-      end
-  end, lang.home.buy.description({home.buy_price})}
-
-  menu[lang.home.sell.title()] = {function(player,choice)
-    local address = vRP.getUserAddress(user_id)
-      if address and address.home == home_name then -- check if already have a home
-        -- sold, give sell price, remove address
-        vRP.giveMoney(user_id, home.sell_price)
-        vRP.removeUserAddress(user_id)
-        vRPclient._notify(player,lang.home.sell.sold())
-      else
-        vRPclient._notify(player,lang.home.sell.no_home())
-      end
-  end, lang.home.sell.description({home.sell_price})}
-
-  return menu
-end
-
--- build homes entry points
-local function build_client_homes(source)
-  local user_id = vRP.getUserId(source)
-  if user_id then
-    for k,v in pairs(cfg.homes) do
-      local x,y,z = table.unpack(v.entry_point)
-
-      local function entry_enter(player,area)
-        local user_id = vRP.getUserId(player)
-        if user_id and vRP.hasPermissions(user_id,v.permissions or {}) then
-          vRP.openMenu(source,build_entry_menu(user_id, k))
+      local menu
+      local function enter(user)
+        if user:hasPermissions(cfg.permissions or {}) then
+          menu = user:openMenu("home_entry", {name = name})
         end
       end
 
-      local function entry_leave(player,area)
-        vRP.closeMenu(player)
+      local function leave(user)
+        if menu then
+          user:closeMenu(menu)
+        end
       end
 
-      vRPclient._addBlip(source,x,y,z,v.blipid,v.blipcolor,k)
-      vRPclient._addMarker(source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+      vRP.EXT.Map.remote._addBlip(user.source,x,y,z,cfg.blipid,cfg.blipcolor,name)
+      vRP.EXT.Map.remote._addMarker(user.source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
 
-      vRP.setArea(source,"vRP:home"..k,x,y,z,1,1.5,entry_enter,entry_leave)
+      user:setArea("vRP:home:"..name,x,y,z,1,1.5,enter,leave)
     end
   end
 end
 
-AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
-  if first_spawn then -- first spawn, build homes
-    build_client_homes(source)
-  else -- death, leave home if inside one
-    -- leave slot if inside one
-    local tmp = vRP.getUserTmpTable(user_id)
-    if tmp and tmp.home_stype then
-      leave_slot(user_id, source, tmp.home_stype, tmp.home_sid)
+function Home.event:playerStateUpdate(user, state)
+  -- override player state position when in home (to home entry)
+  if state.position then
+    local slot = user.home_slot
+    if slot then
+      local home_cfg = self.cfg.homes[slot.home]
+      if home_cfg then
+        local x,y,z = table.unpack(home_cfg.entry_point)
+        user.cdata.state.position = {x=x,y=y,z=z}
+      end
     end
   end
-end)
+end
 
-AddEventHandler("vRP:playerLeave",function(user_id, player) 
-  -- leave slot if inside one
-  local tmp = vRP.getUserTmpTable(user_id)
-  if tmp and tmp.home_stype then
-    leave_slot(user_id, player, tmp.home_stype, tmp.home_sid)
-  end
-end)
+function Home.event:playerLeave(user)
+  user:leaveHome()
+end
 
+function Home.event:playerDeath(user)
+  user:leaveHome()
+end
 
+vRP:registerExtension(Home)
