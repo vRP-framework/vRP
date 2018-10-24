@@ -27,6 +27,7 @@ server_scripts{
   "modules/garage.lua",
   "modules/business.lua",
   "modules/item_transformer.lua",
+  "modules/hidden_transformer.lua",
   --[[
   "modules/police.lua",
   "modules/home.lua",
