@@ -38,6 +38,17 @@ local function bind_informer(self, user)
   if self.informer then
     local x,y,z = table.unpack(self.informer)
 
+    local menu
+    local function enter(user)
+      menu = user:openMenu("hidden_transformer_informer")
+    end
+
+    local function leave(user)
+      if menu then
+        user:closeMenu(menu)
+      end
+    end
+
     -- add informer blip/marker/area
     vRP.EXT.Map.remote._setNamedBlip(user.source,"vRP:informer",x,y,z,self.cfg.informer.blipid,self.cfg.informer.blipcolor,lang.itemtr.informer.title())
     vRP.EXT.Map.remote._setNamedMarker(user.source,"vRP:informer",x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
