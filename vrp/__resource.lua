@@ -26,8 +26,8 @@ server_scripts{
   "modules/cloak.lua",
   "modules/garage.lua",
   "modules/business.lua",
-  --[[
   "modules/item_transformer.lua",
+  --[[
   "modules/police.lua",
   "modules/home.lua",
   "modules/home_components.lua",
