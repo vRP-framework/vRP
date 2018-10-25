@@ -200,7 +200,7 @@ end
 
 -- close the business of a character
 function Business:closeBusiness(character_id)
-  vRP.execute("vRP/delete_business", {character_id = character_id})
+  vRP:execute("vRP/delete_business", {character_id = character_id})
 end
 
 -- EVENT
