@@ -157,6 +157,7 @@ function GUI.User:closeMenu(menu)
 end
 
 -- close and rebuild current menu (no remove)
+-- menu is rebuilt, listeners are kept
 function GUI.User:actualizeMenu()
   local menu = self:getMenu()
   if menu then

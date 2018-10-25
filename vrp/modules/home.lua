@@ -42,7 +42,7 @@ function Slot:__construct(type, id, owner_id, home, number)
   self.home = home
   self.number = number
 
-  self.users = {}
+  self.users = {} -- map of users
   self.components = {} -- map of index => component
 end
 
@@ -103,6 +103,10 @@ end
 
 local EntryComponent = class("entry", Component)
 
+function EntryComponent:load()
+  self.point_id = "vRP:home:component:entry:"..self.index
+end
+
 function EntryComponent:enter(user)
   local x,y,z = self.x, self.y, self.z
   -- teleport to the slot entry point
@@ -112,7 +116,7 @@ function EntryComponent:enter(user)
 
   local menu
   local function enter(user)
-    menu = user:openMenu("home", {slot = self.slot})
+    menu = user:openMenu("home:component:entry", {slot = self.slot})
   end
 
   local function leave(user)
@@ -121,13 +125,13 @@ function EntryComponent:enter(user)
     end
   end
 
-  vRP.EXT.Map.remote._setNamedMarker(user.source,"vRP:home:entry",x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
-  user:setArea("vRP:home:entry",x,y,z,1,1.5,enter,leave)
+  vRP.EXT.Map.remote._setNamedMarker(user.source,self.point_id,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+  user:setArea(self.point_id,x,y,z,1,1.5,enter,leave)
 end
 
 function EntryComponent:leave(user)
-  vRP.EXT.Map.remote._removeNamedMarker(user.source, "vRP:home:entry")
-  user:removeArea("vRP:home:entry")
+  vRP.EXT.Map.remote._removeNamedMarker(user.source, self.point_id)
+  user:removeArea(self.point_id)
 end
 
 -- Extension
@@ -195,8 +199,8 @@ end
 
 -- PRIVATE METHODS
 
--- menu: home
-local function menu_home(self)
+-- menu: home component entry
+local function menu_home_component_entry(self)
   local function m_leave(menu)
     menu.user:leaveHome()
   end
@@ -209,7 +213,7 @@ local function menu_home(self)
     end
   end
 
-  vRP.EXT.GUI:registerMenuBuilder("home", function(menu)
+  vRP.EXT.GUI:registerMenuBuilder("home:component:entry", function(menu)
     local user = menu.user
     local slot = menu.data.slot
 
@@ -225,8 +229,8 @@ local function menu_home(self)
   end)
 end
 
--- menu: home entry
-local function menu_home_entry(self)
+-- menu: home
+local function menu_home(self)
   local function m_intercom(menu)
     local user = menu.user
 
@@ -292,7 +296,7 @@ local function menu_home_entry(self)
     end
   end
 
-  vRP.EXT.GUI:registerMenuBuilder("home_entry", function(menu)
+  vRP.EXT.GUI:registerMenuBuilder("home", function(menu)
     menu.title = menu.data.name
     menu.css.header_color = "rgba(0,255,125,0.75)"
 
@@ -342,7 +346,7 @@ function Home:__construct()
   end)
 
   -- menu
-  menu_home_entry(self)
+  menu_home_component_entry(self)
   menu_home(self)
 
   -- entry component
@@ -449,7 +453,7 @@ function Home.event:playerSpawn(user, first_spawn)
       local menu
       local function enter(user)
         if user:hasPermissions(cfg.permissions or {}) then
-          menu = user:openMenu("home_entry", {name = name})
+          menu = user:openMenu("home", {name = name})
         end
       end
 

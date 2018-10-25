@@ -107,14 +107,30 @@ function Inventory.User:clearInventory()
   self.cdata.inventory = {}
 end
 
+-- chest menu remove event
+local function e_chest_remove(menu)
+  -- unload chest
+
+  if menu.data.cb_close then
+    menu.data.cb_close(menu.data.id)
+  end
+
+  vRP.EXT.Inventory:unloadChest(menu.data.id)
+end
+
 -- open a chest by identifier
 -- cb_close(id): called when the chest is closed (optional)
 -- cb_in(chest_id, fullid, amount): called when an item is added (optional)
 -- cb_out(chest_id, fullid, amount): called when an item is taken (optional)
+-- return chest menu or nil
 function Inventory.User:openChest(id, max_weight, cb_close, cb_in, cb_out)
   if not vRP.EXT.Inventory.chests[id] then -- not already loaded
     local chest = vRP.EXT.Inventory:loadChest(id)
-    self:openMenu("chest", {id = id, chest = chest, max_weight = max_weight, cb_close = cb_close, cb_in = cb_in, cb_out = cb_out})
+    local menu = self:openMenu("chest", {id = id, chest = chest, max_weight = max_weight, cb_close = cb_close, cb_in = cb_in, cb_out = cb_out})
+
+    menu:listen("remove", e_chest_remove)
+
+    return menu
   else
     vRP.EXT.Base.remote._notify(self.source, lang.inventory.chest.already_opened())
   end
@@ -341,19 +357,17 @@ end
 -- menu: chest
 local function menu_chest(self)
   local function m_take(menu)
-    menu.user:openMenu("chest.take", menu.data) -- pass menu chest data
+    local smenu = menu.user:openMenu("chest.take", menu.data) -- pass menu chest data
+    menu:listen("remove", function(menu)
+      menu.user:closeMenu(smenu)
+    end)
   end
 
   local function m_put(menu)
-    menu.user:openMenu("chest.put", menu.data) -- pass menu chest data
-  end
-
-  local function e_remove(menu)
-    if menu.data.cb_close then
-      menu.data.cb_close(menu.data.id)
-    end
-
-    self:unloadChest(menu.data.id)
+    local smenu = menu.user:openMenu("chest.put", menu.data) -- pass menu chest data
+    menu:listen("remove", function(menu)
+      menu.user:closeMenu(smenu)
+    end)
   end
 
   vRP.EXT.GUI:registerMenuBuilder("chest", function(menu)
@@ -362,8 +376,6 @@ local function menu_chest(self)
 
     menu:addOption(lang.inventory.chest.take.title(), m_take)
     menu:addOption(lang.inventory.chest.put.title(), m_put)
-
-    menu:listen("remove", e_remove)
   end)
 end
 

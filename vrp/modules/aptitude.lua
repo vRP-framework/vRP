@@ -23,7 +23,7 @@ function Aptitude.User:varyExp(group, aptitude, amount)
   local Aptitude = vRP.EXT.Aptitude
   local apt = Aptitude:getAptitude(group, aptitude)
 
-  if def then
+  if apt then
     local aptitudes = self:getAptitudes()
 
     -- apply variation
@@ -34,13 +34,13 @@ function Aptitude.User:varyExp(group, aptitude, amount)
     exp = exp+amount
     --- clamp
     if exp < 0 then exp = 0 
-    elseif def[3] >= 0 and exp > def[3] then exp = def[3] end
+    elseif apt[3] >= 0 and exp > apt[3] then exp = apt[3] end
 
     aptitudes[group][aptitude] = exp
 
     -- info notify
     local group_title = Aptitude:getGroupTitle(group)
-    local aptitude_title = def[1]
+    local aptitude_title = apt[1]
 
     --- exp
     if amount < 0 then
