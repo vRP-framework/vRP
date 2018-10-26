@@ -15,8 +15,75 @@ local lang = {
     }
   },
   weapon = {
+    -- weapon translation by GTA 5 weapon name (lower case)
     pistol = "Pistolet"
   },
+  item = {
+    medkit = {
+      name = "Trousse de secours",
+      description = "Utilisé pour réanimer des personnes inconscientes."
+    },
+    repairkit = {
+      name = "Kit de réparation",
+      description = "Utilisé pour réparer des véhicules."
+    },
+    dirty_money = {
+      name = "Argent sale",
+      description = "Argent obtenu illégalement."
+    },
+    money = {
+      name = "Argent",
+      description = "Paquet d'argent.",
+      unpack = {
+        title = "Défaire",
+        prompt = "Montant à défaire ? (max {1})"
+      }
+    },
+    money_binder = {
+      name = "Paqueteur de billets",
+      description = "Utilisé pour créer des paquets de 1000.",
+      bind = {
+        title = "Faire un paquet"
+      }
+    },
+    wbody = {
+      name = "Corps de {1}",
+      description = "Corps d'arme de {1}.",
+      equip = {
+        title = "Equiper"
+      }
+    },
+    wammo = {
+      name = "Munitions de {1}",
+      description = "Munitions d'arme pour {1}.",
+      load = {
+        title = "Charger",
+        prompt = "Montant à charger ? (max {1})"
+      }
+    },
+    bulletproof_vest = {
+      name = "Gilet pare-balles",
+      description = "Une protection utile.",
+      wear = {
+        title = "Mettre"
+      }
+    }
+  },
+  edible = {
+    liquid = {
+      action = "Boire",
+      notify = "~b~ Boit {1}."
+    },
+    solid = {
+      action = "Manger",
+      notify = "~o~ Mange {1}."
+    },
+    drug = {
+      action = "Prendre",
+      notify = "~g~ Prend {1}."
+    }
+  },
+
   survival = {
     starving = "Affamé",
     thirsty = "Assoiffé"

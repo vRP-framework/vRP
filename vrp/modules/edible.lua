@@ -1,3 +1,4 @@
+local lang = vRP.lang
 
 local Edible = class("Edible", vRP.Extension)
 
@@ -9,7 +10,7 @@ local function define_items(self)
     if edible then
       return edible.name
     else
-      return "<"..args[2]..">"
+      return "[edible|"..args[2].."]"
     end
   end
 
@@ -31,7 +32,7 @@ local function define_items(self)
     local etype = self.types[edible.type]
 
     -- consume
-    if user:tryTakeItem(fullid, 1) then
+    if user:tryTakeItem(fullid, 1, nil, true) then
       -- menu update
       local namount = user:getItemAmount(fullid)
       if namount > 0 then
@@ -76,6 +77,54 @@ local function define_items(self)
   vRP.EXT.Inventory:defineItem("edible", i_edible_name, i_edible_description, i_edible_menu, i_edible_weight)
 end
 
+local function define_basics(self)
+  -- food effect
+  self:defineEffect("food", function(user, value)
+    user:varyVital("food", value)
+  end)
+
+  -- water effect
+  self:defineEffect("water", function(user, value)
+    user:varyVital("water", value)
+  end)
+
+  -- health effect
+  self:defineEffect("health", function(user, value)
+    vRP.EXT.Survival.remote._varyHealth(user.source, value)
+  end)
+
+  -- liquid type
+  local liquid_seq = {
+    {"mp_player_intdrink","intro_bottle",1},
+    {"mp_player_intdrink","loop_bottle",1},
+    {"mp_player_intdrink","outro_bottle",1}
+  }
+
+  self:defineType("liquid", lang.edible.liquid.action(), function(user, edible)
+    vRP.EXT.Base.remote._playAnim(user.source,true,liquid_seq,false)
+    vRP.EXT.Base.remote._notify(user.source, lang.edible.liquid.notify({edible.name}))
+  end)
+
+  -- solid type
+  local solid_seq = {
+    {"mp_player_inteat@burger", "mp_player_int_eat_burger_enter",1},
+    {"mp_player_inteat@burger", "mp_player_int_eat_burger",1},
+    {"mp_player_inteat@burger", "mp_player_int_eat_burger_fp",1},
+    {"mp_player_inteat@burger", "mp_player_int_eat_exit_burger",1}
+  }
+
+  self:defineType("solid", lang.edible.solid.action(), function(user, edible)
+    vRP.EXT.Base.remote._playAnim(user.source,true,solid_seq,false)
+    vRP.EXT.Base.remote._notify(user.source, lang.edible.solid.notify({edible.name}))
+  end)
+
+  -- drug type
+  self:defineType("drug", lang.edible.drug.action(), function(user, edible)
+    vRP.EXT.Base.remote._playAnim(user.source,true,liquid_seq,false)
+    vRP.EXT.Base.remote._notify(user.source, lang.edible.drug.notify({edible.name}))
+  end)
+end
+
 -- METHODS
 
 function Edible:__construct()
@@ -86,6 +135,8 @@ function Edible:__construct()
   self.types = {}
   self.effects = {}
   self.edibles = {}
+
+  define_basics(self)
 
   -- load edibles
   for id, v in pairs(self.cfg.edibles) do

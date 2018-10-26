@@ -10,29 +10,28 @@ cfg.shop_types = {
 
     -- list itemid => price
     -- Drinks
-    ["milk"] = 2,
-    ["water"] = 2,
-    ["coffee"] = 4,
-    ["tea"] = 4,
-    ["icetea"] = 8,
-    ["orangejuice"] = 8,
-    ["gocagola"] = 12,
-    ["redgull"] = 12,
-    ["lemonlimonad"] = 14,
-    ["vodka"] = 30,
+    ["edible|milk"] = 2,
+    ["edible|water"] = 2,
+    ["edible|coffee"] = 4,
+    ["edible|tea"] = 4,
+    ["edible|icetea"] = 8,
+    ["edible|orangejuice"] = 8,
+    ["edible|gocagola"] = 12,
+    ["edible|redgull"] = 12,
+    ["edible|lemonlimonad"] = 14,
+    ["edible|vodka"] = 30,
 
     --Food
-    ["bread"] = 2,
-    ["donut"] = 2,
-    ["tacos"] = 8,
-    ["sandwich"] = 20,
-    ["kebab"] = 20,
-    ["pdonut"] = 65,
+    ["edible|bread"] = 2,
+    ["edible|donut"] = 2,
+    ["edible|tacos"] = 8,
+    ["edible|sandwich"] = 20,
+    ["edible|kebab"] = 20
   },
   ["drugstore"] = {
     _config = {blipid=51, blipcolor=2},
     ["medkit"] = 75,
-    ["pills"] = 10
+    ["edible|pills"] = 10
   },
   ["tools"] = {
     _config = {blipid=51, blipcolor=47},

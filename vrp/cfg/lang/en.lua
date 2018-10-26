@@ -16,6 +16,7 @@ local lang = {
     }
   },
   weapon = {
+    -- weapon translation by GTA 5 weapon name (lower case)
     pistol = "Pistol"
   },
   item = {
@@ -43,7 +44,7 @@ local lang = {
       name = "Money binder",
       description = "Used to bind 1000$ of money.",
       bind = {
-        title = "Bind money",
+        title = "Bind money"
       }
     },
     wbody = {
@@ -67,6 +68,20 @@ local lang = {
       wear = {
         title = "Wear"
       }
+    }
+  },
+  edible = {
+    liquid = {
+      action = "Drink",
+      notify = "~b~ Drinking {1}."
+    },
+    solid = {
+      action = "Eat",
+      notify = "~o~ Eating {1}."
+    },
+    drug = {
+      action = "Take",
+      notify = "~g~ Taking {1}."
     }
   },
   survival = {

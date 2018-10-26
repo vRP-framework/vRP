@@ -189,7 +189,7 @@ local function menu_inventory_item(self)
 
     -- prompt number
     local amount = parseInt(user:prompt(lang.inventory.trash.prompt({user:getItemAmount(fullid)}),""))
-    if user:tryTakeItem(fullid,amount,false,true) then
+    if user:tryTakeItem(fullid,amount,nil,true) then
       if user:getItemAmount(fullid) > 0 then
         user:actualizeMenu()
       else

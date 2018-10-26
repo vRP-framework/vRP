@@ -31,7 +31,8 @@ server_scripts{
   "modules/home.lua",
   "modules/home_components.lua",
   "modules/police.lua",
-  "modules/radio.lua"
+  "modules/radio.lua",
+  "modules/edible.lua"
 }
 
 -- client scripts
