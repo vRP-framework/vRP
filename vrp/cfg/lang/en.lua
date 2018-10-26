@@ -18,6 +18,50 @@ local lang = {
   weapon = {
     pistol = "Pistol"
   },
+  item = {
+    medkit = {
+      title = "Medical Kit",
+      description = "Used to reanimate unconscious people."
+    },
+    repairkit = {
+      title = "Repair Kit",
+      description = "Used to repair vehicles."
+    },
+    dirty_money = {
+      title = "Dirty money",
+      description = "Illegally earned money."
+    },
+    money = {
+      title = "Money",
+      description = "Packed money.",
+      unpack = {
+        title = "Unpack",
+        prompt = "How much to unpack ? (max {1})"
+      }
+    },
+    money_binder = {
+      title = "Money binder",
+      description = "Used to bind 1000$ of money.",
+      bind = {
+        title = "Bind money",
+      }
+    },
+    wbody = {
+      title = "{1} body",
+      description = "Weapon body of {1}.",
+      equip = {
+        title = "Equip"
+      }
+    },
+    wammo = {
+      title = "{1} ammo",
+      description = "Weapon ammo for {1}.",
+      load = {
+        title = "Load",
+        prompt = "Amount to load ? (max {1})"
+      }
+    }
+  },
   survival = {
     starving = "starving",
     thirsty = "thirsty"

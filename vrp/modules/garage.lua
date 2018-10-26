@@ -315,6 +315,11 @@ function Garage:__construct()
     end
   end
 
+  -- items
+  vRP.EXT.Inventory:defineItem("repairkit", lang.item.repairkit.title(), lang.item.repairkit.description(), nil, 0.5)
+
+  -- menu
+
   menu_garage_owned(self)
   menu_garage_buy(self)
   menu_garage_sell(self)

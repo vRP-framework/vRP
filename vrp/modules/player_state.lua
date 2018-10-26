@@ -1,4 +1,97 @@
+local lang = vRP.lang
+
 local PlayerState = class("PlayerState", vRP.Extension)
+
+-- PRIVATE METHODS
+
+local function define_items(self)
+  -- parametric weapon items
+  -- give "wbody|WEAPON_PISTOL" and "wammo|WEAPON_PISTOL" to have pistol body and pistol bullets
+
+  local function get_wname(weapon_id)
+    local name = string.gsub(weapon_id,"WEAPON_","")
+    name = string.upper(string.sub(name,1,1))..string.lower(string.sub(name,2))
+    -- lang translation support, ex: weapon.pistol = "Pistol", by default use the native name
+    return lang.weapon[string.lower(name)]({}, name)
+  end
+
+  -- wbody
+
+  local function i_wbody_name(args)
+    return lang.item.wbody.title({get_wname(args[2])})
+  end
+
+  local function i_wbody_desc(args)
+    return lang.item.wbody.description({get_wname(args[2])})
+  end
+
+  local function m_wbody_equip(menu)
+    local user = menu.user
+    local fullid = menu.data.fullid
+    local citem = vRP.EXT.Inventory:computeItem(fullid)
+
+    if user:tryTakeItem(fullid, 1) then -- give weapon body
+      local weapons = {}
+      weapons[citem.args[2]] = {ammo = 0}
+      self.remote._giveWeapons(user.source, weapons)
+
+      local namount = user:getItemAmount(fullid)
+      if namount > 0 then
+        user:actualizeMenu()
+      else
+        user:closeMenu(menu)
+      end
+    end
+  end
+
+  local function i_wbody_menu(args, menu)
+    menu:addOption(lang.item.wbody.equip.title(), m_wbody_equip)
+  end
+
+  vRP.EXT.Inventory:defineItem("wbody",i_wbody_name,i_wbody_desc,i_wbody_menu,0.75)
+
+  -- wammo
+
+  local function i_wammo_name(args)
+    return lang.item.wammo.title({get_wname(args[2])})
+  end
+
+  local function i_wammo_desc(args)
+    return lang.item.wammo.description({get_wname(args[2])})
+  end
+
+  local function m_wammo_load(menu)
+    local user = menu.user
+    local fullid = menu.data.fullid
+
+    local amount = user:getItemAmount(fullid)
+    local ramount = parseInt(user:prompt(lang.item.wammo.load.prompt({amount}), ""))
+
+    local citem = vRP.EXT.Inventory:computeItem(fullid)
+
+    local weapons = self.remote.getWeapons(user.source)
+    if weapons[citem.args[2]] then -- check if the weapon is equiped
+      if user:tryTakeItem(fullid, ramount) then -- give weapon ammo
+        local weapons = {}
+        weapons[citem.args[2]] = {ammo = ramount}
+        self.remote._giveWeapons(user.source, weapons)
+
+        local namount = user:getItemAmount(fullid)
+        if namount > 0 then
+          user:actualizeMenu()
+        else
+          user:closeMenu(menu)
+        end
+      end
+    end
+  end
+
+  local function i_wammo_menu(args, menu)
+    menu:addOption(lang.item.wammo.load.title(), m_wammo_load)
+  end
+
+  vRP.EXT.Inventory:defineItem("wammo", i_wammo_name,i_wammo_desc,i_wammo_menu,0.01)
+end
 
 -- METHODS
 
@@ -6,6 +99,9 @@ function PlayerState:__construct()
   vRP.Extension.__construct(self)
 
   self.cfg = module("vrp", "cfg/player_state")
+
+  -- items
+  define_items(self)
 end
 
 -- EVENT

@@ -179,6 +179,11 @@ function Business:__construct()
     vRP:execute("vRP/business_tables")
   end)
 
+  -- items
+  vRP.EXT.Inventory:defineItem("dirty_money", lang.item.dirty_money.title(), lang.item.dirty_money.description(), nil, 0)
+
+  -- menu
+
   menu_commerce_chamber_directory(self)
   menu_commerce_chamber(self)
 end

@@ -98,12 +98,69 @@ function Money.User:tryFullPayment(amount, dry)
   return false
 end
 
+-- PRIVATE METHODS
+
+local function define_items(self)
+  local function m_money_unpack(menu)
+    local user = menu.user
+    local fullid = menu.data.fullid
+
+    local amount = user:getItemAmount(fullid)
+    local ramount = parseInt(user:prompt(lang.item.money.unpack.prompt({amount}), ""))
+    if user:tryTakeItem(fullid, ramount) then -- unpack the money
+      user:giveWallet(ramount)
+
+      if ramount == amount then
+        user:closeMenu(menu)
+      else
+        user:actualizeMenu()
+      end
+    end
+  end
+
+  local function i_money_menu(args, menu)
+    menu:addOption(lang.item.money.unpack.title(), m_money_unpack)
+  end
+
+  local function m_money_binder_bind(menu)
+    local user = menu.user
+    local fullid = menu.data.fullid
+
+    if user:tryTakeItem(fullid, 1, true) and user:tryPayment(1000, true) and user:tryGiveItem("money", 1000, true) then
+      user:tryTakeItem(fullid, 1)
+      user:tryPayment(1000)
+      user:tryGiveItem("money", 1000)
+
+      local namount = user:getItemAmount(fullid)
+      if namount > 0 then
+        user:actualizeMenu()
+      else
+        user:closeMenu(menu)
+      end
+    else
+      vRP.EXT.Base.remote._notify(user.source, lang.money.not_enough())
+    end
+  end
+
+  local function i_money_binder_menu(args, menu)
+    menu:addOption(lang.item.money_binder.bind.title(), m_money_binder_bind)
+  end
+
+  vRP.EXT.Inventory:defineItem("money", lang.item.money.title(), lang.item.money.description(), i_money_menu, 0)
+  vRP.EXT.Inventory:defineItem("money_binder", lang.item.money_binder.title(), lang.item.money_binder.description(), i_money_binder_menu, 0)
+end
+
 -- METHODS
 
 function Money:__construct()
   vRP.Extension.__construct(self)
 
   self.cfg = module("cfg/money")
+
+  -- items
+  define_items(self)
+
+  -- main menu
 
   local function m_give(menu)
     local user = menu.user

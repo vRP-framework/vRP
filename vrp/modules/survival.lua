@@ -52,6 +52,9 @@ function Survival:__construct()
   self:registerVital("water", 1)
   self:registerVital("food", 0.75)
 
+  -- items
+  vRP.EXT.Inventory:defineItem("medkit", lang.item.medkit.title(), lang.item.medkit.description(), nil, 0.5)
+
   -- water/food task increase
   local function task_update()
     SetTimeout(60000, task_update)
