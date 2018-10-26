@@ -1,6 +1,7 @@
 local Tools = module("vrp", "lib/Tools")
 local htmlEntities = module("vrp", "lib/htmlEntities")
 local EventDispatcher = module("vrp", "lib/EventDispatcher")
+local lang = vRP.lang
 
 local cfg = module("cfg/gui")
 
@@ -212,6 +213,11 @@ function GUI:__construct()
 
   self.cfg = module("vrp", "cfg/gui")
   self.menu_builders = {}
+
+  self:registerMenuBuilder("main", function(menu)
+    menu.title = lang.common.menu.title()
+    menu.css.header_color = "rgba(0,125,255,0.75)"
+  end)
 end
 
 -- MENU

@@ -31,11 +31,7 @@ server_scripts{
   "modules/home.lua",
   "modules/home_components.lua",
   "modules/police.lua",
-  --[[
-
-  -- basic implementations
-  "modules/basic_radio.lua"
-  --]]
+  "modules/radio.lua"
 }
 
 -- client scripts
@@ -51,10 +47,8 @@ client_scripts{
   "client/phone.lua",
   "client/garage.lua",
   "client/police.lua",
-  --[[
-  "client/iplloader.lua",
-  "client/basic_radio.lua"
-  --]]
+  "client/radio.lua",
+  "client/iplloader.lua"
 }
 
 -- client files

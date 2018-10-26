@@ -9,7 +9,10 @@ local lang = {
     not_found = "~r~Non trouvé.",
     request_refused = "~r~Requête refusée.",
     wearing_uniform = "~r~Attention, vous portez un uniforme.",
-    not_allowed = "~r~Non autorisé."
+    not_allowed = "~r~Non autorisé.",
+    menu = {
+      title = "Menu"
+    }
   },
   weapon = {
     pistol = "Pistolet"

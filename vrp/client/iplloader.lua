@@ -1,4 +1,4 @@
-if cfg.iplload then
+if vRP.cfg.iplload then
   Citizen.CreateThread(function()
     LoadMpDlcMaps()
     EnableMpDlcMaps(true)

@@ -102,7 +102,7 @@ local function menu_police_pc(self)
       local content = table.concat(tuser.police_records, "<br />")
       vRP.EXT.GUI.remote._setDiv(user.source,"police_pc",m_police_pc_css,content)
     else
-      vRPclient._notify(player,lang.common.not_found())
+      vRP.EXT.Base.remote._notify(user.source,lang.common.not_found())
     end
   end
 
@@ -185,10 +185,12 @@ local function menu_police_pc(self)
     menu.css.header_color = "rgba(0,125,255,0.75)"
 
     menu:addOption(lang.police.pc.searchreg.title(), m_searchreg, lang.police.pc.searchreg.description())
-    menu:addOption(lang.police.pc.trackveh.title(),mh_trackveh, lang.police.pc.trackveh.description())
+    menu:addOption(lang.police.pc.trackveh.title(), m_trackveh, lang.police.pc.trackveh.description())
     menu:addOption(lang.police.pc.records.show.title(), m_show_police_records, lang.police.pc.records.show.description())
     menu:addOption(lang.police.pc.records.delete.title(), m_delete_police_records, lang.police.pc.records.delete.description())
     menu:addOption(lang.police.pc.closebusiness.title(), m_closebusiness, lang.police.pc.closebusiness.description())
+
+    menu:listen("close", e_pc_div_close)
   end)
 end
 
