@@ -20,19 +20,19 @@ local lang = {
   },
   item = {
     medkit = {
-      title = "Medical Kit",
+      name = "Medical Kit",
       description = "Used to reanimate unconscious people."
     },
     repairkit = {
-      title = "Repair Kit",
+      name = "Repair Kit",
       description = "Used to repair vehicles."
     },
     dirty_money = {
-      title = "Dirty money",
+      name = "Dirty money",
       description = "Illegally earned money."
     },
     money = {
-      title = "Money",
+      name = "Money",
       description = "Packed money.",
       unpack = {
         title = "Unpack",
@@ -40,25 +40,32 @@ local lang = {
       }
     },
     money_binder = {
-      title = "Money binder",
+      name = "Money binder",
       description = "Used to bind 1000$ of money.",
       bind = {
         title = "Bind money",
       }
     },
     wbody = {
-      title = "{1} body",
+      name = "{1} body",
       description = "Weapon body of {1}.",
       equip = {
         title = "Equip"
       }
     },
     wammo = {
-      title = "{1} ammo",
+      name = "{1} ammo",
       description = "Weapon ammo for {1}.",
       load = {
         title = "Load",
         prompt = "Amount to load ? (max {1})"
+      }
+    },
+    bulletproof_vest = {
+      name = "Bulletproof Vest",
+      description = "A handy protection.",
+      wear = {
+        title = "Wear"
       }
     }
   },

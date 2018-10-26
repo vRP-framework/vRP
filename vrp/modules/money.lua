@@ -146,8 +146,8 @@ local function define_items(self)
     menu:addOption(lang.item.money_binder.bind.title(), m_money_binder_bind)
   end
 
-  vRP.EXT.Inventory:defineItem("money", lang.item.money.title(), lang.item.money.description(), i_money_menu, 0)
-  vRP.EXT.Inventory:defineItem("money_binder", lang.item.money_binder.title(), lang.item.money_binder.description(), i_money_binder_menu, 0)
+  vRP.EXT.Inventory:defineItem("money", lang.item.money.name(), lang.item.money.description(), i_money_menu, 0)
+  vRP.EXT.Inventory:defineItem("money_binder", lang.item.money_binder.name(), lang.item.money_binder.description(), i_money_binder_menu, 0)
 end
 
 -- METHODS

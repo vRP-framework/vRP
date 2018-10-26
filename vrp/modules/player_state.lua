@@ -18,7 +18,7 @@ local function define_items(self)
   -- wbody
 
   local function i_wbody_name(args)
-    return lang.item.wbody.title({get_wname(args[2])})
+    return lang.item.wbody.name({get_wname(args[2])})
   end
 
   local function i_wbody_desc(args)
@@ -53,7 +53,7 @@ local function define_items(self)
   -- wammo
 
   local function i_wammo_name(args)
-    return lang.item.wammo.title({get_wname(args[2])})
+    return lang.item.wammo.name({get_wname(args[2])})
   end
 
   local function i_wammo_desc(args)

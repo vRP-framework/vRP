@@ -316,7 +316,7 @@ function Garage:__construct()
   end
 
   -- items
-  vRP.EXT.Inventory:defineItem("repairkit", lang.item.repairkit.title(), lang.item.repairkit.description(), nil, 0.5)
+  vRP.EXT.Inventory:defineItem("repairkit", lang.item.repairkit.name(), lang.item.repairkit.description(), nil, 0.5)
 
   -- menu
 

@@ -180,7 +180,7 @@ function Business:__construct()
   end)
 
   -- items
-  vRP.EXT.Inventory:defineItem("dirty_money", lang.item.dirty_money.title(), lang.item.dirty_money.description(), nil, 0)
+  vRP.EXT.Inventory:defineItem("dirty_money", lang.item.dirty_money.name(), lang.item.dirty_money.description(), nil, 0)
 
   -- menu
 

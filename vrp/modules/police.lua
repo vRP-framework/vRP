@@ -587,6 +587,30 @@ div_police_identity{
   end)
 end
 
+local function define_items(self)
+  local function m_bulletproof_vest_wear(menu)
+    local user = menu.user
+    local fullid = menu.data.fullid
+
+    if user:tryTakeItem(fullid, 1) then -- take vest
+      vRP.EXT.PlayerState.remote._setArmour(user.source, 100)
+
+      local namount = user:getItemAmount(fullid)
+      if namount > 0 then
+        user:actualizeMenu()
+      else
+        user:closeMenu(menu)
+      end
+    end
+  end
+
+  local function i_bulletproof_vest_menu(args, menu)
+    menu:addOption(lang.item.bulletproof_vest.wear.title(), m_bulletproof_vest_wear)
+  end
+
+  vRP.EXT.Inventory:defineItem("bulletproof_vest", lang.item.bulletproof_vest.name(), lang.item.bulletproof_vest.description(), i_bulletproof_vest_menu, 1.5)
+end
+
 -- METHODS
 
 function Police:__construct()
@@ -596,6 +620,9 @@ function Police:__construct()
   self:log(#self.cfg.pcs.." PCs "..#self.cfg.jails.." jails")
 
   self.wantedlvl_users = {}
+
+  -- items
+  define_items(self)
 
   -- menu
   menu_police_pc(self)
