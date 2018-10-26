@@ -239,4 +239,27 @@ function Aptitude.event:characterLoad(user)
   end
 end
 
+function Aptitude.event:playerDeath(user)
+  if self.cfg.lose_aptitudes_on_death then
+    -- re-init aptitudes
+    user.cdata.aptitudes = {}
+
+    local aptitudes = user.cdata.aptitudes
+
+    for gid,group in pairs(self.groups) do
+      if not aptitudes[gid] then -- each group
+        aptitudes[gid] = {}
+      end
+
+      local gaptitudes = aptitudes[gid]
+
+      for id,def in pairs(group) do -- each aptitude
+        if id ~= "_title" and not gaptitudes[id] then
+          gaptitudes[id] = def[2] -- init exp
+        end
+      end
+    end
+  end
+end
+
 vRP:registerExtension(Aptitude)

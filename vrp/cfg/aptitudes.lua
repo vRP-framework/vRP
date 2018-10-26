@@ -23,4 +23,6 @@ cfg.gaptitudes = {
   }
 }
 
+cfg.lose_aptitudes_on_death = true
+
 return cfg

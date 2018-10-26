@@ -3,7 +3,7 @@ local cfg = {}
 
 cfg.inventory_weight_per_strength = 10 -- weight for an user inventory per strength level (no unit, but thinking in "kg" is a good norm)
 
-
+cfg.lose_inventory_on_death = true
 
 -- list of static chest types (map of name => {.title,.blipid,.blipcolor,.weight, .permissions (optional)})
 cfg.static_chest_types = {

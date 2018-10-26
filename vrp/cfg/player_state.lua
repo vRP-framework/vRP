@@ -21,6 +21,4 @@ for i=0,19 do
   cfg.default_customization[i] = {0,0}
 end
 
-cfg.lose_aptitudes_on_death = true
-
 return cfg

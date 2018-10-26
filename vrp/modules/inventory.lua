@@ -539,6 +539,12 @@ function Inventory.event:characterLoad(user)
   end
 end
 
+function Inventory.event:playerDeath(user)
+  if self.cfg.lose_inventory_on_death then
+    user.cdata.inventory = {}
+  end
+end
+
 --[[
 -- STATIC CHESTS
 
