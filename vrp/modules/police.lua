@@ -428,9 +428,9 @@ div_police_identity{
         else
           vRP.EXT.Base.remote._notify(user.source,lang.police.not_handcuffed())
         end
-      else
-        vRP.EXT.Base.remote._notify(user.source,lang.common.no_player_near())
       end
+    else
+      vRP.EXT.Base.remote._notify(user.source,lang.common.no_player_near())
     end
   end
 
@@ -477,9 +477,9 @@ div_police_identity{
         else
           vRP.EXT.Base.remote._notify(user.source,lang.police.not_handcuffed())
         end
-      else
-        vRP.EXT.Base.remote._notify(user.source,lang.common.no_player_near())
       end
+    else
+      vRP.EXT.Base.remote._notify(user.source,lang.common.no_player_near())
     end
   end
 
