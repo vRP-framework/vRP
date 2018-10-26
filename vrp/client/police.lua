@@ -1,42 +1,172 @@
 
 -- this module define some police tools and functions
+local Police = class("Police", vRP.Extension)
 
-local handcuffed = false
-local cop = false
+function Police:__construct()
+  vRP.Extension.__construct(self)
+
+  self.handcuffed = false
+  self.cop = false
+  self.wanted_level = 0
+
+  -- task: keep handcuffed animation
+  Citizen.CreateThread(function()
+    while true do
+      Citizen.Wait(15000)
+      if self.handcuffed then
+        vRP.EXT.Base:playAnim(true,{{"mp_arresting","idle",1}},true)
+      end
+    end
+  end)
+
+  -- task: force stealth movement while handcuffed (prevent use of fist and slow the player)
+  Citizen.CreateThread(function()
+    while true do
+      Citizen.Wait(0)
+      if self.handcuffed then
+        SetPedStealthMovement(GetPlayerPed(-1),true,"")
+        DisableControlAction(0,21,true) -- disable sprint
+        DisableControlAction(0,24,true) -- disable attack
+        DisableControlAction(0,25,true) -- disable aim
+        DisableControlAction(0,47,true) -- disable weapon
+        DisableControlAction(0,58,true) -- disable weapon
+        DisableControlAction(0,263,true) -- disable melee
+        DisableControlAction(0,264,true) -- disable melee
+        DisableControlAction(0,257,true) -- disable melee
+        DisableControlAction(0,140,true) -- disable melee
+        DisableControlAction(0,141,true) -- disable melee
+        DisableControlAction(0,142,true) -- disable melee
+        DisableControlAction(0,143,true) -- disable melee
+        DisableControlAction(0,75,true) -- disable exit vehicle
+        DisableControlAction(27,75,true) -- disable exit vehicle
+        DisableControlAction(0,22,true) -- disable jump
+        DisableControlAction(0,32,true) -- disable move up
+        DisableControlAction(0,268,true)
+        DisableControlAction(0,33,true) -- disable move down
+        DisableControlAction(0,269,true)
+        DisableControlAction(0,34,true) -- disable move left
+        DisableControlAction(0,270,true)
+        DisableControlAction(0,35,true) -- disable move right
+        DisableControlAction(0,271,true)
+      end
+    end
+  end)
+
+  -- task: follow 
+  Citizen.CreateThread(function()
+    while true do
+      Citizen.Wait(5000)
+      if self.follow_player then
+        local tplayer = GetPlayerFromServerId(follow_player)
+        local ped = GetPlayerPed(-1)
+        if NetworkIsPlayerConnected(tplayer) then
+          local tped = GetPlayerPed(tplayer)
+          TaskGoToEntity(ped, tped, -1, 1.0, 10.0, 1073741824.0, 0)
+          SetPedKeepTask(ped, true)
+        end
+      end
+    end
+  end)
+
+  -- task: jail
+  Citizen.CreateThread(function()
+    while true do
+      Citizen.Wait(5)
+      if self.current_jail then
+        local x,y,z = vRP.EXT.Base:getPosition()
+
+        local dx = x-self.current_jail[1]
+        local dy = y-self.current_jail[2]
+        local dist = math.sqrt(dx*dx+dy*dy)
+
+        if dist >= self.current_jail[4] then
+          local ped = GetPlayerPed(-1)
+          SetEntityVelocity(ped, 0.0001, 0.0001, 0.0001) -- stop player
+
+          -- normalize + push to the edge + add origin
+          dx = dx/dist*self.current_jail[4]+self.current_jail[1]
+          dy = dy/dist*self.current_jail[4]+self.current_jail[2]
+
+          -- teleport player at the edge
+          SetEntityCoordsNoOffset(ped,dx,dy,z,true,true,true)
+        end
+      end
+    end
+  end)
+
+  -- task: update wanted level
+  Citizen.CreateThread(function()
+    while true do
+      Citizen.Wait(2000)
+
+      -- if cop, reset wanted level
+      if self.cop then
+        ClearPlayerWantedLevel(PlayerId())
+        SetPlayerWantedLevelNow(PlayerId(),false)
+      end
+      
+      -- update level
+      local nwanted_level = GetPlayerWantedLevel(PlayerId())
+      if nwanted_level ~= self.wanted_level then
+        self.wanted_level = nwanted_level
+        self.remote._updateWantedLevel(self.wanted_level)
+      end
+    end
+  end)
+
+  -- task: detect vehicle stealing
+  Citizen.CreateThread(function()
+    while true do
+      Citizen.Wait(1)
+      local ped = GetPlayerPed(-1)
+      if IsPedTryingToEnterALockedVehicle(ped) or IsPedJacking(ped) then
+        Citizen.Wait(2000) -- wait x seconds before setting wanted
+        local model = vRP.EXT.Garage:getNearestOwnedVehicle(5)
+        if not model then -- prevent stealing detection on owned vehicle
+          for i=0,4 do -- keep wanted for 1 minutes 30 seconds
+            self:applyWantedLevel(2)
+            Citizen.Wait(15000)
+          end
+        end
+        Citizen.Wait(15000) -- wait 15 seconds before checking again
+      end
+    end
+  end)
+end
 
 -- set player as cop (true or false)
-function tvRP.setCop(flag)
-  cop = flag
+function Police:setCop(flag)
+  self.cop = flag
   SetPedAsCop(GetPlayerPed(-1),flag)
 end
 
 -- HANDCUFF
 
-function tvRP.toggleHandcuff()
-  handcuffed = not handcuffed
+function Police:toggleHandcuff()
+  self.handcuffed = not self.handcuffed
 
-  SetEnableHandcuffs(GetPlayerPed(-1), handcuffed)
-  if handcuffed then
-    tvRP.playAnim(true,{{"mp_arresting","idle",1}},true)
+  SetEnableHandcuffs(GetPlayerPed(-1), self.handcuffed)
+  if self.handcuffed then
+    vRP.EXT.Base:playAnim(true,{{"mp_arresting","idle",1}},true)
   else
-    tvRP.stopAnim(true)
+    vRP.EXT.Base:stopAnim(true)
     SetPedStealthMovement(GetPlayerPed(-1),false,"") 
   end
 end
 
-function tvRP.setHandcuffed(flag)
-  if handcuffed ~= flag then
-    tvRP.toggleHandcuff()
+function Police:setHandcuffed(flag)
+  if self.handcuffed ~= flag then
+    self:toggleHandcuff()
   end
 end
 
-function tvRP.isHandcuffed()
-  return handcuffed
+function Police:isHandcuffed()
+  return self.handcuffed
 end
 
 -- (experimental, based on experimental getNearestVehicle)
-function tvRP.putInNearestVehicleAsPassenger(radius)
-  local veh = tvRP.getNearestVehicle(radius)
+function Police:putInNearestVehicleAsPassenger(radius)
+  local veh = vRP.EXT.Garage:getNearestVehicle(radius)
 
   if IsEntityAVehicle(veh) then
     for i=1,math.max(GetVehicleMaxNumberOfPassengers(veh),3) do
@@ -50,81 +180,12 @@ function tvRP.putInNearestVehicleAsPassenger(radius)
   return false
 end
 
-function tvRP.putInNetVehicleAsPassenger(net_veh)
-  local veh = NetworkGetEntityFromNetworkId(net_veh)
-  if IsEntityAVehicle(veh) then
-    for i=1,GetVehicleMaxNumberOfPassengers(veh) do
-      if IsVehicleSeatFree(veh,i) then
-        SetPedIntoVehicle(GetPlayerPed(-1),veh,i)
-        return true
-      end
-    end
-  end
-end
-
-function tvRP.putInVehiclePositionAsPassenger(x,y,z)
-  local veh = tvRP.getVehicleAtPosition(x,y,z)
-  if IsEntityAVehicle(veh) then
-    for i=1,GetVehicleMaxNumberOfPassengers(veh) do
-      if IsVehicleSeatFree(veh,i) then
-        SetPedIntoVehicle(GetPlayerPed(-1),veh,i)
-        return true
-      end
-    end
-  end
-end
-
--- keep handcuffed animation
-Citizen.CreateThread(function()
-  while true do
-    Citizen.Wait(15000)
-    if handcuffed then
-      tvRP.playAnim(true,{{"mp_arresting","idle",1}},true)
-    end
-  end
-end)
-
--- force stealth movement while handcuffed (prevent use of fist and slow the player)
-Citizen.CreateThread(function()
-  while true do
-    Citizen.Wait(0)
-    if handcuffed then
-      SetPedStealthMovement(GetPlayerPed(-1),true,"")
-      DisableControlAction(0,21,true) -- disable sprint
-      DisableControlAction(0,24,true) -- disable attack
-      DisableControlAction(0,25,true) -- disable aim
-      DisableControlAction(0,47,true) -- disable weapon
-      DisableControlAction(0,58,true) -- disable weapon
-      DisableControlAction(0,263,true) -- disable melee
-      DisableControlAction(0,264,true) -- disable melee
-      DisableControlAction(0,257,true) -- disable melee
-      DisableControlAction(0,140,true) -- disable melee
-      DisableControlAction(0,141,true) -- disable melee
-      DisableControlAction(0,142,true) -- disable melee
-      DisableControlAction(0,143,true) -- disable melee
-      DisableControlAction(0,75,true) -- disable exit vehicle
-      DisableControlAction(27,75,true) -- disable exit vehicle
-      DisableControlAction(0,22,true) -- disable jump
-      DisableControlAction(0,32,true) -- disable move up
-      DisableControlAction(0,268,true)
-      DisableControlAction(0,33,true) -- disable move down
-      DisableControlAction(0,269,true)
-      DisableControlAction(0,34,true) -- disable move left
-      DisableControlAction(0,270,true)
-      DisableControlAction(0,35,true) -- disable move right
-      DisableControlAction(0,271,true)
-    end
-  end
-end)
-
 -- FOLLOW
-
-local follow_player
 
 -- follow another player
 -- player: nil to disable
-function tvRP.followPlayer(player)
-  follow_player = player
+function Police:followPlayer(player)
+  self.follow_player = player
 
   if not player then -- unfollow
     ClearPedTasks(GetPlayerPed(-1))
@@ -132,77 +193,30 @@ function tvRP.followPlayer(player)
 end
 
 -- return player or nil if not following anyone
-function tvRP.getFollowedPlayer()
-  return follow_player
+function Police:getFollowedPlayer()
+  return self.follow_player
 end
-
--- follow thread
-Citizen.CreateThread(function()
-  while true do
-    Citizen.Wait(5000)
-    if follow_player then
-      local tplayer = GetPlayerFromServerId(follow_player)
-      local ped = GetPlayerPed(-1)
-      if NetworkIsPlayerConnected(tplayer) then
-        local tped = GetPlayerPed(tplayer)
-        TaskGoToEntity(ped, tped, -1, 1.0, 10.0, 1073741824.0, 0)
-        SetPedKeepTask(ped, true)
-      end
-    end
-  end
-end)
 
 -- JAIL
 
-local jail = nil
-
 -- jail the player in a no-top no-bottom cylinder 
-function tvRP.jail(x,y,z,radius)
-  tvRP.teleport(x,y,z) -- teleport to center
-  jail = {x+0.0001,y+0.0001,z+0.0001,radius+0.0001}
+function Police:jail(x,y,z,radius)
+  vRP.EXT.Base:teleport(x,y,z) -- teleport to center
+  self.current_jail = {x+0.0001,y+0.0001,z+0.0001,radius+0.0001}
 end
 
 -- unjail the player
-function tvRP.unjail()
-  jail = nil
+function Police:unjail()
+  self.current_jail = nil
 end
 
-function tvRP.isJailed()
-  return jail ~= nil
+function Police:isJailed()
+  return self.current_jail ~= nil
 end
-
--- jail thread
-Citizen.CreateThread(function()
-  while true do
-    Citizen.Wait(5)
-    if jail then
-      local x,y,z = tvRP.getPosition()
-
-      local dx = x-jail[1]
-      local dy = y-jail[2]
-      local dist = math.sqrt(dx*dx+dy*dy)
-
-      if dist >= jail[4] then
-        local ped = GetPlayerPed(-1)
-        SetEntityVelocity(ped, 0.0001, 0.0001, 0.0001) -- stop player
-
-        -- normalize + push to the edge + add origin
-        dx = dx/dist*jail[4]+jail[1]
-        dy = dy/dist*jail[4]+jail[2]
-
-        -- teleport player at the edge
-        SetEntityCoordsNoOffset(ped,dx,dy,z,true,true,true)
-      end
-    end
-  end
-end)
 
 -- WANTED
 
--- wanted level sync
-local wanted_level = 0
-
-function tvRP.applyWantedLevel(new_wanted)
+function Police:applyWantedLevel(new_wanted)
   Citizen.CreateThread(function()
     local old_wanted = GetPlayerWantedLevel(PlayerId())
     local wanted = math.max(old_wanted,new_wanted)
@@ -214,42 +228,19 @@ function tvRP.applyWantedLevel(new_wanted)
   end)
 end
 
--- update wanted level
-Citizen.CreateThread(function()
-  while true do
-    Citizen.Wait(2000)
+-- TUNNEL
+Police.tunnel = {}
 
-    -- if cop, reset wanted level
-    if cop then
-      ClearPlayerWantedLevel(PlayerId())
-      SetPlayerWantedLevelNow(PlayerId(),false)
-    end
-    
-    -- update level
-    local nwanted_level = GetPlayerWantedLevel(PlayerId())
-    if nwanted_level ~= wanted_level then
-      wanted_level = nwanted_level
-      vRPserver._updateWantedLevel(wanted_level)
-    end
-  end
-end)
+Police.tunnel.setCop = Police.setCop
+Police.tunnel.toggleHandcuff = Police.toggleHandcuff
+Police.tunnel.setHandcuffed = Police.setHandcuffed
+Police.tunnel.isHandcuffed = Police.isHandcuffed
+Police.tunnel.putInNearestVehicleAsPassenger = Police.putInNearestVehicleAsPassenger
+Police.tunnel.followPlayer = Police.followPlayer
+Police.tunnel.getFollowedPlayer = Police.getFollowedPlayer
+Police.tunnel.jail = Police.jail
+Police.tunnel.unjail = Police.unjail
+Police.tunnel.isJailed = Police.isJailed
+Police.tunnel.applyWantedLevel = Police.applyWantedLevel
 
--- detect vehicle stealing
-Citizen.CreateThread(function()
-  while true do
-    Citizen.Wait(1)
-    local ped = GetPlayerPed(-1)
-    if IsPedTryingToEnterALockedVehicle(ped) or IsPedJacking(ped) then
-      Citizen.Wait(2000) -- wait x seconds before setting wanted
-      local ok,vtype,name = tvRP.getNearestOwnedVehicle(5)
-      if not ok then -- prevent stealing detection on owned vehicle
-        for i=0,4 do -- keep wanted for 1 minutes 30 seconds
-          tvRP.applyWantedLevel(2)
-          Citizen.Wait(15000)
-        end
-      end
-      Citizen.Wait(15000) -- wait 15 seconds before checking again
-    end
-  end
-end)
-
+vRP:registerExtension(Police)

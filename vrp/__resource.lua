@@ -30,8 +30,8 @@ server_scripts{
   "modules/hidden_transformer.lua",
   "modules/home.lua",
   "modules/home_components.lua",
-  --[[
   "modules/police.lua",
+  --[[
 
   -- basic implementations
   "modules/basic_radio.lua"
@@ -50,9 +50,9 @@ client_scripts{
   "client/identity.lua",
   "client/phone.lua",
   "client/garage.lua",
+  "client/police.lua",
   --[[
   "client/iplloader.lua",
-  "client/police.lua",
   "client/basic_radio.lua"
   --]]
 }

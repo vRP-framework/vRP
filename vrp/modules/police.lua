@@ -14,7 +14,7 @@ function Police.User:insertPoliceRecord(record)
   self:savePoliceRecords()
 end
 
-function Police.user:savePoliceRecords()
+function Police.User:savePoliceRecords()
   -- save records
   vRP:setCData(self.cid, "vRP:police:records", msgpack.pack(self.police_records))
 end
@@ -108,7 +108,7 @@ local function menu_police_pc(self)
 
   -- delete police records by registration
   local function m_delete_police_records(menu)
-    local menu.user
+    local user = menu.user
 
     local reg = user:prompt(lang.police.pc.searchreg.prompt(),"")
     local tuser
@@ -591,6 +591,7 @@ function Police:__construct()
   vRP.Extension.__construct(self)
 
   self.cfg = module("cfg/police")
+  self:log(#self.cfg.pcs.." PCs "..#self.cfg.jails.." jails")
 
   self.wantedlvl_users = {}
 
@@ -610,9 +611,9 @@ function Police:__construct()
     local weapons = vRP.EXT.PlayerState.remote.replaceWeapons(user.source, {})
     for k,v in pairs(weapons) do
       -- convert weapons to parametric weapon items
-      user:tryGiveItem("wbody|"..k, 1, true)
+      user:tryGiveItem("wbody|"..k, 1)
       if v.ammo > 0 then
-        user:tryGiveItem("wammo|"..k, v.ammo, true)
+        user:tryGiveItem("wammo|"..k, v.ammo)
       end
     end
   end
@@ -629,7 +630,7 @@ function Police:__construct()
 
   -- task: display wanted positions
   local function task_wanted_positions()
-    local listeners = vRP.Group:getUsersByPermission("police.wanted")
+    local listeners = vRP.EXT.Group:getUsersByPermission("police.wanted")
 
     for user, v in pairs(self.wantedlvl_users) do -- each wanted player
       if v > 0 then
@@ -657,7 +658,7 @@ Police.event = {}
 function Police.event:characterLoad(user)
   -- load records
   local sdata = vRP:getCData(user.cid, "vRP:police:records")
-  user.police_records = (sdata and msgpack.unpack(sdata) or {})
+  user.police_records = (sdata and string.len(sdata) > 0 and msgpack.unpack(sdata) or {})
 end
 
 function Police.event:playerSpawn(user, first_spawn)
@@ -712,3 +713,5 @@ function Police.tunnel:updateWantedLevel(level)
     end
   end
 end
+
+vRP:registerExtension(Police)

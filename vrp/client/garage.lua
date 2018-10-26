@@ -144,17 +144,6 @@ function Garage:replaceNearestVehicle(radius)
   end
 end
 
--- try to get a vehicle at a specific position (using raycast)
-function Garage:getVehicleAtPosition(x,y,z)
-  x = x+0.000
-  y = y+0.0001
-  z = z+0.0001
-
-  local ray = CastRayPointToPoint(x,y,z,x,y,z+4,10,GetPlayerPed(-1),0)
-  local a, b, c, d, ent = GetRaycastResult(ray)
-  return ent
-end
-
 -- return model or nil
 function Garage:getNearestOwnedVehicle(radius)
   self:tryOwnNearestVehicle(radius) -- get back network lost vehicles
