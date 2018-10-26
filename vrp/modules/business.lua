@@ -26,7 +26,7 @@ local function menu_commerce_chamber_directory(self)
     local rows = vRP:query("vRP/get_business_page", {b = page*10, n = 10})
     for _,row in ipairs(rows) do
       -- get owner identity
-      local identity = vRP.EXT.Identity:getIdentityByCharacterId(row.character_id)
+      local identity = vRP.EXT.Identity:getIdentity(row.character_id)
       if identity then
         menu:addOption(htmlEntities.encode(row.name), nil, lang.business.directory.info({row.capital,htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.registration,identity.phone}))
       end
@@ -61,7 +61,7 @@ local function menu_commerce_chamber(self)
   local function m_launder(menu)
     local user = menu.user
 
-    local business = self:getBusinessByCharacterId(user.cid) -- update business data
+    local business = self:getBusiness(user.cid) -- update business data
     -- compute launder capacity
     local launder_left = math.min(business.capital-business.laundered,user:getItemAmount("dirty_money")) 
     local amount = parseInt(user:prompt(lang.business.launder.prompt({launder_left}),""..launder_left))
@@ -123,7 +123,7 @@ local function menu_commerce_chamber(self)
 
     local user = menu.user
 
-    local business = self:getBusinessByCharacterId(user.cid)
+    local business = self:getBusiness(user.cid)
     if business then -- have a business
       -- business info
       menu:addOption(lang.business.info.title(), nil, lang.business.info.info({htmlEntities.encode(business.name), business.capital, business.laundered}))
@@ -185,7 +185,7 @@ end
 
 
 -- return character business data or nil
-function Business:getBusinessByCharacterId(character_id)
+function Business:getBusiness(character_id)
   local rows = vRP:query("vRP/get_business", {character_id = character_id})
   local business = rows[1]
 

@@ -55,8 +55,8 @@ function Identity:__construct()
     vRP:prepare("vRP/get_character_identity","SELECT * FROM vrp_character_identities WHERE character_id = @character_id")
     vRP:prepare("vRP/init_character_identity","INSERT IGNORE INTO vrp_character_identities(character_id,registration,phone,firstname,name,age) VALUES(@character_id,@registration,@phone,@firstname,@name,@age)")
     vRP:prepare("vRP/update_character_identity","UPDATE vrp_character_identities SET firstname = @firstname, name = @name, age = @age, registration = @registration, phone = @phone WHERE character_id = @character_id")
-    vRP:prepare("vRP/get_characterbyreg","SELECT character_id, user_id FROM vrp_character_identities INNER JOIN vrp_characters ON character_id = vrp_characters.id WHERE registration = @registration")
-    vRP:prepare("vRP/get_characterbyphone","SELECT character_id, user_id FROM vrp_character_identities INNER JOIN vrp_characters ON character_id = vrp_characters.id WHERE phone = @phone")
+    vRP:prepare("vRP/get_characterbyreg","SELECT character_id FROM vrp_character_identities WHERE registration = @registration")
+    vRP:prepare("vRP/get_characterbyphone","SELECT character_id FROM vrp_character_identities WHERE phone = @phone")
 
     vRP:execute("vRP/identity_tables")
   end)
@@ -137,7 +137,7 @@ end
 
 -- identity access (online and offline characters)
 -- return identity or nil
-function Identity:getIdentityByCharacterId(cid)
+function Identity:getIdentity(cid)
   local user = vRP.users_by_cid[cid]
   if user then
     return user.identity
@@ -147,19 +147,19 @@ function Identity:getIdentityByCharacterId(cid)
   end
 end
 
--- return character_id, user_id or nil
+-- return character_id or nil
 function Identity:getByRegistration(registration)
   local rows = vRP:query("vRP/get_characterbyreg", {registration = registration or ""})
   if #rows > 0 then
-    return rows[1].character_id, rows[1].user_id
+    return rows[1].character_id
   end
 end
 
--- return character_id, user_id or nil
+-- return character_id or nil
 function Identity:getByPhone(phone)
   local rows = vRP:query("vRP/get_characterbyphone", {phone = phone or ""})
   if #rows > 0 then
-    return rows[1].character_id, rows[1].user_id
+    return rows[1].character_id
   end
 end
 

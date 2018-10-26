@@ -42,7 +42,7 @@ cfg.groups = {
     "player.phone",
     "player.calladmin",
     "police.askid",
-    "police.store_weapons",
+    "player.store_weapons",
     "police.seizable" -- can be seized
   },
   ["police"] = {
@@ -68,7 +68,7 @@ cfg.groups = {
     "police.jail",
     "police.fine",
     "police.announce",
-    "-police.store_weapons",
+    "-player.store_weapons",
     "-police.seizable" -- negative permission, police can't seize itself, even if another group add the permission
   },
   ["emergency"] = {
