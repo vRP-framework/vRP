@@ -391,6 +391,30 @@ function Inventory:__construct()
 
   self.chests = {}
 
+  -- special item permission
+  local function fperm_item(user, params)
+    if #params == 3 then -- decompose item.operator
+      local item = params[2]
+      local op = params[3]
+
+      local amount = user:getItemAmount(item)
+
+      local fop = string.sub(op,1,1)
+      if fop == "<" then  -- less (item.<x)
+        local n = parseInt(string.sub(op,2,string.len(op)))
+        if amount < n then return true end
+      elseif fop == ">" then -- greater (item.>x)
+        local n = parseInt(string.sub(op,2,string.len(op)))
+        if amount > n then return true end
+      else -- equal (item.x)
+        local n = parseInt(string.sub(op,1,string.len(op)))
+        if amount == n then return true end
+      end
+    end
+  end
+
+  vRP.EXT.Group:registerPermissionFunction("item", fperm_item)
+
   -- menu
 
   menu_inventory_item(self)

@@ -114,6 +114,31 @@ function Aptitude:__construct()
     end
   end
 
+  -- special aptitude permission
+  local function fperm_aptitude(user, params)
+    if #params == 4 then -- decompose group.aptitude.operator
+      local group = params[2]
+      local aptitude = params[3]
+      local op = params[4]
+
+      local alvl = math.floor(self:expToLevel(user:getExp(group,aptitude)))
+
+      local fop = string.sub(op,1,1)
+      if fop == "<" then  -- less (group.aptitude.<x)
+        local lvl = parseInt(string.sub(op,2,string.len(op)))
+        if alvl < lvl then return true end
+      elseif fop == ">" then -- greater (group.aptitude.>x)
+        local lvl = parseInt(string.sub(op,2,string.len(op)))
+        if alvl > lvl then return true end
+      else -- equal (group.aptitude.x)
+        local lvl = parseInt(string.sub(op,1,string.len(op)))
+        if alvl == lvl then return true end
+      end
+    end
+  end
+
+  vRP.EXT.Group:registerPermissionFunction("aptitude", fperm_aptitude)
+
   -- menu
 
   local m_aptitude_css = [[

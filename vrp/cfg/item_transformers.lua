@@ -21,7 +21,7 @@ cfg.item_transformers = {
         out_money=0, -- money earned per unit
         reagents={}, -- items taken per unit
         products={ -- items given per unit
-          ["water"] = 1
+          ["edible|water"] = 1
         }
       },
       ["Harvest tacos"] = { -- action name
@@ -30,7 +30,7 @@ cfg.item_transformers = {
         out_money=0, -- money earned per unit
         reagents={}, -- items taken per unit
         products={ -- items given per unit
-          ["tacos"] = 1
+          ["edible|tacos"] = 1
         }
       }
     }

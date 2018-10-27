@@ -96,51 +96,6 @@ function Group.User:hasPermission(perm)
 
   local fchar = string.sub(perm,1,1)
 
-  --[[
-  if fchar == "@" then -- special aptitude permission
-    local _perm = string.sub(perm,2,string.len(perm))
-    local parts = splitString(_perm,".")
-    if #parts == 3 then -- decompose group.aptitude.operator
-      local group = parts[1]
-      local aptitude = parts[2]
-      local op = parts[3]
-
-      local alvl = math.floor(vRP.expToLevel(vRP.getExp(user_id,group,aptitude)))
-
-      local fop = string.sub(op,1,1)
-      if fop == "<" then  -- less (group.aptitude.<x)
-        local lvl = parseInt(string.sub(op,2,string.len(op)))
-        if alvl < lvl then return true end
-      elseif fop == ">" then -- greater (group.aptitude.>x)
-        local lvl = parseInt(string.sub(op,2,string.len(op)))
-        if alvl > lvl then return true end
-      else -- equal (group.aptitude.x)
-        local lvl = parseInt(string.sub(op,1,string.len(op)))
-        if alvl == lvl then return true end
-      end
-    end
-  elseif fchar == "#" then -- special item permission
-    local _perm = string.sub(perm,2,string.len(perm))
-    local parts = splitString(_perm,".")
-    if #parts == 2 then -- decompose item.operator
-      local item = parts[1]
-      local op = parts[2]
-
-      local amount = vRP.getInventoryItemAmount(user_id, item)
-
-      local fop = string.sub(op,1,1)
-      if fop == "<" then  -- less (item.<x)
-        local n = parseInt(string.sub(op,2,string.len(op)))
-        if amount < n then return true end
-      elseif fop == ">" then -- greater (item.>x)
-        local n = parseInt(string.sub(op,2,string.len(op)))
-        if amount > n then return true end
-      else -- equal (item.x)
-        local n = parseInt(string.sub(op,1,string.len(op)))
-        if amount == n then return true end
-      end
-    end
-    --]]
   if fchar == "!" then -- special function permission
     local _perm = string.sub(perm,2,string.len(perm))
     local params = splitString(_perm,".")
@@ -205,22 +160,15 @@ function Group:__construct()
     return not user:hasPermission("!"..table.concat(params, ".", 2))
   end)
 
-  --[[
-  vRP.registerPermissionFunction("is", function(user_id, parts)
-    local param = parts[2]
+  -- register fperm is ...
+  self:registerPermissionFunction("is", function(user, params)
+    local param = params[2]
     if param == "inside" then
-      local player = vRP.getUserSource(user_id)
-      if player then
-        return vRPclient.isInside(player)
-      end
+      return vRP.EXT.Base.remote.isInside(user.source)
     elseif param == "invehicle" then
-      local player = vRP.getUserSource(user_id)
-      if player then
-        return vRPclient.isInVehicle(player)
-      end
+      return vRP.EXT.Garage.remote.isInVehicle(user.source)
     end
   end)
-  --]]
 end
 
 -- return users list
@@ -256,6 +204,9 @@ end
 --- params: params (strings) of the permissions, ex "!name.param1.param2" -> ["name", "param1", "param2"]
 --- should return true or false/nil
 function Group:registerPermissionFunction(name, callback)
+  if self.func_perms[name] then
+    self:log("WARNING: re-registered permission function \""..name.."\"")
+  end
   self.func_perms[name] = callback
 end
 
