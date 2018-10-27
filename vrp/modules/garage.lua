@@ -393,7 +393,7 @@ function Garage:__construct()
     local user = menu.user
 
     -- anim and repair
-    if user:tryGetItem("repairkit",1) then
+    if user:tryTakeItem("repairkit",1) then
       vRP.EXT.Base.remote._playAnim(user.source,false,{task="WORLD_HUMAN_WELDING"},false)
       SetTimeout(15000, function()
         self.remote._fixNearestVehicle(user.source,7)
