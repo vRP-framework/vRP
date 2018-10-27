@@ -99,8 +99,7 @@ end
 
 -- return maximum weight of inventory
 function Inventory.User:getInventoryMaxWeight()
---  return math.floor(vRP.expToLevel(vRP.getExp(user_id, "physical", "strength")))*cfg.inventory_weight_per_strength
-  return 30
+  return math.floor(vRP.EXT.Aptitude:expToLevel(self:getExp("physical", "strength")))*vRP.EXT.Inventory.cfg.inventory_weight_per_strength
 end
 
 function Inventory.User:clearInventory()
