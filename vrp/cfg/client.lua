@@ -18,6 +18,8 @@ cfg.gui = {
   anchor_minimap_bottom = 213
 }
 
+cfg.default_menu = true -- if false, will disable the default menu
+
 -- gui controls (see https://wiki.fivem.net/wiki/Controls)
 -- recommended to keep the default values and ask players to change their keys
 cfg.controls = {
