@@ -177,7 +177,7 @@ function Radio:enter(user)
   -- auto play station
   if self.station then
     local x,y,z = table.unpack(self.source_position)
-    vRP.EXT.GUI.remote._setAudioSource(user.source, self.point_id, self.station, 0.5, x, y, z, 50)
+    vRP.EXT.Audio.remote._setAudioSource(user.source, self.point_id, self.station, 0.5, x, y, z, 50)
   end
 end
 
@@ -188,7 +188,7 @@ function Radio:leave(user)
 
   -- auto stop station
   if self.station then
-    vRP.EXT.GUI.remote._removeAudioSource(user.source, self.point_id)
+    vRP.EXT.Audio.remote._removeAudioSource(user.source, self.point_id)
   end
 end
 
@@ -198,7 +198,7 @@ function Radio:off()
 
     -- remove radio source for all players
     for user in pairs(self.slot.users) do
-      vRP.EXT.GUI.remote._removeAudioSource(user.source, self.point_id)
+      vRP.EXT.Audio.remote._removeAudioSource(user.source, self.point_id)
     end
   end
 end
@@ -212,7 +212,7 @@ function Radio:play(name)
 
     -- apply station change to players
     for user in pairs(self.slot.users) do
-      vRP.EXT.GUI.remote._setAudioSource(user.source, self.point_id, self.station, 0.5, x, y, z, 50)
+      vRP.EXT.Audio.remote._setAudioSource(user.source, self.point_id, self.station, 0.5, x, y, z, 50)
     end
   end
 end

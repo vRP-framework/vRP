@@ -20,14 +20,14 @@ function Phone.User:sendSMS(phone, msg)
       sms = string.sub(msg,1,cfg.sms_size)
     end
 
-    local cid, uid = vRP.EXT.Identity:getByPhone(phone)
+    local cid = vRP.EXT.Identity:getByPhone(phone)
     if cid then
-      local tuser = vRP.users[uid]
-      if tuser and tuser.cid == cid then
+      local tuser = vRP.users_by_cid[cid]
+      if tuser then
         local from = tuser:getPhoneDirectoryName(self.identity.phone).." ("..self.identity.phone..")"
 
         vRP.EXT.Base.remote._notify(tuser.source,lang.phone.sms.notify({from, msg}))
-        vRP.EXT.GUI.remote._playAudioSource(tuser.source, cfg.sms_sound, 0.5)
+        vRP.EXT.Audio.remote._playAudioSource(tuser.source, cfg.sms_sound, 0.5)
         tuser:addSMS(self.identity.phone, msg)
         return true
       end
@@ -53,10 +53,10 @@ end
 function Phone.User:phoneCall(phone)
   local cfg = vRP.EXT.Phone.cfg
 
-  local cid, uid = vRP.EXT.Identity:getByPhone(phone)
+  local cid = vRP.EXT.Identity:getByPhone(phone)
   if cid then
-    local tuser = vRP.users[uid]
-    if tuser and tuser.cid == cid then
+    local tuser = vRP.users_by_cid[cid]
+    if tuser then
       local to = self:getPhoneDirectoryName(phone).." ("..phone..")"
       local from = tuser:getPhoneDirectoryName(self.identity.phone).." ("..self.identity.phone..")"
 
@@ -68,15 +68,15 @@ function Phone.User:phoneCall(phone)
       vRP.EXT.Base.remote._notify(tuser.source,lang.phone.call.notify_from({from}))
 
       -- play dialing sound
-      vRP.EXT.GUI.remote._setAudioSource(self.source, "vRP:phone:dialing", cfg.dialing_sound, 0.5)
-      vRP.EXT.GUI.remote._setAudioSource(tuser.source, "vRP:phone:dialing", cfg.ringing_sound, 0.5)
+      vRP.EXT.Audio.remote._setAudioSource(self.source, "vRP:phone:dialing", cfg.dialing_sound, 0.5)
+      vRP.EXT.Audio.remote._setAudioSource(tuser.source, "vRP:phone:dialing", cfg.ringing_sound, 0.5)
 
       local ok = false
 
       -- send request to called
       if tuser:request(lang.phone.call.ask({from}), 15) then -- accepted
         vRP.EXT.Phone.remote._hangUp(tuser.source) -- hangup phone of the receiver
-        vRP.EXT.GUI.remote._connectVoice(tuser.source, "phone", self.source) -- connect voice
+        vRP.EXT.Audio.remote._connectVoice(tuser.source, "phone", self.source) -- connect voice
         ok = true
       else -- refused
         vRP.EXT.Base.remote._notify(self.source,lang.phone.call.notify_refused({to})) 
@@ -84,8 +84,8 @@ function Phone.User:phoneCall(phone)
       end
 
       -- remove dialing sound
-      vRP.EXT.GUI.remote._removeAudioSource(self.source, "vRP:phone:dialing")
-      vRP.EXT.GUI.remote._removeAudioSource(tuser.source, "vRP:phone:dialing")
+      vRP.EXT.Audio.remote._removeAudioSource(self.source, "vRP:phone:dialing")
+      vRP.EXT.Audio.remote._removeAudioSource(tuser.source, "vRP:phone:dialing")
 
       return ok
     end
@@ -97,12 +97,12 @@ end
 function Phone.User:sendSMSPos(phone, x,y,z)
   local cfg = vRP.EXT.Phone.cfg
 
-  local cid, uid = vRP.EXT.Identity:getByPhone(phone)
+  local cid = vRP.EXT.Identity:getByPhone(phone)
   if cid then
-    local tuser = vRP.users[uid]
-    if tuser and tuser.cid == cid then
+    local tuser = vRP.users_by_cid[cid]
+    if tuser then
       local from = tuser:getPhoneDirectoryName(self.identity.phone).." ("..self.identity.phone..")"
-      vRP.EXT.GUI.remote._playAudioSource(tuser.source, cfg.sms_sound, 0.5)
+      vRP.EXT.Audio.remote._playAudioSource(tuser.source, cfg.sms_sound, 0.5)
       vRP.EXT.Base.remote._notify(tuser.source,lang.phone.smspos.notify({from})) -- notify
       -- add position for 5 minutes
       local bid = vRP.EXT.Map.remote.addBlip(tuser.source,x,y,z,162,37,from)

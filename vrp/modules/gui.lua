@@ -256,9 +256,6 @@ function GUI.event:playerSpawn(user, first_spawn)
     -- load additional css using the div api
     self.remote._setDiv(user.source, "additional_css",".div_additional_css{ display: none; }\n\n"..self.cfg.css,"")
 
-    -- send peer config
-    self.remote._setPeerConfiguration(user.source, self.cfg.voip_peer_configuration)
-
     -- load static menus
     --[[
     for k,v in pairs(self.cfg.static_menus) do
@@ -359,12 +356,6 @@ function GUI.tunnel:openMainMenu()
   if user then
     user:openMenu("main")
   end
-end
-
--- VoIP
-
-function GUI.tunnel:signalVoicePeer(player, data)
-  self.remote._signalVoicePeer(player, source, data)
 end
 
 vRP:registerExtension(GUI)

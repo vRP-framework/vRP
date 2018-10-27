@@ -8,7 +8,7 @@ function Radio:__construct()
   self.talking = false
 
   -- radio channel behavior
-  vRP.EXT.GUI:registerVoiceCallbacks("radio", function(player)
+  vRP.EXT.Audio:registerVoiceCallbacks("radio", function(player)
     self:log("(vRPvoice-radio) requested by "..player)
     return (self.rplayers[player] ~= nil)
   end,
@@ -28,8 +28,8 @@ function Radio:__construct()
       self.talking = IsControlPressed(table.unpack(vRP.cfg.controls.radio))
 
       if old_talking ~= self.talking then
-        vRP.EXT.GUI:setVoiceState("world", nil, talking)
-        vRP.EXT.GUI:setVoiceState("radio", nil, talking)
+        vRP.EXT.Audio:setVoiceState("world", nil, talking)
+        vRP.EXT.Audio:setVoiceState("radio", nil, talking)
       end
     end
   end)
@@ -40,7 +40,7 @@ Radio.event = {}
 
 function Radio.event:NUIready()
   -- radio channel config
-  vRP.EXT.GUI:configureVoice("radio", vRP.cfg.radio_voice_config)
+  vRP.EXT.Audio:configureVoice("radio", vRP.cfg.radio_voice_config)
 end
 
 -- TUNNEL
@@ -52,7 +52,7 @@ end
 
 function Radio.tunnel:disconnectRadio()
   self.rplayers = {}
-  vRP.EXT.GUI:disconnectVoice("radio", nil)
+  vRP.EXT.Audio:disconnectVoice("radio", nil)
 end
 
 vRP:registerExtension(Radio)

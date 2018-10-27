@@ -322,9 +322,9 @@ local function m_audiosource(menu)
   if name and string.len(name) > 0 then
     if url and string.len(url) > 0 then
       local x,y,z = vRP.EXT.Base.remote.getPosition(user.source)
-      vRP.EXT.GUI.remote._setAudioSource(-1,"vRP:admin:"..name,url,0.5,x,y,z,125)
+      vRP.EXT.Audio.remote._setAudioSource(-1,"vRP:admin:"..name,url,0.5,x,y,z,125)
     else
-      vRP.EXT.GUI.remote._removeAudioSource(-1,"vRP:admin:"..name)
+      vRP.EXT.Audio.remote._removeAudioSource(-1,"vRP:admin:"..name)
     end
   end
 end

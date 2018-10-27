@@ -10,8 +10,8 @@ function Phone:__construct()
   self.in_call = false
 
   -- phone channel behavior
-  local GUI = vRP.EXT.GUI
-  GUI:registerVoiceCallbacks("phone", function(player)
+  local Audio = vRP.EXT.Audio
+  Audio:registerVoiceCallbacks("phone", function(player)
     self:log("(vRPvoice-phone) requested by "..player)
     if player == self.player_called then
       self.player_called = nil
@@ -21,14 +21,14 @@ function Phone:__construct()
   function(player, is_origin)
     self:log("(vRPvoice-phone) connected to "..player)
     self.in_call = true
-    GUI:setVoiceState("phone", nil, true)
-    GUI:setVoiceState("world", nil, true)
+    Audio:setVoiceState("phone", nil, true)
+    Audio:setVoiceState("world", nil, true)
   end,
   function(player)
     self:log("(vRPvoice-phone) disconnected from "..player)
     self.in_call = false
-    if not GUI:isSpeaking() then -- end world voice if not speaking
-      GUI:setVoiceState("world", nil, false)
+    if not Audio:isSpeaking() then -- end world voice if not speaking
+      Audio:setVoiceState("world", nil, false)
     end
   end)
 
@@ -37,14 +37,14 @@ function Phone:__construct()
     while true do
       Citizen.Wait(500)
       if self.in_call then -- force world voice if in a phone call
-        GUI:setVoiceState("world", nil, true)
+        Audio:setVoiceState("world", nil, true)
       end
     end
   end)
 end
 
 function Phone:hangUp()
-  vRP.EXT.GUI:disconnectVoice("phone", nil)
+  vRP.EXT.Audio:disconnectVoice("phone", nil)
 end
 
 -- EVENT
@@ -52,7 +52,7 @@ Phone.event = {}
 
 function Phone.event:NUIready()
   -- phone channel config
-  vRP.EXT.GUI:configureVoice("phone", vRP.cfg.phone_voice_config)
+  vRP.EXT.Audio:configureVoice("phone", vRP.cfg.phone_voice_config)
 end
 
 -- TUNNEL

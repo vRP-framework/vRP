@@ -24,12 +24,12 @@ function Radio.User:connectRadio()
       end
     end
 
-    vRP.EXT.GUI.remote._playAudioSource(self.source, vRP.EXT.Radio.cfg.on_sound, 0.5)
+    vRP.EXT.Audio.remote._playAudioSource(self.source, vRP.EXT.Radio.cfg.on_sound, 0.5)
     vRP.EXT.Radio.remote.setupRadio(self.source, players)
 
     -- wait setup and connect all radio players to this new one
     for player in pairs(players) do
-      vRP.EXT.GUI.remote._connectVoice(self.source, "radio", player)
+      vRP.EXT.Audio.remote._connectVoice(self.source, "radio", player)
     end
 
     rusers[self] = true
@@ -41,7 +41,7 @@ function Radio.User:disconnectRadio()
 
   if rusers[self] then
     rusers[self] = nil
-    vRP.EXT.GUI.remote._playAudioSource(self.source, vRP.EXT.Radio.cfg.off_sound, 0.5)
+    vRP.EXT.Audio.remote._playAudioSource(self.source, vRP.EXT.Radio.cfg.off_sound, 0.5)
     vRP.EXT.Radio.remote._disconnectRadio(self.source)
   end
 end
