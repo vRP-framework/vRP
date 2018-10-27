@@ -4,8 +4,6 @@ local GUI = class("GUI", vRP.Extension)
 function GUI:__construct()
   vRP.Extension.__construct(self)
 
-  self.menu_state = {}
-
   self.channel_callbacks = {}
   self.voice_channels = {} -- map of channel => map of player => state (0-1)
 
@@ -126,7 +124,7 @@ function GUI:__construct()
       end
 
       -- open general menu
-      if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.open)) and ((vRP.EXT.Survival and not vRP.EXT.Survival:isInComa() or true) or not vRP.cfg.coma_disable_menu) and ((vRP.EXT.Police and not vRP.EXT.Police:isHandcuffed() or true) or not vRP.cfg.handcuff_disable_menu) and not self.menu_state.opened then 
+      if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.open)) and ((vRP.EXT.Survival and not vRP.EXT.Survival:isInComa() or true) or not vRP.cfg.coma_disable_menu) and ((vRP.EXT.Police and not vRP.EXT.Police:isHandcuffed() or true) or not vRP.cfg.handcuff_disable_menu) and not self.menu_data then 
         self.remote._openMainMenu() 
       end
 
@@ -162,6 +160,12 @@ end
 
 function GUI:isPaused()
   return self.paused
+end
+
+-- MENU
+
+function GUI:isMenuOpen()
+  return self.menu_data ~= nil
 end
 
 -- ANNOUNCE
@@ -382,6 +386,8 @@ GUI.tunnel = {}
 -- MENU
 
 function GUI.tunnel:openMenu(menudata)
+  self.menu_data = menudata
+
   if vRP.cfg.default_menu then
     SendNUIMessage({act="open_menu", menudata = menudata})
   end
@@ -390,6 +396,8 @@ function GUI.tunnel:openMenu(menudata)
 end
 
 function GUI.tunnel:closeMenu()
+  self.menu_data = nil
+
   if vRP.cfg.default_menu then
     SendNUIMessage({act="close_menu"})
   end
@@ -434,10 +442,6 @@ RegisterNUICallback("menu",function(data,cb)
   if data.act == "valid" then
     vRP.EXT.GUI.remote._triggerMenuOption(data.option+1,data.mod)
   end
-end)
-
-RegisterNUICallback("menu_state",function(data,cb)
-  vRP.EXT.GUI.menu_state = data
 end)
 
 -- gui prompt event

@@ -27,20 +27,12 @@ function Menu()
   document.body.appendChild(this.div_desc);
   this.div.style.display = "none";
   this.div_desc.style.display = "none";
-
-  this.updateState();
-}
-
-Menu.prototype.updateState = function()
-{
-  $.post("http://vrp/menu_state",JSON.stringify({opened: this.opened}));
 }
 
 Menu.prototype.open = function(data) 
 {
   this.close();
   this.opened = true;
-  this.updateState();
 
   this.div.style.display = "block";
 
@@ -112,7 +104,6 @@ Menu.prototype.close = function()
 {
   if(this.opened){
     this.opened = false;
-    this.updateState();
     this.options = [];
     this.title = "Menu";
 
