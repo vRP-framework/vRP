@@ -24,6 +24,7 @@ function Garage:getVehicleInfo(veh)
   end
 end
 
+-- return true if spawned (if not already out)
 function Garage:spawnVehicle(model, pos) -- one vehicle per model allowed at the same time
   local vehicle = self.vehicles[model]
   if not vehicle then
@@ -62,11 +63,12 @@ function Garage:spawnVehicle(model, pos) -- one vehicle per model allowed at the
 
       SetModelAsNoLongerNeeded(mhash)
     end
-  else
-    vRP.EXT.Base:notify("This vehicle is already out.")
+
+    return true
   end
 end
 
+-- return true if despawned
 function Garage:despawnVehicle(model)
   local veh = self.vehicles[model]
   if veh then
@@ -78,7 +80,8 @@ function Garage:despawnVehicle(model)
     SetVehicleAsNoLongerNeeded(Citizen.PointerValueIntInitialized(veh))
     Citizen.InvokeNative(0xEA386986E786A54F, Citizen.PointerValueIntInitialized(veh))
     self.vehicles[model] = nil
-    vRP.EXT.Base:notify("Vehicle stored.")
+
+    return true
   end
 end
 
@@ -256,6 +259,7 @@ function Garage:vc_toggleEngine(model)
   end
 end
 
+-- return true if locked, false if unlocked
 function Garage:vc_toggleLock(model)
   local vehicle = self.vehicles[model]
   if vehicle then
@@ -265,11 +269,11 @@ function Garage:vc_toggleLock(model)
       SetVehicleDoorsLockedForAllPlayers(veh, false)
       SetVehicleDoorsLocked(veh,1)
       SetVehicleDoorsLockedForPlayer(veh, PlayerId(), false)
-      vRP.EXT.Base:notify("Vehicle unlocked.")
+      return false
     else -- lock
       SetVehicleDoorsLocked(veh,2)
       SetVehicleDoorsLockedForAllPlayers(veh, true)
-      vRP.EXT.Base:notify("Vehicle locked.")
+      return true
     end
   end
 end

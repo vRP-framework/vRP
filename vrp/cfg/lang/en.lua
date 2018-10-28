@@ -455,7 +455,8 @@ local lang = {
     title = "Garage ({1})",
     owned = {
       title = "Owned",
-      description = "Owned vehicles."
+      description = "Owned vehicles.",
+      already_out = "This vehicle is already out."
     },
     buy = {
       title = "Buy",
@@ -474,7 +475,8 @@ local lang = {
       title = "Store",
       description = "Put your current vehicle in the garage.",
       too_far = "The vehicle is too far away.",
-      wrong_garage = "The vehicle can't be stored in this garage."
+      wrong_garage = "The vehicle can't be stored in this garage.",
+      stored = "Vehicle stored."
     }
   },
   vehicle = {
@@ -498,7 +500,9 @@ local lang = {
     },
     lock = {
       title = "Lock/unlock",
-      description = "Lock or unlock the vehicle."
+      description = "Lock or unlock the vehicle.",
+      locked = "Vehicle locked.",
+      unlocked = "Vehicle unlocked."
     },
     engine = {
       title = "Engine on/off",

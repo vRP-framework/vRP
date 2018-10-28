@@ -66,7 +66,6 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * multi-server (SData)
 * remove client-side config file, instead use .client property in server files, sent over the network
 * fragment some big modules like GUI
-* lang client property sent over the network for client translations
 * `namespace.foo.bar` instead of `namespace:foo:bar`
 * better garage nearest vehicle search
 * use menu instead of div when possible, identity display as modular menu

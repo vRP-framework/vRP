@@ -348,7 +348,9 @@ local function menu_chest_put(self)
     -- add user items
     for fullid,amount in pairs(menu.user:getInventory()) do
       local citem = self:computeItem(fullid)
-      menu:addOption(htmlEntities.encode(citem.name), m_put, lang.inventory.iteminfo({amount,citem.description,string.format("%.2f", citem.weight)}), fullid)
+      if citem then
+        menu:addOption(htmlEntities.encode(citem.name), m_put, lang.inventory.iteminfo({amount,citem.description,string.format("%.2f", citem.weight)}), fullid)
+      end
     end
   end)
 end

@@ -24,7 +24,9 @@ end
 local function menu_garage_owned(self)
   local function m_get(menu, model)
     local user = menu.user
-    vRP.EXT.Garage.remote._spawnVehicle(user.source, model)
+    if not vRP.EXT.Garage.remote.spawnVehicle(user.source, model) then
+      vRP.EXT.Base.remote._notify(user.source, lang.garage.owned.already_out())
+    end
     user:closeMenu(menu)
   end
 
@@ -206,7 +208,9 @@ local function menu_garage(self)
     local model = vRP.EXT.Garage.remote.getNearestOwnedVehicle(user.source, 15)
     if model then
       if menu.data.vehicles[model] then -- model in this garage
-        vRP.EXT.Garage.remote._despawnVehicle(user.source, model) 
+        if vRP.EXT.Garage.remote.despawnVehicle(user.source, model) then
+          vRP.EXT.Base.remote._notify(user.source, lang.garage.store.stored())
+        end
       else
         vRP.EXT.Base.remote._notify(user.source, lang.garage.store.wrong_garage())
       end
@@ -274,7 +278,10 @@ local function menu_vehicle(self)
     local user = menu.user
     local model = menu.data.model
 
-    self.remote._vc_toggleLock(user.source, model)
+    local locked = self.remote.vc_toggleLock(user.source, model)
+    if locked ~= nil then
+      vRP.EXT.Base.remote._notify(user.source, (locked and lang.vehicle.lock.locked() or lang.vehicle.lock.unlocked()))
+    end
   end
 
   -- engine on/off
