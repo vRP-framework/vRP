@@ -67,8 +67,8 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * remove client-side config file, instead use .client property in server files, sent over the network
 * fragment some big modules like GUI
 * `namespace.foo.bar` instead of `namespace:foo:bar`
-* better garage nearest vehicle search
 * use menu instead of div when possible, identity display as modular menu
+* possible cop despawn
 
 == vRP 2 dev' phases
 * refactoring

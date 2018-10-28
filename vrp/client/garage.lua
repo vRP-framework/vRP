@@ -101,23 +101,48 @@ Citizen.CreateThread(function()
 end)
 --]]
 
--- (experimental) this function return the nearest vehicle
--- (don't work with all vehicles, but aim to)
-function Garage:getNearestVehicle(radius)
-  local x,y,z = vRP.EXT.Base:getPosition()
-  local ped = GetPlayerPed(-1)
-  if IsPedSittingInAnyVehicle(ped) then
-    return GetVehiclePedIsIn(ped, true)
-  else
-    -- flags used:
-    --- 8192: boat
-    --- 4096: helicos
-    --- 4,2,1: cars (with police)
 
-    local veh = GetClosestVehicle(x+0.0001,y+0.0001,z+0.0001, radius+0.0001, 0, 8192+4096+4+2+1)  -- boats, helicos
-    if not IsEntityAVehicle(veh) then veh = GetClosestVehicle(x+0.0001,y+0.0001,z+0.0001, radius+0.0001, 0, 4+2+1) end -- cars
-    return veh
+
+-- return map of veh => distance
+function Garage:getNearestVehicles(radius)
+  local r = {}
+
+  local px,py,pz = vRP.EXT.Base:getPosition()
+
+  local vehs = {}
+  local it, veh = FindFirstVehicle()
+  if veh then table.insert(vehs, veh) end
+  local ok
+  repeat
+    ok, veh = FindNextVehicle(it)
+    if ok and veh then table.insert(vehs, veh) end
+  until not ok
+  EndFindVehicle(it)
+
+  for _,veh in pairs(vehs) do
+    local x,y,z = table.unpack(GetEntityCoords(veh,true))
+    local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
+    if distance <= radius then
+      r[veh] = distance
+    end
   end
+
+  return r
+end
+
+function Garage:getNearestVehicle(radius)
+  local veh
+
+  local vehs = self:getNearestVehicles(radius)
+  local min = radius+10.0
+  for _veh,dist in pairs(vehs) do
+    if dist < min then
+      min = dist 
+      veh = _veh 
+    end
+  end
+
+  return veh 
 end
 
 -- try to re-own the nearest vehicle
@@ -126,9 +151,7 @@ function Garage:tryOwnNearestVehicle(radius)
   if veh then
     local cid, model = self:getVehicleInfo(veh)
     if cid and vRP.EXT.Base.cid == cid then
-      if not self.vehicles[model] then
-        self.vehicles[model] = veh
-      end
+      self.vehicles[model] = veh
     end
   end
 end

@@ -143,6 +143,7 @@ function Base:getCamDirection()
   return x,y,z
 end
 
+-- return map of player id => distance
 function Base:getNearestPlayers(radius)
   local r = {}
 
