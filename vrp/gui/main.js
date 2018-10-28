@@ -24,6 +24,12 @@ window.addEventListener("load",function(){
   requestmgr.onResponse = function(id,ok){ $.post("http://vrp/request",JSON.stringify({act: "response", id: id, ok: ok})); }
   wprompt.onClose = function(){ $.post("http://vrp/prompt",JSON.stringify({act: "close", result: wprompt.result})); }
   dynamic_menu.onValid = function(option,mod){ $.post("http://vrp/menu",JSON.stringify({act: "valid", option: option, mod: mod})); }
+  var select_event = false;
+  dynamic_menu.onSelect = function(option){ 
+    if(select_event){
+      $.post("http://vrp/menu",JSON.stringify({act: "select", option: option}));
+    }
+  }
 
   //init
   $.post("http://vrp/init",""); 
@@ -53,11 +59,17 @@ window.addEventListener("load",function(){
         $(document.body).show();
     }
     else if(data.act == "open_menu"){ //OPEN DYNAMIC MENU
+      select_event = data.menudata.select_event;
       dynamic_menu.open(data.menudata);
-
     }
     else if(data.act == "close_menu"){ //CLOSE MENU
       dynamic_menu.close();
+    }
+    else if(data.act == "set_menu_select_event"){
+      select_event = data.select_event;
+    }
+    else if(data.act == "update_menu_option"){
+      dynamic_menu.updateOption(data.index, data.title, data.description);
     }
     // PROGRESS BAR
     else if(data.act == "set_pbar"){

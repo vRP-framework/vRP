@@ -84,16 +84,15 @@ local function menu_skinshop(self)
   end
 
   vRP.EXT.GUI:registerMenuBuilder("skinshop", function(menu)
+    local user = menu.user
+
     menu.title = lang.skinshop.title()
     menu.css.header_color="rgba(0,255,125,0.75)"
 
-    --[[
     -- notify player if wearing a uniform
-    local data = vRP.getUserDataTable(user_id)
-    if data.cloakroom_idle ~= nil then
-      vRPclient._notify(source,lang.common.wearing_uniform())
+    if user:hasCloak() then
+      vRP.EXT.Base.remote._notify(user.source,lang.common.wearing_uniform())
     end
-    --]]
 
     -- get old customization to compute the price
     menu.old_custom = vRP.EXT.PlayerState.remote.getCustomization(menu.user.source)

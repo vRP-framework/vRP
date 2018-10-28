@@ -61,6 +61,33 @@ Menu.prototype.open = function(data)
   this.setSelected(0);
 }
 
+Menu.prototype.updateOption = function(i, title, description)
+{
+  if(i >= 0 && i < this.options.length){
+    var option = this.options[i];
+
+    if(title){
+      option[0] = title;
+      this.el_options[i].innerHTML = title;
+    }
+
+    if(description){
+      if(option.length > 1)
+        option[1] = description;
+      else
+        option.push(description);
+
+      if(this.selected == i){
+        this.div_desc.innerHTML = option[1];
+
+        this.div_desc.style.display = "block";
+        this.div_desc.style.left = (this.div.offsetLeft+this.div.offsetWidth)+"px";
+        this.div_desc.style.top = (this.div.offsetTop+this.div_header.offsetHeight)+"px";
+      }
+    }
+  }
+}
+
 Menu.prototype.setSelected = function(i)
 {
   //check validity
@@ -71,11 +98,19 @@ Menu.prototype.setSelected = function(i)
     this.div_desc.style.display = "none";
   }
 
+  var prev_selected = this.selected;
+
   this.selected = i;
   if(this.selected < 0)
     this.selected = this.options.length-1;
   else if(this.selected >= this.options.length)
     this.selected = 0;
+
+  //trigger select event
+  if(this.selected != prev_selected){
+    if(this.onSelect)
+      this.onSelect(this.selected);
+  }
 
   //check validity
   if(this.selected >= 0 && this.selected < this.el_options.length){
@@ -103,6 +138,7 @@ Menu.prototype.setSelected = function(i)
 Menu.prototype.close = function()
 {
   if(this.opened){
+    this.selected = -1;
     this.opened = false;
     this.options = [];
     this.title = "Menu";

@@ -157,6 +157,34 @@ function GUI.tunnel:closeMenu()
   vRP:triggerEvent("menuClose")
 end
 
+function GUI.tunnel:setMenuSelectEvent(select_event)
+  if self.menu_data then
+    self.menu_data.select_event = select_event
+
+    if vRP.cfg.default_menu then
+      SendNUIMessage({act="set_menu_select_event", select_event = select_event})
+    end
+
+    vRP:triggerEvent("menuSetSelectEvent", select_event)
+  end
+end
+
+function GUI.tunnel:updateMenuOption(index, title, description)
+  if self.menu_data then
+    local option = self.menu_data.options[index]
+    if option then
+      if title then option[1] = title end
+      if description then option[2] = description end
+    end
+
+    if vRP.cfg.default_menu then
+      SendNUIMessage({act="update_menu_option", index = index-1, title = title, description = description})
+    end
+
+    vRP:triggerEvent("menuOptionUpdate", index, title, description)
+  end
+end
+
 -- PROMPT
 
 function GUI.tunnel:prompt(title,default_text)
@@ -188,6 +216,8 @@ GUI.tunnel.removeDiv = GUI.removeDiv
 RegisterNUICallback("menu",function(data,cb)
   if data.act == "valid" then
     vRP.EXT.GUI.remote._triggerMenuOption(data.option+1,data.mod)
+  elseif data.act == "select" then
+    vRP.EXT.GUI.remote._triggerMenuSelect(data.option+1)
   end
 end)
 

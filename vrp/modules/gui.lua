@@ -19,6 +19,19 @@ function Menu:__construct(user, name, data)
   self.data = data -- build data (should not be modified afterwards)
 end
 
+-- overload
+function Menu:listen(name, callback)
+  if name == "select" then
+    if not self.event_listeners["select"] then
+      if self.user:getMenu() == self then -- is current menu
+        vRP.EXT.GUI.remote._setMenuSelectEvent(self.user.source, true)
+      end
+    end
+  end
+
+  EventDispatcher.listen(self, name, callback)
+end
+
 function Menu:initialize()
   self.title = htmlEntities.encode("<"..self.name..">")
   self.options = {}
@@ -31,7 +44,8 @@ function Menu:serializeNet()
   local data = {
     options = {},
     title = self.title,
-    css = self.css
+    css = self.css,
+    select_event = (self.event_listeners["select"] ~= nil)
   }
 
   -- titles
@@ -51,10 +65,32 @@ function Menu:triggerClose()
   end
 end
 
+function Menu:triggerSelect(id)
+  if self.options[id] then
+    self:triggerEvent("select", self, id)
+  end
+end
+
 function Menu:triggerOption(id, mod)
   local option = self.options[id]
   if option and option[2] then
     option[2](self, option[4], mod, id)
+  end
+end
+
+-- update menu option
+-- title: (optional) as Menu:addOption
+-- description: (optional) as Menu:addOption
+-- will trigger client update if current menu
+function Menu:updateOption(id, title, description)
+  local option = self.options[id]
+  if option then
+    if title then option[1] = title end
+    if description then option[3] = description end
+
+    if self.user:getMenu() == self then -- current menu
+      vRP.EXT.GUI.remote._updateMenuOption(self.user.source, id, title, description)
+    end
   end
 end
 
@@ -72,9 +108,9 @@ end
 -- index: (optional) by default the option is added at the end, but an index can be used to insert the option
 function Menu:addOption(title, action, description, value, index)
   if index then
-    table.insert(self.options, index, {title, action, description or "", value or #self.options+1})
+    table.insert(self.options, index, {title, action, description, value or #self.options+1})
   else
-    table.insert(self.options, {title, action, description or "", value or #self.options+1})
+    table.insert(self.options, {title, action, description, value or #self.options+1})
   end
 end
 
@@ -290,9 +326,9 @@ function GUI.event:playerSpawn(user, first_spawn)
 end
 
 function GUI.event:playerLeave(user)
-  for i=#user.menu_stack,1,-1 do
-    user.menu_stack[i]:triggerClose()
-  end
+  repeat 
+    user:closeMenu()
+  until not user:getMenu()
 end
 
 -- TUNNEL
@@ -313,7 +349,18 @@ function GUI.tunnel:triggerMenuOption(id, mod)
   if user then
     local menu = user:getMenu()
     if menu then
-      menu:triggerOption(id, tonumber(mod))
+      menu:triggerOption(id, mod)
+    end
+  end
+end
+
+function GUI.tunnel:triggerMenuSelect(id)
+  local user = vRP.users_by_source[source]
+
+  if user then
+    local menu = user:getMenu()
+    if menu then
+      menu:triggerSelect(id)
     end
   end
 end
