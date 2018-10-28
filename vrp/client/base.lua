@@ -59,32 +59,6 @@ function Base:__construct()
 
   self.players = {} -- keep track of connected players (server id)
 
-  -- voice proximity task
-  Citizen.CreateThread(function()
-    while true do
-      Citizen.Wait(500)
-      if vRP.cfg.vrp_voip then -- vRP voip
-        NetworkSetTalkerProximity(0) -- disable voice chat
-      else -- regular voice chat
-        local ped = GetPlayerPed(-1)
-        local proximity = vRP.cfg.voice_proximity
-
-        if IsPedSittingInAnyVehicle(ped) then
-          local veh = GetVehiclePedIsIn(ped,false)
-          local hash = GetEntityModel(veh)
-          -- make open vehicles (bike,etc) use the default proximity
-          if IsThisModelACar(hash) or IsThisModelAHeli(hash) or IsThisModelAPlane(hash) then
-            proximity = vRP.cfg.voice_proximity_vehicle
-          end
-        elseif self:isInside() then
-          proximity = vRP.cfg.voice_proximity_inside
-        end
-
-        NetworkSetTalkerProximity(proximity+0.0001)
-      end
-    end
-  end)
-
   self.ragdoll = false
   -- ragdoll thread
   Citizen.CreateThread(function()
