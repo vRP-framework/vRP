@@ -262,13 +262,16 @@ local function menu_home(self)
     local user = menu.user
     local home_cfg = self.cfg.homes[menu.data.name]
 
-    local address = self:getAddress(user.cid)
+    local address = user.address
     if not address then -- check if not already have a home
       local number = self:findFreeNumber(menu.data.name, home_cfg.max)
         if number then
           if user:tryPayment(home_cfg.buy_price) then
             -- bought, set address
-            self:setAddress(user.cid, menu.data.name, number)
+            user.address = {character_id = user.cid, home = menu.data.name, number = number}
+            vRP:execute("vRP/set_address", {character_id = user.cid, home = menu.data.name, number = number})
+            vRP:triggerEvent("characterAddressUpdate", user)
+
             vRP.EXT.Base.remote._notify(user.source,lang.home.buy.bought())
           else
             vRP.EXT.Base.remote._notify(user.source,lang.money.not_enough())
@@ -285,11 +288,15 @@ local function menu_home(self)
     local user = menu.user
     local home_cfg = self.cfg.homes[menu.data.name]
 
-    local address = self:getAddress(user.cid)
+    local address = user.address
     if address and address.home == menu.data.name then -- check have home
       -- sold, give sell price, remove address
       user:giveWallet(home_cfg.sell_price)
-      self:removeAddress(user.cid)
+      vRP:execute("vRP/rm_address", {character_id = user.cid})
+      user.address = nil
+
+      vRP:triggerEvent("characterAddressUpdate", user)
+
       vRP.EXT.Base.remote._notify(user.source,lang.home.sell.sold())
     else
       vRP.EXT.Base.remote._notify(user.source,lang.home.sell.no_home())
@@ -353,20 +360,16 @@ function Home:__construct()
   self:registerComponent(EntryComponent)
 end
 
--- return character address (home and number) or nil
+-- address access (online and offline characters)
+-- return address or nil
 function Home:getAddress(cid)
-  local rows = vRP:query("vRP/get_address", {character_id = cid})
-  return rows[1]
-end
-
--- set character address
-function Home:setAddress(cid,home,number)
-  vRP:execute("vRP/set_address", {character_id = cid, home = home, number = number})
-end
-
--- remove character address
-function Home:removeAddress(cid)
-  vRP:execute("vRP/rm_address", {character_id = cid})
+  local user = vRP.users_by_cid[cid]
+  if user then
+    return user.address
+  else
+    local rows = vRP:query("vRP/get_address", {character_id = cid})
+    return rows[1]
+  end
 end
 
 -- return character id or nil
@@ -443,6 +446,16 @@ end
 
 -- EVENT
 Home.event = {}
+
+function Home.event:characterLoad(user)
+  -- load address
+  local rows = vRP:query("vRP/get_address", {character_id = user.cid})
+  if #rows > 0 then -- loaded
+    user.address = rows[1]
+  end
+
+  vRP:triggerEvent("characterAddressUpdate", user)
+end
 
 function Home.event:playerSpawn(user, first_spawn)
   if first_spawn then

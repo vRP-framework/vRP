@@ -93,7 +93,7 @@ function Identity:__construct()
               phone = phone
             })
 
-            vRP:triggerEvent("playerIdentityUpdate", user)
+            vRP:triggerEvent("characterIdentityUpdate", user)
             vRP.EXT.Base.remote._notify(user.source,lang.money.paid({self.cfg.new_identity_cost}))
           else
             vRP.EXT.Base.remote._notify(user.source,lang.money.not_enough())
@@ -120,7 +120,7 @@ function Identity:__construct()
   vRP.EXT.GUI:registerMenuBuilder("main", function(menu)
     -- generate identity content
     -- get address
-    local address = vRP.EXT.Home:getAddress(menu.user.cid)
+    local address = menu.user.address
     local home = ""
     local number = ""
     if address then
@@ -218,7 +218,7 @@ function Identity.event:characterLoad(user)
     })
   end
 
-  vRP:triggerEvent("playerIdentityUpdate", user)
+  vRP:triggerEvent("characterIdentityUpdate", user)
 end
 
 function Identity.event:playerSpawn(user, first_spawn)
@@ -241,7 +241,7 @@ function Identity.event:playerSpawn(user, first_spawn)
   end
 end
 
-function Identity.event:playerIdentityUpdate(user)
+function Identity.event:characterIdentityUpdate(user)
   -- send registration number to client at spawn
   self.remote._setRegistrationNumber(user.source, user.identity.registration)
 end

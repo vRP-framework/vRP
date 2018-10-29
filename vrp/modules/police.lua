@@ -338,7 +338,7 @@ div_police_identity{
             bcapital = business.capital
           end
 
-          local address = vRP.EXT.Home:getAddress(nuser.cid)
+          local address = nuser.address
           if address then
             home = address.home
             number = address.number
