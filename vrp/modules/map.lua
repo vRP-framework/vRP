@@ -73,7 +73,7 @@ Map.tunnel = {}
 function Map.tunnel:enterArea(name)
   local user = vRP.users_by_source[source]
 
-  if user then
+  if user and not user.loading_character then
     local area = user.map_areas[name] 
     if area and not area.inside then -- trigger enter callback
       area.inside = true
@@ -87,7 +87,7 @@ end
 function Map.tunnel:leaveArea(name)
   local user = vRP.users_by_source[source]
 
-  if user then
+  if user and not user.loading_character then
     local area = user.map_areas[name] 
     if area and area.inside then -- trigger enter callback
       area.inside = false

@@ -152,7 +152,7 @@ Survival.tunnel = {}
 function Survival.tunnel:consume(water, food)
   local user = vRP.users_by_source[source]
 
-  if user then
+  if user and not user.loading_character then
     if water then
       user:varyVital("water", -water)
     end

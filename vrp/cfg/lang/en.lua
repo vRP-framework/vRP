@@ -16,10 +16,11 @@ local lang = {
     }
   },
   characters = {
-    title = "Characters",
+    title = "[Characters]",
     character = {
       title = "#{1}: {2} {3}",
-      use_error = "~r~Couldn't use character."
+      error = "~r~Invalid character.",
+      delay_error = "~r~You need to wait before using another character."
     },
     create = {
       title = "Create",

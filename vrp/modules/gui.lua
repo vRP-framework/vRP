@@ -205,6 +205,12 @@ function GUI.User:actualizeMenu()
   end
 end
 
+function GUI.User:closeMenus()
+  repeat
+    self:closeMenu()
+  until not self:getMenu()
+end
+
 -- prompt textual (and multiline) information from player
 -- return entered text
 function GUI.User:prompt(title, default_text)
@@ -326,9 +332,11 @@ function GUI.event:playerSpawn(user, first_spawn)
 end
 
 function GUI.event:playerLeave(user)
-  repeat 
-    user:closeMenu()
-  until not user:getMenu()
+  user:closeMenus()
+end
+
+function GUI.event:characterUnload(user)
+  user:closeMenus()
 end
 
 -- TUNNEL
@@ -338,7 +346,7 @@ GUI.tunnel = {}
 function GUI.tunnel:closeMenu()
   local user = vRP.users_by_source[source]
 
-  if user then
+  if user and not user.loading_character then
     user:closeMenu()
   end
 end
@@ -346,7 +354,7 @@ end
 function GUI.tunnel:triggerMenuOption(id, mod)
   local user = vRP.users_by_source[source]
 
-  if user then
+  if user and not user.loading_character then
     local menu = user:getMenu()
     if menu then
       menu:triggerOption(id, mod)
@@ -357,7 +365,7 @@ end
 function GUI.tunnel:triggerMenuSelect(id)
   local user = vRP.users_by_source[source]
 
-  if user then
+  if user and not user.loading_character then
     local menu = user:getMenu()
     if menu then
       menu:triggerSelect(id)
@@ -369,7 +377,7 @@ end
 function GUI.tunnel:promptResult(text)
   local user = vRP.users_by_source[source]
   
-  if user then
+  if user and not user.loading_character then
     if text == nil then
       text = ""
     end
@@ -386,7 +394,7 @@ end
 function GUI.tunnel:requestResult(id,ok)
   local user = vRP.users_by_source[source]
 
-  if user then
+  if user and not user.loading_character then
     local request = user.requests[id]
     if request then -- end request
       request.done = true -- set done, the timeout will not call the callback a second time
@@ -400,7 +408,7 @@ end
 -- open the general player menu
 function GUI.tunnel:openMainMenu()
   local user = vRP.users_by_source[source]
-  if user then
+  if user and not user.loading_character then
     user:openMenu("main")
   end
 end

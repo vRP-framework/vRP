@@ -498,6 +498,10 @@ function Home.event:playerStateUpdate(user, state)
   end
 end
 
+function Home.event:characterUnload(user)
+  user:leaveHome()
+end
+
 function Home.event:playerLeave(user)
   user:leaveHome()
 end

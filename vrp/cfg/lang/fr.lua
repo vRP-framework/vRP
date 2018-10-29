@@ -14,6 +14,23 @@ local lang = {
       title = "Menu"
     }
   },
+  characters = {
+    title = "[Personnages]",
+    character = {
+      title = "#{1}: {2} {3}",
+      error = "~r~Personnage invalide.",
+      delay_error = "~r~Vous devez attendre avant de pouvoir utiliser un autre personnage."
+    },
+    create = {
+      title = "Créer",
+      error = "~r~Impossible de créer un nouveau personnage."
+    },
+    delete = {
+      title = "Supprimer",
+      prompt = "Id du personnage à supprimer ?",
+      error = "~r~Impossible de supprimer le personnage #{1}."
+    }
+  },
   weapon = {
     -- weapon translation by GTA 5 weapon name (lower case)
     pistol = "Pistolet"

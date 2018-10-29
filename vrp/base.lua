@@ -138,10 +138,13 @@ local Base = class("Base", vRP.Extension)
 local function menu_characters(self)
   local function m_use(menu, cid)
     local user = menu.user
-    if user:useCharacter(cid) then
-      user:closeMenu(menu)
-    else
-      self.remote._notify(user.source, lang.characters.use_error())
+    local ok, err = user:useCharacter(cid)
+    if not ok then
+      if err <= 2 then
+        self.remote._notify(user.source, lang.characters.character.delay_error())
+      else
+        self.remote._notify(user.source, lang.characters.character.error())
+      end
     end
   end
 
@@ -174,8 +177,10 @@ local function menu_characters(self)
     local characters = user:getCharacters()
     for _, cid in pairs(characters) do
       local identity = vRP.EXT.Identity:getIdentity(cid)
+      local prefix
+      if cid == user.cid then prefix = "* " else prefix = "" end
 
-      menu:addOption(lang.characters.character.title({cid, htmlEntities.encode(identity and identity.name or ""), htmlEntities.encode(identity and identity.firstname or "")}), m_use, nil, cid)
+      menu:addOption(prefix..lang.characters.character.title({cid, htmlEntities.encode(identity and identity.name or ""), htmlEntities.encode(identity and identity.firstname or "")}), m_use, nil, cid)
     end
 
     menu:addOption(lang.characters.create.title(), m_create)

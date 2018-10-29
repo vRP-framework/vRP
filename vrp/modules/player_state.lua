@@ -165,12 +165,16 @@ function PlayerState.event:characterLoad(user)
   end
 end
 
+function PlayerState.event:characterUnload(user)
+  self.remote._setStateReady(user.source, true)
+end
+
 -- TUNNEL
 PlayerState.tunnel = {}
 
 function PlayerState.tunnel:update(state)
   local user = vRP.users_by_source[source]
-  if user then
+  if user and not user.loading_character then
     for k,v in pairs(state) do
       user.cdata.state[k] = v
     end

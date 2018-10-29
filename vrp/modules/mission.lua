@@ -92,4 +92,11 @@ function Mission:__construct()
   end)
 end
 
+-- EVENT
+Mission.event = {}
+
+function Mission.event:characterUnload(user)
+  user:stopMission()
+end
+
 vRP:registerExtension(Mission)

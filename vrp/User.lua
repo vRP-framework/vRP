@@ -17,6 +17,8 @@ function User:__construct(source, id)
   self.id = id
   self.endpoint = "0.0.0.0"
   self.data = {}
+  self.loading_character = false
+  self.last_character_select = 0
 
   -- extensions constructors
   for _,uext in pairs(extensions) do
@@ -29,7 +31,10 @@ end
 
 function User:save()
   vRP:setUData(self.id, "vRP:datatable", msgpack.pack(self.data))
-  vRP:setCData(self.cid, "vRP:datatable", msgpack.pack(self.cdata))
+
+  if not self.loading_character then
+    vRP:setCData(self.cid, "vRP:datatable", msgpack.pack(self.cdata))
+  end
 end
 
 -- return characters id list
@@ -56,16 +61,26 @@ function User:createCharacter()
 end
 
 -- use character
--- return true or false on failure
+-- return true or false, err_code
+-- err_code: 
+--- 1: delay error, too soon
+--- 2: already loading
+--- 3: invalid character
 function User:useCharacter(id)
-  if id == self.cid then return true end
+  if id == self.cid then return true end -- same check
+
+  -- delay check
+  local select_time = os.time()
+  if select_time-self.last_character_select < vRP.cfg.character_select_delay then return false, 1 end
+
+  if self.loading_character then return false, 2 end -- loading check
 
   local rows = vRP:query("vRP/check_character", {user_id = self.id, id = id})
   if #rows > 0 then
     -- unload character
     if self.cid then 
-      vRP.users_by_cid[self.cid] = nil -- reference
       vRP:triggerEventSync("characterUnload", self)
+      vRP.users_by_cid[self.cid] = nil -- reference
 
       vRP:setCData(self.cid, "vRP:datatable", msgpack.pack(self.cdata))
     end
@@ -73,6 +88,8 @@ function User:useCharacter(id)
     self.cid = id
     self.data.current_character = id
     vRP.users_by_cid[self.cid] = self -- reference
+    self.last_character_select = select_time
+    self.loading_character = true
 
     -- load character
     self.cdata = {}
@@ -82,6 +99,7 @@ function User:useCharacter(id)
     end
 
     vRP:triggerEventSync("characterLoad", self)
+    self.loading_character = false
 
     if self.spawns > 0 then -- trigger respawn if already spawned
       vRP.EXT.Base.remote._triggerRespawn(self.source)
@@ -90,7 +108,7 @@ function User:useCharacter(id)
     return true
   end
 
-  return false
+  return false, 3
 end
 
 -- delete character
