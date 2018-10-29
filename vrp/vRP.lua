@@ -334,8 +334,8 @@ function vRP:dropPlayer(source)
     -- remove player from connected clients
     self.EXT.Base.remote._removePlayer(-1, user.source)
 
-    self:triggerEvent("characterUnload", user)
-    self:triggerEvent("playerLeave", user)
+    self:triggerEventSync("characterUnload", user)
+    self:triggerEventSync("playerLeave", user)
 
     -- save user
     user:save()

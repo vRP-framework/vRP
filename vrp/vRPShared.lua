@@ -94,16 +94,46 @@ function vRPShared:registerExtension(extension)
   end
 end
 
+-- trigger event (with async call for each listener)
 function vRPShared:triggerEvent(name, ...)
   local exts = self.ext_listeners[name]
   if exts then
     local params = {...}
+    local max = table_maxn(params)
 
     for ext,func in pairs(exts) do
       async(function()
-        func(ext, table.unpack(params, 1,table_maxn(params)))
+        func(ext, table.unpack(params, 1, max))
       end)
     end
+  end
+end
+
+-- trigger events and wait for all listeners to complete
+function vRPShared:triggerEventSync(name, ...)
+  local exts = self.ext_listeners[name]
+  if exts then
+    local params = {...}
+    local max = table_maxn(params)
+    local count = 0
+
+    local r = async()
+
+    for ext,func in pairs(exts) do
+      count = count+1
+    end
+
+    for ext,func in pairs(exts) do
+      async(function()
+        func(ext, table.unpack(params, 1,max))
+        count = count-1
+        if count == 0 then -- all done
+          r()
+        end
+      end)
+    end
+
+    r:wait() -- wait events completion
   end
 end
 

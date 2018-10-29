@@ -70,9 +70,10 @@ function Group.User:removeGroup(name)
   if groupdef and groupdef._config then
     gtype = groupdef._config.gtype 
   end
-  vRP:triggerEvent("playerLeaveGroup", self, name, gtype)
 
   groups[name] = nil -- remove reference
+
+  vRP:triggerEvent("playerLeaveGroup", self, name, gtype)
 end
 
 -- get user group by type

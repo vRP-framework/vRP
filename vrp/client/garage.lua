@@ -59,9 +59,9 @@ function Garage:spawnVehicle(model, pos) -- one vehicle per model allowed at the
       DecorSetInt(veh, "vRP.owner", vRP.EXT.Base.id)
       self.vehicles[model] = nveh -- mark as owned
 
-      vRP:triggerEvent("garageVehicleSpawn", model)
-
       SetModelAsNoLongerNeeded(mhash)
+
+      vRP:triggerEvent("garageVehicleSpawn", model)
     end
 
     return true

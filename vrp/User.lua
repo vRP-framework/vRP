@@ -65,7 +65,7 @@ function User:useCharacter(id)
     -- unload character
     if self.cid then 
       vRP.users_by_cid[self.cid] = nil -- reference
-      vRP:triggerEvent("characterUnload", self)
+      vRP:triggerEventSync("characterUnload", self)
 
       vRP:setCData(self.cid, "vRP:datatable", msgpack.pack(self.cdata))
     end
@@ -81,7 +81,11 @@ function User:useCharacter(id)
       self.cdata = msgpack.unpack(sdata)
     end
 
-    vRP:triggerEvent("characterLoad", self)
+    vRP:triggerEventSync("characterLoad", self)
+
+    if self.spawns > 0 then -- trigger respawn if already spawned
+      vRP.EXT.Base.remote._triggerRespawn(self.source)
+    end
 
     return true
   end

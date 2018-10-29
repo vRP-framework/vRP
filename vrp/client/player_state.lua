@@ -232,7 +232,7 @@ function PlayerState:setCustomization(custom) -- indexed [drawable,texture,palet
         if HasModelLoaded(mhash) then
           -- changing player model remove weapons, armour and health, so save it
 
-          vRP:triggerEvent("playerModelSave")
+          vRP:triggerEventSync("playerModelSave")
 
           local weapons = self:getWeapons()
           local armour = self:getArmour()
@@ -244,7 +244,7 @@ function PlayerState:setCustomization(custom) -- indexed [drawable,texture,palet
           self:setArmour(armour)
           self:setHealth(health)
 
-          vRP:triggerEvent("playerModelRestore")
+          vRP:triggerEventSync("playerModelRestore")
 
           SetModelAsNoLongerNeeded(mhash)
         end
