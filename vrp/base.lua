@@ -6,6 +6,8 @@ Proxy = module("lib/Proxy")
 Tunnel = module("lib/Tunnel")
 Debug = module("lib/Debug")
 
+local htmlEntities = module("vrp", "lib/htmlEntities")
+
 local cvRP = module("vrp", "vRP")
 vRP = cvRP() -- instantiate vRP
 
@@ -130,9 +132,74 @@ local lang = vRP.lang
 
 local Base = class("Base", vRP.Extension)
 
+-- PRIVATE METHODS
+
+-- menu: characters
+local function menu_characters(self)
+  local function m_use(menu, cid)
+    local user = menu.user
+    if user:useCharacter(cid) then
+      user:closeMenu(menu)
+    else
+      self.remote._notify(user.source, lang.characters.use_error())
+    end
+  end
+
+  local function m_create(menu)
+    local user = menu.user
+    if user:createCharacter() then
+      user:actualizeMenu()
+    else
+      self.remote._notify(user.source, lang.characters.create.error())
+    end
+  end
+
+  local function m_delete(menu)
+    local user = menu.user
+
+    local cid = parseInt(user:prompt(lang.characters.delete.prompt(), ""))
+    if user:deleteCharacter(cid) then
+      user:actualizeMenu()
+    else
+      self.remote._notify(user.source, lang.characters.delete.error({cid}))
+    end
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("characters", function(menu)
+    local user = menu.user
+    menu.title = lang.characters.title()
+    menu.css.header_color = "rgba(0,125,255,0.75)"
+
+    -- characters
+    local characters = user:getCharacters()
+    for _, cid in pairs(characters) do
+      local identity = vRP.EXT.Identity:getIdentity(cid)
+
+      menu:addOption(lang.characters.character.title({cid, htmlEntities.encode(identity and identity.name or ""), htmlEntities.encode(identity and identity.firstname or "")}), m_use, nil, cid)
+    end
+
+    menu:addOption(lang.characters.create.title(), m_create)
+    menu:addOption(lang.characters.delete.title(), m_delete)
+  end)
+end
+
 -- EVENT
 
 Base.event = {}
+
+function Base.event:extensionLoad(ext)
+  if ext == vRP.EXT.GUI then
+    menu_characters(self)
+
+    local function m_characters(menu)
+      menu.user:openMenu("characters")
+    end
+
+    vRP.EXT.GUI:registerMenuBuilder("main", function(menu)
+      menu:addOption(lang.characters.title(), m_characters)
+    end)
+  end
+end
 
 function Base.event:playerJoin(user)
   self.remote._setUserId(user.id)

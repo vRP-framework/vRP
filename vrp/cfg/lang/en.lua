@@ -15,6 +15,22 @@ local lang = {
       title = "Menu"
     }
   },
+  characters = {
+    title = "Characters",
+    character = {
+      title = "#{1}: {2} {3}",
+      use_error = "~r~Couldn't use character."
+    },
+    create = {
+      title = "Create",
+      error = "~r~Couldn't create a new character."
+    },
+    delete = {
+      title = "Delete",
+      prompt = "Character id to delete ?",
+      error = "~r~Couldn't delete character #{1}."
+    }
+  },
   weapon = {
     -- weapon translation by GTA 5 weapon name (lower case)
     pistol = "Pistol"

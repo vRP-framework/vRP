@@ -86,6 +86,8 @@ function vRPShared:registerExtension(extension)
       end
 
       self:log("Extension "..class.name(ext).." loaded.")
+
+      self:triggerEvent("extensionLoad", ext)
     else
       self:error("An extension named "..class.name(extension).." is already registered.")
     end

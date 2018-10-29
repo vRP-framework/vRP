@@ -142,7 +142,7 @@ function Identity:getIdentity(cid)
   if user then
     return user.identity
   else
-    local rows = vRP:query("vRP/get_character_identity", {character_id = user.cid})
+    local rows = vRP:query("vRP/get_character_identity", {character_id = cid})
     return rows[1]
   end
 end
