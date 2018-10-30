@@ -1,13 +1,6 @@
+include::global.adoc[]
+
 = vRP
-ifdef::env-github[]
-:tip-caption: :bulb:
-:note-caption: :information_source:
-:important-caption: :heavy_exclamation_mark:
-:caution-caption: :fire:
-:warning-caption: :warning:
-endif::[]
-:toc: left
-:toclevels: 5
 
 [.left]
 image::misc/logo.png[vRP,200,200]
@@ -16,7 +9,6 @@ _FiveM RP addon/framework_ +
 The project aims to create a generic and simple RP framework to prevent everyone from reinventing the wheel. +
 Contributions are welcomed.
 
-TIP: Config examples are git branches as `cfg_NAME...`. It's easier to update, for example if `cfg_FR` is not up-to-date, you could do a `git merge` from the last version.
 
 http://discord.gg/xzGZBAb[Discord]
 
