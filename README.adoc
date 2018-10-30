@@ -70,7 +70,7 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * possible cop despawn
 
 === vRP 2 dev' phases
-* [line-through]#refactoring#
+* [.line-through]#refactoring#
 * improvements
 * client-side optimizations
 * documentation
