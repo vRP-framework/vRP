@@ -11,7 +11,7 @@ endif::[]
 = vRP
 
 [.left]
-image::misc/logo.png[vRP,200,200]
+image::misc/logo_alpha.png[vRP,300,300]
 
 _FiveM RP addon/framework_ +
 The project aims to create a generic and simple RP framework to prevent everyone from reinventing the wheel. +
