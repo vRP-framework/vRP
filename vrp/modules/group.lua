@@ -161,14 +161,14 @@ function Group:__construct()
     return not user:hasPermission("!"..table.concat(params, ".", 2))
   end)
 
-  -- register fperm is ...
-  self:registerPermissionFunction("is", function(user, params)
-    local param = params[2]
-    if param == "inside" then
-      return vRP.EXT.Base.remote.isInside(user.source)
-    elseif param == "invehicle" then
-      return vRP.EXT.Garage.remote.isInVehicle(user.source)
+  -- register group fperm
+  self:registerPermissionFunction("group", function(user, params)
+    local group = params[2]
+    if group then
+      return user:hasGroup(group)
     end
+
+    return false
   end)
 end
 

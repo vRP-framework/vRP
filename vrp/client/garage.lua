@@ -226,6 +226,15 @@ function Garage:isInVehicle()
   return IsPedSittingInAnyVehicle(ped) 
 end
 
+-- return model or nil if not in owned vehicle
+function Garage:getInOwnedVehicleModel()
+  local veh = GetVehiclePedIsIn(ped,false)
+  local cid, model = self:getVehicleInfo(veh)
+  if cid and cid == vRP.EXT.Base.cid then
+    return model
+  end
+end
+
 -- VEHICLE COMMANDS
 
 function Garage:vc_openDoor(model, door_index)
@@ -321,6 +330,7 @@ Garage.tunnel.replaceNearestVehicle = Garage.replaceNearestVehicle
 Garage.tunnel.getNearestOwnedVehicle = Garage.getNearestOwnedVehicle
 Garage.tunnel.getAnyOwnedVehiclePosition = Garage.getAnyOwnedVehiclePosition
 Garage.tunnel.getOwnedVehiclePosition = Garage.getOwnedVehiclePosition
+Garage.tunnel.getInOwnedVehicleModel = Garage.getInOwnedVehicleModel
 Garage.tunnel.ejectVehicle = Garage.ejectVehicle
 Garage.tunnel.isInVehicle = Garage.isInVehicle
 Garage.tunnel.vc_openDoor = Garage.vc_openDoor

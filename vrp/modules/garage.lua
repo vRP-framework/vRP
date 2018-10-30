@@ -323,7 +323,27 @@ function Garage:__construct()
   end
 
   -- items
+
   vRP.EXT.Inventory:defineItem("repairkit", lang.item.repairkit.name(), lang.item.repairkit.description(), nil, 0.5)
+
+  -- fperms
+
+  vRP.EXT.Group:registerPermissionFunction("in_vehicle", function(user, params)
+    return self.remote.isInVehicle(user.source)
+  end)
+
+  vRP.EXT.Group:registerPermissionFunction("in_owned_vehicle", function(user, params)
+    local model = self.remote.getInOwnedVehicleModel(user.source)
+    if model then
+      if params[2] then
+        return model == params[2]
+      end
+
+      return true
+    end
+
+    return false
+  end)
 
   -- menu
 

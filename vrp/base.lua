@@ -203,6 +203,11 @@ function Base.event:extensionLoad(ext)
     vRP.EXT.GUI:registerMenuBuilder("main", function(menu)
       menu:addOption(lang.characters.title(), m_characters)
     end)
+  elseif ext == vRP.EXT.Group then
+    -- register fperm inside
+    vRP.EXT.Group:registerPermissionFunction("inside", function(user, params)
+      return self.remote.isInside(user.source)
+    end)
   end
 end
 
