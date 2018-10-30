@@ -375,7 +375,7 @@ function Phone:sendServiceAlert(sender, service_name,x,y,z,msg)
   if service then
     local targets = {}
     for _,user in pairs(vRP.users) do
-      if user:hasPermission(service.alert_permission) then
+      if user:isReady() and user:hasPermission(service.alert_permission) then
         table.insert(targets, user)
       end
     end

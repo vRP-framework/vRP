@@ -29,6 +29,11 @@ function User:__construct(source, id)
   end
 end
 
+-- return true if the user character is ready (loaded, not loading)
+function User:isReady()
+  return self.cid and not self.loading_character
+end
+
 function User:save()
   vRP:setUData(self.id, "vRP:datatable", msgpack.pack(self.data))
 

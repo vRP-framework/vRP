@@ -346,7 +346,7 @@ GUI.tunnel = {}
 function GUI.tunnel:closeMenu()
   local user = vRP.users_by_source[source]
 
-  if user and not user.loading_character then
+  if user and user:isReady() then
     user:closeMenu()
   end
 end
@@ -354,7 +354,7 @@ end
 function GUI.tunnel:triggerMenuOption(id, mod)
   local user = vRP.users_by_source[source]
 
-  if user and not user.loading_character then
+  if user and user:isReady() then
     local menu = user:getMenu()
     if menu then
       menu:triggerOption(id, mod)
@@ -365,7 +365,7 @@ end
 function GUI.tunnel:triggerMenuSelect(id)
   local user = vRP.users_by_source[source]
 
-  if user and not user.loading_character then
+  if user and user:isReady() then
     local menu = user:getMenu()
     if menu then
       menu:triggerSelect(id)
@@ -377,7 +377,7 @@ end
 function GUI.tunnel:promptResult(text)
   local user = vRP.users_by_source[source]
   
-  if user and not user.loading_character then
+  if user and user:isReady() then
     if text == nil then
       text = ""
     end
@@ -394,7 +394,7 @@ end
 function GUI.tunnel:requestResult(id,ok)
   local user = vRP.users_by_source[source]
 
-  if user and not user.loading_character then
+  if user and user:isReady() then
     local request = user.requests[id]
     if request then -- end request
       request.done = true -- set done, the timeout will not call the callback a second time
@@ -408,7 +408,7 @@ end
 -- open the general player menu
 function GUI.tunnel:openMainMenu()
   local user = vRP.users_by_source[source]
-  if user and not user.loading_character then
+  if user and user:isReady() then
     user:openMenu("main")
   end
 end

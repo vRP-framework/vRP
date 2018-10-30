@@ -159,7 +159,7 @@ local function m_unban(menu)
   end
 end
 
-local function m_emote(menu)
+local function m_emote(menu, upper)
   local user = menu.user
   if user:hasPermission("player.custom_emote") then
     local content = user:prompt("Animation sequence ('dict anim optional_loops' per line): ","")
@@ -170,10 +170,20 @@ local function m_emote(menu)
         table.insert(args,arg)
       end
 
-      table.insert(seq,{args[1] or "", args[2] or "", args[3] or 1})
+      table.insert(seq,{args[1] or "", args[2] or "", args[4] or 1})
     end
 
-    vRP.EXT.Base.remote._playAnim(user.source, true, seq, false)
+    vRP.EXT.Base.remote._playAnim(user.source, upper, seq, false)
+  end
+end
+
+local function m_emote_task(menu)
+  local user = menu.user
+  if user:hasPermission("player.custom_emote") then
+    local content = user:prompt("Task name: ","")
+    local seq = {task = content or ""}
+
+    vRP.EXT.Base.remote._playAnim(user.source, false, seq, false)
   end
 end
 
@@ -250,7 +260,7 @@ local function m_calladmin(menu)
   local admins = {} 
   for id,user in pairs(vRP.users) do
     -- check admin
-    if user:hasPermission("admin.tickets") then
+    if user:isReady() and user:hasPermission("admin.tickets") then
       table.insert(admins, user)
     end
   end
@@ -398,7 +408,13 @@ function Admin:__construct()
       menu:addOption("Give item", m_giveitem)
     end
     if user:hasPermission("player.custom_emote") then
-      menu:addOption("Custom emote", m_emote)
+      menu:addOption("Custom upper emote", m_emote, nil, true)
+    end
+    if user:hasPermission("player.custom_emote") then
+      menu:addOption("Custom full emote", m_emote, nil, false)
+    end
+    if user:hasPermission("player.custom_emote") then
+      menu:addOption("Custom emote task", m_emote_task)
     end
     if user:hasPermission("player.custom_sound") then
       menu:addOption("Custom sound", m_sound)

@@ -60,8 +60,10 @@ function Survival:__construct()
     SetTimeout(60000, task_update)
 
     for id,user in pairs(vRP.users) do
-      user:varyVital("water", -self.cfg.water_per_minute)
-      user:varyVital("food", -self.cfg.food_per_minute)
+      if user:isReady() then
+        user:varyVital("water", -self.cfg.water_per_minute)
+        user:varyVital("food", -self.cfg.food_per_minute)
+      end
     end
   end
 
@@ -152,7 +154,7 @@ Survival.tunnel = {}
 function Survival.tunnel:consume(water, food)
   local user = vRP.users_by_source[source]
 
-  if user and not user.loading_character then
+  if user and user:isReady() then
     if water then
       user:varyVital("water", -water)
     end

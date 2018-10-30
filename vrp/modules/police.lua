@@ -726,7 +726,7 @@ Police.tunnel = {}
 function Police.tunnel:updateWantedLevel(level)
   local user = vRP.users_by_source[source]
 
-  if user and not user.loading_character then
+  if user and user:isReady() then
     local was_wanted = (self:getUserWantedLevel(user) > 0)
     self.wantedlvl_users[user] = level
     local is_wanted = (level > 0)

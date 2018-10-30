@@ -173,7 +173,7 @@ PlayerState.tunnel = {}
 
 function PlayerState.tunnel:update(state)
   local user = vRP.users_by_source[source]
-  if user and not user.loading_character then
+  if user and user:isReady() then
     for k,v in pairs(state) do
       user.cdata.state[k] = v
     end

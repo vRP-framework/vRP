@@ -177,7 +177,7 @@ function Group:getUsersByGroup(name)
   local users = {}
 
   for _,user in pairs(vRP.users) do
-    if user:hasGroup(name) then 
+    if user:isReady() and user:hasGroup(name) then 
       table.insert(users, user) 
     end
   end
@@ -190,7 +190,7 @@ function Group:getUsersByPermission(perm)
   local users = {}
 
   for _,user in pairs(vRP.users) do
-    if user:hasPermission(perm) then 
+    if user:isReady() and user:hasPermission(perm) then 
       table.insert(users, user) 
     end
   end
