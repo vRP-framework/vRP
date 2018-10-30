@@ -213,6 +213,12 @@ function Money.event:playerSpawn(user, first_spawn)
   end
 end
 
+function Money.event:playerDeath(user)
+  if self.cfg.lose_wallet_on_death then
+    user:setWallet(0)
+  end
+end
+
 function Money.event:playerMoneyUpdate(user)
   if self.cfg.money_display then
     -- update money

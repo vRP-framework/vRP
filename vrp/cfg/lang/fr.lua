@@ -555,7 +555,7 @@ local lang = {
   },
   item_transformer = {
     not_enough_reagents = "~r~Pas assez d'éléments.",
-    empty = "empty"
+    empty = "vide"
   },
   hidden_transformer = {
     informer = {

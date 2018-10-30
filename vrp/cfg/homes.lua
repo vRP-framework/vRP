@@ -130,7 +130,7 @@ cfg.slot_types = {
       {"radio", -463.13302612305,-715.83905029297,52.003196716309, _config = { stations = radio_stations }}
     }
   },
-  ["other_flat"] = {
+  ["rich_flat"] = {
     {
       {"entry",-784.363,323.792,211.996},
       {"chest",-766.744384765625,328.375,211.396545410156, _config = {weight=500}},
@@ -168,30 +168,48 @@ cfg.slot_types = {
 
 -- define home clusters
 cfg.homes = {
-  ["Basic Housing 1"] = {
+  ["HLM Vinewood"] = {
     slot = "basic_flat",
     entry_point = {-635.665,44.155,42.697},
     buy_price = 100000,
     sell_price = 80000,
-    max = 99,
+    max = 250,
     blipid=40,
     blipcolor=4
   },
-  ["Basic Housing 2"] = {
+  ["HLM Little Vinewood"] = {
     slot = "basic_flat",
-    entry_point = {-1446.769,-538.531,34.740},
+    entry_point = {-599.255981445313,147.80744934082,61.672721862793},
     buy_price = 100000,
     sell_price = 80000,
-    max = 99,
+    max = 250,
     blipid=40,
     blipcolor=4
   },
-  ["Rich Housing"] = {
-    slot = "other_flat",
-    entry_point = {-770.921,312.537,85.698},
+  ["HLM Little Seoul"] = {
+    slot = "basic_flat",
+    entry_point = {-767.436462402344,-751.6806640625,27.8752155303955},
+    buy_price = 100000,
+    sell_price = 80000,
+    max = 250,
+    blipid=40,
+    blipcolor=4
+  },
+  ["Alesandro Hotel"] = {
+    slot = "basic_flat",
+    entry_point = {-599.255981445313,147.80744934082,61.672721862793},
+    buy_price = 100000,
+    sell_price = 80000,
+    max = 50,
+    blipid=40,
+    blipcolor=4
+  },
+  ["Le Burton"] = {
+    slot = "rich_flat",
+    entry_point = {-417.206024169922,-187.134948730469,37.4518280029297},
     buy_price = 500000,
-    sell_price = 300000,
-    max = 10,
+    sell_price = 350000,
+    max = 30,
     blipid=40,
     blipcolor=5
   }

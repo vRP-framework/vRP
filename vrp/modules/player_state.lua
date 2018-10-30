@@ -135,9 +135,8 @@ function PlayerState.event:playerSpawn(user, first_spawn)
     self.remote.setCustomization(user.source,user.cdata.state.customization) 
   end
 
-  if user.cdata.state.weapons then -- weapons
-    self.remote.giveWeapons(user.source,user.cdata.state.weapons,true)
-  end
+  -- weapons
+  self.remote.giveWeapons(user.source,user.cdata.state.weapons or {},true)
 
   if user.cdata.state.health then -- health
     self.remote.setHealth(user.source,user.cdata.state.health)

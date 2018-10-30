@@ -4,31 +4,93 @@ local cfg = {}
 
 -- define transformers randomly placed on the map
 cfg.hidden_transformers = {
-  ["weed field"] = {
+  ["Weed field"] = {
     def = {
       name="Weed field", -- menu name
-      -- permissions = {"harvest.weed"}, -- you can add permissions
       r=0,g=200,b=0, -- color
-      max_units=30,
-      units_per_minute=1,
+      max_units=500,
+      units_per_minute=10,
       x=0,y=0,z=0, -- pos
-      radius=5, height=1.5, -- area
+      radius=10, height=1.8, -- area
       recipes = {
         ["Harvest"] = { -- action name
-          description="Harvest some weed.", -- action description
+          description="Harvest weed.", -- action description
           in_money=0, -- money taken per unit
           out_money=0, -- money earned per unit
           reagents={}, -- items taken per unit
           products={ -- items given per unit
-            ["weed"] = 1
+            ["weed"] = 10
           }
         }
       }
     },
     positions = {
-      {1873.36901855469,3658.46215820313,33.8029747009277},
-      {1856.33776855469,3635.12109375,34.1897926330566},
-      {1830.75390625,3621.44140625,33.8487205505371}
+      {2224.19091796875,5576.9423828125,53.8465042114258},
+      {-1011.81121826172,1049.76477050781,164.933609008789},
+      {501.445129394531,6495.7001953125,30.4247779846191}
+    }
+  },
+  ["Weed processing"] = {
+    def = {
+      name="Weed processing", -- menu name
+      r=0,g=200,b=0, -- color
+      max_units=1000,
+      units_per_minute=1000,
+      x=0,y=0,z=0, -- pos
+      radius=8, height=1.8, -- area
+      recipes = {
+        ["Process"] = { -- action name
+          description="Process weed.", -- action description
+          in_money=0, -- money taken per unit
+          out_money=0, -- money earned per unit
+          reagents={
+            ["weed"] = 2,
+            ["demineralized_water"] = 1
+          }, -- items taken per unit
+          products={ -- items given per unit
+            ["weed_processed"] = 1
+          }
+        }
+      },
+      permissions = {
+        "!aptitude.science.chemicals.>4"
+      }
+    },
+    positions = {
+      {1443.16345214844,6332.486328125,23.981897354126},
+      {1581.90747070313,2910.68334960938,56.9333839416504},
+      {2154.8515625,3386.4052734375,45.5702743530273}
+    }
+  },
+  ["Weed resale"] = {
+    def = {
+      name="Weed resale", -- menu name
+      r=0,g=200,b=0, -- color
+      max_units=1000,
+      units_per_minute=1000,
+      x=0,y=0,z=0, -- pos
+      radius=5, height=1.8, -- area
+      recipes = {
+        ["Sell"] = { -- action name
+          description="Sell processed weed.", -- action description
+          in_money=0, -- money taken per unit
+          out_money=0, -- money earned per unit
+          reagents={
+            ["weed_processed"] = 10
+          }, -- items taken per unit
+          products={ -- items given per unit
+            ["dirty_money"] = 5000
+          }
+        }
+      }
+    },
+    positions = {
+      {-410.352722167969,447.736328125,112.580322265625},
+      {-1907.70776367188,292.63720703125,88.6077499389648},
+      {-970.378356933594,-1121.73522949219,2.17184591293335},
+      {340.481842041016,-1856.76635742188,27.3206825256348},
+      {-585.191833496094,-1606.83642578125,27.010814666748},
+      {238.181610107422,-2021.85290527344,18.3191604614258}
     }
   }
 }
@@ -39,13 +101,15 @@ cfg.hidden_transformer_duration = 5*24*60 -- 5 days
 -- configure the information reseller (can sell hidden transformers positions)
 cfg.informer = {
   infos = {
-    ["weed field"] = 20000
+    ["Weed field"] = 25000,
+    ["Weed processing"] = 25000,
+    ["Weed resale"] = 25000
   },
   positions = {
     {1821.12390136719,3685.9736328125,34.2769317626953},
     {1804.2958984375,3684.12280273438,34.217945098877}
   },
-  interval = 60, -- interval in minutes for the reseller respawn
+  interval = 30, -- interval in minutes for the reseller respawn
   duration = 10, -- duration in minutes of the spawned reseller
   blipid = 133,
   blipcolor = 2

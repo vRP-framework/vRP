@@ -9,6 +9,33 @@ local cfg = {}
 --- onjoin (optional): function(user) (called when the character join the group)
 --- onleave (optional): function(user) (called when the character leave the group)
 
+function police_init(user)
+  local weapons = {}
+  weapons["WEAPON_STUNGUN"] = {ammo=1000}
+  weapons["WEAPON_COMBATPISTOL"] = {ammo=100}
+  weapons["WEAPON_NIGHTSTICK"] = {ammo=0}
+  weapons["WEAPON_FLASHLIGHT"] = {ammo=0}
+  
+  vRP.EXT.PlayerState.remote._giveWeapons(user.source,weapons,true)
+  vRP.EXT.Police.remote._setCop(user.source,true)
+  vRP.EXT.PlayerState.remote._setArmour(user.source,100)
+end
+
+function police_onjoin(user)
+  police_init(user)
+end
+
+function police_onleave(user)
+  vRP.EXT.PlayerState.remote._giveWeapons(user.source,{},true)
+  vRP.EXT.Police.remote._setCop(user.source,false)
+  vRP.EXT.PlayerState.remote._setArmour(user.source,0)
+  user:removeCloak()
+end
+
+function police_onspawn(user)
+  police_init(user)
+end
+
 cfg.groups = {
   ["superadmin"] = {
     _config = {onspawn = function(user) vRP.EXT.Base.remote._notify(user.source, "You are superadmin.") end},
@@ -49,9 +76,9 @@ cfg.groups = {
     _config = {
       title = "Police",
       gtype = "job",
-      onjoin = function(user) vRP.EXT.Police.remote._setCop(user.source,true) end,
-      onspawn = function(user) vRP.EXT.Police.remote._setCop(user.source,true) end,
-      onleave = function(user) vRP.EXT.Police.remote._setCop(user.source,false) end
+      onjoin = police_onjoin,
+      onspawn = police_onspawn,
+      onleave = police_onleave
     },
     "police.menu",
     "police.cloakroom",
@@ -68,6 +95,8 @@ cfg.groups = {
     "police.jail",
     "police.fine",
     "police.announce",
+    "police.vehicle",
+    "police.chest_seized",
     "-player.store_weapons",
     "-police.seizable" -- negative permission, police can't seize itself, even if another group add the permission
   },
@@ -78,7 +107,9 @@ cfg.groups = {
     },
     "emergency.revive",
     "emergency.shop",
-    "emergency.service"
+    "emergency.service",
+    "emergency.vehicle",
+    "emergency.cloakroom"
   },
   ["repair"] = {
     _config = {
@@ -88,13 +119,16 @@ cfg.groups = {
     "vehicle.repair",
     "vehicle.replace",
     "repair.service"
+--    "mission.repair.satellite_dishes", -- basic mission
+--    "mission.repair.wind_turbines" -- basic mission
   },
   ["taxi"] = {
     _config = {
       title = "Taxi",
       gtype = "job"
     },
-    "taxi.service"
+    "taxi.service",
+    "taxi.vehicle"
   },
   ["citizen"] = {
     _config = {
@@ -117,11 +151,20 @@ cfg.users = {
 --- x,y,z, blipid, blipcolor, permissions (optional)
 
 cfg.selectors = {
-  ["Job Selector"] = {
+  ["Jobs"] = {
     _config = {x = -268.363739013672, y = -957.255126953125, z = 31.22313880920410, blipid = 351, blipcolor = 47},
-    "police",
     "taxi",
     "repair",
+    "citizen"
+  },
+  ["Police job"] = {
+    _config = {x = 437.924987792969,y = -987.974182128906, z = 30.6896076202393 , blipid = 351, blipcolor= 38 },
+    "police",
+    "citizen"
+  },
+  ["Emergency job"] = {
+    _config = {x=-498.959716796875,y=-335.715148925781,z=34.5017547607422, blipid = 351, blipcolor= 1 },
+    "emergency",
     "citizen"
   }
 }

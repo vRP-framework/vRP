@@ -11,7 +11,13 @@ local cfg = {}
 -- genfunction are functions returning a correct value as: function(args, ...)
 -- where args is a list of {base_idname,args...}
 cfg.items = {
-  ["weed"] = {"Weed", "Some weed.", nil, 0.01}
+  ["gold_ore"] = {"Gold ore","",nil,1},
+  ["gold_processed"] = {"Gold processed","",nil,1.2},
+  ["gold_ingot"] = {"Gold ingot","",nil,12},
+  ["gold_catalyst"] = {"Gold catalyst","Used to transform processed gold into gold ingot.",nil,0.1},
+  ["weed"] = {"Weed leaf", "", nil, 0.05},
+  ["weed_processed"] = {"Weed processed", "", nil, 0.1},
+  ["demineralized_water"] = {"Demineralized water (1L)","",nil,1}
 }
 
 return cfg

@@ -5,6 +5,8 @@ local cfg = {}
 cfg.open_wallet = 150
 cfg.open_bank = 1000
 
+cfg.lose_wallet_on_death = true
+
 cfg.money_display = true
 
 -- money display css

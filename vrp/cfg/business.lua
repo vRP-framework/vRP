@@ -13,7 +13,7 @@ cfg.blip = {431,70}
 
 -- positions of commerce chambers
 cfg.commerce_chambers = {
-  {1858.21, 3687.51, 34.2671}
+  {-156.09016418457,-603.548278808594,48.2438659667969}
 }
 
 return cfg

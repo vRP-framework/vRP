@@ -27,6 +27,9 @@ cfg.edibles = {
   tacos = {"solid", {food = 0.2, water = -0.05}, "Tacos","", 0.2},
   sandwich = {"solid", {food = 0.25, water = -0.1}, "Sandwich","A tasty snack.", 0.5},
   kebab = {"solid", {food = 0.45, water = -0.2, health = 5}, "Kebab","", 0.85},
+  --- fruits
+  peach = {"solid", {food = 0.1, water = 0.1}, "Peach","A peach.", 0.15},
+
 
   -- drugs
   pills = {"drug", {health = 25}, "Pills","A simple medication.", 0.1}

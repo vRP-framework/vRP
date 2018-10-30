@@ -28,8 +28,13 @@ cfg.shop_types = {
     ["edible|sandwich"] = 20,
     ["edible|kebab"] = 20
   },
+  ["chemicals"] = {
+    _config = {blipid=52, blipcolor=46},
+    ["gold_catalyst"] = 50,
+    ["demineralized_water"] = 5
+  },
   ["drugstore"] = {
-    _config = {blipid=51, blipcolor=2},
+    _config = {blipid=51, blipcolor=2, permissions={"emergency.shop"} },
     ["medkit"] = 75,
     ["edible|pills"] = 10
   },
@@ -195,6 +200,22 @@ cfg.shop_types = {
     ["wammo|WEAPON_GRENADE"] = 70,
     ["wbody|WEAPON_SMOKEGRENADE"] = 50000,
     ["wbody|WEAPON_PETROLCAN"] = 50000
+  },
+  ["melee weapons"] = {
+    _config = {blipid=154, blipcolor=1},
+    ["wbody|WEAPON_KNIFE"] = 75,
+    ["wbody|WEAPON_MACHETE"] = 250
+  },
+  ["handguns"] = {
+    _config = {blipid=156, blipcolor=1},
+    ["wbody|WEAPON_PISTOL"] = 950,
+    ["wbody|WEAPON_COMBATPISTOL"] = 1550,
+    ["wammo|WEAPON_PISTOL"] = 1,
+    ["wammo|WEAPON_COMBATPISTOL"] = 1
+  },
+  ["gear"] = {
+    _config = {blipid=175, blipcolor=1},
+    ["bulletproof_vest"] = 750
   }
 }
 
@@ -223,7 +244,14 @@ cfg.shops = {
   {"food",-1223.18127441406,-907.385681152344,12.3263463973999}, 
   {"food",-707.408996582031,-913.681701660156,19.2155857086182},
 
+  -- {"TCG",-1223.18127441406,-907.385681152344,12.3263463973999},
+  {"tools",-707.408996582031,-913.681701660156,19.2155857086182},
+  {"chemicals",1163.79260253906,2705.58544921875,38.1576995849609},
+  {"drugstore",-497.977142333984,-328.329895019531,34.501636505127},
+  {"gear", 844.76324462891,-1029.4772949219,28.194856643677},
+
   -- weapons
+  --[[
   {"sandyshores1", 1692.41, 3758.22, 34.7053},
   {"vinewood1", 252.696, -48.2487, 69.941},
   {"eastlossantos1", 844.299, -1033.26, 28.1949},
@@ -235,6 +263,10 @@ cfg.shops = {
   {"chumash1", -3172.60375976563,1085.74816894531,20.8387603759766},
   {"midlossantosrange", 21.70, -1107.41, 29.79},
   {"cypressflatsrange1", 810.15, -2156.88, 29.61}
+  --]]
+  {"melee weapons", 21.70, -1107.41, 29.79},
+  {"handguns", 844.299, -1033.26, 28.1949}
+
 }
 
 return cfg

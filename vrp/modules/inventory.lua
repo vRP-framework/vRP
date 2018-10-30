@@ -440,7 +440,7 @@ function Inventory:__construct()
 end
 
 -- define an inventory item (parametric or plain text data)
--- id: unique item identifier (string)
+-- id: unique item identifier (string, no "." or "|")
 -- name: display name, value or genfunction(args)
 -- description: value or genfunction(args) (html)
 -- menu_builder: (optional) genfunction(args, menu)
