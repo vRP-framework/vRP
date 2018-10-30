@@ -89,15 +89,15 @@ local lang = {
   edible = {
     liquid = {
       action = "Boire",
-      notify = "~b~ Boit {1}."
+      notify = "~b~Boit {1}."
     },
     solid = {
       action = "Manger",
-      notify = "~o~ Mange {1}."
+      notify = "~o~Mange {1}."
     },
     drug = {
       action = "Prendre",
-      notify = "~g~ Prend {1}."
+      notify = "~g~Prend {1}."
     }
   },
 
@@ -553,8 +553,11 @@ local lang = {
       title = "> Enlever"
     }
   },
-  itemtr = {
+  item_transformer = {
     not_enough_reagents = "~r~Pas assez d'éléments.",
+    empty = "empty"
+  },
+  hidden_transformer = {
     informer = {
       title = "Informateur illégal",
       description = "{1} $",

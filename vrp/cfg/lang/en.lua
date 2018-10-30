@@ -90,15 +90,15 @@ local lang = {
   edible = {
     liquid = {
       action = "Drink",
-      notify = "~b~ Drinking {1}."
+      notify = "~b~Drinking {1}."
     },
     solid = {
       action = "Eat",
-      notify = "~o~ Eating {1}."
+      notify = "~o~Eating {1}."
     },
     drug = {
       action = "Take",
-      notify = "~g~ Taking {1}."
+      notify = "~g~Taking {1}."
     }
   },
   survival = {
@@ -553,8 +553,11 @@ local lang = {
       title = "> Undress"
     }
   },
-  itemtr = {
+  item_transformer = {
     not_enough_reagents = "~r~Not enough reagents.",
+    empty = "empty"
+  },
+  hidden_transformer = {
     informer = {
       title = "Illegal Informer",
       description = "{1} $",

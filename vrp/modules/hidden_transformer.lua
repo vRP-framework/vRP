@@ -16,7 +16,7 @@ local function menu_informer(self)
       if user:tryPayment(price) then
         vRP.EXT.Map.remote._setGPS(user.source, itemtr.cfg.x, itemtr.cfg.y) -- set gps marker
         vRP.EXT.Base.remote._notify(user.source, lang.money.paid({price}))
-        vRP.EXT.Base.remote._notify(user.source, lang.itemtr.informer.bought())
+        vRP.EXT.Base.remote._notify(user.source, lang.hidden_transformer.informer.bought())
       else
         vRP.EXT.Base.remote._notify(user.source, lang.money.not_enough())
       end
@@ -24,12 +24,12 @@ local function menu_informer(self)
   end
 
   vRP.EXT.GUI:registerMenuBuilder("hidden_transformer_informer", function(menu)
-    menu.title = lang.itemtr.informer.title()
+    menu.title = lang.hidden_transformer.informer.title()
     menu.css.header_color = "rgba(0,255,125,0.75)"
 
     -- add infos
     for id,price in pairs(self.cfg.informer.infos) do
-      menu:addOption(id, m_buy, lang.itemtr.informer.description({price}), id)
+      menu:addOption(id, m_buy, lang.hidden_transformer.informer.description({price}), id)
     end
   end)
 end
@@ -50,7 +50,7 @@ local function bind_informer(self, user)
     end
 
     -- add informer blip/marker/area
-    vRP.EXT.Map.remote._setNamedBlip(user.source,"vRP:informer",x,y,z,self.cfg.informer.blipid,self.cfg.informer.blipcolor,lang.itemtr.informer.title())
+    vRP.EXT.Map.remote._setNamedBlip(user.source,"vRP:informer",x,y,z,self.cfg.informer.blipid,self.cfg.informer.blipcolor,lang.hidden_transformer.informer.title())
     vRP.EXT.Map.remote._setNamedMarker(user.source,"vRP:informer",x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
     user:setArea("vRP:informer",x,y,z,1,1.5,enter,leave)
   end

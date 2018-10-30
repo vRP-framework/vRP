@@ -22,7 +22,8 @@ cfg.item_transformers = {
         reagents={}, -- items taken per unit
         products={ -- items given per unit
           ["edible|water"] = 1
-        }
+        },
+        -- permissions = {"harvest.water_bottle"} -- recipe permissions
       },
       ["Harvest tacos"] = { -- action name
         description="Harvest some tacos.", -- action description

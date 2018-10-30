@@ -77,7 +77,7 @@ function Transformer:tick()
       end
 
       if not reagents_ok then
-        vRP.EXT.Base.remote._notify(user.source, lang.itemtr.not_enough_reagents())
+        vRP.EXT.Base.remote._notify(user.source, lang.item_transformer.not_enough_reagents())
       end
 
       if money_ok and reagents_ok and inventory_ok then -- do transformation
@@ -116,7 +116,7 @@ function Transformer:tick()
     if self.units > 0 then -- display units left
       vRP.EXT.GUI.remote._setProgressBarText(user.source,"vRP:item_transformer:"..self.id, recipe_name.."... "..self.units.."/"..self.cfg.max_units)
     else
-      vRP.EXT.GUI.remote._setProgressBarText(user.source,"vRP:item_transformer:"..self.id, "empty")
+      vRP.EXT.GUI.remote._setProgressBarText(user.source,"vRP:item_transformer:"..self.id, lang.item_transformer.empty())
     end
   end
 end
@@ -146,39 +146,42 @@ local function menu_item_transformer(self)
 
   vRP.EXT.GUI:registerMenuBuilder("item_transformer", function(menu)
     local itemtr = menu.data.itemtr
+    local user = menu.user
 
     menu.title = itemtr.cfg.name
     menu.css.header_color = "rgba("..itemtr.cfg.r..","..itemtr.cfg.g..","..itemtr.cfg.b..",0.75)"
 
     -- add recipes
     for recipe_name,recipe in pairs(itemtr.cfg.recipes) do
-      local info = "<br /><br />"
-      if recipe.in_money > 0 then info = info.."- "..recipe.in_money end
-      for fullid,amount in pairs(recipe.reagents) do
-        local citem = vRP.EXT.Inventory:computeItem(fullid)
-        if citem then
-          info = info.."<br />"..amount.." "..citem.name
-        end
-      end
-      info = info.."<br /><span style=\"color: rgb(0,255,125)\">=></span>"
-      if recipe.out_money > 0 then info = info.."<br />+ "..recipe.out_money end
-      for fullid,amount in pairs(recipe.products) do
-        local citem = vRP.EXT.Inventory:computeItem(fullid)
-        if citem then
-          info = info.."<br />"..amount.." "..citem.name
-        end
-      end
-      for apt,exp in pairs(recipe.aptitudes or {}) do
-        local parts = splitString(apt,".")
-        if #parts == 2 then
-          local def = vRP.EXT.Aptitude:getAptitude(parts[1],parts[2])
-          if def then
-            info = info.."<br />[EXP] "..exp.." "..vRP.EXT.Aptitude:getGroupTitle(parts[1]).."/"..def[1]
+      if user:hasPermissions(recipe.permissions or {}) then
+        local info = "<br /><br />"
+        if recipe.in_money > 0 then info = info.."- "..recipe.in_money end
+        for fullid,amount in pairs(recipe.reagents) do
+          local citem = vRP.EXT.Inventory:computeItem(fullid)
+          if citem then
+            info = info.."<br />"..amount.." "..citem.name
           end
         end
-      end
+        info = info.."<br /><span style=\"color: rgb(0,255,125)\">=></span>"
+        if recipe.out_money > 0 then info = info.."<br />+ "..recipe.out_money end
+        for fullid,amount in pairs(recipe.products) do
+          local citem = vRP.EXT.Inventory:computeItem(fullid)
+          if citem then
+            info = info.."<br />"..amount.." "..citem.name
+          end
+        end
+        for apt,exp in pairs(recipe.aptitudes or {}) do
+          local parts = splitString(apt,".")
+          if #parts == 2 then
+            local def = vRP.EXT.Aptitude:getAptitude(parts[1],parts[2])
+            if def then
+              info = info.."<br />[EXP] "..exp.." "..vRP.EXT.Aptitude:getGroupTitle(parts[1]).."/"..def[1]
+            end
+          end
+        end
 
-      menu:addOption(recipe_name, m_recipe, recipe.description..info, recipe_name)
+        menu:addOption(recipe_name, m_recipe, recipe.description..info, recipe_name)
+      end
     end
   end)
 end
