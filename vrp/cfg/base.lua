@@ -20,7 +20,8 @@ cfg.load_duration = 30 -- seconds, player duration in loading mode at the first 
 cfg.load_delay = 60 -- milliseconds, delay the tunnel communication when in loading mode
 cfg.global_delay = 0 -- milliseconds, delay the tunnel communication when not in loading mode
 
-cfg.ping_timeout = 5 -- number of minutes after a client should be kicked if not sending pings
+cfg.ping_check_interval = 0 -- seconds, 0 to disable ping timeout
+cfg.ping_timeout_misses = 10 -- number of ping miss required to reject a player
 
 cfg.max_characters = 5 -- maximum number of characters per user
 cfg.character_select_delay = 60 -- minimum number of seconds between character selects, at least 30 seconds is recommended

@@ -96,11 +96,13 @@ function vRP:__construct()
   end
   task_save()
 
-  local function task_timeout()
-    SetTimeout(30000, task_timeout)
-    self:checkTimeout()
+  if self.cfg.ping_check_interval > 0 then
+    local function task_timeout()
+      SetTimeout(self.cfg.ping_check_interval*1000, task_timeout)
+      self:checkTimeout()
+    end
+    task_timeout()
   end
-  task_timeout()
 end
 
 -- register a DB driver
@@ -369,10 +371,16 @@ function vRP:save()
 end
 
 function vRP:checkTimeout()
-  for k,user in pairs(self.users) do
-    if GetPlayerPing(user.source) <= 0 then
-      self:kick(user,"[vRP] Ping timeout.")
-      self:dropPlayer(user.source)
+  for id,user in pairs(self.users) do
+    if GetPlayerPing(user.source) <= 0 then -- ping miss
+      user.ping_misses = user.ping_misses+1
+
+      if user.ping_misses >= self.cfg.ping_timeout_misses then
+        self:kick(user,"[vRP] Ping timeout.")
+        self:dropPlayer(user.source)
+      end
+    else
+      user.ping_misses = 0 -- reset ping misses
     end
   end
 end
@@ -409,6 +417,7 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
             self.pending_users[table.concat(ids, ";")] = user
 
             user.spawns = 0
+            user.ping_misses = 0
             user.name = name
 
             -- set endpoint
