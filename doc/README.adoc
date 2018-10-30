@@ -1,3 +1,12 @@
-include::../global.adoc[]
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc: left
+:toclevels: 5
+
 
 TIP: Config examples are git branches as `cfg_NAME...`. It's easier to update, for example if `cfg_FR` is not up-to-date, you could do a `git merge` from the last version.
