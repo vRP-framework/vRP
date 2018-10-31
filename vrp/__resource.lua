@@ -61,6 +61,7 @@ files{
   "lib/Proxy.lua",
   "lib/Debug.lua",
   "lib/IDManager.lua",
+  "lib/ActionDelay.lua",
   "client/vRP.lua",
   "vRPShared.lua",
   "cfg/client.lua",

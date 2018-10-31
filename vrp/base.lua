@@ -139,7 +139,7 @@ local function menu_characters(self)
     local ok, err = user:useCharacter(cid)
     if not ok then
       if err <= 2 then
-        self.remote._notify(user.source, lang.characters.character.delay_error())
+        self.remote._notify(user.source, lang.common.must_wait({user.use_character_action:remaining()}))
       else
         self.remote._notify(user.source, lang.characters.character.error())
       end

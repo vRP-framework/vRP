@@ -1,3 +1,5 @@
+local ActionDelay = module("vrp", "lib/ActionDelay")
+
 -- load User extensions
 
 local extensions = {}
@@ -18,7 +20,7 @@ function User:__construct(source, id)
   self.endpoint = "0.0.0.0"
   self.data = {}
   self.loading_character = false
-  self.last_character_select = 0
+  self.use_character_action = ActionDelay()
 
   -- extensions constructors
   for _,uext in pairs(extensions) do
@@ -75,8 +77,7 @@ function User:useCharacter(id)
   if id == self.cid then return true end -- same check
 
   -- delay check
-  local select_time = os.time()
-  if select_time-self.last_character_select < vRP.cfg.character_select_delay then return false, 1 end
+  if not self.use_character_action:perform(vRP.cfg.character_select_delay) then return false, 1 end
 
   if self.loading_character then return false, 2 end -- loading check
 
@@ -93,7 +94,6 @@ function User:useCharacter(id)
     self.cid = id
     self.data.current_character = id
     vRP.users_by_cid[self.cid] = self -- reference
-    self.last_character_select = select_time
     self.loading_character = true
 
     -- load character

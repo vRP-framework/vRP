@@ -11,6 +11,7 @@ local lang = {
     request_refused = "~r~Request refused.",
     wearing_uniform = "~r~Be careful, you are wearing a uniform.",
     not_allowed = "~r~Not allowed.",
+    must_wait = "~r~Must wait {1} seconds before being able to perform this action.",
     menu = {
       title = "Menu"
     }
@@ -19,8 +20,7 @@ local lang = {
     title = "[Characters]",
     character = {
       title = "#{1}: {2} {3}",
-      error = "~r~Invalid character.",
-      delay_error = "~r~You need to wait before using another character."
+      error = "~r~Invalid character."
     },
     create = {
       title = "Create",

@@ -5,8 +5,9 @@
 
 local cfg = {}
 
--- list of {title,upper,seq,looping} and an optional permissions property
--- seq can also be a task definition, check the examples below
+-- list of {title,upper,seq,looping,delay} and an optional permissions property
+-- seq: can also be a task definition, check the examples below
+-- delay: (optional) number of seconds before being able to do another emote, default is 0
 cfg.emotes = {
   {"Handsup", -- handsup state, use clear to lower hands
     true,
@@ -28,14 +29,14 @@ cfg.emotes = {
   {"Rock", true,{{"mp_player_introck","mp_player_int_rock",1}},false},
   {"Sit Chair", false, {task="PROP_HUMAN_SEAT_CHAIR_MP_PLAYER"}, false},
 --  {"Cop", false, {task="WORLD_HUMAN_COP_IDLES"}, false},
---  {"Bum sign", false, {task="WORLD_HUMAN_BUM_FREEWAY"}, false},
+  {"Bum sign", false, {task="WORLD_HUMAN_BUM_FREEWAY"}, false, 5},
   {"Bum wash", false, {task="WORLD_HUMAN_BUM_WASH"}, false},
---  {"Clipboard", false, {task="WORLD_HUMAN_CLIPBOARD"}, false},
+  {"Clipboard", false, {task="WORLD_HUMAN_CLIPBOARD"}, false, 5},
   {"Binoculars",false, {task="WORLD_HUMAN_BINOCULARS"}, false},
   {"Cheer",false, {task="WORLD_HUMAN_CHEERING"}, false},
   {"Crink",false, {task="WORLD_HUMAN_DRINKING"}, false},
   {"Smoke", false, {task="WORLD_HUMAN_SMOKING"}, false},
---  {"Smoke nervous", false, {task="WORLD_HUMAN_AA_SMOKE"}, false},
+  {"Smoke nervous", false, {task="WORLD_HUMAN_AA_SMOKE"}, false, 5},
 --  {"Film", false, {task="WORLD_HUMAN_MOBILE_FILM_SHOCKING"}, false},
 --  {"Plant", false, {task="WORLD_HUMAN_GARDENER_PLANT"}, false},
   {"Guard", false, {task="WORLD_HUMAN_GUARD_STAND"}, false},
@@ -45,9 +46,9 @@ cfg.emotes = {
 --  {"Fishing", false, {task="WORLD_HUMAN_STAND_FISHING"}, false},
 --  {"Hangout", false, {task="WORLD_HUMAN_HANG_OUT_STREET"}, false},
 -- {"Hiker", false, {task="WORLD_HUMAN_HIKER_STANDING"}, false},
---  {"Partying", false, {task="WORLD_HUMAN_PARTYING"}, false},
+  {"Partying", false, {task="WORLD_HUMAN_PARTYING"}, false, 5},
   {"Statue", false, {task="WORLD_HUMAN_HUMAN_STATUE"}, false},
---  {"Music", false, {task="WORLD_HUMAN_MUSICIAN"}, false},
+  {"Music", false, {task="WORLD_HUMAN_MUSICIAN"}, false, 5},
   {"Jog", false, {task="WORLD_HUMAN_JOG_STANDING"}, false},
   {"Lean", false, {task="WORLD_HUMAN_LEANING"}, false},
   {"Flex", false, {task="WORLD_HUMAN_MUSCLE_FLEX"}, false},

@@ -3,7 +3,19 @@
 
 local lang = vRP.lang
 
+local ActionDelay = module("vrp", "lib/ActionDelay")
+
 local Emotes = class("Emotes", vRP.Extension)
+
+-- SUBCLASS
+
+Emotes.User = class("User")
+
+function Emotes.User:__construct()
+  self.emotes_action = ActionDelay()
+end
+
+-- METHODS
 
 function Emotes:__construct()
   vRP.Extension.__construct(self)
@@ -13,9 +25,13 @@ function Emotes:__construct()
   self:log(#self.cfg.emotes.." emotes from config")
 
   local function m_emote(menu, value)
+    local user = menu.user
+
     local emote = self.cfg.emotes[value]
-    if emote then
-      vRP.EXT.Base.remote._playAnim(menu.user.source,emote[2],emote[3],emote[4])
+    if user.emotes_action:perform(emote[5] or 0) then
+      vRP.EXT.Base.remote._playAnim(user.source,emote[2],emote[3],emote[4])
+    else
+      vRP.EXT.Base.remote._notify(user.source, lang.common.must_wait({user.emotes_action:remaining()}))
     end
   end
 
@@ -48,8 +64,8 @@ end
 
 -- add a new emote
 -- see cfg/emotes.lua
-function Emotes:add(title, upper, seq, looping)
-  table.insert(self.cfg.emotes, {title, upper, seq, looping})
+function Emotes:add(config)
+  table.insert(self.cfg.emotes, config)
 end
 
 vRP:registerExtension(Emotes)
