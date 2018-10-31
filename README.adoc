@@ -67,7 +67,6 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * `namespace.foo.bar` instead of `namespace:foo:bar`
 * use menu instead of div when possible, identity display as modular menu
 * vehicle state
-* possible cop despawn
 * identity display group gtype list
 * ammo box
 * blip marker display (BMD?) or entity system
