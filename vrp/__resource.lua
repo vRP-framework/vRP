@@ -60,7 +60,7 @@ files{
   "lib/Tunnel.lua",
   "lib/Proxy.lua",
   "lib/Debug.lua",
-  "lib/Tools.lua",
+  "lib/IDManager.lua",
   "client/vRP.lua",
   "vRPShared.lua",
   "cfg/client.lua",

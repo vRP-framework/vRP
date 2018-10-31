@@ -1,5 +1,4 @@
 local lang = vRP.lang
-local Tools = module("vrp","lib/Tools")
 
 -- a basic garage implementation
 local Garage = class("Garage", vRP.Extension)

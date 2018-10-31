@@ -1,5 +1,4 @@
 local htmlEntities = module("lib/htmlEntities")
-local Tools = module("lib/Tools")
 
 local Admin = class("Admin", vRP.Extension)
 

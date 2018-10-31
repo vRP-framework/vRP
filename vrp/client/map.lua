@@ -1,6 +1,6 @@
 -- BLIPS: see https://wiki.gtanet.work/index.php?title=Blips for blip id/color
 
-local Tools = module("vrp", "lib/Tools")
+local IDManager = module("vrp", "lib/IDManager")
 
 local Map = class("Map", vRP.Extension)
 
@@ -10,7 +10,7 @@ function Map:__construct()
   self.named_blips = {}
 
   self.markers = {}
-  self.marker_ids = Tools.newIDGenerator()
+  self.marker_ids = IDManager()
   self.named_markers = {}
 
   self.areas = {}

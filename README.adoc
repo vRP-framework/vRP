@@ -71,6 +71,11 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * identity display group gtype list
 * group selectors
 * ammo box
+* action delay, emote delay, character delay
+* vRP db driver optimization
+* blip marker display (BPD?) or entity system
+* IDGenerator rework (IDManager)
+* parcel delivery basic mission
 
 === vRP 2 dev' phases
 * [.line-through]#refactoring#

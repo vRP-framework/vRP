@@ -1,7 +1,5 @@
 -- init vRP client context
 
-local Luaoop = module("vrp", "lib/Luaoop")
-class = Luaoop.class
 Tunnel = module("vrp", "lib/Tunnel")
 Proxy = module("vrp", "lib/Proxy")
 
@@ -49,7 +47,7 @@ end)
 
 -- Base extension
 
-local Tools = module("vrp", "lib/Tools")
+local IDManager = module("vrp", "lib/IDManager")
 
 local Base = class("Base", vRP.Extension)
 Base.tunnel = {}
@@ -71,7 +69,7 @@ function Base:__construct()
   end)
 
   self.anims = {}
-  self.anim_ids = Tools.newIDGenerator()
+  self.anim_ids = IDManager()
 end
 
 function Base:triggerRespawn()

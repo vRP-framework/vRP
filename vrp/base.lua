@@ -1,7 +1,5 @@
 -- init vRP server context
 
-local Luaoop = module("vrp", "lib/Luaoop")
-class = Luaoop.class
 Proxy = module("lib/Proxy")
 Tunnel = module("lib/Tunnel")
 Debug = module("lib/Debug")

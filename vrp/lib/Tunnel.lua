@@ -1,5 +1,5 @@
 
-local Tools = module("lib/Tools")
+local IDManager = module("lib/IDManager")
 local Debug = module("lib/Debug")
 
 -- API used in function of the side
@@ -161,7 +161,7 @@ end
 function Tunnel.getInterface(name,identifier)
   if not identifier then identifier = GetCurrentResourceName() end
   
-  local ids = Tools.newIDGenerator()
+  local ids = IDManager()
   local callbacks = {}
 
   -- build interface

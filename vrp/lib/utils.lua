@@ -1,5 +1,5 @@
 -- this file define global tools required by vRP and vRP extensions
--- it will create module, SERVER, CLIENT, async...
+-- it will create module, SERVER, CLIENT, async, class...
 
 -- side detection
 SERVER = not IsVehicleEngineStarting
@@ -50,6 +50,11 @@ function module(rsc, path)
     end
   end
 end
+
+-- Luaoop class
+
+local Luaoop = module("vrp", "lib/Luaoop")
+class = Luaoop.class
 
 -- Luaseq like for FiveM
 

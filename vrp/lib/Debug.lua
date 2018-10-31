@@ -1,5 +1,5 @@
 
-local Tools = module("vrp", "lib/Tools")
+local IDManager = module("vrp", "lib/IDManager")
 
 local Debug = {}
 
@@ -10,7 +10,7 @@ if SERVER then
 end
 Debug.maxlen = 75
 
-local profile_ids = Tools.newIDGenerator()
+local profile_ids = IDManager()
 local profiles = {}
 
 function Debug.log(str, no_limit)

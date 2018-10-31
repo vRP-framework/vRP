@@ -1,4 +1,4 @@
-local Tools = module("vrp", "lib/Tools")
+local IDManager = module("vrp", "lib/IDManager")
 local htmlEntities = module("vrp", "lib/htmlEntities")
 local EventDispatcher = module("vrp", "lib/EventDispatcher")
 local lang = vRP.lang
@@ -124,7 +124,7 @@ GUI.User = class("User")
 
 function GUI.User:__construct()
   self.menu_stack = {} -- stack of {name, data, menu}
-  self.request_ids = Tools.newIDGenerator()
+  self.request_ids = IDManager()
   self.requests = {}
 end
 

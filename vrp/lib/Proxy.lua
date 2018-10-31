@@ -1,7 +1,7 @@
 -- Proxy interface system, used to add/call functions between resources
 
 local Debug = module("lib/Debug") 
-local Tools = module("lib/Tools")
+local IDManager = module("lib/IDManager")
 
 local Proxy = {}
 
@@ -87,7 +87,7 @@ end
 function Proxy.getInterface(name, identifier)
   if not identifier then identifier = GetCurrentResourceName() end
 
-  local ids = Tools.newIDGenerator()
+  local ids = IDManager()
   local callbacks = {}
   local r = setmetatable({},{ __index = proxy_resolve, name = name, ids = ids, callbacks = callbacks, identifier = identifier })
 
