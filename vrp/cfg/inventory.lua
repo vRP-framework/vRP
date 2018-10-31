@@ -6,6 +6,7 @@ cfg.inventory_weight_per_strength = 10 -- weight for an user inventory per stren
 cfg.lose_inventory_on_death = true
 
 -- list of static chest types (map of name => {.title,.blipid,.blipcolor,.weight, .permissions (optional)})
+-- static chests are local to the server
 cfg.static_chest_types = {
   ["police_seized"] = {
     title = "Seized chest",
@@ -18,7 +19,7 @@ cfg.static_chest_types = {
 
 -- list of static chest points
 cfg.static_chests = {
-  {"police_seized", 1855.13940429688,3688.68579101563,34.2670478820801}
+  {"police_seized", 452.44293212891,-980.17449951172,30.689586639404}
 }
 
 return cfg

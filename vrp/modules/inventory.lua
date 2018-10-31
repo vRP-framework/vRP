@@ -117,7 +117,7 @@ local function e_chest_remove(menu)
   vRP.EXT.Inventory:unloadChest(menu.data.id)
 end
 
--- open a chest by identifier
+-- open a chest by identifier (GData)
 -- cb_close(id): called when the chest is closed (optional)
 -- cb_in(chest_id, fullid, amount): called when an item is added (optional)
 -- cb_out(chest_id, fullid, amount): called when an item is taken (optional)
@@ -570,45 +570,34 @@ function Inventory.event:playerDeath(user)
   end
 end
 
---[[
--- STATIC CHESTS
-
-local function build_client_static_chests(source)
-  local user_id = vRP.getUserId(source)
-  if user_id then
-    for k,v in pairs(cfg.static_chests) do
+function Inventory.event:playerSpawn(user, first_spawn)
+  if first_spawn then
+    -- init static chests
+    for k,v in pairs(self.cfg.static_chests) do
       local mtype,x,y,z = table.unpack(v)
-      local schest = cfg.static_chest_types[mtype]
+      local schest = self.cfg.static_chest_types[mtype]
 
       if schest then
-        local function schest_enter(source)
-          local user_id = vRP.getUserId(source)
-          if user_id ~= nil and vRP.hasPermissions(user_id,schest.permissions or {}) then
-            -- open chest
-            vRP.openChest(source, "static:"..k, schest.weight or 0)
+        local menu
+        local function enter(user)
+          if user:hasPermissions(schest.permissions or {}) then
+            menu = user:openChest("cfg_static:"..vRP.cfg.server_id.."_"..k, schest.weight or 0)
           end
         end
 
-        local function schest_leave(source)
-          vRP.closeMenu(source)
+        local function leave(user)
+          if menu then
+            user:closeMenu(menu)
+          end
         end
 
-        vRPclient._addBlip(source,x,y,z,schest.blipid,schest.blipcolor,schest.title)
-        vRPclient._addMarker(source,x,y,z-1,0.7,0.7,0.5,255,226,0,125,150)
+        vRP.EXT.Map.remote._addBlip(user.source,x,y,z,schest.blipid,schest.blipcolor,schest.title)
+        vRP.EXT.Map.remote._addMarker(user.source,x,y,z-1,0.7,0.7,0.5,255,226,0,125,150)
 
-        vRP.setArea(source,"vRP:static_chest:"..k,x,y,z,1,1.5,schest_enter,schest_leave)
+        user:setArea("vRP:static_chest:"..k,x,y,z,1,1.5,enter,leave)
       end
     end
   end
 end
-
-AddEventHandler("vRP:playerSpawn",function(user_id, source, first_spawn)
-  if first_spawn then
-    -- load static chests
-    build_client_static_chests(source)
-  end
-end)
-
---]]
 
 vRP:registerExtension(Inventory)

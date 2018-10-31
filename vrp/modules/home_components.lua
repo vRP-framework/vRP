@@ -13,7 +13,7 @@ function Chest:enter(user)
   local menu
   local function enter(user)
     if user.cid == self.slot.owner_id then -- owner
-      menu = user:openChest("home_"..self.slot.owner_id, self.cfg.weight or 200)
+      menu = user:openChest("home:"..self.slot.owner_id, self.cfg.weight or 200)
     end
   end
 

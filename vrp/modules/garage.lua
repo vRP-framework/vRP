@@ -14,7 +14,7 @@ end
 -- STATIC
 
 function Garage.getVehicleChestId(cid, model)
-  return "vehtrunk_"..cid.."_"..model
+  return "vehtrunk:"..cid.."_"..model
 end
 
 -- PRIVATE METHODS
