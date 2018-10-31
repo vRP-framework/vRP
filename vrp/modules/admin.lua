@@ -186,6 +186,22 @@ local function m_emote_task(menu)
   end
 end
 
+local function m_model(menu)
+  local user = menu.user
+  if user:hasPermission("player.custom_model") then
+    local model = user:prompt("Model hash or name: ","")
+    local hash = tonumber(model)
+    local custom = {}
+    if hash then
+      custom.modelhash = hash
+    else
+      custom.model = model
+    end
+
+    vRP.EXT.PlayerState.remote._setCustomization(user.source, custom)
+  end
+end
+
 local function m_sound(menu)
   local user = menu.user
   if user:hasPermission("player.custom_sound") then
@@ -414,6 +430,9 @@ function Admin:__construct()
     end
     if user:hasPermission("player.custom_emote") then
       menu:addOption("Custom emote task", m_emote_task)
+    end
+    if user:hasPermission("player.custom_model") then
+      menu:addOption("Custom model", m_model)
     end
     if user:hasPermission("player.custom_sound") then
       menu:addOption("Custom sound", m_sound)

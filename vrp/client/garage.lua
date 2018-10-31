@@ -52,7 +52,7 @@ function Garage:spawnVehicle(model, pos) -- one vehicle per model allowed at the
       SetEntityInvincible(nveh,false)
       SetPedIntoVehicle(GetPlayerPed(-1),nveh,-1) -- put player inside
       SetVehicleNumberPlateText(nveh, "P "..vRP.EXT.Identity:getRegistrationNumber())
-      Citizen.InvokeNative(0xAD738C3085FE7E11, nveh, true, true) -- set as mission entity
+      SetEntityAsMissionEntity(nveh, true, true)
       SetVehicleHasBeenOwnedByPlayer(nveh,true)
 
       -- set decorators
@@ -76,7 +76,7 @@ function Garage:despawnVehicle(model)
 
     -- remove vehicle
     SetVehicleHasBeenOwnedByPlayer(veh,false)
-    Citizen.InvokeNative(0xAD738C3085FE7E11, veh, false, true) -- set not as mission entity
+    SetEntityAsMissionEntity(veh, false, true)
     SetVehicleAsNoLongerNeeded(Citizen.PointerValueIntInitialized(veh))
     Citizen.InvokeNative(0xEA386986E786A54F, Citizen.PointerValueIntInitialized(veh))
     self.vehicles[model] = nil

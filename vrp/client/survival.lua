@@ -57,7 +57,7 @@ function Survival:__construct()
     end
   end)
 
-  -- coma task
+  -- task: coma
   Citizen.CreateThread(function() 
     while true do
       Citizen.Wait(0)
@@ -109,7 +109,7 @@ function Survival:__construct()
     end
   end)
 
- -- coma decrease task
+ -- task: coma decrease
   Citizen.CreateThread(function()
     while true do 
       Citizen.Wait(1000)
@@ -119,7 +119,7 @@ function Survival:__construct()
     end
   end)
 
-  -- disable health regen task, conflicts with coma system
+  -- task: disable health regen, conflicts with coma system
   Citizen.CreateThread(function() 
     while true do
       Citizen.Wait(100)

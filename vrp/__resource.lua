@@ -33,6 +33,7 @@ server_scripts{
   "modules/home_components.lua",
   "modules/police.lua",
   "modules/radio.lua",
+  "modules/ped_blacklist.lua",
   "modules/edible.lua"
 }
 
@@ -51,6 +52,7 @@ client_scripts{
   "client/garage.lua",
   "client/police.lua",
   "client/radio.lua",
+  "client/ped_blacklist.lua",
   "client/iplloader.lua"
 }
 

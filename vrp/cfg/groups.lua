@@ -55,6 +55,7 @@ cfg.groups = {
     "player.unban",
     "player.noclip",
     "player.custom_emote",
+    "player.custom_model",
     "player.custom_sound",
     "player.display_custom",
     "player.coords",
