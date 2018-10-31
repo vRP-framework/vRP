@@ -60,9 +60,9 @@ function Group.User:removeGroup(name)
   local groups = self:getGroups()
 
   local cfg = vRP.EXT.Group.cfg
-  local groupdef = cfg.groups[group]
-  if groupdef and groupdef._config and groupdef._config.onleave then
-    groupdef._config.onleave(self) -- call leave callback
+  local group = cfg.groups[name]
+  if group and group._config and group._config.onleave then
+    group._config.onleave(self) -- call leave callback
   end
 
   -- trigger leave event
@@ -148,6 +148,32 @@ function Group.User:hasPermissions(perms)
   return true
 end
 
+-- PRIVATE METHODS
+
+-- menu: group_selector
+local function menu_group_selector(self)
+  local function m_select(menu, group_name)
+    local user = menu.user
+
+    user:addGroup(group_name)
+    user:closeMenu(menu)
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("group_selector", function(menu)
+    menu.title = menu.data.name
+    menu.css.header_color = "rgba(255,154,24,0.75)"
+
+    for k,group_name in pairs(menu.data.groups) do
+      if k ~= "_config" then
+        local group = self.cfg.groups[group_name]
+        if group and group._config and group._config.title then
+          menu:addOption(group._config.title, m_select, nil, group_name)
+        end
+      end
+    end
+  end)
+end
+
 -- METHODS
 
 function Group:__construct()
@@ -170,6 +196,9 @@ function Group:__construct()
 
     return false
   end)
+
+  -- menu
+  menu_group_selector(self)
 end
 
 -- return users list
@@ -215,8 +244,40 @@ end
 
 Group.event = {}
 
-function Group.event:playerSpawn(user)
+function Group.event:playerSpawn(user, first_spawn)
+  if first_spawn then
+    -- init group selectors
+    for k,v in pairs(self.cfg.selectors) do
+      local gcfg = v._config
+
+      if gcfg then
+        local x = gcfg.x
+        local y = gcfg.y
+        local z = gcfg.z
+
+        local menu
+        local function enter(user)
+          if user:hasPermissions(gcfg.permissions or {}) then
+            menu = user:openMenu("group_selector", {name = k, groups = v}) 
+          end
+        end
+
+        local function leave(user)
+          if menu then
+            user:closeMenu(menu)
+          end
+        end
+
+        vRP.EXT.Map.remote._addBlip(user.source,x,y,z,gcfg.blipid,gcfg.blipcolor,k)
+        vRP.EXT.Map.remote._addMarker(user.source,x,y,z-1,0.7,0.7,0.5,255,154,24,125,150)
+
+        user:setArea("vRP:gselector:"..k,x,y,z,1,1.5,enter,leave)
+      end
+    end
+  end
+
   -- call group onspawn callback at spawn
+
   local groups = user:getGroups()
 
   for name in pairs(groups) do
@@ -246,78 +307,4 @@ end
 
 vRP:registerExtension(Group)
 
---[[
--- GROUP SELECTORS
 
--- build menus
-local selector_menus = {}
-for k,v in pairs(selectors) do
-  local kgroups = {}
-
-  local function ch_select(player,choice)
-    local user_id = vRP.getUserId(player)
-    if user_id then
-      local gname = kgroups[choice]
-      if gname then
-        vRP.addUserGroup(user_id, gname)
-        vRP.closeMenu(player)
-      end
-    end
-  end
-
-  local menu = {name=k, css={top="75px",header_color="rgba(255,154,24,0.75)"}}
-  for l,w in pairs(v) do
-    if l ~= "_config" then
-      local title = vRP.getGroupTitle(w)
-      kgroups[title] = w
-      menu[title] = {ch_select}
-    end
-  end
-
-  selector_menus[k] = menu
-end
-
-local function build_client_selectors(source)
-  local user_id = vRP.getUserId(source)
-  if user_id then
-    for k,v in pairs(selectors) do
-      local gcfg = v._config
-      local menu = selector_menus[k]
-
-      if gcfg and menu then
-        local x = gcfg.x
-        local y = gcfg.y
-        local z = gcfg.z
-
-        local function selector_enter(source)
-          local user_id = vRP.getUserId(source)
-          if user_id ~= nil and vRP.hasPermissions(user_id,gcfg.permissions or {}) then
-            vRP.openMenu(source,menu) 
-          end
-        end
-
-        local function selector_leave(source)
-          vRP.closeMenu(source)
-        end
-
-        vRPclient._addBlip(source,x,y,z,gcfg.blipid,gcfg.blipcolor,k)
-        vRPclient._addMarker(source,x,y,z-1,0.7,0.7,0.5,255,154,24,125,150)
-
-        vRP.setArea(source,"vRP:gselector:"..k,x,y,z,1,1.5,selector_enter,selector_leave)
-      end
-    end
-  end
-end
-
--- events
-
--- player spawn
-AddEventHandler("vRP:playerSpawn", function(user_id, source, first_spawn)
-  -- first spawn
-  if first_spawn then
-    -- add selectors 
-    build_client_selectors(source)
-
-end)
-
---]]
