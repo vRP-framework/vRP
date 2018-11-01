@@ -49,9 +49,13 @@ local function bind_informer(self, user)
       end
     end
 
-    -- add informer blip/marker/area
-    vRP.EXT.Map.remote._setNamedBlip(user.source,"vRP:informer",x,y,z,self.cfg.informer.blipid,self.cfg.informer.blipcolor,lang.hidden_transformer.informer.title())
-    vRP.EXT.Map.remote._setNamedMarker(user.source,"vRP:informer",x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+    -- add informer map_entity and area
+
+    local ment = clone(self.cfg.informer.map_entity)
+    ment[2].title = lang.hidden_transformer.informer.title()
+    ment[2].pos = {x,y,z-1}
+    vRP.EXT.Map.remote._setEntity(user.source,"vRP:informer",ment[1],ment[2])
+
     user:setArea("vRP:informer",x,y,z,1,1.5,enter,leave)
   end
 end
@@ -134,8 +138,7 @@ end
 function HiddenTransformer:despawnInformer()
   if self.informer then
     for id,user in pairs(vRP.users) do -- remove informer data for all users
-      vRP.EXT.Map.remote._removeNamedBlip(user.source,"vRP:informer")
-      vRP.EXT.Map.remote._removeNamedMarker(user.source,"vRP:informer")
+      vRP.EXT.Map.remote._removeEntity(user.source,"vRP:informer")
       user:removeArea("vRP:informer")
     end
 

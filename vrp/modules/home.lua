@@ -125,12 +125,15 @@ function EntryComponent:enter(user)
     end
   end
 
-  vRP.EXT.Map.remote._setNamedMarker(user.source,self.point_id,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+  local ment = clone(vRP.EXT.home.cfg.entry_map_entity)
+  ment[2].pos = {x,y,z-1}
+  vRP.EXT.Map.remote._setEntity(user.source,self.point_id,ment[1],ment[2])
+
   user:setArea(self.point_id,x,y,z,1,1.5,enter,leave)
 end
 
 function EntryComponent:leave(user)
-  vRP.EXT.Map.remote._removeNamedMarker(user.source, self.point_id)
+  vRP.EXT.Map.remote._removeEntity(user.source, self.point_id)
   user:removeArea(self.point_id)
 end
 
@@ -476,8 +479,10 @@ function Home.event:playerSpawn(user, first_spawn)
         end
       end
 
-      vRP.EXT.Map.remote._addBlip(user.source,x,y,z,cfg.blipid,cfg.blipcolor,name)
-      vRP.EXT.Map.remote._addMarker(user.source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+      local ment = clone(cfg.map_entity)
+      ment[2].title = name
+      ment[2].pos = {x,y,z-1}
+      vRP.EXT.Map.remote._addEntity(user.source,ment[1],ment[2])
 
       user:setArea("vRP:home:"..name,x,y,z,1,1.5,enter,leave)
     end

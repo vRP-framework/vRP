@@ -88,8 +88,10 @@ function Shop.event:playerSpawn(user, first_spawn)
           end
         end
 
-        vRP.EXT.Map.remote._addBlip(user.source,x,y,z,gcfg.blipid,gcfg.blipcolor,lang.shop.title({gtype}))
-        vRP.EXT.Map.remote._addMarker(user.source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+        local ment = clone(gcfg.map_entity)
+        ment[2].title = lang.shop.title({gtype})
+        ment[2].pos = {x,y,z-1}
+        vRP.EXT.Map.remote._addEntity(user.source, ment[1], ment[2])
 
         user:setArea("vRP:shop:"..k,x,y,z,1,1.5,enter,leave)
       end

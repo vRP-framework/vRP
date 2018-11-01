@@ -55,7 +55,7 @@ function PoI:load()
 
   -- blip
   if self.cfg.blip_id and self.cfg.blip_color then
-    self.blip = AddBlipForCoord(self.cfg.pos[1],self.cfg.pos[2],self.cfg.pos[3])
+    self.blip = AddBlipForCoord(self.cfg.pos[1]+0.001,self.cfg.pos[2]+0.001,self.cfg.pos[3]+0.001)
     SetBlipSprite(self.blip, self.cfg.blip_id)
     SetBlipAsShortRange(self.blip, true)
     SetBlipColour(self.blip, self.cfg.blip_color)
@@ -71,7 +71,7 @@ function PoI:load()
   self.scale = self.cfg.scale or {0.7,0.7,0.5}
   self.color = self.cfg.color or {0,255,125,125}
   self.marker_id = self.cfg.marker_id
-  self.height = self.cfg.height or 1
+  self.height = self.cfg.height or 0
   self.rotate_speed = self.cfg.rotate_speed
   self.rz = 0
 
@@ -146,12 +146,8 @@ function Map:__construct()
       local elapsed = (last_time-time)*0.001
       last_time = time
 
-      local px,py,pz = vRP.EXT.Base:getPosition()
-
-      local count = 0
       for entity in pairs(self.frame_entities) do
         entity:frame(elapsed)
-        count = count+1
       end
     end
   end)

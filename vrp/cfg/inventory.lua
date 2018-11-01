@@ -5,13 +5,13 @@ cfg.inventory_weight_per_strength = 10 -- weight for an user inventory per stren
 
 cfg.lose_inventory_on_death = true
 
--- list of static chest types (map of name => {.title,.blipid,.blipcolor,.weight, .permissions (optional)})
+-- list of static chest types (map of name => {.title,.map_entity,.weight, .permissions (optional)})
+-- map_entity: {ent,cfg} will fill cfg.pos, cfg.title
 -- static chests are local to the server
 cfg.static_chest_types = {
   ["police_seized"] = {
     title = "Seized chest",
-    blipid = 374,
-    blipcolor = 38,
+    map_entity = {"PoI", {blip_id = 374, blip_color = 38, marker_id = 1}},
     weight = 500,
     permissions = {"police.chest_seized"}
   }

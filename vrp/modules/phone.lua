@@ -105,9 +105,13 @@ function Phone.User:sendSMSPos(phone, x,y,z)
       vRP.EXT.Audio.remote._playAudioSource(tuser.source, cfg.sms_sound, 0.5)
       vRP.EXT.Base.remote._notify(tuser.source,lang.phone.smspos.notify({from})) -- notify
       -- add position for 5 minutes
-      local bid = vRP.EXT.Map.remote.addBlip(tuser.source,x,y,z,162,37,from)
+      local ment = clone(cfg.smspos_map_entity)
+      ment[2].title = from
+      ment[2].pos = {x,y,z-1}
+
+      local id = vRP.EXT.Map.remote.addEntity(tuser.source, ment[1], ment[2])
       SetTimeout(cfg.smspos_duration*1000,function()
-        vRP.EXT.Map.remote._removeBlip(tuser.source,{bid})
+        vRP.EXT.Map.remote._removeEntity(tuser.source,id)
       end)
 
       return true
@@ -384,9 +388,13 @@ function Phone:sendServiceAlert(sender, service_name,x,y,z,msg)
     for _,user in pairs(targets) do
       vRP.EXT.Base.remote._notify(user.source,service.alert_notify..msg)
       -- add position for service.time seconds
-      local bid = vRP.EXT.Map.remote.addBlip(user.source,x,y,z,service.blipid,service.blipcolor,"("..service_name..") "..msg)
+      local ment = clone(service.map_entity)
+      ment[2].title = "("..service_name..") "..msg
+      ment[2].pos = {x,y,z-1}
+
+      local id = vRP.EXT.Map.remote.addEntity(user.source,ment[1],ment[2])
       SetTimeout(service.alert_time*1000,function()
-        vRP.EXT.Map.remote._removeBlip(user.source,bid)
+        vRP.EXT.Map.remote._removeEntity(user.source,id)
       end)
 
       -- call request

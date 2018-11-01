@@ -87,8 +87,10 @@ function ATM.event:playerSpawn(user, first_spawn)
     for k,v in pairs(self.cfg.atms) do
       local x,y,z = table.unpack(v)
 
-      vRP.EXT.Map.remote._addBlip(user.source,x,y,z,108,4,lang.atm.title())
-      vRP.EXT.Map.remote._addMarker(user.source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+      local ment = clone(self.cfg.atm_map_entity)
+      ment[2].title = lang.atm.title()
+      ment[2].pos = {x,y,z-1}
+      vRP.EXT.Map.remote._addEntity(user.source,ment[1],ment[2])
 
       user:setArea("vRP:atm:"..k,x,y,z,1,1.5,enter,leave)
     end

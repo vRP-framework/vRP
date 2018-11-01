@@ -111,8 +111,7 @@ cfg.informer = {
   },
   interval = 30, -- interval in minutes for the reseller respawn
   duration = 10, -- duration in minutes of the spawned reseller
-  blipid = 133,
-  blipcolor = 2
+  map_entity = {"PoI", {blip_id = 133, blip_id = 2, marker_id = 1}} -- {ent,cfg} will fill cfg.title, cfg.pos
 }
 
 return cfg

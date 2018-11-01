@@ -1,6 +1,9 @@
 
 local cfg = {}
 
+-- {ent,cfg} will fill cfg.title, cfg.pos
+cfg.atm_map_entity = {"PoI", {blip_id = 108, blip_color = 4, marker_id = 1}}
+
 -- list of atms positions
 
 cfg.atms = {

@@ -69,7 +69,6 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * vehicle state
 * identity display group gtype list
 * ammo box
-* blip marker display (BMD?) or entity system
 * parcel delivery basic mission
 * remove debug, add log level
 

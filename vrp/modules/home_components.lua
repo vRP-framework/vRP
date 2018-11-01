@@ -24,12 +24,15 @@ function Chest:enter(user)
   end
 
   local x,y,z = self.x, self.y, self.z
-  vRP.EXT.Map.remote._setNamedMarker(user.source,self.point_id,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+  local ment = clone(vRP.EXT.home_components.cfg.chest.map_entity)
+  ment[2].pos = {x,y,z-1}
+  vRP.EXT.Map.remote._setEntity(user.source,self.point_id,ment[1],ment[2])
+
   user:setArea(self.point_id,x,y,z,1,1.5,enter,leave)
 end
 
 function Chest:leave(user)
-  vRP.EXT.Map.remote._removeNamedMarker(user.source,self.point_id)
+  vRP.EXT.Map.remote._removeEntity(user.source,self.point_id)
   user:removeArea(self.point_id)
 end
 
@@ -75,12 +78,15 @@ function Wardrobe:enter(user)
   end
 
   local x,y,z = self.x, self.y, self.z
-  vRP.EXT.Map.remote._setNamedMarker(user.source,self.point_id,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+  local ment = clone(vRP.EXT.home_components.cfg.wardrobe.map_entity)
+  ment[2].pos = {x,y,z-1}
+  vRP.EXT.Map.remote._setEntity(user.source,self.point_id,ment[1],ment[2])
+
   user:setArea(self.point_id,x,y,z,1,1.5,enter,leave)
 end
 
 function Wardrobe:leave(user)
-  vRP.EXT.Map.remote._removeNamedMarker(user.source,self.point_id)
+  vRP.EXT.Map.remote._removeEntity(user.source,self.point_id)
   user:removeArea(self.point_id)
 end
 
@@ -107,12 +113,16 @@ function Gametable:enter(user)
   end
 
   local x,y,z = self.x, self.y, self.z
-  vRP.EXT.Map.remote._setNamedMarker(user.source,self.point_id,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+
+  local ment = clone(vRP.EXT.home_components.cfg.gametable.map_entity)
+  ment[2].pos = {x,y,z-1}
+  vRP.EXT.Map.remote._setEntity(user.source,self.point_id,ment[1],ment[2])
+
   user:setArea(self.point_id,x,y,z,1,1.5,enter,leave)
 end
 
 function Gametable:leave(user)
-  vRP.EXT.Map.remote._removeNamedMarker(user.source,self.point_id)
+  vRP.EXT.Map.remote._removeEntity(user.source,self.point_id)
   user:removeArea(self.point_id)
 end
 
@@ -136,14 +146,16 @@ function ItemTransformer:unload()
 end
 
 function ItemTransformer:enter(user)
-  if self.cfg.marker then
-    vRP.EXT.Map.remote._setNamedMarker(user.source,self.point_id,self.x,self.y,self.z-1,0.7,0.7,0.5,0,255,125,125,150)
+  local ment = clone(self.cfg.map_entity)
+  if ment then
+    ment[2].pos = {self.x,self.y,self.z-1}
+    vRP.EXT.Map.remote._setEntity(user.source,self.point_id,ment[1],ment[2])
   end
 end
 
 function ItemTransformer:leave(user)
-  if self.cfg.marker then
-    vRP.EXT.Map.remote._removeNamedMarker(user.source, self.point_id)
+  if self.cfg.map_entity then
+    vRP.EXT.Map.remote._removeEntity(user.source, self.point_id)
   end
 end
 
@@ -171,7 +183,11 @@ function Radio:enter(user)
   end
 
   local x,y,z = self.x, self.y, self.z
-  vRP.EXT.Map.remote._setNamedMarker(user.source,self.point_id,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+
+  local ment = clone(vRP.EXT.home_components.cfg.radio.map_entity)
+  ment[2].pos = {x,y,z-1}
+  vRP.EXT.Map.remote._setEntity(user.source,self.point_id,ment[1],ment[2])
+
   user:setArea(self.point_id,x,y,z,1,1.5,enter,leave)
 
   -- auto play station
@@ -183,7 +199,7 @@ end
 
 function Radio:leave(user)
   -- remove radio menu entry
-  vRP.EXT.Map.remote._removeNamedMarker(user.source,self.point_id)
+  vRP.EXT.Map.remote._removeEntity(user.source,self.point_id)
   user:removeArea(self.point_id)
 
   -- auto stop station
@@ -364,6 +380,7 @@ end
 function home_components:__construct()
   vRP.Extension.__construct(self)
 
+  self.cfg = module("vrp", "cfg/home_components")
   self.sanitizes = module("vrp", "cfg/sanitizes")
 
   menu_wardrobe(self)

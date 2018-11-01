@@ -103,6 +103,21 @@ function tohex(str)
   return string.gsub(str, '.', hex_conv)
 end
 
+
+-- basic deep clone function (doesn't handle circular references)
+function clone(t)
+  if type(t) == "table" then
+    local new = {}
+    for k,v in pairs(t) do
+      new[k] = clone(v)
+    end
+
+    return new
+  else
+    return t
+  end
+end
+
 function parseInt(v)
 --  return cast(int,tonumber(v))
   local n = tonumber(v)

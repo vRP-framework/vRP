@@ -591,8 +591,11 @@ function Inventory.event:playerSpawn(user, first_spawn)
           end
         end
 
-        vRP.EXT.Map.remote._addBlip(user.source,x,y,z,schest.blipid,schest.blipcolor,schest.title)
-        vRP.EXT.Map.remote._addMarker(user.source,x,y,z-1,0.7,0.7,0.5,255,226,0,125,150)
+        local ment = clone(schest.map_entity)
+        ment[2].title = schest.title
+        ment[2].pos = {x,y,z-1}
+
+        vRP.EXT.Map.remote._addEntity(user.source,ment[1],ment[2])
 
         user:setArea("vRP:static_chest:"..k,x,y,z,1,1.5,enter,leave)
       end

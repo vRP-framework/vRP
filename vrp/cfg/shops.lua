@@ -2,11 +2,13 @@
 local cfg = {}
 
 -- define shop types
--- _config: blipid, blipcolor, permissions (optional, only users with the permissions will have access to the shop)
+-- _config: {.map_entity, .permissions}
+--- map_entity: {ent,cfg} will fill cfg.title, cfg.pos
+--- permissions: (optional)
 
 cfg.shop_types = {
   ["food"] = {
-    _config = {blipid=52, blipcolor=2},
+    _config = {map_entity = {"PoI", {blip_id = 52, blip_color = 2, marker_id = 1}}},
 
     -- list itemid => price
     -- Drinks
@@ -29,21 +31,21 @@ cfg.shop_types = {
     ["edible|kebab"] = 20
   },
   ["chemicals"] = {
-    _config = {blipid=52, blipcolor=46},
+    _config = {map_entity = {"PoI", {blip_id = 52, blip_color = 46, marker_id = 1}}},
     ["gold_catalyst"] = 50,
     ["demineralized_water"] = 5
   },
   ["drugstore"] = {
-    _config = {blipid=51, blipcolor=2, permissions={"emergency.shop"} },
+    _config = {permissions={"emergency.shop"}, map_entity = {"PoI", {blip_id = 51, blip_color = 2, marker_id = 1}}},
     ["medkit"] = 75,
     ["edible|pills"] = 10
   },
   ["tools"] = {
-    _config = {blipid=51, blipcolor=47},
+    _config = {map_entity = {"PoI", {blip_id = 51, blip_color = 47, marker_id = 1}}},
     ["repairkit"] = 50
   },
   ["TCG"] = { -- need vRP-TCG extension
-    _config = {blipid=408, blipcolor=2},
+    _config = {map_entity = {"PoI", {blip_id = 408, blip_color = 2, marker_id = 1}}},
     ["tcgbooster|0|5"] = 10,
     ["tcgbooster|1|5"] = 100,
     ["tcgbooster|2|5"] = 1000,
@@ -53,7 +55,7 @@ cfg.shop_types = {
   -- weapons
   -- for the native name, see https://wiki.fivem.net/wiki/Weapons (not all of them will work, look at client/player_state.lua for the real weapon list)
   ["sandyshores1"] = {
-    _config = {blipid=154,blipcolor=1},
+    _config = {map_entity = {"PoI", {blip_id = 154, blip_color = 1, marker_id = 1}}},
     ["wbody|WEAPON_BOTTLE"] = 1000,
     ["wbody|WEAPON_BAT"] = 1500,
     ["wbody|WEAPON_KNUCKLE"] = 1500,
@@ -61,7 +63,7 @@ cfg.shop_types = {
   },
 
   ["vinewood1"] = {
-    _config = {blipid=154,blipcolor=1},
+    _config = {map_entity = {"PoI", {blip_id = 154, blip_color = 1, marker_id = 1}}},
     ["wbody|WEAPON_MARKSMANPISTOL"] = 1500,
     ["wbody|WEAPON_SNSPISTOL"] = 2500,
     ["wbody|WEAPON_VINTAGEPISTOL"] = 2500,
@@ -85,7 +87,7 @@ cfg.shop_types = {
   },
 
   ["vespuccibeach1"] = {
-    _config = {blipid=154,blipcolor=1},
+    _config = {map_entity = {"PoI", {blip_id = 154, blip_color = 1, marker_id = 1}}},
     ["wbody|WEAPON_MICROSMG"] = 50000,
     ["wbody|WEAPON_SMG"] = 5000,
     ["wbody|WEAPON_ASSAULTSMG"] = 5500,
@@ -104,7 +106,7 @@ cfg.shop_types = {
   },
 
   ["paletobay1"] = {
-    _config = {blipid=154,blipcolor=1},
+    _config = {map_entity = {"PoI", {blip_id = 154, blip_color = 1, marker_id = 1}}},
     ["wbody|WEAPON_MARKSMANPISTOL"] = 1500,
     ["wbody|WEAPON_SNSPISTOL"] = 2500,
     ["wbody|WEAPON_COMPACTRIFLE"] = 200000,
@@ -124,7 +126,7 @@ cfg.shop_types = {
   },
 
   ["tataviammountains1"] = {
-    _config = {blipid=154,blipcolor=2},
+    _config = {map_entity = {"PoI", {blip_id = 154, blip_color = 2, marker_id = 1}}},
     ["wbody|WEAPON_GUSENBERG"] = 200000,
     ["wbody|WEAPON_MG"] = 250000,
     ["wbody|WEAPON_COMBATMG"] = 500000,
@@ -134,7 +136,7 @@ cfg.shop_types = {
   },
 
   ["chumash1"] = {
-    _config = {blipid=154,blipcolor=1},
+    _config = {map_entity = {"PoI", {blip_id = 154, blip_color = 1, marker_id = 1}}},
     ["wbody|WEAPON_MARKSMANPISTOL"] = 1500,
     ["wbody|WEAPON_SNSPISTOL"] = 2500,
     ["wbody|WEAPON_MARKSMANRIFLE"] = 150000,
@@ -148,7 +150,7 @@ cfg.shop_types = {
   },
 
   ["eastlossantos1"] = {
-    _config = {blipid=154,blipcolor=1},
+    _config = {map_entity = {"PoI", {blip_id = 154, blip_color = 1, marker_id = 1}}},
     ["wbody|WEAPON_BULLPUPRIFLE"] = 200000,
     ["wbody|WEAPON_ADVANCEDRIFLE"] = 200000,
     ["wbody|WEAPON_SPECIALCARBINE"] = 200000,
@@ -164,7 +166,7 @@ cfg.shop_types = {
   },
 
   ["midlossantosrange"] = {
-    _config = {blipid=154,blipcolor=1},
+    _config = {map_entity = {"PoI", {blip_id = 154, blip_color = 1, marker_id = 1}}},
     ["wbody|WEAPON_SAWNOFFSHOTGUN"] = 350000,
     ["wbody|WEAPON_PUMPSHOTGUN"] = 500000,
     ["wbody|WEAPON_BULLPUPSHOTGUN"] = 650000,
@@ -178,7 +180,7 @@ cfg.shop_types = {
   },
 
   ["greatchaparral1"] = {
-    _config = {blipid=154,blipcolor=1},
+    _config = {map_entity = {"PoI", {blip_id = 154, blip_color = 1, marker_id = 1}}},
     ["wbody|WEAPON_GRENADELAUNCHER_SMOKE"] = 500000,
     ["wammo|WEAPON_GRENADELAUNCHER_SMOKE"] = 100,
     ["wbody|WEAPON_FIREEXTINGUISHER"] = 1000000,
@@ -191,7 +193,7 @@ cfg.shop_types = {
   },
 
   ["cypressflatsrange1"] = {
-    _config = {blipid=154,blipcolor=1},
+    _config = {map_entity = {"PoI", {blip_id = 154, blip_color = 1, marker_id = 1}}},
     ["wbody|WEAPON_MARKSMANPISTOL"] = 1500,
     ["wbody|WEAPON_SNSPISTOL"] = 2500,
     ["wbody|WEAPON_GRENADE"] = 500000,
@@ -202,19 +204,19 @@ cfg.shop_types = {
     ["wbody|WEAPON_PETROLCAN"] = 50000
   },
   ["melee weapons"] = {
-    _config = {blipid=154, blipcolor=1},
+    _config = {map_entity = {"PoI", {blip_id = 154, blip_color = 1, marker_id = 1}}},
     ["wbody|WEAPON_KNIFE"] = 75,
     ["wbody|WEAPON_MACHETE"] = 250
   },
   ["handguns"] = {
-    _config = {blipid=156, blipcolor=1},
+    _config = {map_entity = {"PoI", {blip_id = 156, blip_color = 1, marker_id = 1}}},
     ["wbody|WEAPON_PISTOL"] = 950,
     ["wbody|WEAPON_COMBATPISTOL"] = 1550,
     ["wammo|WEAPON_PISTOL"] = 1,
     ["wammo|WEAPON_COMBATPISTOL"] = 1
   },
   ["gear"] = {
-    _config = {blipid=175, blipcolor=1},
+    _config = {map_entity = {"PoI", {blip_id = 175, blip_color = 1, marker_id = 1}}},
     ["bulletproof_vest"] = 750
   }
 }

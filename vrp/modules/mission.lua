@@ -36,22 +36,21 @@ function Mission.User:nextMissionStep()
     else -- mission step
       local step = self.mission.steps[self.mission_step]
       local x,y,z = table.unpack(step.position)
-      local blipid = 1
-      local blipcolor = 5
+      local ment = {"PoI", {blip_id = 1, blip_color = 5, marker_id = 1, color = {255,226,0,125}}}
       local onleave = function() end
-      if step.blipid then blipid = step.blipid end
-      if step.blipcolor then blipcolor = step.blipcolor end
+      if step.map_entity then ment = step.map_entity end
       if step.onleave then onleave = step.onleave end
 
       -- display
       vRP.EXT.GUI.remote._setDivContent(self.source,"mission",lang.mission.display({self.mission.name,self.mission_step-1,#self.mission.steps,step.text}))
 
-      -- blip/route
-      local id = vRP.EXT.Map.remote.setNamedBlip(self.source, "vRP:mission", x,y,z, blipid, blipcolor, lang.mission.blip({self.mission.name,self.mission_step,#self.mission.steps}))
-      vRP.EXT.Map.remote._setBlipRoute(self.source,id)
+      -- map entity/route
+      ment[2].title = lang.mission.title({self.mission.name,self.mission_step,#self.mission.steps})
+      ment[2].pos = {x,y,z-1}
+      vRP.EXT.Map.remote.setEntity(self.source, "vRP:mission", ment[1], ment[2])
+      vRP.EXT.Map.remote._commandEntity(self.source, "vRP:mission", "setBlipRoute")
 
       -- map trigger
-      vRP.EXT.Map.remote._setNamedMarker(self.source,"vRP:mission", x,y,z-1,0.7,0.7,0.5,255,226,0,125,150)
       self:setArea("vRP:mission",x,y,z,1,1.5,step.onenter,step.onleave)
     end
   end
@@ -63,8 +62,7 @@ function Mission.User:stopMission()
     self.mission_step = nil
     self.mission = nil
 
-    vRP.EXT.Map.remote._removeNamedBlip(self.source,"vRP:mission")
-    vRP.EXT.Map.remote._removeNamedMarker(self.source,"vRP:mission")
+    vRP.EXT.Map.remote._removeEntity(self.source,"vRP:mission")
     vRP.EXT.GUI.remote._removeDiv(self.source,"mission")
     self:removeArea("vRP:mission")
   end

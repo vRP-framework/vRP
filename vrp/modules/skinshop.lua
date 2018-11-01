@@ -138,20 +138,23 @@ SkinShop.event = {}
 
 function SkinShop.event:playerSpawn(user, first_spawn)
   if first_spawn then
+    -- init skinshops
     for k,v in pairs(self.cfg.skinshops) do
-      local parts,x,y,z = table.unpack(v)
+      local cfg,x,y,z = table.unpack(v)
 
       local menu
       local function enter(user)
-        menu = user:openMenu("skinshop", {parts = parts})
+        menu = user:openMenu("skinshop", {parts = cfg.parts})
       end
 
       local function leave(user)
         user:closeMenu(menu)
       end
 
-      vRP.EXT.Map.remote._addBlip(user.source,x,y,z,73,3,lang.skinshop.title())
-      vRP.EXT.Map.remote._addMarker(user.source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+      local ment = clone(cfg.map_entity)
+      ment[2].title = lang.skinshop.title()
+      ment[2].pos = {x,y,z-1}
+      vRP.EXT.Map.remote._addEntity(user.source, ment[1], ment[2])
 
       user:setArea("vRP:skinshop:"..k,x,y,z,1,1.5,enter,leave)
     end

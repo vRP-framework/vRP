@@ -8,8 +8,8 @@ cfg.minimum_capital = 25000
 -- default: reset every 24h
 cfg.transfer_reset_interval = 24*60
 
--- commerce chamber {blipid,blipcolor}
-cfg.blip = {431,70} 
+-- {ent,cfg} will fill cfg.title, cfg.pos
+cfg.commerce_chamber_map_entity = {"PoI", {blip_id = 431, blip_color = 70, marker_id = 1}}
 
 -- positions of commerce chambers
 cfg.commerce_chambers = {

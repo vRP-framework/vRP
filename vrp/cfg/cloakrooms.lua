@@ -14,11 +14,12 @@ end
 
 -- cloakroom types (_config, map of name => customization)
 --- _config:
+---- map_entity: {ent,cfg} will fill cfg.title, cfg.pos
 ---- permissions (optional)
 ---- not_uniform (optional): if true, the cloakroom will take effect directly on the player, not as a uniform you can remove
 cfg.cloakroom_types = {
   ["police"] = {
-    _config = { permissions = {"police.cloakroom"} },
+    _config = { permissions = {"police.cloakroom"}, map_entity = {"PoI", {marker_id = 1}} },
     ["Male uniform"] = {
       [3] = {30,0},
       [4] = {25,2},
@@ -37,7 +38,7 @@ cfg.cloakroom_types = {
     }
   },
   ["emergency"] = {
-    _config = { permissions = {"emergency.cloakroom"} },
+    _config = { permissions = {"emergency.cloakroom"}, map_entity = {"PoI", {marker_id = 1}} },
     ["Male uniform"] = {
       [3] = {81,0},
       [4] = {0,0},
@@ -49,6 +50,7 @@ cfg.cloakroom_types = {
     }
   },
   ["jail"] = {
+    _config = { map_entity = {"PoI", {marker_id = 1}} },
     ["Male suit"] = {
       [3] = {5,0},
       [4] = {7,15},
@@ -58,7 +60,7 @@ cfg.cloakroom_types = {
     }
   },
   ["surgery"] = {
-    _config = { not_uniform = true },
+    _config = { not_uniform = true, map_entity = {"PoI", {marker_id = 1}} },
     ["Male"] = surgery_male,
     ["Female"] = surgery_female
   }

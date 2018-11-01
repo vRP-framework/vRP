@@ -266,7 +266,7 @@ function ItemTransformer:set(id, cfg)
   self:remove(id) -- remove pre-existing transformer
 
   -- create item transformer
-  local itemtr = Transformer(id, cfg)
+  local itemtr = Transformer(id, clone(cfg))
   self.transformers[id] = itemtr
 
   -- bind tr area to all already spawned players

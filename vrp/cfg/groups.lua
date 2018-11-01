@@ -149,22 +149,23 @@ cfg.users = {
 
 -- group selectors
 -- _config
---- x,y,z, blipid, blipcolor, permissions (optional)
+--- x,y,z, map_entity, permissions (optional)
+---- map_entity: {ent,cfg} will fill cfg.title, cfg.pos
 
 cfg.selectors = {
   ["Jobs"] = {
-    _config = {x = -268.363739013672, y = -957.255126953125, z = 31.22313880920410, blipid = 351, blipcolor = 47},
+    _config = {x = -268.363739013672, y = -957.255126953125, z = 31.22313880920410, map_entity = {"PoI", {blip_id = 351, blip_color = 47, marker_id = 1}}},
     "taxi",
     "repair",
     "citizen"
   },
   ["Police job"] = {
-    _config = {x = 437.924987792969,y = -987.974182128906, z = 30.6896076202393 , blipid = 351, blipcolor= 38 },
+    _config = {x = 437.924987792969,y = -987.974182128906, z = 30.6896076202393, map_entity = {"PoI", {blip_id = 351, blip_color = 38, marker_id = 1}}},
     "police",
     "citizen"
   },
   ["Emergency job"] = {
-    _config = {x=-498.959716796875,y=-335.715148925781,z=34.5017547607422, blipid = 351, blipcolor= 1 },
+    _config = {x=-498.959716796875,y=-335.715148925781,z=34.5017547607422, map_entity = {"PoI", {blip_id = 351, blip_color = 1, marker_id = 1}}},
     "emergency",
     "citizen"
   }

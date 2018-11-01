@@ -1,6 +1,9 @@
 
 local cfg = {}
 
+-- {ent,cfg} will fill cfg.pos, cfg.title
+cfg.pc_map_entity = {"PoI", {marker_id = 1}}
+
 -- PCs positions
 cfg.pcs = {
   {437.14007568359,-996.31872558594,30.689586639404},

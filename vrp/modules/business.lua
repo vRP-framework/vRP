@@ -227,8 +227,11 @@ function Business.event:playerSpawn(user, first_spawn)
         end
       end
 
-      vRP.EXT.Map.remote._addBlip(user.source,x,y,z,self.cfg.blip[1],self.cfg.blip[2],lang.business.title())
-      vRP.EXT.Map.remote._addMarker(user.source,x,y,z-1,0.7,0.7,0.5,0,255,125,125,150)
+      local ment = clone(self.cfg.commerce_chamber_map_entity)
+      ment[2].title = lang.business.title()
+      ment[2].pos = {x,y,z-1}
+      vRP.EXT.Map.remote._addEntity(user.source, ment[1], ment[2])
+
       user:setArea("vRP:business:"..k,x,y,z,1,1.5,enter,leave)
     end
   end
