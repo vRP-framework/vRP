@@ -10,15 +10,9 @@ Map.Entity = class("Map.Entity")
 
 -- Entity.command for command methods
 
-function Map.Entity:__construct(cfg,x,y,z,active_distance)
+function Map.Entity:__construct(id,cfg)
+  self.id = id
   self.cfg = cfg
-  self.x = x
-  self.y = y
-  self.z = z
-  self.active_distance = active_distance
-
-  self.active = false
-  self.frame_when_inactive = false
 end
 
 function Map.Entity:load()
@@ -27,48 +21,87 @@ end
 function Map.Entity:unload()
 end
 
+-- called to check if the entity is active
+-- px, py, pz: player position
+function Map.Entity:active(px, py, pz)
+  return false
+end
+
+-- called at each render frame if the entity is active
 -- time: seconds since last frame
 function Map.Entity:frame(time) 
 end
 
--- basic entities
 
-local PoI = class("PoI", Map.Entity)
+-- basic entities
+local PosEntity = class("PosEntity", Map.Entity)
+Map.PosEntity = PosEntity
+
+function PosEntity:load()
+  self.active_distance = self.cfg.active_distance or 250
+  self.pos = self.cfg.pos
+end
+
+function PosEntity:active(px,py,pz)
+  local dist = GetDistanceBetweenCoords(self.pos[1],self.pos[2],self.pos[3],px,py,pz,true)
+  return (dist <= self.active_distance)
+end
+
+-- PoI
+local PoI = class("PoI", Map.PosEntity)
 
 function PoI:load()
-  -- blip
-  self.blip = AddBlipForCoord(x,y,z)
-  SetBlipSprite(self.blip, self.cfg.blip_id)
-  SetBlipAsShortRange(blip, true)
-  SetBlipColour(blip, self.cfg.blip_color)
+  PosEntity.load(self)
 
-  if self.cfg.title ~= nil then
-    BeginTextCommandSetBlipName("STRING")
-    AddTextComponentString(self.cfg.title)
-    EndTextCommandSetBlipName(blip)
+  -- blip
+  if self.cfg.blip_id and self.cfg.blip_color then
+    self.blip = AddBlipForCoord(self.cfg.pos[1],self.cfg.pos[2],self.cfg.pos[3])
+    SetBlipSprite(self.blip, self.cfg.blip_id)
+    SetBlipAsShortRange(self.blip, true)
+    SetBlipColour(self.blip, self.cfg.blip_color)
+
+    if self.cfg.title then
+      BeginTextCommandSetBlipName("STRING")
+      AddTextComponentString(self.cfg.title)
+      EndTextCommandSetBlipName(self.blip)
+    end
   end
 
-  -- marker
-  self.dpos = self.cfg.dpos or {0,0,-1}
+  -- prepare marker
   self.scale = self.cfg.scale or {0.7,0.7,0.5}
-  self.rgba = self.cfg.rgba or {0,255,125,125}
+  self.color = self.cfg.color or {0,255,125,125}
   self.marker_id = self.cfg.marker_id
+  self.height = self.cfg.height or 1
+  self.rotate_speed = self.cfg.rotate_speed
+  self.rz = 0
+
+  self.active_distance = self.cfg.active_distance or 250
 end
 
 function PoI:unload()
   RemoveBlip(self.blip)
 end
 
+function PoI:active(px,py,pz)
+  return (PosEntity.active(self, px,py,pz) and self.marker_id)
+end
+
 function PoI:frame(time)
-  if self.marker_id then
-    DrawMarker(self.marker_id,self.x+self.dpos[1],self.y+self.dpos[2],self.z+self.dpos[3],0,0,0,0,0,0,self..scale[1],self.scale[2],self.scale[3],self.rgba[1],self.rgba[2],self.rgba[3],self.rgba[4],0)
+  if self.marker_id then 
+    if self.rotate_speed then
+      self.rz = (self.rz+360*self.rotate_speed*time)%360
+    end
+
+    DrawMarker(self.marker_id,self.pos[1],self.pos[2],self.pos[3]+self.height,0,0,0,0,0,self.rz,self.scale[1],self.scale[2],self.scale[3],self.color[1],self.color[2],self.color[3],self.color[4],0)
   end
 end
 
 PoI.command = {}
 
-function PoI.command:blipRoute()
-  SetBlipRoute(self.blip,true)
+function PoI.command:setBlipRoute()
+  if self.blip then
+    SetBlipRoute(self.blip,true)
+  end
 end
 
 -- METHODS
@@ -78,6 +111,8 @@ function Map:__construct()
 
   self.entities = {} -- map of id (number or name) => entity
   self.entities_ids = IDManager()
+  self.def_entities = {}
+  self.frame_entities = {}
 
   self.areas = {}
 
@@ -87,12 +122,15 @@ function Map:__construct()
   -- task: entities active check
   Citizen.CreateThread(function()
     while true do
-      Citizen.Wait(40)
+      Citizen.Wait(100)
 
       local px,py,pz = vRP.EXT.Base:getPosition()
+      self.frame_entities = {}
 
       for id,entity in pairs(self.entities) do
-        entity.active = (GetDistanceBetweenCoords(entity.x,entity.y,entity.z,px,py,pz,true) <= entity.active_distance)
+        if entity:active(px,py,pz) then
+          self.frame_entities[entity] = true
+        end
       end
     end
   end)
@@ -110,10 +148,10 @@ function Map:__construct()
 
       local px,py,pz = vRP.EXT.Base:getPosition()
 
-      for id,entity in pairs(self.entities) do
-        if entity.active or entity.frame_when_inactive then
-          entity:frame(elapsed)
-        end
+      local count = 0
+      for entity in pairs(self.frame_entities) do
+        entity:frame(elapsed)
+        count = count+1
       end
     end
   end)
@@ -155,58 +193,57 @@ function Map:registerEntity(ent)
   end
 end
 
--- return id (-1 if the entity is invalid)
-function Map:addEntity(ent, cfg, x, y, z)
+-- add entity
+-- return id (number) or nil on failure
+function Map:addEntity(ent, cfg)
   local cent = self.def_entities[ent]
 
-  local id = -1
+  local id
 
   if cent then
     id = self.entities_ids:gen()
-    local ent = cent(cfg, x,y,z, vRP.cfg.default_map_entity_active_distance)
-    self.entities[id] = ent
-    ent:load()
+    local nent = cent(id, cfg)
+    self.entities[id] = nent
+    nent:load()
   end
 
   return id
 end
 
+-- id: number or string
 function Map:removeEntity(id)
-  if type(id) == "number" then
-    local ent = self.entities[id]
-    if ent then
-      ent:unload()
-      self.entities[id] = nil
+  local ent = self.entities[id]
+  if ent then
+    ent:unload()
+    self.frame_entities[ent] = nil
+    self.entities[id] = nil
+
+    if type(id) == "number" then
+      self.entities_ids:free(id)
     end
   end
 end
 
-function Map:setNamedEntity(name, ent, cfg, x,y,z)
-  self:removeNamedEntity(name) -- remove old one
-
-  if type(name) == "string" then
-    local cent = self.def_entities[ent]
-    if cent then
-      local ent = cent(cfg, x,y,z, vRP.cfg.default_map_entity_active_distance)
-      self.entities[name] = ent
-      ent:load()
+-- id: number (update added entity) or string (create/update named entity)
+function Map:setEntity(id, ent, cfg)
+  local cent = self.def_entities[ent]
+  if cent then
+    -- unload previous entity
+    local pent = self.entities[id]
+    if pent then
+      pent:unload()
+      self.frame_entities[pent] = nil
     end
-  end
-end
 
--- remove a named blip
-function Map:removeNamedEntity(name)
-  if type(name) == "string" then
-    local ent = self.entities[name]
-    if ent then
-      ent:unload()
-      self.entities[name] = nil
-    end
+    -- load new entity
+    local nent = cent(id, cfg)
+    self.entities[id] = nent
+    nent:load()
   end
 end
 
 -- entity command
--- id: entity name or id
+-- id: number or string
 function Map:commandEntity(id, command, ...)
   local ent = self.entities[id]
   if ent then
@@ -270,24 +307,12 @@ end
 Map.tunnel = {}
 
 Map.tunnel.addEntity = Map.addEntity
+Map.tunnel.setEntity = Map.setNamedEntity
 Map.tunnel.removeEntity = Map.removeEntity
-Map.tunnel.setNamedEntity = Map.setNamedEntity
-Map.tunnel.removeNamedEntity = Map.removeNamedEntity
 Map.tunnel.commandEntity = Map.commandEntity
 Map.tunnel.setGPS = Map.setGPS
 Map.tunnel.setArea = Map.setArea
 Map.tunnel.removeArea = Map.removeArea
 Map.tunnel.setStateOfClosestDoor = Map.setStateOfClosestDoor
-
--- batch blips/markers loading
-function Map.tunnel:loadBlipsMarkers(blips, markers)
-  for k,v in pairs(blips) do
-    self:addBlip(v[1],v[2],v[3],v[4],v[5],v[6])
-  end
-
-  for k,v in pairs(markers) do
-    self:addMarker(v[1],v[2],v[3],v[4],v[5],v[6],v[7],v[8],v[9],v[10],v[11])
-  end
-end
 
 vRP:registerExtension(Map)

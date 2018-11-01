@@ -71,6 +71,7 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * ammo box
 * blip marker display (BMD?) or entity system
 * parcel delivery basic mission
+* remove debug, add log level
 
 === vRP 2 dev' phases
 * [.line-through]#refactoring#

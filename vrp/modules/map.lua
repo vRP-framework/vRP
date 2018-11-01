@@ -43,8 +43,8 @@ end
 function Map:__construct()
   vRP.Extension.__construct(self)
 
-  self.cfg = module("vrp", "cfg/blips_markers")
-  self:log(#self.cfg.blips.." blips "..#self.cfg.markers.." markers")
+  self.cfg = module("vrp", "cfg/map")
+  self:log(#self.cfg.entities.." entities")
 end
 
 -- EVENT
@@ -60,9 +60,11 @@ function Map.event:playerLeave(user)
 end
 
 function Map.event:playerSpawn(user, first_spawn)
-  -- add additional blips/markers
+  -- add additional entities
   if first_spawn then
-    self.remote._loadBlipsMarkers(user.source, self.cfg.blips, self.cfg.markers)
+    for _, entdef in ipairs(self.cfg.entities) do
+      self.remote._addEntity(user.source, entdef[1], entdef[2])
+    end
   end
 end
 
