@@ -1,6 +1,5 @@
 
 local IDManager = module("lib/IDManager")
-local Debug = module("lib/Debug")
 
 -- API used in function of the side
 local TriggerRemoteEvent = nil
@@ -77,10 +76,6 @@ local function tunnel_resolve(itable,key)
         if r then
           rid = ids:gen()
           callbacks[rid] = r
-
-          if Debug.active then -- debug
-            profile = Debug.pbegin("tunnel_"..iname..":"..identifier.."("..rid.."):"..fname)
-          end
         end
 
         if SERVER then
@@ -95,10 +90,6 @@ local function tunnel_resolve(itable,key)
       if r then
         rid = ids:gen()
         callbacks[rid] = r
-
-        if Debug.active then -- debug
-          profile = Debug.pbegin("tunnel_"..iname..":"..identifier.."("..rid.."):"..fname)
-        end
       end
 
       if SERVER then
@@ -109,13 +100,7 @@ local function tunnel_resolve(itable,key)
     end
 
     if r then
-      if profile then -- debug
-        local rets = {r:wait()}
-        Debug.pend(profile)
-        return table.unpack(rets, 1, table_maxn(rets))
-      else
-        return r:wait()
-      end
+      return r:wait()
     end
   end
 
@@ -131,10 +116,6 @@ function Tunnel.bindInterface(name,interface)
   RegisterLocalEvent(name..":tunnel_req")
   AddEventHandler(name..":tunnel_req",function(member,args,identifier,rid)
     local source = source
-
-    if Debug.active then
-      Debug.log("tunnelreq#"..rid.."_"..name..":"..member.." "..json.encode(Debug.safeTableCopy(args)))
-    end
 
     local f = interface[member]
 
@@ -170,10 +151,6 @@ function Tunnel.getInterface(name,identifier)
   -- receive response
   RegisterLocalEvent(name..":"..identifier..":tunnel_res")
   AddEventHandler(name..":"..identifier..":tunnel_res",function(rid,args)
---    if Debug.active then
---      Debug.log("tunnelres#"..rid.."_"..name.." "..json.encode(Debug.safeTableCopy(args)))
---    end
-
     local callback = callbacks[rid]
     if callback then
       -- free request id

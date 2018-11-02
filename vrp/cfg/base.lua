@@ -32,10 +32,6 @@ cfg.ignore_ip_identifier = true
 
 cfg.lang = "en"
 
-cfg.debug = false
-
--- time to wait before displaying async return warning (seconds)
-cfg.debug_async_time = 2
-
+cfg.log_level = 0 -- maximum verbose level for logs, -1 may disable logs and 1000 may print all logs
 
 return cfg

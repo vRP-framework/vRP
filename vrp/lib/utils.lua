@@ -58,17 +58,7 @@ class = Luaoop.class
 
 -- Luaseq like for FiveM
 
-local Debug = module("vrp", "lib/Debug")
-
 local function wait(self)
-  if Debug.active then -- debug
-    SetTimeout(math.floor(Debug.async_time)*1000, function()
-      if not self.r then
-        Debug.log("WARNING: in resource \""..GetCurrentResourceName().."\" async return take more than "..Debug.async_time.."s "..self.traceback, true)
-      end
-    end)
-  end
-
   local rets = Citizen.Await(self.p)
   if not rets then
     rets = self.r 
@@ -87,11 +77,7 @@ function async(func)
   if func then
     Citizen.CreateThreadNow(func)
   else
-    if Debug.active then -- debug
-      return setmetatable({ wait = wait, p = promise.new(), traceback = debug.traceback("",2) }, { __call = areturn })
-    else
-      return setmetatable({ wait = wait, p = promise.new() }, { __call = areturn })
-    end
+    return setmetatable({ wait = wait, p = promise.new() }, { __call = areturn })
   end
 end
 

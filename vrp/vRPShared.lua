@@ -47,8 +47,8 @@ function vRPShared.Extension:__construct()
   self.remote = Tunnel.getInterface("vRP.EXT."..class.name(self))
 end
 
-function vRPShared.Extension:log(msg)
-  vRP:log(msg, class.name(self))
+function vRPShared.Extension:log(msg, level)
+  vRP:log(msg, class.name(self), level)
 end
 
 function vRPShared.Extension:error(msg)
@@ -61,6 +61,8 @@ function vRPShared:__construct()
   -- extensions
   self.EXT = {} -- map of name => ext
   self.ext_listeners = {} -- map of name => map of ext => callback
+
+  self.log_level = 0
 end
 
 -- register an extension
@@ -140,12 +142,17 @@ function vRPShared:triggerEventSync(name, ...)
 end
 
 -- msg: log message
--- suffix: optional category, string
-function vRPShared:log(msg, suffix)
-  if suffix then
-    print("[vRP:"..suffix.."] "..msg)
-  else
-    print("[vRP] "..msg)
+-- suffix: (optional) category, string
+-- level: (optional) level, 0 by default
+function vRPShared:log(msg, suffix, level)
+  if not level then level = 0 end
+
+  if level <= self.log_level then
+    if suffix then
+      print("[vRP:"..suffix.."] "..msg)
+    else
+      print("[vRP] "..msg)
+    end
   end
 end
 

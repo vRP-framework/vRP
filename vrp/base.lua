@@ -2,7 +2,6 @@
 
 Proxy = module("lib/Proxy")
 Tunnel = module("lib/Tunnel")
-Debug = module("lib/Debug")
 
 local htmlEntities = module("vrp", "lib/htmlEntities")
 

@@ -1,6 +1,5 @@
 -- Proxy interface system, used to add/call functions between resources
 
-local Debug = module("lib/Debug") 
 local IDManager = module("lib/IDManager")
 
 local Proxy = {}
@@ -33,10 +32,6 @@ local function proxy_resolve(itable,key)
       r = async()
       rid = ids:gen()
       callbacks[rid] = r
-
-      if Debug.active then
-        profile = Debug.pbegin("proxy_"..iname..":"..identifier.."("..rid.."):"..fname)
-      end
     end
 
     local args = {...}
@@ -44,13 +39,7 @@ local function proxy_resolve(itable,key)
     TriggerEvent(iname..":proxy",fname, args, identifier, rid)
     
     if not no_wait then
-      if Debug.active then -- debug
-        local rets = {r:wait()}
-        Debug.pend(profile)
-        return table.unpack(rets, 1, table_maxn(rets))
-      else
-        return r:wait()
-      end
+      return r:wait()
     end
   end
 
@@ -61,10 +50,6 @@ end
 --- Add event handler to call interface functions (can be called multiple times for the same interface name with different tables)
 function Proxy.addInterface(name, itable)
   AddEventHandler(name..":proxy", function(member,args,identifier,rid)
-    if Debug.active then
-      Debug.log("proxy_"..name..":"..identifier.."("..rid.."):"..member.." "..json.encode(Debug.safeTableCopy(args)))
-    end
-
     local f = itable[member]
 
     local rets = {}
@@ -92,9 +77,6 @@ function Proxy.getInterface(name, identifier)
   local r = setmetatable({},{ __index = proxy_resolve, name = name, ids = ids, callbacks = callbacks, identifier = identifier })
 
   AddEventHandler(name..":"..identifier..":proxy_res", function(rid,rets)
---    if Debug.active then
---      Debug.log("proxy_"..name..":"..identifier.."_res("..rid.."): "..json.encode(Debug.safeTableCopy(rets)))
---    end
 
     local callback = callbacks[rid]
     if callback then

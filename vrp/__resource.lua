@@ -61,7 +61,6 @@ files{
   "lib/Luaoop.lua",
   "lib/Tunnel.lua",
   "lib/Proxy.lua",
-  "lib/Debug.lua",
   "lib/IDManager.lua",
   "lib/ActionDelay.lua",
   "client/vRP.lua",

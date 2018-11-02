@@ -56,6 +56,7 @@ function vRP:__construct()
 
   -- load config
   self.cfg = module("vrp", "cfg/base")
+  self.log_level = self.cfg.log_level
 
   -- load language 
   self.luang = Luang()
@@ -150,8 +151,8 @@ end
 --- name: unique name for the query
 --- query: SQL string with @params notation
 function vRP:prepare(name, query)
-  if Debug.active then
-    Debug.log("prepare "..name.." = \""..query.."\"")
+  if self.log_level > 0 then
+    self:log("prepare "..name.." = \""..query.."\"")
   end
 
   self.prepared_queries[name] = true
@@ -177,8 +178,8 @@ function vRP:query(name, params, mode)
 
   if not mode then mode = "query" end
 
-  if Debug.active then
-    Debug.log("query "..name.." ("..mode..") params = "..json.encode(params or {}))
+  if self.log_level > 0 then
+    self:log("query "..name.." ("..mode..") params = "..json.encode(params or {}))
   end
 
   if self.db_initialized then -- direct call
@@ -364,7 +365,10 @@ end
 function vRP:save()
   self:triggerEvent("save")
 
-  Debug.log("save users")
+  if self.log_level > 0 then
+    self:log("save users")
+  end
+
   for k,user in pairs(self.users) do
     user:save()
   end
@@ -390,7 +394,6 @@ end
 function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
   deferrals.defer()
 
-  Debug.log("playerConnecting "..name)
   local ids = GetPlayerIdentifiers(source)
 
   if ids ~= nil and #ids > 0 then
@@ -484,8 +487,6 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
 end
 
 function vRP:onPlayerSpawned(source)
-  Debug.log("playerSpawned "..source)
-
   local ids_key = vRP.getSourceIdKey(source)
   local user = self.users_by_source[source]
   local pending = false
@@ -533,12 +534,10 @@ function vRP:onPlayerSpawned(source)
 end
 
 function vRP:onPlayerDropped(source)
-  Debug.log("playerDropped "..source)
   self:dropPlayer(source)
 end
 
 function vRP:onPlayerDied(source)
-  Debug.log("playerDied "..source)
   local user = self.users_by_source[source]
   if user then
     self:triggerEvent("playerDeath", user)

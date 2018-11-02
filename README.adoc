@@ -70,7 +70,6 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * identity display group gtype list
 * ammo box
 * parcel delivery basic mission
-* remove debug, add log level
 
 === vRP 2 dev' phases
 * [.line-through]#refactoring#
