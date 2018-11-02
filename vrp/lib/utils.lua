@@ -61,7 +61,11 @@ class = Luaoop.class
 local function wait(self)
   local rets = Citizen.Await(self.p)
   if not rets then
-    rets = self.r 
+    if self.r then
+      rets = self.r
+    else
+      error("async wait(): Citizen.Await returned (nil) before the areturn call.")
+    end
   end
 
   return table.unpack(rets, 1, table_maxn(rets))

@@ -68,7 +68,7 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * use menu instead of div when possible, identity display as modular menu
 * vehicle state
 * identity display group gtype list
-* parcel delivery basic mission
+* parcel delivery basic mission, paycheck basic mission
 
 === vRP 2 dev' phases
 * refactoring (done)

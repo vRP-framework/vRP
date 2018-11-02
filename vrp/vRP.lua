@@ -128,9 +128,7 @@ function vRP:registerDBDriver(db_driver)
 
           -- execute cached queries
           for _,query in pairs(self.cached_queries) do
-            async(function()
-              query[2](self.db_driver:onQuery(table.unpack(query[1], 1, table_maxn(query[1]))))
-            end)
+            query[2](self.db_driver:onQuery(table.unpack(query[1], 1, table_maxn(query[1]))))
           end
 
           self.cached_prepares = nil
