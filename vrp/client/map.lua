@@ -87,13 +87,11 @@ function PoI:active(px,py,pz)
 end
 
 function PoI:frame(time)
-  if self.marker_id then 
-    if self.rotate_speed then
-      self.rz = (self.rz+360*self.rotate_speed*time)%360
-    end
-
-    DrawMarker(self.marker_id,self.pos[1],self.pos[2],self.pos[3]+self.height,0,0,0,0,0,self.rz,self.scale[1],self.scale[2],self.scale[3],self.color[1],self.color[2],self.color[3],self.color[4],0)
+  if self.rotate_speed then
+    self.rz = (self.rz+360*self.rotate_speed*time)%360
   end
+
+  DrawMarker(self.marker_id,self.pos[1],self.pos[2],self.pos[3]+self.height,0,0,0,0,0,self.rz,self.scale[1],self.scale[2],self.scale[3],self.color[1],self.color[2],self.color[3],self.color[4],0)
 end
 
 PoI.command = {}

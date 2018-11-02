@@ -72,7 +72,7 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * parcel delivery basic mission
 
 === vRP 2 dev' phases
-* [.line-through]#refactoring#
+* refactoring (done)
 * improvements
 * client-side optimizations
 * documentation
