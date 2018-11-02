@@ -73,10 +73,14 @@ local lang = {
     },
     wammo = {
       name = "{1} ammo",
+      name_box = "{1} ammo x{2}",
       description = "Weapon ammo for {1}.",
       load = {
         title = "Load",
         prompt = "Amount to load ? (max {1})"
+      },
+      open = {
+        title = "Open"
       }
     },
     bulletproof_vest = {

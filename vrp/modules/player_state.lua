@@ -7,6 +7,8 @@ local PlayerState = class("PlayerState", vRP.Extension)
 local function define_items(self)
   -- parametric weapon items
   -- give "wbody|WEAPON_PISTOL" and "wammo|WEAPON_PISTOL" to have pistol body and pistol bullets
+  -- wbody|weapon
+  -- wammo|weapon[|amount] (amount make it an ammo box)
 
   local function get_wname(weapon_id)
     local name = string.gsub(weapon_id,"WEAPON_","")
@@ -53,7 +55,11 @@ local function define_items(self)
   -- wammo
 
   local function i_wammo_name(args)
-    return lang.item.wammo.name({get_wname(args[2])})
+    if args[3] then
+      return lang.item.wammo.name_box({get_wname(args[2]), tonumber(args[3]) or 0})
+    else
+      return lang.item.wammo.name({get_wname(args[2])})
+    end
   end
 
   local function i_wammo_desc(args)
@@ -86,8 +92,33 @@ local function define_items(self)
     end
   end
 
+  local function m_wammo_open(menu)
+    local user = menu.user
+    local fullid = menu.data.fullid
+
+    local citem = vRP.EXT.Inventory:computeItem(fullid)
+    local ammoid = citem.args[1].."|"..citem.args[2]
+    local amount = tonumber(citem.args[3]) or 0
+
+    if user:tryTakeItem(fullid, 1, true) and user:tryGiveItem(ammoid, amount, true) then
+      user:tryTakeItem(fullid, 1)
+      user:tryGiveItem(ammoid, amount)
+
+      local namount = user:getItemAmount(fullid)
+      if namount > 0 then
+        user:actualizeMenu()
+      else
+        user:closeMenu(menu)
+      end
+    end
+  end
+
   local function i_wammo_menu(args, menu)
-    menu:addOption(lang.item.wammo.load.title(), m_wammo_load)
+    if args[3] then
+      menu:addOption(lang.item.wammo.open.title(), m_wammo_open)
+    else
+      menu:addOption(lang.item.wammo.load.title(), m_wammo_load)
+    end
   end
 
   vRP.EXT.Inventory:defineItem("wammo", i_wammo_name,i_wammo_desc,i_wammo_menu,0.01)

@@ -210,10 +210,10 @@ cfg.shop_types = {
   },
   ["handguns"] = {
     _config = {map_entity = {"PoI", {blip_id = 156, blip_color = 1, marker_id = 1}}},
-    ["wbody|WEAPON_PISTOL"] = 950,
-    ["wbody|WEAPON_COMBATPISTOL"] = 1550,
-    ["wammo|WEAPON_PISTOL"] = 1,
-    ["wammo|WEAPON_COMBATPISTOL"] = 1
+    ["wbody|WEAPON_PISTOL"] = 550,
+    ["wbody|WEAPON_COMBATPISTOL"] = 950,
+    ["wammo|WEAPON_PISTOL|50"] = 20,
+    ["wammo|WEAPON_COMBATPISTOL|50"] = 20
   },
   ["gear"] = {
     _config = {map_entity = {"PoI", {blip_id = 175, blip_color = 1, marker_id = 1}}},
