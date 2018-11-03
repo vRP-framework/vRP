@@ -16,11 +16,11 @@ endif::[]
 
 vRP 2 Object-Oriented Programming uses the https://github.com/ImagicTheCat/Luaoop[Luaoop] library.
 
-NOTE: By using OOP, instead of loading resources comminucating with vRP through Proxy, extensions can directly be loaded into the vRP resource context. Each extension keeps its data and is able to access other extensions data and methods, making extending vRP easier, more powerful (you can access stuff even if not exposed) and with less overhead.
+NOTE: By using OOP, instead of loading resources communicating with vRP through Proxy, extensions can directly be loaded into the vRP resource context. Each extension keeps its data and is able to access other extensions data and methods, making extending vRP easier, more powerful (you can access stuff even if not exposed) and with less overhead.
 
 === Extension
 
-An extension is a class extending vRP. Two versions of the an extension (same name) can be loaded server-side and client-side.
+An extension is a class extending vRP. Two versions of an extension (same name) can be loaded server-side and client-side.
 
 [source,lua]
 ----
@@ -33,10 +33,13 @@ Loaded extensions are accessibles through the vRP instance:
 vRP.EXT.MyExt:test()
 ----
 
+TIP: You can see how an extension is made by looking at the code of vRP link:../../vrp/modules[modules] or https://github.com/ImagicTheCat/vRP-basic-mission.
+
 ==== User
 
 Extensions can extend User properties/methods with a User class (constructor is called).
-To not conflict with other extensions, make sure the name of the properties and methods have a very specific name or prefix.
+
+WARNING: To not conflict with other extensions, make sure the name of the properties and methods have a very specific name or prefix.
 
 [source,lua]
 ----
@@ -100,7 +103,7 @@ A DB driver is a class handling MySQL queries. When the vRP MySQL API is used, t
 
 === Data
 
-vRP provides basic methods to store custom binary data in the database. A string key is associated to a binary value (a Lua string). The key is a `VARCHAR(100)` and the value a `BLOB`.
+vRP provides basic methods to store custom binary data in the database. A string key is associated to a binary value (like a Lua string). The key is a `VARCHAR(100)` and the value a `BLOB`.
 
 [horizontal]
 global:: GData
@@ -108,7 +111,7 @@ per server:: SData
 per user:: UData
 per character:: CData
 
-CAUTION: vRP core tables should not be modified for the same reason about core files. New tables and queries should be created if the data system is not powerful enough.
+CAUTION: vRP core tables, as core files, should not be modified for the same reasons. New tables and queries should be created if the data system is not powerful enough.
 
 ==== Multi-server and character
 
@@ -130,7 +133,7 @@ WARNING: Also remember that Citizen event handlers (used by Proxy and Tunnel) se
 
 === Asynchronous 
 
-vRP 2 extensively uses asynchronous tasks in a transparent way using coroutines, some functions may not return immediately.
+vRP 2 extensively uses asynchronous tasks in a transparent way using coroutines, some functions may not return immediately (or never).
 
 == Loading script
 
@@ -147,6 +150,6 @@ local vRP = Proxy.getInterface("vRP")
 vRP.loadScript("my_resource", "server_vrp") -- load server_vrp.lua
 ----
 
-The content of `server_vrp.lua` can now use vRP and the API.
+The content of `server_vrp.lua` is now executed in the vRP context and can now use the API.
 
 == General API
