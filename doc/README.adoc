@@ -14,7 +14,7 @@ endif::[]
 
 vRP is a framework, its goal is to provide a set of tools and flexibility.
 
-It implies that you should never modify the core files of vRP, only the files in the `cfg` folder. 
+It implies that you should never modify the core files of vRP, but only the files in the `cfg` folder. 
 
 [CAUTION]
 ====
@@ -25,7 +25,7 @@ Doing this fragments the vRP community, so vRP extensions are not guaranteed to 
 Instead, vRP should be improved to be flexible as possible to suit your needs by making a **Feature request**, then developers can properly extend vRP by creating extensions without modifying core files, and everyone can use it.
 ====
 
-A framework code should not be customized by definition, because a framework is used to build a custom experience by using the availables features. There is no point in saying "`You should create your custom framework.`", unless it doesn't fit your needs at all.
+A framework code should not be customized by definition, because a framework is used to build a custom experience by using the availables features. There is no point in saying "`You should create your custom framework.`", unless it doesn't fit your needs at all (most of the time filled by extensions).
 
 == Deployment
 
@@ -66,14 +66,13 @@ This way, you will know when config files should be updated and what exactly has
 
 === Issues / Features / Help
 
-WARNING: The issue section is only for bug reports and feature requests. I will close (and ban) issues not related to the core of vRP, to keep the github clean.
-Don't submit issues about vRP modifications, they will be closed without warning.
+WARNING: The issue section is only for bug reports and feature requests. Issues not related to the core of vRP or about vRP modifications will be closed without warning.
 
-When submitting an issue, add any information you can find, with all details. Saying that something doesn't work is useless and will not solve the issue.
-If you have errors in your console BEFORE the issue happen, everything could be corrupted, so the issue is irrelevant, you should solve all unrelated errors before submitting issues.
+When submitting an issue, add any information you can find, with all details. Saying that something doesn't work is almost useless and will probably not be enough to solve the issue.
+If you have errors in your console BEFORE the issue happens, things could be corrupted, so the error is probably irrelevant. You should solve all unrelated errors before submitting issues.
 
 NOTE: For questions, help, discussions around the project, please go instead on the vRP thread of the FiveM forum here: https://forum.fivem.net/t/release-vrp-framework/22894
 
 == Developers
 
-See the developers link:dev/[documentation].
+See the developers link:dev/README.adoc[documentation].

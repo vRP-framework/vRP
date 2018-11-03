@@ -26,7 +26,9 @@ image::http://i.imgur.com/dyePK6Q.png[Support me and the project on Patreon,link
 
 https://pledgie.com/campaigns/34016[(old pledgie, thank you to the donors)]
 
-See the link:doc/[documentation].
+== Documentation
+
+See the link:doc/README.adoc[documentation].
 
 .See also (and use it as a basis to understand how to develop extensions for vRP):
 * https://github.com/ImagicTheCat/vRP-db-drivers (some DB driver alternatives for `vrp_mysql`)
