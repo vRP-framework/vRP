@@ -68,16 +68,17 @@ function User:createCharacter()
 end
 
 -- use character
+-- no_delay: if passed/true, ignore delay check
 -- return true or false, err_code
 -- err_code: 
 --- 1: delay error, too soon
 --- 2: already loading
 --- 3: invalid character
-function User:useCharacter(id)
+function User:useCharacter(id, no_delay)
   if id == self.cid then return true end -- same check
 
   -- delay check
-  if not self.use_character_action:perform(vRP.cfg.character_select_delay) then return false, 1 end
+  if not no_delay and not self.use_character_action:perform(vRP.cfg.character_select_delay) then return false, 1 end
 
   if self.loading_character then return false, 2 end -- loading check
 
@@ -101,6 +102,7 @@ function User:useCharacter(id)
     local sdata = vRP:getCData(self.cid, "vRP:datatable")
     if sdata and string.len(sdata) > 0 then
       self.cdata = msgpack.unpack(sdata)
+      print(self.cdata)
     end
 
     vRP:triggerEventSync("characterLoad", self)

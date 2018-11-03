@@ -434,10 +434,14 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
             if not user:useCharacter(user.data.current_character or 0) then -- use last used character
               local characters = user:getCharacters()
               if #characters > 0 then -- use existing character
-                user:useCharacter(characters[1])
+                user:useCharacter(characters[1], true)
               else -- use new character
                 local cid = user:createCharacter()
-                user:useCharacter(cid)
+                if cid then
+                  user:useCharacter(cid, true)
+                else
+                  self:error("couldn't create user ("..user.id.." character")
+                end
               end
             end
 
