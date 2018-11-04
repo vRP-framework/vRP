@@ -102,7 +102,6 @@ function User:useCharacter(id, no_delay)
     local sdata = vRP:getCData(self.cid, "vRP:datatable")
     if sdata and string.len(sdata) > 0 then
       self.cdata = msgpack.unpack(sdata)
-      print(self.cdata)
     end
 
     vRP:triggerEventSync("characterLoad", self)

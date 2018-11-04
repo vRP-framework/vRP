@@ -199,6 +199,8 @@ function Group:__construct()
 
   -- menu
   menu_group_selector(self)
+
+
 end
 
 -- return users list

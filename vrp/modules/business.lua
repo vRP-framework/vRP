@@ -186,6 +186,14 @@ function Business:__construct()
 
   menu_commerce_chamber_directory(self)
   menu_commerce_chamber(self)
+
+  vRP.EXT.GUI:registerMenuBuilder("identity", function(menu)
+    local business = self:getBusiness(menu.data.cid)
+
+    if business then
+      menu:addOption(lang.business.identity.title(), nil, lang.business.identity.info({htmlEntities.encode(business.name), business.capital}))
+    end
+  end)
 end
 
 

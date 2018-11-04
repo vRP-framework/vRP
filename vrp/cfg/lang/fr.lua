@@ -177,6 +177,10 @@ local lang = {
   },
   business = {
     title = "Chambre de commerce",
+    identity = {
+      title = "Entreprise",
+      info = "<em>Nom: </em>{1}<br /><em>Capital: </em>{2} $"
+    },
     directory = {
       title = "Annuaire",
       description = "Annuaire des entreprises",
@@ -210,18 +214,21 @@ local lang = {
       
     }
   },
-  cityhall = {
-    title = "Hôtel de ville",
-    identity = {
-      title = "Nouvelle identité",
-      description = "Creez une nouvelle identité, frais de création = {1} $.",
-      prompt_firstname = "Entrez votre prénom:",
-      prompt_name = "Entrez votre nom de famille:",
-      prompt_age = "Entrez votre âge:"
+  identity = {
+    title = "Identité",
+    citizenship = {
+      title = "Citoyenneté",
+      info = "<em>Name: </em>{1}<br /><em>First name: </em>{2}<br /><em>Age: </em>{3}<br /><em>Registration n°: </em>{4}<br /><em>Phone: </em>{5}",
     },
-    menu = {
-      title = "Identité",
-      info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em>N° d'immatriculation: </em>{4}<br /><em>Téléphone: </em>{5}<br /><em>Adresse: </em>{7}, {6}"
+    cityhall = {
+      title = "Hôtel de ville",
+      new_identity = {
+        title = "Nouvelle identité",
+        description = "Creez une nouvelle identité, frais de création = {1} $.",
+        prompt_firstname = "Entrez votre prénom:",
+        prompt_name = "Entrez votre nom de famille:",
+        prompt_age = "Entrez votre âge:"
+      },
     }
   },
   police = {
@@ -333,9 +340,6 @@ local lang = {
         title = "Ranger ses armes",
         description = "Ranger ses armes dans son inventaire."
       }
-    },
-    identity = {
-      info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em>N° d'immatriculation: </em>{4}<br /><em>Téléphone: </em>{5}<br /><em>Entreprise: </em>{6}<br /><em>Capital de l'entreprise: </em>{7} $<br /><em>Adresse: </em>{9}, {8}"
     }
   },
   emergency = {
@@ -416,6 +420,10 @@ local lang = {
     }
   },
   home = {
+    address = {
+      title = "Adresse",
+      info = "{1}, {2}"
+    },
     buy = {
       title = "Acheter",
       description = "Acheter un logement ici, le prix est {1} $.",

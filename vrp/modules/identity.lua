@@ -27,51 +27,20 @@ function Identity.generateStringNumber(format) -- (ex: DDDLLL, D => digit, L => 
   return number
 end
 
--- METHODS
+-- PRIVATE METHODS
 
-function Identity:__construct()
-  vRP.Extension.__construct(self)
-
-  self.cfg = module("cfg/identity")
-  self.sanitizes = module("cfg/sanitizes")
-
-  async(function()
-    -- init sql
-    vRP:prepare("vRP/identity_tables", [[
-    CREATE TABLE IF NOT EXISTS vrp_character_identities(
-      character_id INTEGER,
-      registration VARCHAR(20),
-      phone VARCHAR(20),
-      firstname VARCHAR(50),
-      name VARCHAR(50),
-      age INTEGER,
-      CONSTRAINT pk_character_identities PRIMARY KEY(character_id),
-      CONSTRAINT fk_character_identities_characters FOREIGN KEY(character_id) REFERENCES vrp_characters(id) ON DELETE CASCADE,
-      INDEX(registration),
-      INDEX(phone)
-    );
-    ]])
-
-    vRP:prepare("vRP/get_character_identity","SELECT * FROM vrp_character_identities WHERE character_id = @character_id")
-    vRP:prepare("vRP/init_character_identity","INSERT IGNORE INTO vrp_character_identities(character_id,registration,phone,firstname,name,age) VALUES(@character_id,@registration,@phone,@firstname,@name,@age)")
-    vRP:prepare("vRP/update_character_identity","UPDATE vrp_character_identities SET firstname = @firstname, name = @name, age = @age, registration = @registration, phone = @phone WHERE character_id = @character_id")
-    vRP:prepare("vRP/get_characterbyreg","SELECT character_id FROM vrp_character_identities WHERE registration = @registration")
-    vRP:prepare("vRP/get_characterbyphone","SELECT character_id FROM vrp_character_identities WHERE phone = @phone")
-
-    vRP:execute("vRP/identity_tables")
-  end)
-
-  -- city hall menu
-  local function m_identity(menu)
+-- menu: cityhall
+local function menu_cityhall(self)
+  local function m_new_identity(menu)
     local user = menu.user
 
-    local firstname = user:prompt(lang.cityhall.identity.prompt_firstname(),"")
+    local firstname = user:prompt(lang.identity.cityhall.new_identity.prompt_firstname(),"")
     if string.len(firstname) >= 2 and string.len(firstname) < 50 then
       firstname = sanitizeString(firstname, self.sanitizes.name[1], self.sanitizes.name[2])
-      local name = user:prompt(lang.cityhall.identity.prompt_name(),"")
+      local name = user:prompt(lang.identity.cityhall.new_identity.prompt_name(),"")
       if string.len(name) >= 2 and string.len(name) < 50 then
         name = sanitizeString(name, self.sanitizes.name[1], self.sanitizes.name[2])
-        local age = user:prompt(lang.cityhall.identity.prompt_age(),"")
+        local age = user:prompt(lang.identity.cityhall.new_identity.prompt_age(),"")
         age = parseInt(age)
         if age >= 16 and age <= 150 then
           if user:tryPayment(self.cfg.new_identity_cost) then
@@ -110,28 +79,71 @@ function Identity:__construct()
   end
 
   vRP.EXT.GUI:registerMenuBuilder("cityhall", function(menu)
-    menu.title = lang.cityhall.title()
+    menu.title = lang.identity.cityhall.title()
     menu.css.header_color="rgba(0,125,255,0.75)"
 
-    menu:addOption(lang.cityhall.identity.title(), m_identity, lang.cityhall.identity.description({self.cfg.new_identity_cost}))
+    menu:addOption(lang.identity.cityhall.new_identity.title(), m_new_identity, lang.identity.cityhall.new_identity.description({self.cfg.new_identity_cost}))
+  end)
+end
+
+local function menu_identity(self)
+  vRP.EXT.GUI:registerMenuBuilder("identity", function(menu)
+    menu.title = lang.identity.title()
+    menu.css.header_color="rgba(0,125,255,0.75)"
+
+    local identity = self:getIdentity(menu.data.cid)
+
+    if identity then
+      menu:addOption(lang.identity.citizenship.title(), nil, lang.identity.citizenship.info({htmlEntities.encode(identity.name), htmlEntities.encode(identity.firstname), identity.age, identity.registration, identity.phone}))
+    end
+  end)
+end
+
+-- METHODS
+
+function Identity:__construct()
+  vRP.Extension.__construct(self)
+
+  self.cfg = module("cfg/identity")
+  self.sanitizes = module("cfg/sanitizes")
+
+  async(function()
+    -- init sql
+    vRP:prepare("vRP/identity_tables", [[
+    CREATE TABLE IF NOT EXISTS vrp_character_identities(
+      character_id INTEGER,
+      registration VARCHAR(20),
+      phone VARCHAR(20),
+      firstname VARCHAR(50),
+      name VARCHAR(50),
+      age INTEGER,
+      CONSTRAINT pk_character_identities PRIMARY KEY(character_id),
+      CONSTRAINT fk_character_identities_characters FOREIGN KEY(character_id) REFERENCES vrp_characters(id) ON DELETE CASCADE,
+      INDEX(registration),
+      INDEX(phone)
+    );
+    ]])
+
+    vRP:prepare("vRP/get_character_identity","SELECT * FROM vrp_character_identities WHERE character_id = @character_id")
+    vRP:prepare("vRP/init_character_identity","INSERT IGNORE INTO vrp_character_identities(character_id,registration,phone,firstname,name,age) VALUES(@character_id,@registration,@phone,@firstname,@name,@age)")
+    vRP:prepare("vRP/update_character_identity","UPDATE vrp_character_identities SET firstname = @firstname, name = @name, age = @age, registration = @registration, phone = @phone WHERE character_id = @character_id")
+    vRP:prepare("vRP/get_characterbyreg","SELECT character_id FROM vrp_character_identities WHERE registration = @registration")
+    vRP:prepare("vRP/get_characterbyphone","SELECT character_id FROM vrp_character_identities WHERE phone = @phone")
+
+    vRP:execute("vRP/identity_tables")
   end)
 
-  -- add identity to main menu
-  vRP.EXT.GUI:registerMenuBuilder("main", function(menu)
-    -- generate identity content
-    -- get address
-    local address = menu.user.address
-    local home = ""
-    local number = ""
-    if address then
-      home = address.home
-      number = address.number
-    end
-  
-    local identity = menu.user.identity
+  -- menus
+  menu_cityhall(self)
+  menu_identity(self)
 
-    local content = lang.cityhall.menu.info({htmlEntities.encode(identity.name),htmlEntities.encode(identity.firstname),identity.age,identity.registration,identity.phone,home,number})
-    menu:addOption(lang.cityhall.menu.title(), nil, content)
+  -- add identity to main menu
+  local function m_identity(menu)
+    menu.user:openMenu("identity", {cid = menu.user.cid})
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("main", function(menu)
+    menu:addOption(lang.identity.title(), m_identity)
   end)
 end
 

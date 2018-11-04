@@ -1,5 +1,6 @@
 
 local lang = vRP.lang
+local htmlEntities = module("vrp", "lib/htmlEntities")
 
 -- this module describe the home system 
 
@@ -358,6 +359,15 @@ function Home:__construct()
   -- menu
   menu_home_component_entry(self)
   menu_home(self)
+
+  -- identity info
+  vRP.EXT.GUI:registerMenuBuilder("identity", function(menu)
+    local address = self:getAddress(menu.data.cid)
+
+    if address then
+      menu:addOption(lang.home.address.title(), nil, lang.home.address.info({address.number, htmlEntities.encode(address.home)}))
+    end
+  end)
 
   -- entry component
   self:registerComponent(EntryComponent)

@@ -52,33 +52,8 @@ local function menu_police_pc(self)
     if cid then
       local identity = vRP.EXT.Identity:getIdentity(cid)
       if identity then
-        -- display identity and business
-        local name = identity.name
-        local firstname = identity.firstname
-        local age = identity.age
-        local phone = identity.phone
-        local registration = identity.registration
-        local bname = ""
-        local bcapital = 0
-        local home = ""
-        local number = ""
-
-        local business = vRP.EXT.Business:getBusiness(cid)
-        if business then
-          bname = business.name
-          bcapital = business.capital
-        end
-
-        local address = vRP.EXT.Home:getAddress(cid)
-        if address then
-          home = address.home
-          number = address.number
-        end
-
-        e_pc_div_close(menu)
-
-        local content = lang.police.identity.info({name,firstname,age,registration,phone,bname,bcapital,home,number})
-        vRP.EXT.GUI.remote._setDiv(user.source,"police_pc",m_police_pc_css,content)
+        local smenu = user:openMenu("identity", {cid = cid})
+        menu:listen("remove", function(menu) menu.user:closeMenu(smenu) end)
       else
         vRP.EXT.Base.remote._notify(user.source,lang.common.not_found())
       end
@@ -297,18 +272,6 @@ local function menu_police(self)
     end
   end
 
-  local m_askid_css = [[
-div_police_identity{ 
-  background-color: rgba(0,0,0,0.75); 
-  color: white; 
-  font-weight: bold; 
-  width: 500px; 
-  padding: 10px; 
-  margin: auto; 
-  margin-top: 150px; 
-}
-  ]]
-
   local function m_askid(menu)
     local user = menu.user
 
@@ -319,37 +282,7 @@ div_police_identity{
     if nuser then
       vRP.EXT.Base.remote._notify(user.source,lang.police.menu.askid.asked())
       if nuser:request(lang.police.menu.askid.request(),15) then
-        local identity = nuser.identity
-        if identity then
-          -- display identity and business
-          local name = identity.name
-          local firstname = identity.firstname
-          local age = identity.age
-          local phone = identity.phone
-          local registration = identity.registration
-          local bname = ""
-          local bcapital = 0
-          local home = ""
-          local number = ""
-
-          local business = vRP.EXT.Business:getBusiness(nuser.cid)
-          if business then
-            bname = business.name
-            bcapital = business.capital
-          end
-
-          local address = nuser.address
-          if address then
-            home = address.home
-            number = address.number
-          end
-
-          local content = lang.police.identity.info({name,firstname,age,registration,phone,bname,bcapital,home,number})
-          vRP.EXT.GUI.remote._setDiv(user.source,"police_identity",m_askid_css,content)
-          -- request to hide div
-          user:request(lang.police.menu.askid.request_hide(), 1000)
-          vRP.EXT.GUI.remote._removeDiv(user.source,"police_identity")
-        end
+        user:openMenu("identity", {cid = nuser.cid})
       else
         vRP.EXT.Base.remote._notify(user.source,lang.common.request_refused())
       end

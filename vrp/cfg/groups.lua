@@ -69,7 +69,6 @@ cfg.groups = {
   ["user"] = {
     "player.phone",
     "player.calladmin",
-    "police.askid",
     "player.store_weapons",
     "police.seizable" -- can be seized
   },
@@ -82,6 +81,7 @@ cfg.groups = {
       onleave = police_onleave
     },
     "police.menu",
+    "police.askid",
     "police.cloakroom",
     "police.pc",
     "police.handcuff",

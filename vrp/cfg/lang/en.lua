@@ -177,6 +177,10 @@ local lang = {
   },
   business = {
     title = "Chamber of Commerce",
+    identity = {
+      title = "Business",
+      info = "<em>name: </em>{1}<br /><em>capital: </em>{2} $"
+    },
     directory = {
       title = "Directory",
       description = "Business directory.",
@@ -210,18 +214,21 @@ local lang = {
       
     }
   },
-  cityhall = {
-    title = "City Hall",
-    identity = {
-      title = "New identity",
-      description = "Create a new identity, cost = {1} $.",
-      prompt_firstname = "Enter your firstname:",
-      prompt_name = "Enter your name:",
-      prompt_age = "Enter your age:",
+  identity = {
+    title = "Identity",
+    citizenship = {
+      title = "Citizenship",
+      info = "<em>Name: </em>{1}<br /><em>First name: </em>{2}<br /><em>Age: </em>{3}<br /><em>Registration n°: </em>{4}<br /><em>Phone: </em>{5}",
     },
-    menu = {
-      title = "Identity",
-      info = "<em>Name: </em>{1}<br /><em>First name: </em>{2}<br /><em>Age: </em>{3}<br /><em>Registration n°: </em>{4}<br /><em>Phone: </em>{5}<br /><em>Address: </em>{7}, {6}"
+    cityhall = {
+      title = "City Hall",
+      new_identity = {
+        title = "New identity",
+        description = "Create a new identity, cost = {1} $.",
+        prompt_firstname = "Enter your firstname:",
+        prompt_name = "Enter your name:",
+        prompt_age = "Enter your age:",
+      }
     }
   },
   police = {
@@ -333,9 +340,6 @@ local lang = {
         title = "Store weapons",
         description = "Store your weapons in your inventory."
       }
-    },
-    identity = {
-      info = "<em>Name: </em>{1}<br /><em>First name: </em>{2}<br /><em>Age: </em>{3}<br /><em>Registration n°: </em>{4}<br /><em>Phone: </em>{5}<br /><em>Business: </em>{6}<br /><em>Business capital: </em>{7} $<br /><em>Address: </em>{9}, {8}"
     }
   },
   emergency = {
@@ -416,6 +420,10 @@ local lang = {
     }
   },
   home = {
+    address = {
+      title = "Address",
+      info = "{1}, {2}"
+    },
     buy = {
       title = "Buy",
       description = "Buy a home here, price is {1} $.",
