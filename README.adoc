@@ -73,7 +73,6 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * `namespace.foo.bar` instead of `namespace:foo:bar`
 * use menu instead of div when possible
 * vehicle state
-* identity display group gtype list
 
 === vRP 2 dev' phases
 * refactoring (done)

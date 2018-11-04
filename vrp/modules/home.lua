@@ -463,9 +463,7 @@ Home.event = {}
 function Home.event:characterLoad(user)
   -- load address
   local rows = vRP:query("vRP/get_address", {character_id = user.cid})
-  if #rows > 0 then -- loaded
-    user.address = rows[1]
-  end
+  user.address = rows[1]
 
   vRP:triggerEvent("characterAddressUpdate", user)
 end

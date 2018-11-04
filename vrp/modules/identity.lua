@@ -107,6 +107,20 @@ function Identity:__construct()
   self.cfg = module("cfg/identity")
   self.sanitizes = module("cfg/sanitizes")
 
+  -- menus
+  menu_cityhall(self)
+  menu_identity(self)
+
+  -- add identity to main menu
+  local function m_identity(menu)
+    menu.user:openMenu("identity", {cid = menu.user.cid})
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("main", function(menu)
+    menu:addOption(lang.identity.title(), m_identity)
+  end)
+
+
   async(function()
     -- init sql
     vRP:prepare("vRP/identity_tables", [[
@@ -131,19 +145,6 @@ function Identity:__construct()
     vRP:prepare("vRP/get_characterbyphone","SELECT character_id FROM vrp_character_identities WHERE phone = @phone")
 
     vRP:execute("vRP/identity_tables")
-  end)
-
-  -- menus
-  menu_cityhall(self)
-  menu_identity(self)
-
-  -- add identity to main menu
-  local function m_identity(menu)
-    menu.user:openMenu("identity", {cid = menu.user.cid})
-  end
-
-  vRP.EXT.GUI:registerMenuBuilder("main", function(menu)
-    menu:addOption(lang.identity.title(), m_identity)
   end)
 end
 

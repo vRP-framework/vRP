@@ -171,5 +171,12 @@ cfg.selectors = {
   }
 }
 
+-- identity display gtypes
+-- used to display gtype groups in the identity
+-- map of gtype => title
+cfg.identity_gtypes = {
+  job = "Job"
+}
+
 return cfg
 

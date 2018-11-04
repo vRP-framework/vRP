@@ -165,9 +165,9 @@ local function menu_group_selector(self)
 
     for k,group_name in pairs(menu.data.groups) do
       if k ~= "_config" then
-        local group = self.cfg.groups[group_name]
-        if group and group._config and group._config.title then
-          menu:addOption(group._config.title, m_select, nil, group_name)
+        local title = self:getGroupTitle(group_name)
+        if title then
+          menu:addOption(title, m_select, nil, group_name)
         end
       end
     end
@@ -200,7 +200,21 @@ function Group:__construct()
   -- menu
   menu_group_selector(self)
 
-
+  -- identity gtypes display
+  vRP.EXT.GUI:registerMenuBuilder("identity", function(menu)
+    local tuser = vRP.users_by_cid[menu.data.cid]
+    if tuser then
+      for gtype, title in pairs(self.cfg.identity_gtypes) do
+        local group_name = tuser:getGroupByType(gtype)
+        if group_name then
+          local gtitle = self:getGroupTitle(group_name)
+          if gtitle then
+            menu:addOption(title, nil, gtitle)
+          end
+        end
+      end
+    end
+  end)
 end
 
 -- return users list
@@ -229,6 +243,13 @@ function Group:getUsersByPermission(perm)
   return users
 end
 
+-- return title or nil
+function Group:getGroupTitle(group_name)
+  local group = self.cfg.groups[group_name]
+  if group and group._config then
+    return group._config.title
+  end
+end
 
 -- register a special permission function
 -- name: name of the permission -> "!name.[...]"

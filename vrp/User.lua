@@ -68,17 +68,16 @@ function User:createCharacter()
 end
 
 -- use character
--- no_delay: if passed/true, ignore delay check
 -- return true or false, err_code
 -- err_code: 
 --- 1: delay error, too soon
 --- 2: already loading
 --- 3: invalid character
-function User:useCharacter(id, no_delay)
+function User:useCharacter(id)
   if id == self.cid then return true end -- same check
 
   -- delay check
-  if not no_delay and not self.use_character_action:perform(vRP.cfg.character_select_delay) then return false, 1 end
+  if self.use_character_action:remaining() > 0 then return false, 1 end
 
   if self.loading_character then return false, 2 end -- loading check
 
@@ -107,9 +106,12 @@ function User:useCharacter(id, no_delay)
     vRP:triggerEventSync("characterLoad", self)
     self.loading_character = false
 
+    self.use_character_action:perform(vRP.cfg.character_select_delay)
+
     if self.spawns > 0 then -- trigger respawn if already spawned
       vRP.EXT.Base.remote._triggerRespawn(self.source)
     end
+
 
     return true
   end
