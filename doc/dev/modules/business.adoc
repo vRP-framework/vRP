@@ -29,8 +29,9 @@ Business:closeBusiness(character_id)
 
 == Item
 
-[horizontal]
-dirty_money:: can be converted to money using business money laundering
+=== dirty_money
+
+Can be converted to money using business money laundering.
 
 == Menu
 

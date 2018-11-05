@@ -1,0 +1,39 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc: left
+:toclevels: 5
+
+= Emotes
+
+This module add an emotes menu.
+
+== Extension
+
+=== User
+
+[source,lua]
+----
+self.emotes_action -- emotes action delay
+----
+
+=== Server
+
+[source,lua]
+----
+self.cfg
+
+-- add a new emote
+-- see cfg/emotes.lua
+Emotes:add(config)
+----
+
+== Menu
+
+=== emotes
+
+Emotes menu.

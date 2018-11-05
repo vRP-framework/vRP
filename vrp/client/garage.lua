@@ -130,6 +130,7 @@ function Garage:getNearestVehicles(radius)
   return r
 end
 
+-- return veh
 function Garage:getNearestVehicle(radius)
   local veh
 
@@ -201,7 +202,7 @@ function Garage:getAnyOwnedVehiclePosition()
     end
   end
 
-  return false,0,0,0
+  return false
 end
 
 -- return x,y,z or nil

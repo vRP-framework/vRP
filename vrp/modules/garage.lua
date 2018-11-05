@@ -7,12 +7,15 @@ local Garage = class("Garage", vRP.Extension)
 
 Garage.User = class("User")
 
+-- get owned vehicles
+-- return map of model
 function Garage.User:getVehicles()
   return self.cdata.vehicles
 end
 
 -- STATIC
 
+-- get vehicle trunk chest id by character id and model
 function Garage.getVehicleChestId(cid, model)
   return "vehtrunk:"..cid.."_"..model
 end
@@ -312,7 +315,7 @@ function Garage:__construct()
   self.cfg = module("cfg/garages")
   self:log(#self.cfg.garages.." garages")
 
-  self.models = {} -- map of models
+  self.models = {} -- map of all garage defined models
 
   -- register models
   for gtype, vehicles in pairs(self.cfg.garage_types) do

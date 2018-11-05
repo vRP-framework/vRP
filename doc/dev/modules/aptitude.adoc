@@ -71,7 +71,9 @@ Aptitude:levelToExp(lvl)
 
 == Permission
 
-=== Aptitude level comparison
+=== aptitude
+
+Aptitude level comparison.
 
 `!aptitude.<group>.<aptitude>.<op>`
 
