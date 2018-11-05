@@ -176,13 +176,13 @@ Same data as `garage`.
 
 === in_vehicle
 
-`in_vehicle`
+`!in_vehicle`
 
 Will do a tunnel call.
 
 === in_owned_vehicle
 
-`in_owned_vehicle[.<model>]`
+`!in_owned_vehicle[.<model>]`
 
 Will do a tunnel call.
 
@@ -191,5 +191,5 @@ model:: (optional) vehicle model
 
 .Examples
 [horizontal]
-`in_owned_vehicle`:: check if inside an owned vehicle
-`in_owned_vehicle.taxi`:: check if inside owned taxi model
+`!in_owned_vehicle`:: check if inside an owned vehicle
+`!in_owned_vehicle.taxi`:: check if inside owned taxi model

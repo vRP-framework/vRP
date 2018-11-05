@@ -13,6 +13,7 @@ function Group.User:hasGroup(name)
   return self.cdata.groups[name] ~= nil
 end
 
+-- return map of groups
 function Group.User:getGroups()
   return self.cdata.groups
 end
@@ -94,7 +95,6 @@ end
 
 -- check if the user has a specific permission
 function Group.User:hasPermission(perm)
-
   local fchar = string.sub(perm,1,1)
 
   if fchar == "!" then -- special function permission
