@@ -10,7 +10,7 @@ endif::[]
 
 = Garage
 
-This module manage garages and character vehicles.
+This module manages garages and character vehicles.
 
 == Extension
 

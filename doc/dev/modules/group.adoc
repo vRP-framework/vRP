@@ -10,7 +10,7 @@ endif::[]
 
 = Group
 
-This module add groups and permissions.
+This module adds groups and permissions.
 
 == Extension
 

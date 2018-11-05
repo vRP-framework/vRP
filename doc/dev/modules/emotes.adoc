@@ -10,7 +10,7 @@ endif::[]
 
 = Emotes
 
-This module add an emotes menu.
+This module adds an emotes menu.
 
 == Extension
 

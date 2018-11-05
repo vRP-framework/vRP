@@ -10,7 +10,7 @@ endif::[]
 
 = Audio
 
-This module handle audio features.
+This module handles audio features.
 
 == Extension
 

@@ -10,7 +10,7 @@ endif::[]
 
 = Cloak
 
-This module manage character cloaks (uniforms, etc).
+This module manages character cloaks (uniforms, etc).
 
 == Extension
 

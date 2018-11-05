@@ -10,7 +10,7 @@ endif::[]
 
 = Aptitude
 
-This module add aptitudes and experience (skill/education).
+This module adds aptitudes and experience (skill/education).
 
 == Extension
 

@@ -10,7 +10,7 @@ endif::[]
 
 = Admin
 
-The admin module add an administration (kick,ban...) menu and functions.
+The admin module adds an administration (kick,ban...) menu and functions.
 
 == Menus
 

@@ -10,7 +10,7 @@ endif::[]
 
 = Business
 
-This module add a simple business system (dirty money, capital...).
+This module adds a simple business system (dirty money, capital...).
 
 == Extension
 

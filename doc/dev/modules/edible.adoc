@@ -10,7 +10,7 @@ endif::[]
 
 = Edible
 
-This module define a generic edible item.
+This module defines a generic edible item.
 
 == Extension
 
