@@ -8,12 +8,21 @@ endif::[]
 :toc: left
 :toclevels: 5
 
-= Admin
+= ATM
 
-The admin module add an administration (kick,ban...) menu and functions.
+This module spawns ATMs to interact with the bank.
 
-== Menus
+== Extension
 
-=== admin
+=== Server
 
-Administration menu.
+[source,lua]
+----
+self.cfg
+----
+
+== Menu
+
+=== ATM
+
+ATM menu.

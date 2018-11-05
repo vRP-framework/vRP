@@ -1,0 +1,103 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc: left
+:toclevels: 5
+
+= Audio
+
+This module handle audio features.
+
+== Extension
+
+=== Server
+
+[source,lua]
+----
+self.cfg
+----
+
+=== Client
+
+[source,lua]
+----
+self.voice_channels = {} -- map of channel => map of player => state (0-1)
+
+-- play audio source (once)
+--- url: valid audio HTML url (ex: .ogg/.wav/direct ogg-stream url)
+--- volume: 0-1 
+--- x,y,z: position (omit for unspatialized)
+--- max_dist  (omit for unspatialized)
+Audio:playAudioSource(url, volume, x, y, z, max_dist)
+
+-- set named audio source (looping)
+--- name: source name
+--- url: valid audio HTML url (ex: .ogg/.wav/direct ogg-stream url)
+--- volume: 0-1 
+--- x,y,z: position (omit for unspatialized)
+--- max_dist  (omit for unspatialized)
+Audio:setAudioSource(name, url, volume, x, y, z, max_dist)
+
+-- remove named audio source
+Audio:removeAudioSource(name)
+
+-- VoIP
+
+Audio:setPeerConfiguration(config)
+
+-- request connection to another player for a specific channel
+Audio:connectVoice(channel, player)
+
+-- disconnect from another player for a specific channel
+-- player: nil to disconnect from all players
+Audio:disconnectVoice(channel, player)
+
+-- register callbacks for a specific channel
+--- on_offer(player): should return true to accept the connection
+--- on_connect(player, is_origin): is_origin is true if it's the local peer (not an answer)
+--- on_disconnect(player)
+Audio:registerVoiceCallbacks(channel, on_offer, on_connect, on_disconnect)
+
+-- check if there is an active connection
+-- return boolean or nil
+Audio:isVoiceConnected(channel, player)
+
+-- check if there is a pending connection
+-- return boolean or nil
+Audio:isVoiceConnecting(channel, player)
+
+-- enable/disable speaking
+--- player: nil to affect all channel peers
+--- active: true/false 
+Audio:setVoiceState(channel, player, active)
+
+-- configure channel (can only be called once per channel)
+--- config:
+---- effects: map of name => true/options
+----- spatialization => { max_dist: ..., rolloff: ..., dist_model: ... } (per peer effect)
+----- biquad => { frequency: ..., Q: ..., type: ..., detune: ..., gain: ...} see WebAudioAPI BiquadFilter
+------ freq = 1700, Q = 3, type = "bandpass" (idea for radio effect)
+----- gain => { gain: ... }
+Audio:configureVoice(channel, config)
+
+-- receive voice peer signal
+Audio:signalVoicePeer(player, data)
+
+Audio:isSpeaking()
+
+-- TUNNEL
+
+Audio.tunnel.setPeerConfiguration = Audio.setPeerConfiguration
+Audio.tunnel.signalVoicePeer = Audio.signalVoicePeer
+Audio.tunnel.playAudioSource = Audio.playAudioSource
+Audio.tunnel.setAudioSource = Audio.setAudioSource
+Audio.tunnel.removeAudioSource = Audio.removeAudioSource
+----
+
+.Events
+[horizontal]
+`speakingChange(speaking)`:: called when speaking state changes

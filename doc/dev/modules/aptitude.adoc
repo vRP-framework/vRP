@@ -69,7 +69,7 @@ Aptitude:expToLevel(exp)
 Aptitude:levelToExp(lvl)
 ----
 
-== Permission functions
+== Permission
 
 === Aptitude level comparison
 

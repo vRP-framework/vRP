@@ -6,6 +6,7 @@ local Cloak = class("Cloak", vRP.Extension)
 -- SUBCLASS
 Cloak.User = class("User")
 
+-- cloak: skin customization
 function Cloak.User:setCloak(cloak)
   if not self.cdata.pre_cloak then -- not cloaked
     self.cdata.pre_cloak = vRP.EXT.PlayerState.remote.getCustomization(self.source) -- save

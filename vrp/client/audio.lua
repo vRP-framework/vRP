@@ -213,6 +213,7 @@ function Audio:registerVoiceCallbacks(channel, on_offer, on_connect, on_disconne
 end
 
 -- check if there is an active connection
+-- return boolean or nil
 function Audio:isVoiceConnected(channel, player)
   local channel = self.voice_channels[channel]
   if channel then
@@ -221,6 +222,7 @@ function Audio:isVoiceConnected(channel, player)
 end
 
 -- check if there is a pending connection
+-- return boolean or nil
 function Audio:isVoiceConnecting(channel, player)
   local channel = self.voice_channels[channel]
   if channel then

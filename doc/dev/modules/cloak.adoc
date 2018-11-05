@@ -1,0 +1,47 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc: left
+:toclevels: 5
+
+= Cloak
+
+This module manage character cloaks (uniforms, etc).
+
+== Extension
+
+=== User
+
+[source,lua]
+----
+self.cdata.pre_cloak
+
+-- cloak: skin customization
+User:setCloak(cloak)
+
+User:removeCloak()
+
+User:hasCloak()
+----
+
+=== Server
+
+[source,lua]
+----
+self.cfg
+----
+
+== Menu
+
+=== cloakroom
+
+Cloakroom menu.
+
+.data
+[horizontal]
+type:: cloakroom type
+cloaks:: cloakroom type table

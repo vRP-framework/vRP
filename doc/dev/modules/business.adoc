@@ -1,0 +1,47 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc: left
+:toclevels: 5
+
+= Business
+
+This module add a simple business system (dirty money, capital...).
+
+== Extension
+
+=== Server
+
+[source,lua]
+----
+self.cfg
+
+-- return character business data or nil
+Business:getBusiness(character_id)
+
+-- close the business of a character
+Business:closeBusiness(character_id)
+----
+
+== Item
+
+[horizontal]
+dirty_money:: can be converted to money using business money laundering
+
+== Menu
+
+=== commerce_chamber
+
+Commerce chamber menu.
+
+=== commerce_chamber.directory
+
+Business directory.
+
+.data
+[horizontal]
+page:: page index, start at 0
