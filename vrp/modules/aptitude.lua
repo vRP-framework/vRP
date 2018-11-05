@@ -19,6 +19,7 @@ function Aptitude.User:getAptitudes()
   return self.cdata.aptitudes
 end
 
+-- vary experience of an aptitude
 function Aptitude.User:varyExp(group, aptitude, amount)
   local Aptitude = vRP.EXT.Aptitude
   local apt = Aptitude:getAptitude(group, aptitude)
@@ -59,6 +60,7 @@ function Aptitude.User:varyExp(group, aptitude, amount)
   end
 end
 
+-- level up an aptitude
 function Aptitude.User:levelUp(group, aptitude)
   local Aptitude = vRP.EXT.Aptitude
 
@@ -69,6 +71,7 @@ function Aptitude.User:levelUp(group, aptitude)
   self:varyExp(group, aptitude, add_exp)
 end
 
+-- level down an aptitude
 function Aptitude.User:levelDown(group, aptitude)
   local Aptitude = vRP.EXT.Aptitude
 
@@ -88,6 +91,7 @@ function Aptitude.User:getExp(group, aptitude)
   end
 end
 
+-- set aptitude experience
 function Aptitude.User:setExp(group, aptitude, amount)
   local exp = self:getExp(group, aptitude)
   self:varyExp(group, aptitude, amount-exp)
@@ -199,10 +203,12 @@ height: 20px;
   end)
 end
 
+-- define aptitude group
 function Aptitude:defineGroup(group, title)
   self.groups[group] = {_title = title}
 end
 
+-- define aptitude
 -- max_exp: -1 => infinite
 function Aptitude:defineAptitude(group, aptitude, title, init_exp, max_exp)
   local vgroup = self.groups[group]
@@ -211,6 +217,7 @@ function Aptitude:defineAptitude(group, aptitude, title, init_exp, max_exp)
   end
 end
 
+-- get aptitude definition
 function Aptitude:getAptitude(group, aptitude)
   local vgroup = self.groups[group]
   if vgroup then
@@ -218,6 +225,8 @@ function Aptitude:getAptitude(group, aptitude)
   end
 end
 
+-- get aptitude group title
+-- return string
 function Aptitude:getGroupTitle(group)
   local vgroup = self.groups[group]
   if vgroup then
@@ -227,11 +236,13 @@ function Aptitude:getGroupTitle(group)
   end
 end
 
+-- convert experience to level
 -- return float
 function Aptitude:expToLevel(exp)
   return (math.sqrt(1+8*exp/self.exp_step)-1)/2
 end
 
+-- convert level to experience
 -- return integer
 function Aptitude:levelToExp(lvl)
   return math.floor((self.exp_step*lvl*(lvl+1))/2)

@@ -153,3 +153,7 @@ vRP.loadScript("my_resource", "server_vrp") -- load server_vrp.lua
 The content of `server_vrp.lua` is now executed in the vRP context and can now use the API.
 
 == General API
+
+== Modules
+
+See link:modules/[].

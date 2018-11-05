@@ -1,0 +1,84 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc: left
+:toclevels: 5
+
+= Aptitude
+
+This module add aptitudes and experience (skill/education).
+
+== Extension
+
+=== User
+
+[source,lua]
+----
+self.cdata.aptitudes
+
+-- return user aptitudes table
+User:getAptitudes()
+
+-- vary experience of an aptitude
+User:varyExp(group, aptitude, amount)
+
+-- level up an aptitude
+User:levelUp(group, aptitude)
+
+-- level down an aptitude
+User:levelDown(group, aptitude)
+
+User:getExp(group, aptitude)
+
+-- set aptitude experience
+User:setExp(group, aptitude, amount)
+----
+
+=== Server
+
+[source,lua]
+----
+self.cfg
+self.exp_step
+self.groups
+
+-- define aptitude group
+Aptitude:defineGroup(group, title)
+
+-- define aptitude
+-- max_exp: -1 => infinite
+Aptitude:defineAptitude(group, aptitude, title, init_exp, max_exp)
+
+-- get aptitude definition
+Aptitude:getAptitude(group, aptitude)
+
+-- get aptitude group title
+-- return string
+Aptitude:getGroupTitle(group)
+
+-- convert experience to level
+-- return float
+Aptitude:expToLevel(exp)
+
+-- convert level to experience
+-- return integer
+Aptitude:levelToExp(lvl)
+----
+
+== Permission functions
+
+=== Aptitude level comparison
+
+`!aptitude.<group>.<aptitude>.<op>`
+
+[horizontal]
+group, aptitude:: aptitude
+op:: >x, <x, x (equal)
+
+.Example
+[horizontal]
+`!aptitude.physical.strength.>3`:: strength level superior to 3
