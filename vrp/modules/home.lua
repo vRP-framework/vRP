@@ -25,11 +25,11 @@ end
 function Component:unload()
 end
 
--- called when a player enter the slot
+-- called when a player enters the slot
 function Component:enter(user)
 end
 
--- called when a player leave the slot
+-- called when a player leaves the slot
 function Component:leave(user)
 end
 
@@ -39,7 +39,7 @@ local Slot = class("Slot")
 function Slot:__construct(type, id, owner_id, home, number)
   self.type = type
   self.id = id
-  self.owner_id = owner_id
+  self.owner_id = owner_id -- character id
   self.home = home
   self.number = number
 
@@ -197,6 +197,7 @@ function Home.User:leaveHome()
   end
 end
 
+-- check if inside a home
 function Home.User:inHome()
   return self.home_slot ~= nil
 end
