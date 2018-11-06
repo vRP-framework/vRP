@@ -1,0 +1,28 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc: left
+:toclevels: 5
+
+= HiddenTransformer
+
+This module adds hidden/randomly placed transformers and an informer to find them.
+
+== Extension
+
+=== Server
+
+[source,lua]
+----
+self.cfg
+----
+
+== Menu
+
+=== hidden_transformer_informer
+
+Informer menu.
