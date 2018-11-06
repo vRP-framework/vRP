@@ -6,9 +6,6 @@ local lang = vRP.lang
 local cfg = module("cfg/gui")
 
 -- Menu
--- dispatcher events:
---- close(menu)
---- remove(menu)
 local Menu = class("Menu", EventDispatcher)
 
 function Menu:__construct(user, name, data)
@@ -16,10 +13,13 @@ function Menu:__construct(user, name, data)
 
   self.user = user
   self.name = name
-  self.data = data -- build data (should not be modified afterwards)
+  self.data = data -- build data 
 end
 
--- overload
+-- dispatcher events:
+--- close(menu)
+--- remove(menu)
+--- select(menu, id)
 function Menu:listen(name, callback)
   if name == "select" then
     if not self.event_listeners["select"] then
@@ -123,7 +123,7 @@ local GUI = class("GUI", vRP.Extension)
 GUI.User = class("User")
 
 function GUI.User:__construct()
-  self.menu_stack = {} -- stack of {name, data, menu}
+  self.menu_stack = {} -- stack of menus
   self.request_ids = IDManager()
   self.requests = {}
 end
@@ -205,6 +205,7 @@ function GUI.User:actualizeMenu()
   end
 end
 
+-- close all menus
 function GUI.User:closeMenus()
   repeat
     self:closeMenu()
@@ -254,7 +255,7 @@ function GUI:__construct()
   vRP.Extension.__construct(self)
 
   self.cfg = module("vrp", "cfg/gui")
-  self.menu_builders = {}
+  self.menu_builders = {} -- map of name => callbacks list
 
   self:registerMenuBuilder("main", function(menu)
     menu.title = lang.common.menu.title()

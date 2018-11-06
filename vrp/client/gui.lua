@@ -112,7 +112,7 @@ function GUI:setDivContent(name,content)
 end
 
 -- execute js for the div
--- js variables: this is the div
+-- js: code, "this" is the div
 function GUI:divExecuteJS(name,js)
   SendNUIMessage({act="div_execjs", name = name, js = js})
 end
