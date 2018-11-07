@@ -7,14 +7,17 @@ local Money = class("Money", vRP.Extension)
 
 Money.User = class("User")
 
+-- get wallet amount
 function Money.User:getWallet()
   return self.cdata.wallet
 end
 
+-- get bank amount
 function Money.User:getBank()
   return self.cdata.bank
 end
 
+-- set wallet amount
 function Money.User:setWallet(amount)
   if self.cdata.wallet ~= amount then
     self.cdata.wallet = amount
@@ -22,6 +25,7 @@ function Money.User:setWallet(amount)
   end
 end
 
+-- set bank amount
 function Money.User:setBank(amount)
   if self.cdata.bank ~= amount then
     self.cdata.bank = amount
@@ -29,10 +33,12 @@ function Money.User:setBank(amount)
   end
 end
 
+-- give money to bank
 function Money.User:giveBank(amount)
   self:setBank(self:getBank()+math.abs(amount))
 end
 
+-- give money to wallet
 function Money.User:giveWallet(amount)
   self:setWallet(self:getWallet()+math.abs(amount))
 end

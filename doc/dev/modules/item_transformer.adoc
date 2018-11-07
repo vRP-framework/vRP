@@ -23,10 +23,10 @@ This module adds item transformers.
 
 [source,lua]
 ----
-self.id = id
-self.cfg = cfg
-self.units = 0
-self.users = {} -- map of user => recipe name
+self.id
+self.cfg
+self.units
+self.users -- map of user => recipe name
 
 Transformer:unbindUser(user)
 
