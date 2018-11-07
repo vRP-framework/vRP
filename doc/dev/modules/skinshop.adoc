@@ -1,0 +1,36 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc: left
+:toclevels: 5
+
+= SkinShop
+
+This module adds skin shops.
+
+== Extension
+
+=== Server
+
+[source,lua]
+----
+self.cfg
+
+-- parse part key (a ped part or a prop part)
+-- return is_proppart, index
+SkinShop.parsePart(key)
+----
+
+== Menu
+
+=== skinshop
+
+Skinshop menu.
+
+.data
+[horizontal]
+parts:: skinshop config parts
