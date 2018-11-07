@@ -7,7 +7,7 @@ local Police = class("Police", vRP.Extension)
 
 Police.User = class("User")
 
--- insert a police record for a specific user
+-- insert a police record (will do a save)
 --- record: text for one line (html)
 function Police.User:insertPoliceRecord(record)
   table.insert(self.police_records, record)
@@ -552,7 +552,7 @@ function Police:__construct()
   self.cfg = module("cfg/police")
   self:log(#self.cfg.pcs.." PCs "..#self.cfg.jails.." jails")
 
-  self.wantedlvl_users = {}
+  self.wantedlvl_users = {} -- map of user => wanted level
 
   -- items
   define_items(self)

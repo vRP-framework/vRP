@@ -164,7 +164,6 @@ function Police:isHandcuffed()
   return self.handcuffed
 end
 
--- (experimental, based on experimental getNearestVehicle)
 function Police:putInNearestVehicleAsPassenger(radius)
   local veh = vRP.EXT.Garage:getNearestVehicle(radius)
 
