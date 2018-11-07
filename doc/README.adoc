@@ -39,7 +39,7 @@ WARNING: Only the files in the `cfg/` directory should be modified.
 
 There is one required file to configure before launching the server, `cfg/base.lua`, to setup the MySQL database credentials, but it also depends on the DB driver used.
 
-There is a lot to configure in vRP base, everyone can make his unique server. +
+There is a lot to configure in vRP, everyone can make his unique server. +
 Everything you need to know is in the configuration files, default stuff is here as an example.
 
 ==== Database

@@ -39,7 +39,7 @@ TIP: You can see how an extension is made by looking at the code of vRP link:../
 
 Extensions can extend User properties/methods with a User class (constructor is called).
 
-WARNING: To not conflict with other extensions, make sure the name of the properties and methods have a very specific name or prefix.
+WARNING: To not conflict with other extensions, make sure the added properties and methods have a very specific name or prefix.
 
 [source,lua]
 ----
