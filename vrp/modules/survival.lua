@@ -6,10 +6,13 @@ local Survival = class("Survival", vRP.Extension)
 
 Survival.User = class("User")
 
+-- return vital value (0-1) or nil
 function Survival.User:getVital(name)
   return self.cdata.vitals[name]
 end
 
+-- set vital
+-- value: 0-1
 function Survival.User:setVital(name, value)
   if vRP.EXT.Survival.vitals[name] then -- exists
     local overflow
@@ -47,7 +50,7 @@ function Survival:__construct()
   vRP.Extension.__construct(self)
 
   self.cfg = module("cfg/survival")
-  self.vitals = {} -- map of name => {default_value}
+  self.vitals = {} -- registered vitals, map of name => {default_value}
 
   self:registerVital("water", 1)
   self:registerVital("food", 0.75)

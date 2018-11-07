@@ -1,0 +1,83 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc: left
+:toclevels: 5
+
+= Survival
+
+This module adds survival features. 
+
+.Base vitals
+* food
+* water
+
+== Extension
+
+=== User
+
+[source,lua]
+----
+self.cdata.vitals -- map of name => value
+
+-- return vital value (0-1) or nil
+User:getVital(name)
+
+-- set vital
+-- value: 0-1
+User:setVital(name, value)
+
+User:varyVital(name, value)
+----
+
+=== Server
+
+[source,lua]
+----
+self.cfg
+self.vitals -- registered vitals, map of name => {default_value}
+----
+
+.Events
+[horizontal]
+`playerVitalChange(user, name)`:: called when a player vital value changes
+`playerVitalOverflow(user, name, overflow)`:: called when a player vital overflows (overflow can be negative or positive)
+
+=== Client
+
+[source,lua]
+----
+self.in_coma -- flag
+self.coma_left -- seconds
+
+Survival:varyHealth(variation)
+
+Survival:setFriendlyFire(flag)
+
+Survival:setPolice(flag)
+
+-- COMA SYSTEM
+
+Survival:isInComa()
+
+-- kill the player if in coma
+Survival:killComa()
+
+-- TUNNEL
+
+Survival.tunnel.isInComa = Survival.isInComa
+Survival.tunnel.killComa = Survival.killComa
+Survival.tunnel.setFriendlyFire = Survival.setFriendlyFire
+Survival.tunnel.setPolice = Survival.setPolice
+Survival.tunnel.varyHealth = Survival.varyHealth
+----
+
+== Item
+
+=== medkit
+
+Item used to reanimate people in coma.

@@ -3,8 +3,8 @@ local Survival = class("Survival", vRP.Extension)
 function Survival:__construct()
   vRP.Extension.__construct(self)
 
-  self.in_coma = false
-  self.coma_left = vRP.cfg.coma_duration*60
+  self.in_coma = false -- flag
+  self.coma_left = vRP.cfg.coma_duration*60 -- seconds
 
   -- task: impact water and food when the player is running, etc (every 5 seconds)
   Citizen.CreateThread(function()
