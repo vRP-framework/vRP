@@ -154,6 +154,219 @@ The content of `server_vrp.lua` is now executed in the vRP context and can now u
 
 == General API
 
+=== DBDriver
+
+[source,lua]
+----
+-- called when the driver is initialized (connection), should return true on success
+-- db_cfg: cfg/base.lua .db config
+DBDriver:onInit(db_cfg)
+
+-- should prepare the query (@param notation)
+DBDriver:onPrepare(name, query)
+
+-- should execute the prepared query
+-- params: map of parameters
+-- mode: 
+--- "query": should return rows, affected
+--- "execute": should return affected
+--- "scalar": should return a scalar
+DBDriver:onQuery(name, params, mode)
+----
+
+=== Extension
+
+[source,lua]
+----
+self.remote -- tunnel interface to other network side
+
+Extension:log(msg, level)
+
+Extension:error(msg)
+----
+
+=== User
+
+User inherits from all extensions sub-class User.
+
+[source,lua]
+----
+self.source
+self.name -- FiveM name (may be steam name)
+self.id
+self.cid -- character id
+self.endpoint -- FiveM endpoint
+self.data -- user data
+self.cdata -- character data
+self.loading_character -- flag
+self.use_character_action -- action delay
+self.spawns -- spawn count
+
+-- return true if the user character is ready (loaded, not loading)
+User:isReady()
+
+User:save()
+
+-- return characters id list
+User:getCharacters()
+
+-- return created character id or nil if failed
+User:createCharacter()
+
+-- use character
+-- return true or false, err_code
+-- err_code: 
+--- 1: delay error, too soon
+--- 2: already loading
+--- 3: invalid character
+User:useCharacter(id)
+
+-- delete character
+-- return true or false on failure
+User:deleteCharacter(id)
+----
+
+=== vRP
+
+==== Shared
+[source,lua]
+----
+self.EXT -- map of name => ext
+
+vRP.Extension
+
+-- register an extension
+-- extension: Extension class
+vRP:registerExtension(extension)
+
+-- trigger event (with async call for each listener)
+vRP:triggerEvent(name, ...)
+
+-- trigger events and wait for all listeners to complete
+vRP:triggerEventSync(name, ...)
+
+-- msg: log message
+-- suffix: (optional) category, string
+-- level: (optional) level, 0 by default
+vRP:log(msg, suffix, level)
+
+-- msg: error message
+-- suffix: optional category, string
+vRP:error(msg, suffix)
+----
+
+==== Server
+
+[source,lua]
+----
+self.cfg -- cfg/base config
+self.lang
+self.users -- map of id => User
+self.pending_users -- pending user source update (first spawn), map of ids key => user
+self.users_by_source -- map of source => User
+self.users_by_cid -- map of character id => user
+
+-- db/SQL API
+self.db_drivers
+self.db_driver
+self.db_initialized
+
+vRP.DBDriver
+
+-- return identification string for a specific source
+vRP.getSourceIdKey(source)
+
+vRP.getPlayerEndpoint(player)
+
+vRP.getPlayerName(player)
+
+-- register a DB driver
+-- db_driver: DBDriver class
+vRP:registerDBDriver(db_driver)
+
+-- prepare a query
+--- name: unique name for the query
+--- query: SQL string with @params notation
+vRP:prepare(name, query)
+
+-- execute a query
+--- name: unique name of the query
+--- params: map of parameters
+--- mode: default is "query"
+---- "query": should return rows (list of map of parameter => value), affected
+---- "execute": should return affected
+---- "scalar": should return a scalar
+vRP:query(name, params, mode)
+
+-- shortcut for vRP.query with "execute"
+vRP:execute(name, params)
+
+-- shortcut for vRP.query with "scalar"
+vRP:scalar(name, params)
+
+vRP:isBanned(user_id)
+
+vRP:setBanned(user_id,banned)
+
+vRP:isWhitelisted(user_id)
+
+vRP:setWhitelisted(user_id,whitelisted)
+
+-- user data
+-- value: binary string
+vRP:setUData(user_id,key,value)
+
+vRP:getUData(user_id,key)
+
+-- character data
+-- value: binary string
+vRP:setCData(character_id,key,value)
+
+vRP:getCData(character_id,key)
+
+-- server data
+-- value: binary string
+vRP:setSData(key,value,id)
+
+vRP:getSData(key,id)
+
+-- global data
+-- value: binary string
+vRP:setGData(key,value)
+
+vRP:getGData(key)
+
+vRP:ban(user,reason)
+
+vRP:kick(user,reason)
+
+vRP:save()
+----
+
+.Events
+[horizontal]
+(sync) `characterLoad(user)`:: called right after the character loading
+(sync) `characterUnload(user)`:: called before character unloading
+`playerJoin(user)`:: called when a player joins (valid user)
+`playerRejoin(user)`:: called when a player re-joins (ex: after a crash)
+`playerDelay(user, state)`:: called when the player tunnel delay changes, `state` is true if delay is enabled
+`playerSpawn(user, first_spawn)`:: called when the player spawns
+`playerDeath(user)`:: called when the player dies
+(sync) `playerLeave(user)`:: called before user removal
+`save`:: called when vRP performs a save (can be used to sync the save of external extension data)
+
+==== Client
+
+[source, lua]
+----
+self.cfg -- cfg/client config
+----
+
+.Events
+[horizontal]
+`playerSpawn()`:: called when the player spawns
+`playerDeath()`:: called owhen the player dies
+
 == Modules
 
 See link:modules/[].
