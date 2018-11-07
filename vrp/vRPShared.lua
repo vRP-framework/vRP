@@ -113,7 +113,7 @@ function vRPShared:triggerEvent(name, ...)
   end
 end
 
--- trigger events and wait for all listeners to complete
+-- trigger event and wait for all listeners to complete
 function vRPShared:triggerEventSync(name, ...)
   local exts = self.ext_listeners[name]
   if exts then

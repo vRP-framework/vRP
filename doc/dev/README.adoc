@@ -187,7 +187,7 @@ Extension:error(msg)
 
 === User
 
-User inherits from all extensions sub-class User.
+User inherits from all extensions sub-class User (if registered before the first user instantiation).
 
 [source,lua]
 ----
@@ -242,7 +242,7 @@ vRP:registerExtension(extension)
 -- trigger event (with async call for each listener)
 vRP:triggerEvent(name, ...)
 
--- trigger events and wait for all listeners to complete
+-- trigger event and wait for all listeners to complete
 vRP:triggerEventSync(name, ...)
 
 -- msg: log message
@@ -257,17 +257,17 @@ vRP:error(msg, suffix)
 
 .Events
 [horizontal]
-`extensionLoad(extension)`:: called when an extension is loaded, passing the extension instance (can be used to initialize with another extension when loaded before)
+`extensionLoad(extension)`:: called when an extension is loaded, passing the extension instance (can be used to initialize with another extension when loaded before the latter)
 
 ==== Server
 
 [source,lua]
 ----
 self.cfg -- cfg/base config
-self.lang
+self.lang -- loaded lang (https://github.com/ImagicTheCat/Luang)
 self.users -- map of id => User
 self.pending_users -- pending user source update (first spawn), map of ids key => user
-self.users_by_source -- map of source => User
+self.users_by_source -- map of source => user
 self.users_by_cid -- map of character id => user
 
 -- db/SQL API
@@ -369,7 +369,7 @@ self.cfg -- cfg/client config
 .Events
 [horizontal]
 `playerSpawn()`:: called when the player spawns
-`playerDeath()`:: called owhen the player dies
+`playerDeath()`:: called when the player dies
 
 == Modules
 
