@@ -55,9 +55,10 @@ Base.tunnel = {}
 function Base:__construct()
   vRP.Extension.__construct(self)
 
-  self.players = {} -- keep track of connected players (server id)
+  self.players = {} -- map of player id, keeps track of connected players (server id)
 
-  self.ragdoll = false
+  self.ragdoll = false -- flag
+
   -- ragdoll thread
   Citizen.CreateThread(function()
     while true do
@@ -72,6 +73,7 @@ function Base:__construct()
   self.anim_ids = IDManager()
 end
 
+-- trigger vRP respawn
 function Base:triggerRespawn()
   vRP:triggerEvent("playerSpawn")
   TriggerServerEvent("vRPcli:playerSpawned")
@@ -95,12 +97,13 @@ function Base:isInside()
   return not (GetInteriorAtCoords(x,y,z) == 0)
 end
 
--- return vx,vy,vz
+-- return ped speed (based on velocity)
 function Base:getSpeed()
   local vx,vy,vz = table.unpack(GetEntityVelocity(GetPlayerPed(-1)))
   return math.sqrt(vx*vx+vy*vy+vz*vz)
 end
 
+-- return dx,dy,dz
 function Base:getCamDirection()
   local heading = GetGameplayCamRelativeHeading()+GetEntityHeading(GetPlayerPed(-1))
   local pitch = GetGameplayCamRelativePitch()
@@ -158,6 +161,7 @@ function Base:getNearestPlayers(radius)
   return r
 end
 
+-- return player id or nil
 function Base:getNearestPlayer(radius)
   local p = nil
 
@@ -173,12 +177,14 @@ function Base:getNearestPlayer(radius)
   return p
 end
 
+-- GTA 5 text notification
 function Base:notify(msg)
   SetNotificationTextEntry("STRING")
   AddTextComponentString(msg)
   DrawNotification(true, false)
 end
 
+-- GTA 5 picture notification
 function Base:notifyPicture(icon, type, sender, title, text)
   SetNotificationTextEntry("STRING")
   AddTextComponentString(text)

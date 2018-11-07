@@ -255,6 +255,10 @@ vRP:log(msg, suffix, level)
 vRP:error(msg, suffix)
 ----
 
+.Events
+[horizontal]
+`extensionLoad(extension)`:: called when an extension is loaded, passing the extension instance (can be used to initialize with another extension when loaded before)
+
 ==== Server
 
 [source,lua]
