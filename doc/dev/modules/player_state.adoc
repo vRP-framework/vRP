@@ -31,7 +31,7 @@ self.cfg
 .Events
 [horizontal]
 `playerStateLoaded(user)`:: called when the player state loading is finished
-`playerStateUpdate(user, state)`:: called when the player state is updated (`state` read-only, partial update, per properties)
+`playerStateUpdate(user, state)`:: called when the player state is updated (`state` read-only, partial update, per property)
 
 === Client
 

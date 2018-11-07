@@ -42,7 +42,8 @@ cfg.shop_types = {
   },
   ["tools"] = {
     _config = {map_entity = {"PoI", {blip_id = 51, blip_color = 47, marker_id = 1}}},
-    ["repairkit"] = 50
+    ["repairkit"] = 50,
+    ["money_binder"] = 1
   },
   ["TCG"] = { -- need vRP-TCG extension
     _config = {map_entity = {"PoI", {blip_id = 408, blip_color = 2, marker_id = 1}}},
