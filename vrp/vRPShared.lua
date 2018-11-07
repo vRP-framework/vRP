@@ -47,6 +47,7 @@ function vRPShared.Extension:__construct()
   self.remote = Tunnel.getInterface("vRP.EXT."..class.name(self))
 end
 
+-- level: (optional) level, 0 by default
 function vRPShared.Extension:log(msg, level)
   vRP:log(msg, class.name(self), level)
 end

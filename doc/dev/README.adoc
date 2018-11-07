@@ -180,6 +180,7 @@ DBDriver:onQuery(name, params, mode)
 ----
 self.remote -- tunnel interface to other network side
 
+-- level: (optional) level, 0 by default
 Extension:log(msg, level)
 
 Extension:error(msg)
