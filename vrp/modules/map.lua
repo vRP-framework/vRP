@@ -10,13 +10,14 @@ function Map.User:__construct()
 end
 
 -- create/update a player area
+-- cb_enter(user, name): called when entering the area
+-- cb_leave(user, name): called when leaving the area
 function Map.User:setArea(name,x,y,z,radius,height,cb_enter,cb_leave)
   self:removeArea(name)
   self.map_areas[name] = {enter=cb_enter,leave=cb_leave}
   vRP.EXT.Map.remote._setArea(self.source,name,x,y,z,radius,height)
 end
 
--- delete a player area
 function Map.User:removeArea(name)
   -- delete local area
   local area = self.map_areas[name] 
@@ -32,7 +33,6 @@ function Map.User:removeArea(name)
   end
 end
 
--- check if a player is in an area
 function Map.User:inArea(name)
   local area = self.map_areas[name]
   if area then return area.inside end

@@ -15,14 +15,17 @@ function Map.Entity:__construct(id,cfg)
   self.cfg = cfg
 end
 
+-- called when the entity is loaded
 function Map.Entity:load()
 end
 
+-- called when the entity is unloaded
 function Map.Entity:unload()
 end
 
 -- called to check if the entity is active
 -- px, py, pz: player position
+-- should return true if active
 function Map.Entity:active(px, py, pz)
   return false
 end
@@ -74,8 +77,6 @@ function PoI:load()
   self.height = self.cfg.height or 0
   self.rotate_speed = self.cfg.rotate_speed
   self.rz = 0
-
-  self.active_distance = self.cfg.active_distance or 250
 end
 
 function PoI:unload()
@@ -109,8 +110,8 @@ function Map:__construct()
 
   self.entities = {} -- map of id (number or name) => entity
   self.entities_ids = IDManager()
-  self.def_entities = {}
-  self.frame_entities = {}
+  self.def_entities = {} -- defined entities
+  self.frame_entities = {} -- active entities for the next frames
 
   self.areas = {}
 
@@ -174,6 +175,7 @@ function Map:__construct()
   end)
 end
 
+-- ent: Map.Entity class
 function Map:registerEntity(ent)
   if class.is(ent, Map.Entity) then
     local id = class.name(ent)
@@ -188,6 +190,8 @@ function Map:registerEntity(ent)
 end
 
 -- add entity
+-- ent: registered entity name
+-- cfg: entity config
 -- return id (number) or nil on failure
 function Map:addEntity(ent, cfg)
   local cent = self.def_entities[ent]
@@ -219,6 +223,8 @@ function Map:removeEntity(id)
 end
 
 -- id: number (update added entity) or string (create/update named entity)
+-- ent: registered entity name
+-- cfg: entity config
 function Map:setEntity(id, ent, cfg)
   local cent = self.def_entities[ent]
   if cent then
@@ -238,6 +244,8 @@ end
 
 -- entity command
 -- id: number or string
+-- command: command name
+-- ...: arguments
 function Map:commandEntity(id, command, ...)
   local ent = self.entities[id]
   if ent then
@@ -286,14 +294,6 @@ function Map:setStateOfClosestDoor(doordef, locked, doorswing)
   end
 
   SetStateOfClosestDoorOfType(hash,x,y,z,locked,doorswing)
-end
-
-function Map:openClosestDoor(doordef)
-  self:setStateOfClosestDoor(doordef, false, 0)
-end
-
-function Map:closeClosestDoor(doordef)
-  self:setStateOfClosestDoor(doordef, true, 0)
 end
 
 -- TUNNEL
