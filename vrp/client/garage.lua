@@ -51,7 +51,7 @@ function Garage:spawnVehicle(model, pos) -- one vehicle per model allowed at the
       SetVehicleOnGroundProperly(nveh)
       SetEntityInvincible(nveh,false)
       SetPedIntoVehicle(GetPlayerPed(-1),nveh,-1) -- put player inside
-      SetVehicleNumberPlateText(nveh, "P "..vRP.EXT.Identity:getRegistrationNumber())
+      SetVehicleNumberPlateText(nveh, "P "..vRP.EXT.Identity.registration)
       SetEntityAsMissionEntity(nveh, true, true)
       SetVehicleHasBeenOwnedByPlayer(nveh,true)
 

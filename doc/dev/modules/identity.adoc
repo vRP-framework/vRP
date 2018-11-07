@@ -1,0 +1,71 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc: left
+:toclevels: 5
+
+= Identity
+
+This module adds an identity system.
+
+== Extension
+
+=== User
+
+[source,lua]
+----
+self.identity
+----
+
+=== Server
+
+[source,lua]
+----
+self.cfg
+
+-- (ex: DDDLLL, D => digit, L => letter)
+Identity.generateStringNumber(format) 
+
+-- identity access (online and offline characters)
+-- return identity or nil
+Identity:getIdentity(cid)
+
+-- return character_id or nil
+Identity:getByRegistration(registration)
+
+-- return character_id or nil
+Identity:getByPhone(phone)
+
+-- return a unique registration number
+Identity:generateRegistrationNumber()
+
+-- return a unique phone number
+Identity:generatePhoneNumber()
+----
+
+.Events
+[horizontal]
+`characterIdentityUpdate(user)`:: called when the identity is updated (load, change...)
+
+=== Client
+
+[source,lua]
+----
+self.registration
+----
+
+== Menu
+
+=== identity
+
+Identity menu, offline and online characters.
+
+.data
+[horizontal]
+cid:: character id of the identity
+
+=== cityhall

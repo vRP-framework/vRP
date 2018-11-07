@@ -12,7 +12,8 @@ Identity.User = class("User")
 
 -- STATIC
 
-function Identity.generateStringNumber(format) -- (ex: DDDLLL, D => digit, L => letter)
+-- (ex: DDDLLL, D => digit, L => letter)
+function Identity.generateStringNumber(format) 
   local abyte = string.byte("A")
   local zbyte = string.byte("0")
 
