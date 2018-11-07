@@ -79,7 +79,7 @@ Aptitude level comparison.
 
 [horizontal]
 group, aptitude:: aptitude
-op:: >x, <x, x (equal)
+op:: >x, <x, x (equal) level
 
 .Example
 [horizontal]

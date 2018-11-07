@@ -389,8 +389,7 @@ function Inventory:__construct()
 
   self.items = {} -- item definitions
   self.computed_items = {} -- computed item definitions
-
-  self.chests = {}
+  self.chests = {} -- loaded chests
 
   -- special item permission
   local function fperm_item(user, params)
@@ -528,7 +527,7 @@ end
 
 -- load global chest
 -- id: identifier (string)
--- return chest
+-- return chest (as inventory, map of fullid => amount)
 function Inventory:loadChest(id)
   local chest = self.chests[id]
   if not chest then
