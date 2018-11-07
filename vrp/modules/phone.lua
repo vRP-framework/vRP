@@ -10,7 +10,7 @@ local Phone = class("Phone", vRP.Extension)
 
 Phone.User = class("User")
 
--- send an sms from an user to a phone number
+-- send an sms to a phone number
 -- return true on success
 function Phone.User:sendSMS(phone, msg)
   local cfg = vRP.EXT.Phone.cfg
@@ -35,6 +35,7 @@ function Phone.User:sendSMS(phone, msg)
   end
 end
 
+-- add sms to phone
 function Phone.User:addSMS(phone, msg)
   if #self.phone_sms >= vRP.EXT.Phone.cfg.sms_history then -- remove last sms of the table
     table.remove(self.phone_sms)
@@ -48,7 +49,7 @@ function Phone.User:getPhoneDirectoryName(phone)
   return self.cdata.phone_directory[phone] or "unknown"
 end
 
--- call from a user to a phone number
+-- call a phone number
 -- return true if the communication is established
 function Phone.User:phoneCall(phone)
   local cfg = vRP.EXT.Phone.cfg
@@ -92,7 +93,7 @@ function Phone.User:phoneCall(phone)
   end
 end
 
--- send an smspos from an user to a phone number
+-- send smspos to a phone number
 -- return true on success
 function Phone.User:sendSMSPos(phone, x,y,z)
   local cfg = vRP.EXT.Phone.cfg

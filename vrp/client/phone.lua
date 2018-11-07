@@ -6,7 +6,6 @@ local Phone = class("Phone", vRP.Extension)
 function Phone:__construct()
   vRP.Extension.__construct(self)
 
-  self.player_called = nil
   self.in_call = false
 
   -- phone channel behavior
