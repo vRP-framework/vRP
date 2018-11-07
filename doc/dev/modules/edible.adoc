@@ -45,7 +45,7 @@ Edible:defineEdible(id, type, effects, name, description, weight)
 
 === edible
 
-`edible|id`
+`edible|<id>`
 
 [horizontal]
 id:: edible id

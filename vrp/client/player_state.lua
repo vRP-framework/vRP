@@ -83,6 +83,8 @@ end
 
 -- WEAPONS
 
+-- get player weapons 
+-- return map of name => {.ammo}
 function PlayerState:getWeapons()
   local player = GetPlayerPed(-1)
 
@@ -109,6 +111,8 @@ function PlayerState:getWeapons()
 end
 
 -- replace weapons (combination of getWeapons and giveWeapons)
+-- weapons: map of name => {.ammo}
+--- ammo: (optional)
 -- return previous weapons
 function PlayerState:replaceWeapons(weapons)
   local old_weapons = self:getWeapons()
@@ -116,6 +120,8 @@ function PlayerState:replaceWeapons(weapons)
   return old_weapons
 end
 
+-- weapons: map of name => {.ammo}
+--- ammo: (optional)
 function PlayerState:giveWeapons(weapons, clear_before)
   local player = GetPlayerPed(-1)
 
@@ -142,6 +148,7 @@ function PlayerState:getArmour()
   return GetPedArmour(GetPlayerPed(-1))
 end
 
+-- amount: 100-200 ?
 function PlayerState:setHealth(amount)
   SetEntityHealth(GetPlayerPed(-1), math.floor(amount))
 end
@@ -168,6 +175,7 @@ local function parse_part(key)
   end
 end
 
+-- get number of drawables for a specific part
 function PlayerState:getDrawables(part)
   local isprop, index = parse_part(part)
   if isprop then
@@ -177,6 +185,7 @@ function PlayerState:getDrawables(part)
   end
 end
 
+-- get number of textures for a specific part and drawable
 function PlayerState:getDrawableTextures(part,drawable)
   local isprop, index = parse_part(part)
   if isprop then
@@ -186,6 +195,10 @@ function PlayerState:getDrawableTextures(part,drawable)
   end
 end
 
+-- get player skin customization
+-- return custom {.modelhash, ...}
+--- index keys: ped component => {drawable,texture,palette}
+--- "pX" keys: props => {prop_index, prop_texture}
 function PlayerState:getCustomization()
   local ped = GetPlayerPed(-1)
 
@@ -206,8 +219,9 @@ function PlayerState:getCustomization()
   return custom
 end
 
--- partial customization (only what is set is changed)
-function PlayerState:setCustomization(custom) -- indexed [drawable,texture,palette] components or props (p0...) plus .modelhash or .model
+-- set partial customization (only what is set is changed)
+-- custom: indexed {drawable,texture,palette} components or props (p0...) {prop_index, prop_texture} plus .modelhash or .model
+function PlayerState:setCustomization(custom) 
   local r = async()
 
   Citizen.CreateThread(function() -- new thread

@@ -1,0 +1,135 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc: left
+:toclevels: 5
+
+= PlayerState
+
+This module handles the player/character state (customization, weapons, health, armour...).
+
+== Extension
+
+=== User
+
+[source,lua]
+----
+self.cdata.state
+----
+
+=== Server
+
+[source,lua]
+----
+self.cfg
+----
+
+.Events
+[horizontal]
+`playerStateLoaded(user)`:: called when the player state loading is finished
+`playerStateUpdate(user, state)`:: called when the player state is updated (`state` read-only, partial update, per properties)
+
+=== Client
+
+[source,lua]
+----
+self.state_ready 
+self.save_interval
+
+-- WEAPONS
+
+-- get player weapons 
+-- return map of name => {.ammo}
+PlayerState:getWeapons()
+
+-- replace weapons (combination of getWeapons and giveWeapons)
+-- weapons: map of name => {.ammo}
+--- ammo: (optional)
+-- return previous weapons
+PlayerState:replaceWeapons(weapons)
+
+-- weapons: map of name => {.ammo}
+--- ammo: (optional)
+PlayerState:giveWeapons(weapons, clear_before)
+
+-- set player armour (0-100)
+PlayerState:setArmour(amount)
+
+PlayerState:getArmour()
+
+-- amount: 100-200 ?
+PlayerState:setHealth(amount)
+
+PlayerState:getHealth()
+
+-- PLAYER CUSTOMIZATION
+
+-- get number of drawables for a specific part
+PlayerState:getDrawables(part)
+
+-- get number of textures for a specific part and drawable
+PlayerState:getDrawableTextures(part,drawable)
+
+-- get player skin customization
+-- return custom {.modelhash, ...}
+--- index keys: ped component => {drawable,texture,palette}
+--- "pX" keys: props => {prop_index, prop_texture}
+PlayerState:getCustomization()
+
+-- set partial customization (only what is set is changed)
+-- custom: indexed {drawable,texture,palette} components or props (p0...) {prop_index, prop_texture} plus .modelhash or .model
+PlayerState:setCustomization(custom) 
+
+-- TUNNEL
+
+PlayerState.tunnel.getWeapons = PlayerState.getWeapons
+PlayerState.tunnel.replaceWeapons = PlayerState.replaceWeapons
+PlayerState.tunnel.giveWeapons = PlayerState.giveWeapons
+PlayerState.tunnel.setArmour = PlayerState.setArmour
+PlayerState.tunnel.getArmour = PlayerState.getArmour
+PlayerState.tunnel.setHealth = PlayerState.setHealth
+PlayerState.tunnel.getHealth = PlayerState.getHealth
+PlayerState.tunnel.getDrawables = PlayerState.getDrawables
+PlayerState.tunnel.getDrawableTextures = PlayerState.getDrawableTextures
+PlayerState.tunnel.getCustomization = PlayerState.getCustomization
+PlayerState.tunnel.setCustomization = PlayerState.setCustomization
+----
+
+.Events
+[horizontal]
+(sync) `playerModelSave`:: called before the player model is changed (can be used to save some native player data)
+(sync) `playerModelRestore`:: called after the player model is changed (can be used to restore some native player data)
+
+== Item
+
+=== wbody
+
+Weapon body.
+
+`wbody|<weapon>`
+
+[horizontal]
+weapon:: native weapon name
+
+.Example
+[horizontal]
+`wbody|WEAPON_PISTOL`:: pistol body
+
+=== wammo
+
+Weapon ammunition.
+
+`wammo|<weapon>[|<amount>]`
+
+[horizontal]
+weapon:: native weapon name
+amount:: (optional) ammo amount (ammo box)
+
+.Example
+[horizontal]
+`wammo|WEAPON_PISTOL`:: pistol ammo
+`wammo|WEAPON_PISTOL|50`:: pistol ammo box x50
