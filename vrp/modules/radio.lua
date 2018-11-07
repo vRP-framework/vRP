@@ -53,8 +53,8 @@ function Radio:__construct()
 
   self.cfg = module("cfg/radio")
 
-  self.cgroups = {}
-  self.rusers = {}
+  self.cgroups = {} -- groups connect graph
+  self.rusers = {} -- radio users, map of user
 
   -- build groups connect graph
   for k,v in pairs(self.cfg.channels) do

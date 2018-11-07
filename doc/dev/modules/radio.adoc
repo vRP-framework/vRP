@@ -1,0 +1,39 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc: left
+:toclevels: 5
+
+= Radio
+
+This module adds groups radio.
+
+== Extension
+
+=== User
+
+[source,lua]
+----
+User:connectRadio()
+
+User:disconnectRadio()
+----
+
+=== Server
+
+[source,lua]
+----
+self.cfg
+----
+
+=== Client
+
+[source,lua]
+----
+self.rplayers -- radio players that can be accepted
+self.talking
+----
