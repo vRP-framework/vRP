@@ -15,7 +15,7 @@ Mission.User = class("User")
 ----- position: {x,y,z}
 ----- onenter: see Map.User:setArea
 ----- onleave: (optional) see Map.User:setArea
------ blipid, blipcolor (optional)
+----- map_entity: (optional) a simple PoI by default
 function Mission.User:startMission(mission)
   self:stopMission()
   if #mission.steps > 0 then
