@@ -216,7 +216,7 @@ function ItemTransformer:__construct()
 
   self.cfg = module("cfg/item_transformers")
   self:log(#self.cfg.item_transformers.." static item transformers")
-  self.transformers = {}
+  self.transformers = {} -- map of id => transformer
 
   menu_item_transformer(self)
 
@@ -262,6 +262,7 @@ end
 ---- reagents: items as fullid => amount
 ---- products: items as fullid => amount
 ---- aptitudes: (optional) aptitudes production as "group.aptitude" => exp
+---- permissions: (optional) recipe permissions
 function ItemTransformer:set(id, cfg)
   self:remove(id) -- remove pre-existing transformer
 

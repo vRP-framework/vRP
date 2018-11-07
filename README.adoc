@@ -73,6 +73,7 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * `namespace.foo.bar` instead of `namespace:foo:bar`
 * use menu instead of div when possible
 * vehicle state
+* generic/flexible item transformer reagents/products
 
 === vRP 2 dev' phases
 * refactoring (done)
