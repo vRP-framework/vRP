@@ -6,7 +6,7 @@ local PedBlacklist = class("PedBlacklist", vRP.Extension)
 function PedBlacklist:__construct()
   vRP.Extension.__construct(self)
 
-  self.ped_models = {}
+  self.ped_models = {} -- map of model hash
   self.interval = 10000
 
   -- task: remove peds
