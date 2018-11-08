@@ -71,6 +71,44 @@ function Survival:__construct()
   end
 
   task_update()
+
+  -- menu
+  -- EMERGENCY
+
+  local revive_seq = {
+    {"amb@medic@standing@kneel@enter","enter",1},
+    {"amb@medic@standing@kneel@idle_a","idle_a",1},
+    {"amb@medic@standing@kneel@exit","exit",1}
+  }
+
+  local function m_revive(menu)
+    local user = menu.user
+
+    local nuser
+    local nplayer = vRP.EXT.Base.remote.getNearestPlayer(user.source,10)
+    if nplayer then nuser = vRP.users_by_source[nplayer] end
+    if nuser then
+      if self.remote.isInComa(nuser.source) then
+        if user:tryTakeItem("medkit",1) then
+          vRP.EXT.Base.remote._playAnim(user.source,false,revive_seq,false) -- anim
+          SetTimeout(15000, function()
+            self.remote._varyHealth(nuser.source,50) -- heal 50
+          end)
+        end
+      else
+        vRP.EXT.Base.remote._notify(user.source,lang.emergency.menu.revive.not_in_coma())
+      end
+    else
+      vRP.EXT.Base.remote._notify(user.source,lang.common.no_player_near())
+    end
+  end
+
+  -- add choices to the main menu (emergency)
+  vRP.EXT.GUI:registerMenuBuilder("main", function(menu)
+    if menu.user:hasPermission("emergency.revive") then
+      menu:addOption(lang.emergency.menu.revive.title(), m_revive, lang.emergency.menu.revive.description())
+    end
+  end)
 end
 
 -- default_value: (optional) default vital value, 0 by default
@@ -114,10 +152,8 @@ function Survival.event:playerSpawn(user, first_spawn)
 end
 
 function Survival.event:playerStateLoaded(user)
-  -- check coma, kill if in coma
-  if self.remote.isInComa(user.source) then
-    self.remote._killComa(user.source)
-  end
+  -- kill if in coma
+  self.remote._killComa(user.source)
 end
 
 function Survival.event:playerDeath(user)
@@ -167,52 +203,5 @@ function Survival.tunnel:consume(water, food)
     end
   end
 end
-
---[[
--- EMERGENCY
-
----- revive
-local revive_seq = {
-  {"amb@medic@standing@kneel@enter","enter",1},
-  {"amb@medic@standing@kneel@idle_a","idle_a",1},
-  {"amb@medic@standing@kneel@exit","exit",1}
-}
-
-local choice_revive = {function(player,choice)
-  local user_id = vRP.getUserId(player)
-  if user_id then
-    local nplayer = vRPclient.getNearestPlayer(player,10)
-      local nuser_id = vRP.getUserId(nplayer)
-      if nuser_id then
-        if vRPclient.isInComa(nplayer) then
-            if vRP.tryGetInventoryItem(user_id,"medkit",1,true) then
-              vRPclient._playAnim(player,false,revive_seq,false) -- anim
-              SetTimeout(15000, function()
-                vRPclient._varyHealth(nplayer,50) -- heal 50
-              end)
-            end
-          else
-            vRPclient._notify(player,lang.emergency.menu.revive.not_in_coma())
-          end
-      else
-        vRPclient._notify(player,lang.common.no_player_near())
-      end
-  end
-end,lang.emergency.menu.revive.description()}
-
--- add choices to the main menu (emergency)
-vRP.registerMenuBuilder("main", function(add, data)
-  local user_id = vRP.getUserId(data.player)
-  if user_id then
-    local choices = {}
-    if vRP.hasPermission(user_id,"emergency.revive") then
-      choices[lang.emergency.menu.revive.title()] = choice_revive
-    end
-
-    add(choices)
-  end
-end)
-
---]]
 
 vRP:registerExtension(Survival)

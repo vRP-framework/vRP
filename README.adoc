@@ -70,7 +70,6 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * parcel delivery basic mission, paycheck basic mission
 * `namespace.foo.bar` instead of `namespace:foo:bar` ?
 * vehicle state
-* re-add ems
 * radio position display
 
 === vRP 2 dev' phases
