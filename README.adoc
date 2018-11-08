@@ -64,16 +64,14 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * home stuff (home garage,etc)
 * vehicle customization
 * drop weapon/save weapon components
-* police pc: add custom police records
 * admin: tp to marker
 * clients<->server scheme for VoIP
 * props, NPC
 * parcel delivery basic mission, paycheck basic mission
-* remove client-side config file, instead use .client property in server files, sent over the network
-* `namespace.foo.bar` instead of `namespace:foo:bar`
-* use menu instead of div when possible
+* `namespace.foo.bar` instead of `namespace:foo:bar` ?
 * vehicle state
-* generic/flexible item transformer reagents/products
+* re-add ems
+* radio position display
 
 === vRP 2 dev' phases
 * refactoring (done)

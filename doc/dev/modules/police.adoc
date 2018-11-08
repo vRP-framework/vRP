@@ -117,6 +117,14 @@ money:: target maximum available money
 
 Police PC menu.
 
+=== police_pc.records
+
+Police PC records sub-menu. Manage police records of a character.
+
+.data
+[horizontal]
+tuser:: target user
+
 == Item
 
 === bulletproof_vest

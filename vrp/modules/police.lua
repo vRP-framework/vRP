@@ -1,4 +1,5 @@
 local lang = vRP.lang
+local htmlEntities = module("vrp", "lib/htmlEntities")
 
 -- this module define some police tools and functions
 local Police = class("Police", vRP.Extension)
@@ -8,7 +9,7 @@ local Police = class("Police", vRP.Extension)
 Police.User = class("User")
 
 -- insert a police record (will do a save)
---- record: text for one line (html)
+--- record: text for one line 
 function Police.User:insertPoliceRecord(record)
   table.insert(self.police_records, record)
   self:savePoliceRecords()
@@ -21,27 +22,54 @@ end
 
 -- PRIVATE METHODS
 
--- menu: police pc
-local function menu_police_pc(self)
-  local m_police_pc_css = [[
-.div_police_pc{ 
-  background-color: rgba(0,0,0,0.75); 
-  color: white; 
-  font-weight: bold; 
-  width: 500px; 
-  padding: 10px; 
-  margin: auto; 
-  margin-top: 150px; 
-}
-  ]]
+-- menu: police_pc records
+local function menu_police_pc_records(self)
+  local function m_add(menu)
+    local user = menu.user
+    local tuser = menu.data.tuser
 
-  local function e_pc_div_close(menu)
-    if menu.pc_div then
-      vRP.EXT.GUI.remote._removeDiv(menu.user.source,"police_pc")
-      menu.pc_div = nil
+    local record = user:prompt(lang.police.pc.records.add.prompt(), "")
+    if record and string.len(record) > 0 then
+      tuser:insertPoliceRecord(record)
+      user:actualizeMenu()
+    else
+      vRP.EXT.Base.remote._notify(user.source,lang.common.invalid_value())
     end
   end
 
+  local function m_delete(menu)
+    local user = menu.user
+    local tuser = menu.data.tuser
+
+    local index = parseInt(user:prompt(lang.police.pc.records.delete.prompt(), ""))
+    if index > 0 and index <= #tuser.police_records then
+      table.remove(tuser.police_records, index)
+      tuser:savePoliceRecords()
+
+      user:actualizeMenu()
+    else
+      vRP.EXT.Base.remote._notify(user.source,lang.common.invalid_value())
+    end
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("police_pc.records", function(menu)
+    menu.title = lang.police.pc.records.title()
+    menu.css.header_color = "rgba(0,125,255,0.75)"
+
+    local tuser = menu.data.tuser
+
+    -- add records
+    for i, record in ipairs(tuser.police_records) do
+      menu:addOption("#"..i, nil, htmlEntities.encode(record))
+    end
+
+    menu:addOption(lang.police.pc.records.add.title(), m_add)
+    menu:addOption(lang.police.pc.records.delete.title(), m_delete)
+  end)
+end
+
+-- menu: police pc
+local function menu_police_pc(self)
   -- search identity by registration
   local function m_searchreg(menu)
     local user = menu.user
@@ -63,7 +91,7 @@ local function menu_police_pc(self)
   end
 
   -- show police records by registration
-  local function m_show_police_records(menu)
+  local function m_police_records(menu)
     local user = menu.user
 
     local reg = user:prompt(lang.police.pc.searchreg.prompt(),"")
@@ -72,29 +100,8 @@ local function menu_police_pc(self)
     if cid then tuser = vRP.users_by_cid[cid] end
 
     if tuser then
-      e_pc_div_close(menu)
-
-      local content = table.concat(tuser.police_records, "<br />")
-      vRP.EXT.GUI.remote._setDiv(user.source,"police_pc",m_police_pc_css,content)
-    else
-      vRP.EXT.Base.remote._notify(user.source,lang.common.not_found())
-    end
-  end
-
-  -- delete police records by registration
-  local function m_delete_police_records(menu)
-    local user = menu.user
-
-    local reg = user:prompt(lang.police.pc.searchreg.prompt(),"")
-    local tuser
-    local cid = vRP.EXT.Identity:getByRegistration(reg)
-    if cid then tuser = vRP.users_by_cid[cid] end
-
-    if tuser then
-      tuser.police_records = {}
-      tuser:savePoliceRecords()
-
-      vRP.EXT.Base.remote._notify(user.source,lang.police.pc.records.delete.deleted())
+      local smenu = user:openMenu("police_pc.records", {tuser = tuser})
+      menu:listen("remove", function(menu) menu.user:closeMenu(smenu) end)
     else
       vRP.EXT.Base.remote._notify(user.source,lang.common.not_found())
     end
@@ -161,11 +168,8 @@ local function menu_police_pc(self)
 
     menu:addOption(lang.police.pc.searchreg.title(), m_searchreg, lang.police.pc.searchreg.description())
     menu:addOption(lang.police.pc.trackveh.title(), m_trackveh, lang.police.pc.trackveh.description())
-    menu:addOption(lang.police.pc.records.show.title(), m_show_police_records, lang.police.pc.records.show.description())
-    menu:addOption(lang.police.pc.records.delete.title(), m_delete_police_records, lang.police.pc.records.delete.description())
+    menu:addOption(lang.police.pc.records.title(), m_police_records, lang.police.pc.records.description())
     menu:addOption(lang.police.pc.closebusiness.title(), m_closebusiness, lang.police.pc.closebusiness.description())
-
-    menu:listen("close", e_pc_div_close)
   end)
 end
 
@@ -558,6 +562,7 @@ function Police:__construct()
   define_items(self)
 
   -- menu
+  menu_police_pc_records(self)
   menu_police_pc(self)
   menu_police_fine(self)
   menu_police(self)

@@ -265,14 +265,15 @@ local lang = {
         tracked = "Tracked {1} ({2})"
       },
       records = {
-        show = {
-          title = "Show records",
-          description = "Show police records by registration number."
+        title = "Records",
+        description = "Manage police records by registration number.",
+        add = {
+          title = "Add",
+          prompt = "New record:"
         },
         delete = {
-          title = "Clear records",
-          description = "Clear police records by registration number.",
-          deleted = "~b~Police records deleted"
+          title = "Delete",
+          prompt = "Record id to delete ?"
         }
       }
     },

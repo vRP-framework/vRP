@@ -265,14 +265,15 @@ local lang = {
         tracked = "{1} ({2}) localisé."
       },
       records = {
-        show = {
-          title = "Afficher casier",
-          description = "Afficher casier judiciaire par immatriculation."
+        title = "Casier judiciaire",
+        description = "Gérer casier judiciaire par immatriculation.",
+        add = {
+          title = "Ajouter",
+          prompt = "Nouvel enregistrement:"
         },
         delete = {
-          title = "Effacer casier",
-          description = "Effacer casier judiciaire par immatriculation",
-          deleted = "~b~Casier judiciaire effacé."
+          title = "Supprimer",
+          prompt = "Id d'enregistrement à supprimer ?"
         }
       }
     },
