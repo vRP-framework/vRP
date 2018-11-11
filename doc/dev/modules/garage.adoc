@@ -47,13 +47,19 @@ Garage.getVehicleChestId(cid, model)
 ----
 self.vehicles -- map of vehicle model => veh id (owned vehicles)
 self.hash_models -- map of hash => model
+self.save_interval -- seconds
 
 -- veh: vehicle game id
 -- return owner character id and model or nil if not managed by vRP
 Garage:getVehicleInfo(veh)
 
+-- spawn vehicle and place player inside
+-- one vehicle per model allowed at the same time
+--
+-- state: (optional) vehicle state (client)
+-- pos: (optional) {x,y,z}
 -- return true if spawned (if not already out)
-Garage:spawnVehicle(model, pos) -- one vehicle per model allowed at the same time
+Garage:spawnVehicle(model, state, pos) 
 
 -- return true if despawned
 Garage:despawnVehicle(model)
@@ -87,6 +93,18 @@ Garage:isInVehicle()
 
 -- return model or nil if not in owned vehicle
 Garage:getInOwnedVehicleModel()
+
+-- VEHICLE STATE
+
+-- get vehicle customization
+Garage:getCustomization(veh)
+
+-- set vehicle customization (partial update per property)
+Garage:setCustomization(veh, custom)
+
+Garage:getVehicleState(veh)
+
+Garage:setVehicleState(veh, state)
 
 -- VEHICLE COMMANDS
 

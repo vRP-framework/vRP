@@ -11,6 +11,25 @@ function Garage:__construct()
 
   self.vehicles = {} -- map of vehicle model => veh id (owned vehicles)
   self.hash_models = {} -- map of hash => model
+
+  self.save_interval = 30 -- seconds
+
+  -- task: save vehicle states
+  Citizen.CreateThread(function()
+    while true do
+      Citizen.Wait(self.save_interval*1000)
+
+      local states = {}
+      
+      for model, veh in pairs(self.vehicles) do
+        if IsEntityAVehicle(veh) then
+          states[model] = self:getVehicleState(veh)
+        end
+      end
+
+      self.remote._updateVehicleStates(states)
+    end
+  end)
 end
 
 -- veh: vehicle game id
@@ -24,8 +43,13 @@ function Garage:getVehicleInfo(veh)
   end
 end
 
+-- spawn vehicle and place player inside
+-- one vehicle per model allowed at the same time
+--
+-- state: (optional) vehicle state (client)
+-- pos: (optional) {x,y,z}
 -- return true if spawned (if not already out)
-function Garage:spawnVehicle(model, pos) -- one vehicle per model allowed at the same time
+function Garage:spawnVehicle(model, state, pos) 
   local vehicle = self.vehicles[model]
   if not vehicle then
     -- load vehicle model
@@ -60,6 +84,10 @@ function Garage:spawnVehicle(model, pos) -- one vehicle per model allowed at the
       self.vehicles[model] = nveh -- mark as owned
 
       SetModelAsNoLongerNeeded(mhash)
+
+      if state then
+        self:setVehicleState(nveh, state)
+      end
 
       vRP:triggerEvent("garageVehicleSpawn", model)
     end
@@ -236,6 +264,116 @@ function Garage:getInOwnedVehicleModel()
   end
 end
 
+-- VEHICLE STATE
+
+-- get vehicle customization
+function Garage:getCustomization(veh)
+  local custom = {}
+
+  custom.colours = {GetVehicleColours(veh)}
+  custom.extra_colours = {GetVehicleExtraColours(veh)}
+  custom.plate_index = GetVehicleNumberPlateTextIndex(veh)
+  custom.wheel_type = GetVehicleWheelType(veh)
+  custom.window_tint = GetVehicleWindowTint(veh)
+  custom.neons = {}
+  for i=0,3 do
+    custom.neons[i] = IsVehicleNeonLightEnabled(veh, i)
+  end
+  custom.neon_colour = {GetVehicleNeonLightsColour(veh)}
+  custom.tyre_smoke_color = {GetVehicleTyreSmokeColor(veh)}
+
+  for i=0,49 do
+    custom["mod"..i] = GetVehicleMod(veh, i)
+  end
+
+  custom.turbo_enabled = IsToggleModOn(veh, 18)
+  custom.smoke_enabled = IsToggleModOn(veh, 20)
+  custom.xenon_enabled = IsToggleModOn(veh, 22)
+
+  return custom
+end
+
+-- set vehicle customization (partial update per property)
+function Garage:setCustomization(veh, custom)
+  SetVehicleModKit(veh, 0)
+
+  if custom.colours then
+    SetVehicleColours(veh, table.unpack(custom.colours))
+  end
+
+  if custom.extra_colours then
+    SetVehicleExtraColours(veh, table.unpack(custom.extra_colours))
+  end
+
+  if custom.plate_index then 
+    SetVehicleNumberPlateTextIndex(veh, custom.plate_index)
+  end
+
+  if custom.wheel_type then
+    SetVehicleWheelType(veh, custom.wheel_type)
+  end
+
+  if custom.window_tint then
+    SetVehicleWindowTint(veh, custom.window_tint)
+  end
+
+  if custom.neons then
+    for i=0,3 do
+      SetVehicleNeonLightEnabled(veh, i, custom.neons[i])
+    end
+  end
+
+  if custom.neon_colour then
+    SetVehicleNeonLightsColour(veh, table.unpack(custom.neon_colour))
+  end
+
+  if custom.tyre_smoke_color then
+    SetVehicleTyreSmokeColor(veh, table.unpack(custom.tyre_smoke_color))
+  end
+
+  for i=0,49 do
+    local mod = custom["mod"..i]
+    if mod then
+      SetVehicleMod(veh, i, mod, false)
+    end
+  end
+
+  if custom.turbo_enabled ~= nil then
+    ToggleVehicleMod(veh, 18, custom.turbo_enabled)
+  end
+
+  if custom.smoke_enabled ~= nil then
+    ToggleVehicleMod(veh, 20, custom.smoke_enabled)
+  end
+
+  if custom.xenon_enabled ~= nil then
+    ToggleVehicleMod(veh, 22, custom.xenon_enabled)
+  end
+end
+
+function Garage:getVehicleState(veh)
+  return {
+    customization = self:getCustomization(veh),
+    health = GetEntityHealth(veh),
+    dirt_level = GetVehicleDirtLevel(veh)
+  }
+end
+
+function Garage:setVehicleState(veh, state)
+  -- apply state
+  if state.customization then
+    self:setCustomization(veh, state.customization)
+  end
+  
+  if state.health then
+    SetEntityHealth(veh, state.health)
+  end
+
+  if state.dirt_level then
+    SetVehicleDirtLevel(veh, state.dirt_level)
+  end
+end
+
 -- VEHICLE COMMANDS
 
 function Garage:vc_openDoor(model, door_index)
@@ -313,6 +451,10 @@ end
 
 -- TUNNEL
 Garage.tunnel = {}
+
+function Garage.tunnel:setConfig(save_interval)
+  self.save_interval = save_interval
+end
 
 function Garage.tunnel:registerModels(models)
   -- generate models hashes

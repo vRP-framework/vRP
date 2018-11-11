@@ -26,6 +26,8 @@ function Garage.User:getVehicleState(model)
 
     self.vehicle_states[model] = state
   end
+
+  return state
 end
 
 -- STATIC
@@ -41,7 +43,13 @@ end
 local function menu_garage_owned(self)
   local function m_get(menu, model)
     local user = menu.user
-    if not vRP.EXT.Garage.remote.spawnVehicle(user.source, model) then
+    local vstate = user:getVehicleState(model)
+    local state = {}
+    state.customization = vstate.customization
+    state.health = vstate.health
+    state.dirt_level = vstate.dirt_level
+
+    if not vRP.EXT.Garage.remote.spawnVehicle(user.source, model, state) then
       vRP.EXT.Base.remote._notify(user.source, lang.garage.owned.already_out())
     end
     user:closeMenu(menu)
@@ -501,6 +509,8 @@ end
 
 function Garage.event:playerSpawn(user, first_spawn)
   if first_spawn then
+    self.remote._setConfig(user.source, self.cfg.vehicle_state_save_interval)
+
     -- register models
     self.remote._registerModels(user.source, self.models)
 
@@ -532,6 +542,33 @@ function Garage.event:playerSpawn(user, first_spawn)
         vRP.EXT.Map.remote._addEntity(user.source,ment[1], ment[2])
 
         user:setArea("vRP:garage:"..k,x,y,z,1,1.5,enter,leave)
+      end
+    end
+  end
+end
+
+-- TUNNEL
+Garage.tunnel = {}
+
+function Garage.tunnel:updateVehicleStates(states)
+  local user = vRP.users_by_source[source]
+
+  if user then
+    for model, state in pairs(states) do
+      if user.cdata.vehicles[model] or user.rent_vehicles[model] then -- has model
+        local vstate = user:getVehicleState(model)
+
+        if state.customization then
+          vstate.customization = state.customization
+        end
+
+        if state.health then
+          vstate.health = state.health
+        end
+
+        if state.dirt_level then
+          vstate.dirt_level = state.dirt_level
+        end
       end
     end
   end

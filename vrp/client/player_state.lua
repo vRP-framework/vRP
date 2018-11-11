@@ -316,19 +316,4 @@ PlayerState.tunnel.getDrawableTextures = PlayerState.getDrawableTextures
 PlayerState.tunnel.getCustomization = PlayerState.getCustomization
 PlayerState.tunnel.setCustomization = PlayerState.setCustomization
 
--- fix invisible players by resetting customization every minutes
---[[
-Citizen.CreateThread(function()
-  while true do
-    Citizen.Wait(60000)
-    if state_ready then
-      local custom = tvRP.getCustomization()
-      custom.model = nil
-      custom.modelhash = nil
-      tvRP.setCustomization(custom)
-    end
-  end
-end)
---]]
-
 vRP:registerExtension(PlayerState)
