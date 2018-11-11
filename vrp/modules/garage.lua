@@ -13,6 +13,21 @@ function Garage.User:getVehicles()
   return self.cdata.vehicles
 end
 
+-- get vehicle model state table (may be async)
+function Garage.User:getVehicleState(model)
+  local state = self.vehicle_states[model]
+  if not state then -- load state
+    local sdata = vRP:getCData(self.cid, "vRP:vehicle_state:"..model)
+    if sdata and string.len(sdata) > 0 then
+      state = msgpack.unpack(sdata)
+    else
+      state = {}
+    end
+
+    self.vehicle_states[model] = state
+  end
+end
+
 -- STATIC
 
 -- get vehicle trunk chest id by character id and model
@@ -465,6 +480,23 @@ function Garage.event:characterLoad(user)
   end
 
   user.rent_vehicles = {}
+  user.vehicle_states = {}
+end
+
+function Garage.event:characterUnload(user)
+  -- save vehicle states
+  for model, state in pairs(user.vehicle_states) do
+    vRP:setCData(user.cid, "vRP:vehicle_state:"..model, msgpack.pack(state))
+  end
+end
+
+function Garage.event:save()
+  for id, user in pairs(vRP.users) do
+    -- save vehicle states
+    for model, state in pairs(user.vehicle_states) do
+      vRP:setCData(user.cid, "vRP:vehicle_state:"..model, msgpack.pack(state))
+    end
+  end
 end
 
 function Garage.event:playerSpawn(user, first_spawn)

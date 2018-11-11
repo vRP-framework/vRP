@@ -68,7 +68,6 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * clients<->server scheme for VoIP
 * props, NPC
 * parcel delivery basic mission, paycheck basic mission
-* `namespace.foo.bar` instead of `namespace:foo:bar` ?
 * vehicle state
 * radio position display
 

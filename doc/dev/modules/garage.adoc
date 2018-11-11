@@ -20,10 +20,14 @@ This module manages garages and character vehicles.
 ----
 self.cdata.vehicles
 self.rent_vehicles
+self.vehicle_states
 
 -- get owned vehicles
 -- return map of model
 User:getVehicles()
+
+-- get vehicle model state table (may be async)
+User:getVehicleState(model)
 ----
 
 === Server
