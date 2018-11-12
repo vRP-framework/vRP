@@ -69,7 +69,14 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * props, NPC
 * parcel delivery basic mission, paycheck basic mission
 * vehicle state
+** damages
 * radio position display
+* garage entry & spawn points
+* store garage
+* home permissions
+* home garages example
+* doc css
+* mission event/API/cfg for custom display
 
 === vRP 2 dev' phases
 * refactoring (done)
