@@ -12,6 +12,8 @@ endif::[]
 
 This module manages garages and character vehicles.
 
+Each owned vehicle has a saved state which can be extended with new properties.
+
 == Extension
 
 === User
@@ -223,3 +225,10 @@ model:: (optional) vehicle model
 [horizontal]
 `!in_owned_vehicle`:: check if inside an owned vehicle
 `!in_owned_vehicle.taxi`:: check if inside owned taxi model
+
+== Vehicle state
+
+[horizontal]
+customization:: customization properties
+condition:: damages properties
+position, rotation:: position/rotation for persistence

@@ -67,7 +67,7 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * props, NPC
 * parcel delivery basic mission, paycheck basic mission
 * vehicle state
-** position/auto respawn ?
+** lock/unlock
 ** fuel resource integration ?
 * radio position display
 * personal garage ?
