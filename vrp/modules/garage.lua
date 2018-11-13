@@ -587,6 +587,10 @@ function Garage.event:playerSpawn(user, first_spawn)
   end
 end
 
+function Garage.event:playerStateLoaded(user)
+  self.remote._trySpawnOutVehicles(user.source)
+end
+
 -- TUNNEL
 Garage.tunnel = {}
 

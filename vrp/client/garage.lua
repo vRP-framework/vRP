@@ -43,19 +43,9 @@ function Garage:__construct()
   Citizen.CreateThread(function()
     while true do
       Citizen.Wait(self.check_interval*1000)
-      local x,y,z = vRP.EXT.Base:getPosition()
 
       self:tryOwnVehicles() -- get back network lost vehicles
-
-      -- spawn out vehicles
-      for model, data in pairs(self.out_vehicles) do
-        local vx,vy,vz = table.unpack(data[2])
-        local distance = GetDistanceBetweenCoords(x,y,z,vx,vy,vz,true)
-
-        if distance <= self.respawn_radius then
-          self:spawnVehicle(model, data[1], data[2], data[3])
-        end
-      end
+      self:trySpawnOutVehicles()
     end
   end)
 end
@@ -221,6 +211,20 @@ function Garage:tryOwnVehicles()
         self.vehicles[model] = veh -- re-own
         self.out_vehicles[model] = nil
       end
+    end
+  end
+end
+
+function Garage:trySpawnOutVehicles()
+  local x,y,z = vRP.EXT.Base:getPosition()
+
+  -- spawn out vehicles
+  for model, data in pairs(self.out_vehicles) do
+    local vx,vy,vz = table.unpack(data[2])
+    local distance = GetDistanceBetweenCoords(x,y,z,vx,vy,vz,true)
+
+    if distance <= self.respawn_radius then
+      self:spawnVehicle(model, data[1], data[2], data[3])
     end
   end
 end
@@ -587,6 +591,7 @@ Garage.tunnel.getNearestOwnedVehicle = Garage.getNearestOwnedVehicle
 Garage.tunnel.getAnyOwnedVehiclePosition = Garage.getAnyOwnedVehiclePosition
 Garage.tunnel.getOwnedVehiclePosition = Garage.getOwnedVehiclePosition
 Garage.tunnel.getInOwnedVehicleModel = Garage.getInOwnedVehicleModel
+Garage.tunnel.trySpawnOutVehicles = Garage.trySpawnOutVehicles
 Garage.tunnel.ejectVehicle = Garage.ejectVehicle
 Garage.tunnel.isInVehicle = Garage.isInVehicle
 Garage.tunnel.vc_openDoor = Garage.vc_openDoor
