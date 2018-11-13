@@ -266,8 +266,9 @@ function Garage:getCustomization(veh)
   custom.neon_colour = {GetVehicleNeonLightsColour(veh)}
   custom.tyre_smoke_color = {GetVehicleTyreSmokeColor(veh)}
 
+  custom.mods = {}
   for i=0,49 do
-    custom["mod"..i] = GetVehicleMod(veh, i)
+    custom.mods[i] = GetVehicleMod(veh, i)
   end
 
   custom.turbo_enabled = IsToggleModOn(veh, 18)
@@ -315,9 +316,8 @@ function Garage:setCustomization(veh, custom)
     SetVehicleTyreSmokeColor(veh, table.unpack(custom.tyre_smoke_color))
   end
 
-  for i=0,49 do
-    local mod = custom["mod"..i]
-    if mod then
+  if custom.mods then
+    for i, mod in pairs(custom.mods) do
       SetVehicleMod(veh, i, mod, false)
     end
   end
@@ -336,11 +336,39 @@ function Garage:setCustomization(veh, custom)
 end
 
 function Garage:getVehicleState(veh)
-  return {
+  local state = {
     customization = self:getCustomization(veh),
-    health = GetEntityHealth(veh),
-    dirt_level = GetVehicleDirtLevel(veh)
+    condition = {
+      health = GetEntityHealth(veh),
+      engine_health = GetVehicleEngineHealth(veh),
+      petrol_tank_health = GetVehiclePetrolTankHealth(veh),
+      dirt_level = GetVehicleDirtLevel(veh)
+    }
   }
+
+  state.condition.windows = {}
+  for i=0,7 do 
+    state.condition.windows[i] = IsVehicleWindowIntact(veh, i)
+  end
+
+  state.condition.tyres = {}
+  for i=0,7 do
+    local tyre_state = 2 -- 2: fine, 1: burst, 0: completely burst
+    if IsVehicleTyreBurst(veh, i, true) then
+      tyre_state = 0
+    elseif IsVehicleTyreBurst(veh, i, false) then
+      tyre_state = 1
+    end
+
+    state.condition.tyres[i] = tyre_state
+  end
+
+  state.condition.doors = {}
+  for i=0,5 do
+    state.condition.doors[i] = not IsVehicleDoorDamaged(veh, i)
+  end
+
+  return state
 end
 
 function Garage:setVehicleState(veh, state)
@@ -349,12 +377,46 @@ function Garage:setVehicleState(veh, state)
     self:setCustomization(veh, state.customization)
   end
   
-  if state.health then
-    SetEntityHealth(veh, state.health)
-  end
+  if state.condition then
+    if state.condition.health then
+      SetEntityHealth(veh, state.condition.health)
+    end
 
-  if state.dirt_level then
-    SetVehicleDirtLevel(veh, state.dirt_level)
+    if state.condition.engine_health then
+      SetVehicleEngineHealth(veh, state.condition.engine_health)
+    end
+
+    if state.condition.petrol_tank_health then
+      SetVehiclePetrolTankHealth(veh, state.condition.petrol_tank_health)
+    end
+
+    if state.condition.dirt_level then
+      SetVehicleDirtLevel(veh, state.condition.dirt_level)
+    end
+
+    if state.condition.windows then
+      for i, window_state in pairs(state.condition.windows) do
+        if not window_state then
+          SmashVehicleWindow(veh, i)
+        end
+      end
+    end
+
+    if state.condition.tyres then
+      for i, tyre_state in pairs(state.condition.tyres) do
+        if tyre_state < 2 then
+          SetVehicleTyreBurst(veh, i, (tyre_state == 1), 1000.01)
+        end
+      end
+    end
+
+    if state.condition.doors then
+      for i, door_state in pairs(state.condition.doors) do
+        if not door_state then
+          SetVehicleDoorBroken(veh, i, true)
+        end
+      end
+    end
   end
 end
 

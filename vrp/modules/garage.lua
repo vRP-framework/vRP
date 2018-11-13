@@ -44,10 +44,10 @@ local function menu_garage_owned(self)
   local function m_get(menu, model)
     local user = menu.user
     local vstate = user:getVehicleState(model)
-    local state = {}
-    state.customization = vstate.customization
-    state.health = vstate.health
-    state.dirt_level = vstate.dirt_level
+    local state = {
+      customization = vstate.customization,
+      condition = vstate.condition
+    }
 
     if not vRP.EXT.Garage.remote.spawnVehicle(user.source, model, state) then
       vRP.EXT.Base.remote._notify(user.source, lang.garage.owned.already_out())
@@ -562,12 +562,8 @@ function Garage.tunnel:updateVehicleStates(states)
           vstate.customization = state.customization
         end
 
-        if state.health then
-          vstate.health = state.health
-        end
-
-        if state.dirt_level then
-          vstate.dirt_level = state.dirt_level
+        if state.condition then
+          vstate.condition = state.condition
         end
       end
     end
