@@ -136,3 +136,21 @@ slot:: component slot
 === entry
 
 Home entry component.
+
+== Permission
+
+=== home
+
+Home/address check.
+
+`!home[.<name>[.<number>]]`
+
+[horizontal]
+name:: (optional) home name, all `.` characters should be removed
+number:: (optional) home number
+
+.Example
+[horizontal]
+`!home`:: has a home
+`!home.HLM Vinewood`:: lives at `HLM Vinewood`
+`!home.HLM Vinewood.5`:: lives at `5, HLM Vinewood`

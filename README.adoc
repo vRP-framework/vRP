@@ -71,7 +71,6 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 ** position/auto respawn ?
 ** fuel resource integration ?
 * radio position display
-* home permissions
 * personal garage ?
 * doc css
 * mission event/API/cfg for custom display

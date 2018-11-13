@@ -361,6 +361,24 @@ function Home:__construct()
   menu_home_component_entry(self)
   menu_home(self)
 
+  -- permissions
+
+  vRP.EXT.Group:registerPermissionFunction("home", function(user, params)
+    local address = user.address
+
+    local ok = (address ~= nil)
+
+    if ok and params[2] then
+      ok = (params[2] == string.gsub(address.home, "%.", ""))
+    end
+
+    if ok and params[3] then
+      ok = (tonumber(params[3]) == address.number)
+    end
+
+    return ok
+  end)
+
   -- identity info
   vRP.EXT.GUI:registerMenuBuilder("identity", function(menu)
     local address = self:getAddress(menu.data.cid)
