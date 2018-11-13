@@ -43,11 +43,11 @@ function Garage:getVehicleInfo(veh)
   end
 end
 
--- spawn vehicle and place player inside
+-- spawn vehicle
 -- one vehicle per model allowed at the same time
 --
 -- state: (optional) vehicle state (client)
--- pos: (optional) {x,y,z}
+-- pos: (optional) {x,y,z}, if not passed the vehicle will be spawned on the player (and will be put inside the vehicle)
 -- return true if spawned (if not already out)
 function Garage:spawnVehicle(model, state, pos) 
   local vehicle = self.vehicles[model]
@@ -74,7 +74,9 @@ function Garage:spawnVehicle(model, state, pos)
       local nveh = CreateVehicle(mhash, x,y,z+0.5, 0.0, true, false)
       SetVehicleOnGroundProperly(nveh)
       SetEntityInvincible(nveh,false)
-      SetPedIntoVehicle(GetPlayerPed(-1),nveh,-1) -- put player inside
+      if not pos then
+        SetPedIntoVehicle(GetPlayerPed(-1),nveh,-1) -- put player inside
+      end
       SetVehicleNumberPlateText(nveh, "P "..vRP.EXT.Identity.registration)
       SetEntityAsMissionEntity(nveh, true, true)
       SetVehicleHasBeenOwnedByPlayer(nveh,true)
@@ -112,24 +114,6 @@ function Garage:despawnVehicle(model)
     return true
   end
 end
-
--- check vehicles validity
---[[
-Citizen.CreateThread(function()
-  Citizen.Wait(30000)
-
-  for k,v in pairs(vehicles) do
-    if IsEntityAVehicle(v[3]) then -- valid, save position
-      v.pos = {table.unpack(GetEntityCoords(vehicle[3],true))}
-    elseif v.pos then -- not valid, respawn if with a valid position
-      print("[vRP] invalid vehicle "..v[1]..", respawning...")
-      tvRP.spawnGarageVehicle(v[1], v[2], v.pos)
-    end
-  end
-end)
---]]
-
-
 
 -- return map of veh => distance
 function Garage:getNearestVehicles(radius)

@@ -53,11 +53,11 @@ self.save_interval -- seconds
 -- return owner character id and model or nil if not managed by vRP
 Garage:getVehicleInfo(veh)
 
--- spawn vehicle and place player inside
+-- spawn vehicle
 -- one vehicle per model allowed at the same time
 --
 -- state: (optional) vehicle state (client)
--- pos: (optional) {x,y,z}
+-- pos: (optional) {x,y,z}, if not passed the vehicle will be spawned on the player (and will be put inside the vehicle)
 -- return true if spawned (if not already out)
 Garage:spawnVehicle(model, state, pos) 
 

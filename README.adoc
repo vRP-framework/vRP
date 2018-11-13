@@ -61,8 +61,6 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * ...
 
 == TODO list
-* home stuff (home garage,etc)
-* vehicle customization
 * drop weapon/save weapon components
 * admin: tp to marker
 * clients<->server scheme for VoIP
@@ -70,11 +68,11 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * parcel delivery basic mission, paycheck basic mission
 * vehicle state
 ** damages
+** position/auto respawn ?
+** fuel resource integration ?
 * radio position display
-* garage entry & spawn points
-* store garage
 * home permissions
-* home garages example
+* personal garage ?
 * doc css
 * mission event/API/cfg for custom display
 
