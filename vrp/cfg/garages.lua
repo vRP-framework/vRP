@@ -9,7 +9,9 @@ cfg.sell_factor = 0.75 -- sell for 75% of the original price
 -- default chest weight for vehicle trunks
 cfg.default_vehicle_chest_weight = 50
 
-cfg.vehicle_state_save_interval = 30 -- seconds
+cfg.vehicle_state_save_interval = 15 -- seconds
+cfg.vehicle_check_interval = 15 -- seconds, re-own/respawn task
+cfg.vehicle_respawn_radius = 150 -- radius for the out vehicle respawn feature
 
 -- define vehicle chest weight by model in lower case
 cfg.vehicle_chest_weights = {

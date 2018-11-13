@@ -49,7 +49,7 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 
 == Features
 * basic admin tools (kick,ban,whitelist), groups/permissions, languages, identification system (persistant user id for database storage), user/character/server/global custom data key/value
-* player state (surival vitals, weapons, player appearence, position)
+* player state (survival vitals, weapons, player appearence, position)
 * player identity/phone/aptitudes (education/exp), emotes, business system / money (wallet/bank), homes
 * cloakrooms (uniform for jobs), basic police (PC, check, I.D., handcuff, jails, seize weapons/items), basic emergency (coma, reanimate)
 * inventory (with custom item definition, parametric items), chests (vehicle trunks), item transformer (harvest, process, produce) (illegal informer)

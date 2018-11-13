@@ -8,7 +8,8 @@ local Garage = class("Garage", vRP.Extension)
 Garage.User = class("User")
 
 -- get owned vehicles
--- return map of model
+-- return map of model => state
+--- state: 0 (out), 1 (in garage)
 function Garage.User:getVehicles()
   return self.cdata.vehicles
 end
@@ -49,9 +50,15 @@ local function menu_garage_owned(self)
       condition = vstate.condition
     }
 
-    if not vRP.EXT.Garage.remote.spawnVehicle(user.source, model, state) then
+    local vehicles = user:getVehicles()
+    if self.remote.spawnVehicle(user.source, model, state) then
+      if vehicles[model] then
+        vehicles[model] = 0 -- mark as out
+      end
+    else
       vRP.EXT.Base.remote._notify(user.source, lang.garage.owned.already_out())
     end
+
     user:closeMenu(menu)
   end
 
@@ -87,10 +94,10 @@ local function menu_garage_buy(self)
     -- buy vehicle
     local veh = menu.data.vehicles[model]
     if veh and user:tryPayment(veh[2]) then
-      uvehicles[model] = true
+      uvehicles[model] = 1
 
       vRP.EXT.Base.remote._notify(user.source, lang.money.paid({veh[2]}))
-      user:closeMenu(menu)
+      user:actualizeMenu()
     else
       vRP.EXT.Base.remote._notify(user.source, lang.money.not_enough())
     end
@@ -127,7 +134,7 @@ local function menu_garage_sell(self)
       uvehicles[model] = nil
 
       vRP.EXT.Base.remote._notify(user.source,lang.money.received({price}))
-      user:closeMenu(menu)
+      user:actualizeMenu()
     else
       vRP.EXT.Base.remote._notify(user.source,lang.common.not_found())
     end
@@ -162,7 +169,7 @@ local function menu_garage_rent(self)
       user.rent_vehicles[model] = true
 
       vRP.EXT.Base.remote._notify(user.source,lang.money.paid({price}))
-      user:closeMenu(menu)
+      user:actualizeMenu()
     else
       vRP.EXT.Base.remote._notify(user.source,lang.money.not_enough())
     end
@@ -230,10 +237,14 @@ local function menu_garage(self)
   local function m_store(menu)
     local user = menu.user
 
-    local model = vRP.EXT.Garage.remote.getNearestOwnedVehicle(user.source, 15)
+    local model = self.remote.getNearestOwnedVehicle(user.source, 15)
     if model then
       if menu.data.vehicles[model] then -- model in this garage
-        if vRP.EXT.Garage.remote.despawnVehicle(user.source, model) then
+        if self.remote.despawnVehicle(user.source, model) then
+          local vehicles = user:getVehicles()
+          if vehicles[model] then 
+            vehicles[model] = 1 -- mark as in garage
+          end
           vRP.EXT.Base.remote._notify(user.source, lang.garage.store.stored())
         end
       else
@@ -328,6 +339,27 @@ local function menu_vehicle(self)
     menu:addOption(lang.vehicle.lock.title(), m_lock, lang.vehicle.lock.description())
     menu:addOption(lang.vehicle.engine.title(), m_engine, lang.vehicle.engine.description())
   end)
+end
+
+-- send out vehicles to player
+local function send_out_vehicles(self, user)
+  -- out vehicles
+  local out_vehicles = {}
+  for model, state in pairs(user:getVehicles()) do
+    if state == 0 then -- out
+      local vstate = user:getVehicleState(model)
+      if vstate.position then
+        local cstate = {
+          customization = vstate.customization,
+          condition = vstate.condition
+        }
+
+        out_vehicles[model] = {cstate, vstate.position, vstate.rotation}
+      end
+    end
+  end
+
+  self.remote._setOutVehicles(user.source, out_vehicles)
 end
 
 -- METHODS
@@ -489,6 +521,8 @@ function Garage.event:characterLoad(user)
 
   user.rent_vehicles = {}
   user.vehicle_states = {}
+
+  send_out_vehicles(self, user)
 end
 
 function Garage.event:characterUnload(user)
@@ -496,6 +530,9 @@ function Garage.event:characterUnload(user)
   for model, state in pairs(user.vehicle_states) do
     vRP:setCData(user.cid, "vRP:vehicle_state:"..model, msgpack.pack(state))
   end
+
+  -- despawn vehicles
+  self.remote._despawnVehicles(user.source)
 end
 
 function Garage.event:save()
@@ -509,10 +546,13 @@ end
 
 function Garage.event:playerSpawn(user, first_spawn)
   if first_spawn then
-    self.remote._setConfig(user.source, self.cfg.vehicle_state_save_interval)
+    -- config
+    self.remote._setConfig(user.source, self.cfg.vehicle_state_save_interval, self.cfg.vehicle_check_interval, self.cfg.vehicle_respawn_radius)
 
     -- register models
     self.remote._registerModels(user.source, self.models)
+
+    send_out_vehicles(self, user)
 
     -- build garages
     for k,v in pairs(self.cfg.garages) do
@@ -565,6 +605,9 @@ function Garage.tunnel:updateVehicleStates(states)
         if state.condition then
           vstate.condition = state.condition
         end
+
+        if state.position then vstate.position = state.position end
+        if state.rotation then vstate.rotation = state.rotation end
       end
     end
   end

@@ -237,6 +237,9 @@ end
 
 function Identity.event:playerSpawn(user, first_spawn)
   if first_spawn then
+    -- send registration number to client at spawn
+    self.remote._setRegistrationNumber(user.source, user.identity.registration)
+
     -- build city hall
     local menu
     local function enter(user)
@@ -258,7 +261,6 @@ function Identity.event:playerSpawn(user, first_spawn)
 end
 
 function Identity.event:characterIdentityUpdate(user)
-  -- send registration number to client at spawn
   self.remote._setRegistrationNumber(user.source, user.identity.registration)
 end
 

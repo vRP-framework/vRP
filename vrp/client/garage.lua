@@ -13,6 +13,10 @@ function Garage:__construct()
   self.hash_models = {} -- map of hash => model
 
   self.save_interval = 30 -- seconds
+  self.check_interval = 15 -- seconds
+  self.respawn_radius = 200
+
+  self.out_vehicles = {} -- map of vehicle model => {cstate, position, rotation}, unloaded out vehicles to spawn
 
   -- task: save vehicle states
   Citizen.CreateThread(function()
@@ -23,11 +27,35 @@ function Garage:__construct()
       
       for model, veh in pairs(self.vehicles) do
         if IsEntityAVehicle(veh) then
-          states[model] = self:getVehicleState(veh)
+          local state = self:getVehicleState(veh)
+          state.position = {table.unpack(GetEntityCoords(veh, true))}
+          state.rotation = {GetEntityQuaternion(veh)}
+
+          states[model] = state
         end
       end
 
       self.remote._updateVehicleStates(states)
+    end
+  end)
+
+  -- task: vehicles check
+  Citizen.CreateThread(function()
+    while true do
+      Citizen.Wait(self.check_interval*1000)
+      local x,y,z = vRP.EXT.Base:getPosition()
+
+      self:tryOwnVehicles() -- get back network lost vehicles
+
+      -- spawn out vehicles
+      for model, data in pairs(self.out_vehicles) do
+        local vx,vy,vz = table.unpack(data[2])
+        local distance = GetDistanceBetweenCoords(x,y,z,vx,vy,vz,true)
+
+        if distance <= self.respawn_radius then
+          self:spawnVehicle(model, data[1], data[2], data[3])
+        end
+      end
     end
   end)
 end
@@ -44,12 +72,14 @@ function Garage:getVehicleInfo(veh)
 end
 
 -- spawn vehicle
+-- will be placed on ground properly
 -- one vehicle per model allowed at the same time
 --
 -- state: (optional) vehicle state (client)
--- pos: (optional) {x,y,z}, if not passed the vehicle will be spawned on the player (and will be put inside the vehicle)
+-- position: (optional) {x,y,z}, if not passed the vehicle will be spawned on the player (and will be put inside the vehicle)
+-- rotation: (optional) quaternion {x,y,z,w}, if passed with the position, will be applied to the vehicle entity
 -- return true if spawned (if not already out)
-function Garage:spawnVehicle(model, state, pos) 
+function Garage:spawnVehicle(model, state, position, rotation) 
   local vehicle = self.vehicles[model]
   if not vehicle then
     -- load vehicle model
@@ -65,16 +95,19 @@ function Garage:spawnVehicle(model, state, pos)
     -- spawn car
     if HasModelLoaded(mhash) then
       local x,y,z
-      if pos then
-        x,y,z = table.unpack(pos)
+      if position then
+        x,y,z = table.unpack(position)
       else
         x,y,z = vRP.EXT.Base:getPosition()
       end
 
       local nveh = CreateVehicle(mhash, x,y,z+0.5, 0.0, true, false)
+      if position and rotation then
+        SetEntityQuaternion(nveh, table.unpack(rotation))
+      end
       SetVehicleOnGroundProperly(nveh)
       SetEntityInvincible(nveh,false)
-      if not pos then
+      if not position then
         SetPedIntoVehicle(GetPlayerPed(-1),nveh,-1) -- put player inside
       end
       SetVehicleNumberPlateText(nveh, "P "..vRP.EXT.Identity.registration)
@@ -84,6 +117,7 @@ function Garage:spawnVehicle(model, state, pos)
       -- set decorators
       DecorSetInt(veh, "vRP.owner", vRP.EXT.Base.id)
       self.vehicles[model] = nveh -- mark as owned
+      self.out_vehicles[model] = nil
 
       SetModelAsNoLongerNeeded(mhash)
 
@@ -102,7 +136,7 @@ end
 function Garage:despawnVehicle(model)
   local veh = self.vehicles[model]
   if veh then
-    vRP:triggerEvent("garageVehicleStore", model)
+    vRP:triggerEvent("garageVehicleDespawn", model)
 
     -- remove vehicle
     SetVehicleHasBeenOwnedByPlayer(veh,false)
@@ -115,12 +149,15 @@ function Garage:despawnVehicle(model)
   end
 end
 
--- return map of veh => distance
-function Garage:getNearestVehicles(radius)
-  local r = {}
+function Garage:despawnVehicles()
+  for model in pairs(self.vehicles) do
+    self:despawnVehicle(model)
+  end
+end
 
-  local px,py,pz = vRP.EXT.Base:getPosition()
-
+-- get all game vehicles
+-- return list of veh
+function Garage:getAllVehicles()
   local vehs = {}
   local it, veh = FindFirstVehicle()
   if veh then table.insert(vehs, veh) end
@@ -131,7 +168,16 @@ function Garage:getNearestVehicles(radius)
   until not ok
   EndFindVehicle(it)
 
-  for _,veh in pairs(vehs) do
+  return vehs
+end
+
+-- return map of veh => distance
+function Garage:getNearestVehicles(radius)
+  local r = {}
+
+  local px,py,pz = vRP.EXT.Base:getPosition()
+
+  for _,veh in pairs(self:getAllVehicles()) do
     local x,y,z = table.unpack(GetEntityCoords(veh,true))
     local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
     if distance <= radius then
@@ -158,13 +204,23 @@ function Garage:getNearestVehicle(radius)
   return veh 
 end
 
--- try to re-own the nearest vehicle
-function Garage:tryOwnNearestVehicle(radius)
-  local veh = self:getNearestVehicle(radius)
-  if veh then
+-- try re-own vehicles
+function Garage:tryOwnVehicles()
+  for _, veh in pairs(self:getAllVehicles()) do
     local cid, model = self:getVehicleInfo(veh)
-    if cid and vRP.EXT.Base.cid == cid then
-      self.vehicles[model] = veh
+    if cid and vRP.EXT.Base.cid == cid then -- owned
+      local old_veh = self.vehicles[model]
+      if old_veh and IsEntityAVehicle(old_veh) then -- still valid
+        if old_veh ~= veh then -- remove this new one
+          SetVehicleHasBeenOwnedByPlayer(veh,false)
+          SetEntityAsMissionEntity(veh, false, true)
+          SetVehicleAsNoLongerNeeded(Citizen.PointerValueIntInitialized(veh))
+          Citizen.InvokeNative(0xEA386986E786A54F, Citizen.PointerValueIntInitialized(veh))
+        end
+      else -- no valid old veh
+        self.vehicles[model] = veh -- re-own
+        self.out_vehicles[model] = nil
+      end
     end
   end
 end
@@ -185,7 +241,7 @@ end
 
 -- return model or nil
 function Garage:getNearestOwnedVehicle(radius)
-  self:tryOwnNearestVehicle(radius) -- get back network lost vehicles
+  self:tryOwnVehicles() -- get back network lost vehicles
 
   local px,py,pz = vRP.EXT.Base:getPosition()
   local min_dist
@@ -207,6 +263,8 @@ end
 
 -- return ok,x,y,z
 function Garage:getAnyOwnedVehiclePosition()
+  self:tryOwnVehicles() -- get back network lost vehicles
+
   for model,veh in pairs(self.vehicles) do
     if IsEntityAVehicle(veh) then
       local x,y,z = table.unpack(GetEntityCoords(v[2],true))
@@ -219,6 +277,8 @@ end
 
 -- return x,y,z or nil
 function Garage:getOwnedVehiclePosition(model)
+  self:tryOwnVehicles() -- get back network lost vehicles
+
   local veh = self.vehicles[model]
   if veh then
     return table.unpack(GetEntityCoords(veh,true))
@@ -250,8 +310,7 @@ end
 
 -- VEHICLE STATE
 
--- get vehicle customization
-function Garage:getCustomization(veh)
+function Garage:getVehicleCustomization(veh)
   local custom = {}
 
   custom.colours = {GetVehicleColours(veh)}
@@ -278,8 +337,8 @@ function Garage:getCustomization(veh)
   return custom
 end
 
--- set vehicle customization (partial update per property)
-function Garage:setCustomization(veh, custom)
+-- partial update per property
+function Garage:setVehicleCustomization(veh, custom)
   SetVehicleModKit(veh, 0)
 
   if custom.colours then
@@ -337,7 +396,7 @@ end
 
 function Garage:getVehicleState(veh)
   local state = {
-    customization = self:getCustomization(veh),
+    customization = self:getVehicleCustomization(veh),
     condition = {
       health = GetEntityHealth(veh),
       engine_health = GetVehicleEngineHealth(veh),
@@ -371,10 +430,11 @@ function Garage:getVehicleState(veh)
   return state
 end
 
+-- partial update per property
 function Garage:setVehicleState(veh, state)
   -- apply state
   if state.customization then
-    self:setCustomization(veh, state.customization)
+    self:setVehicleCustomization(veh, state.customization)
   end
   
   if state.condition then
@@ -498,8 +558,10 @@ end
 -- TUNNEL
 Garage.tunnel = {}
 
-function Garage.tunnel:setConfig(save_interval)
+function Garage.tunnel:setConfig(save_interval, check_interval, respawn_radius)
   self.save_interval = save_interval
+  self.check_interval = check_interval
+  self.respawn_radius = respawn_radius
 end
 
 function Garage.tunnel:registerModels(models)
@@ -512,8 +574,13 @@ function Garage.tunnel:registerModels(models)
   end
 end
 
+function Garage.tunnel:setOutVehicles(out_vehicles)
+  self.out_vehicles = out_vehicles
+end
+
 Garage.tunnel.spawnVehicle = Garage.spawnVehicle
 Garage.tunnel.despawnVehicle = Garage.despawnVehicle
+Garage.tunnel.despawnVehicles = Garage.despawnVehicles
 Garage.tunnel.fixNearestVehicle = Garage.fixNearestVehicle
 Garage.tunnel.replaceNearestVehicle = Garage.replaceNearestVehicle
 Garage.tunnel.getNearestOwnedVehicle = Garage.getNearestOwnedVehicle

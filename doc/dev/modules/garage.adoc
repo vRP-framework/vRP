@@ -47,22 +47,29 @@ Garage.getVehicleChestId(cid, model)
 ----
 self.vehicles -- map of vehicle model => veh id (owned vehicles)
 self.hash_models -- map of hash => model
-self.save_interval -- seconds
 
 -- veh: vehicle game id
 -- return owner character id and model or nil if not managed by vRP
 Garage:getVehicleInfo(veh)
 
 -- spawn vehicle
+-- will be placed on ground properly
 -- one vehicle per model allowed at the same time
 --
 -- state: (optional) vehicle state (client)
--- pos: (optional) {x,y,z}, if not passed the vehicle will be spawned on the player (and will be put inside the vehicle)
+-- position: (optional) {x,y,z}, if not passed the vehicle will be spawned on the player (and will be put inside the vehicle)
+-- rotation: (optional) quaternion {x,y,z,w}, if passed with the position, will be applied to the vehicle entity
 -- return true if spawned (if not already out)
-Garage:spawnVehicle(model, state, pos) 
+Garage:spawnVehicle(model, state, position, rotation) 
 
 -- return true if despawned
 Garage:despawnVehicle(model)
+
+Garage:despawnVehicles()
+
+-- get all game vehicles
+-- return list of veh
+Garage:getAllVehicles()
 
 -- return map of veh => distance
 Garage:getNearestVehicles(radius)
@@ -70,8 +77,8 @@ Garage:getNearestVehicles(radius)
 -- return veh
 Garage:getNearestVehicle(radius)
 
--- try to re-own the nearest vehicle
-Garage:tryOwnNearestVehicle(radius)
+-- try re-own vehicles
+Garage:tryOwnVehicles()
 
 Garage:fixNearestVehicle(radius)
 
@@ -96,14 +103,14 @@ Garage:getInOwnedVehicleModel()
 
 -- VEHICLE STATE
 
--- get vehicle customization
-Garage:getCustomization(veh)
+Garage:getVehicleCustomization(veh)
 
--- set vehicle customization (partial update per property)
-Garage:setCustomization(veh, custom)
+-- partial update per property
+Garage:setVehicleCustomization(veh, custom)
 
 Garage:getVehicleState(veh)
 
+-- partial update per property
 Garage:setVehicleState(veh, state)
 
 -- VEHICLE COMMANDS
@@ -127,6 +134,7 @@ Garage:vc_toggleLock(model)
 
 Garage.tunnel.spawnVehicle = Garage.spawnVehicle
 Garage.tunnel.despawnVehicle = Garage.despawnVehicle
+Garage.tunnel.despawnVehicles = Garage.despawnVehicles
 Garage.tunnel.fixNearestVehicle = Garage.fixNearestVehicle
 Garage.tunnel.replaceNearestVehicle = Garage.replaceNearestVehicle
 Garage.tunnel.getNearestOwnedVehicle = Garage.getNearestOwnedVehicle
@@ -146,8 +154,8 @@ Garage.tunnel.vc_toggleLock = Garage.vc_toggleLock
 
 .Events
 [horizontal]
-`garageVehicleSpawn(model)`:: called when a vehicle is spawned from a garage
-`garageVehicleStore(model)`:: called when a vehicle is stored into a garage
+`garageVehicleSpawn(model)`:: called when a vehicle is spawned
+`garageVehicleDespawn(model)`:: called when a vehicle is despawned
 
 == Item
 
