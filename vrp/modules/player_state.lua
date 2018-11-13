@@ -196,7 +196,7 @@ function PlayerState.event:characterLoad(user)
 end
 
 function PlayerState.event:characterUnload(user)
-  self.remote._setStateReady(user.source, true)
+  self.remote._setStateReady(user.source, false)
 end
 
 -- TUNNEL
