@@ -25,8 +25,10 @@ self.mission_step
 --- mission: 
 ---- name: mission name
 ---- steps: ordered list of
------ text
+----- text: (html)
 ----- position: {x,y,z}
+----- radius: (optional) area radius (affect default PoI)
+----- height: (optional) area height (affect default PoI)
 ----- onenter: see Map.User:setArea
 ----- onleave: (optional) see Map.User:setArea
 ----- map_entity: (optional) a simple PoI by default

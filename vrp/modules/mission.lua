@@ -11,8 +11,10 @@ Mission.User = class("User")
 --- mission: 
 ---- name: mission name
 ---- steps: ordered list of
------ text
+----- text: (html)
 ----- position: {x,y,z}
+----- radius: (optional) area radius (affect default PoI)
+----- height: (optional) area height (affect default PoI)
 ----- onenter: see Map.User:setArea
 ----- onleave: (optional) see Map.User:setArea
 ----- map_entity: (optional) a simple PoI by default
@@ -36,10 +38,13 @@ function Mission.User:nextMissionStep()
     else -- mission step
       local step = self.mission.steps[self.mission_step]
       local x,y,z = table.unpack(step.position)
-      local ment = {"PoI", {blip_id = 1, blip_color = 5, marker_id = 1, color = {255,226,0,125}}}
+      local radius, height = 1, 1.5
       local onleave = function() end
-      if step.map_entity then ment = step.map_entity end
       if step.onleave then onleave = step.onleave end
+      if step.radius then radius = step.radius end
+      if step.height then height = step.height end
+      local ment = {"PoI", {blip_id = 1, blip_color = 5, marker_id = 1, color = {255,226,0,125}, scale = {0.7*radius,0.7*radius,0.5*height}}}
+      if step.map_entity then ment = step.map_entity end
 
       -- display
       vRP.EXT.GUI.remote._setDivContent(self.source,"mission",lang.mission.display({self.mission.name,self.mission_step-1,#self.mission.steps,step.text}))
@@ -51,7 +56,7 @@ function Mission.User:nextMissionStep()
       vRP.EXT.Map.remote._commandEntity(self.source, "vRP:mission", "setBlipRoute")
 
       -- map trigger
-      self:setArea("vRP:mission",x,y,z,1,1.5,step.onenter,step.onleave)
+      self:setArea("vRP:mission",x,y,z,radius,height,step.onenter,step.onleave)
     end
   end
 end

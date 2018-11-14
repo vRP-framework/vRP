@@ -61,13 +61,12 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * ...
 
 == TODO list
-* drop weapon/save weapon components
+* handle weapon components
 * admin: tp to marker
-* clients<->server scheme for VoIP
+* clients <=> server scheme for VoIP
 * props, NPC
 * parcel delivery basic mission, paycheck basic mission
 * radio position display
-* personal garage ?
 * mission event/API/cfg for custom display
 
 === vRP 2 dev' phases
