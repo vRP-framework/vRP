@@ -66,9 +66,6 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * clients<->server scheme for VoIP
 * props, NPC
 * parcel delivery basic mission, paycheck basic mission
-* vehicle state
-** lock/unlock
-** fuel resource integration ?
 * radio position display
 * personal garage ?
 * mission event/API/cfg for custom display

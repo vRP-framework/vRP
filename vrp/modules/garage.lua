@@ -47,7 +47,8 @@ local function menu_garage_owned(self)
     local vstate = user:getVehicleState(model)
     local state = {
       customization = vstate.customization,
-      condition = vstate.condition
+      condition = vstate.condition,
+      locked = vstate.locked
     }
 
     local vehicles = user:getVehicles()
@@ -351,7 +352,8 @@ local function send_out_vehicles(self, user)
       if vstate.position then
         local cstate = {
           customization = vstate.customization,
-          condition = vstate.condition
+          condition = vstate.condition,
+          locked = vstate.locked
         }
 
         out_vehicles[model] = {cstate, vstate.position, vstate.rotation}
@@ -612,6 +614,8 @@ function Garage.tunnel:updateVehicleStates(states)
 
         if state.position then vstate.position = state.position end
         if state.rotation then vstate.rotation = state.rotation end
+
+        if state.locked ~= nil then vstate.locked = state.locked end
       end
     end
   end

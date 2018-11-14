@@ -431,6 +431,8 @@ function Garage:getVehicleState(veh)
     state.condition.doors[i] = not IsVehicleDoorDamaged(veh, i)
   end
 
+  state.locked = (GetVehicleDoorLockStatus(veh) >= 2)
+
   return state
 end
 
@@ -480,6 +482,17 @@ function Garage:setVehicleState(veh, state)
           SetVehicleDoorBroken(veh, i, true)
         end
       end
+    end
+  end
+
+  if state.locked ~= nil then 
+    if state.locked then -- lock
+      SetVehicleDoorsLocked(veh,2)
+      SetVehicleDoorsLockedForAllPlayers(veh, true)
+    else -- unlock
+      SetVehicleDoorsLockedForAllPlayers(veh, false)
+      SetVehicleDoorsLocked(veh,1)
+      SetVehicleDoorsLockedForPlayer(veh, PlayerId(), false)
     end
   end
 end

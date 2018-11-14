@@ -235,3 +235,4 @@ model:: (optional) vehicle model
 customization:: customization properties
 condition:: damages properties
 position, rotation:: position/rotation for persistence
+locked:: doors state
