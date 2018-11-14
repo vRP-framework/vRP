@@ -224,6 +224,7 @@ function Garage:trySpawnOutVehicles()
     local distance = GetDistanceBetweenCoords(x,y,z,vx,vy,vz,true)
 
     if distance <= self.respawn_radius then
+      self.out_vehicles[model] = nil -- remove from out vehicles
       self:spawnVehicle(model, data[1], data[2], data[3])
     end
   end
@@ -604,6 +605,7 @@ Garage.tunnel.getNearestOwnedVehicle = Garage.getNearestOwnedVehicle
 Garage.tunnel.getAnyOwnedVehiclePosition = Garage.getAnyOwnedVehiclePosition
 Garage.tunnel.getOwnedVehiclePosition = Garage.getOwnedVehiclePosition
 Garage.tunnel.getInOwnedVehicleModel = Garage.getInOwnedVehicleModel
+Garage.tunnel.tryOwnVehicles = Garage.tryOwnVehicles
 Garage.tunnel.trySpawnOutVehicles = Garage.trySpawnOutVehicles
 Garage.tunnel.ejectVehicle = Garage.ejectVehicle
 Garage.tunnel.isInVehicle = Garage.isInVehicle

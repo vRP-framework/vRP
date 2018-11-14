@@ -590,6 +590,7 @@ function Garage.event:playerSpawn(user, first_spawn)
 end
 
 function Garage.event:playerStateLoaded(user)
+  self.remote._tryOwnVehicles(user.source)
   self.remote._trySpawnOutVehicles(user.source)
 end
 

@@ -146,6 +146,7 @@ Garage.tunnel.getAnyOwnedVehiclePosition = Garage.getAnyOwnedVehiclePosition
 Garage.tunnel.getOwnedVehiclePosition = Garage.getOwnedVehiclePosition
 Garage.tunnel.getInOwnedVehicleModel = Garage.getInOwnedVehicleModel
 Garage.tunnel.trySpawnOutVehicles = Garage.trySpawnOutVehicles
+Garage.tunnel.tryOwnVehicles = Garage.tryOwnVehicles
 Garage.tunnel.ejectVehicle = Garage.ejectVehicle
 Garage.tunnel.isInVehicle = Garage.isInVehicle
 Garage.tunnel.vc_openDoor = Garage.vc_openDoor
