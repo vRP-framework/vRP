@@ -301,7 +301,7 @@ end
 Map.tunnel = {}
 
 Map.tunnel.addEntity = Map.addEntity
-Map.tunnel.setEntity = Map.setNamedEntity
+Map.tunnel.setEntity = Map.setEntity
 Map.tunnel.removeEntity = Map.removeEntity
 Map.tunnel.commandEntity = Map.commandEntity
 Map.tunnel.setGPS = Map.setGPS

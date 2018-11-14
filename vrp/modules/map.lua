@@ -10,8 +10,8 @@ function Map.User:__construct()
 end
 
 -- create/update a player area
--- cb_enter(user, name): called when entering the area
--- cb_leave(user, name): called when leaving the area
+-- cb_enter(user, name): (optional) called when entering the area
+-- cb_leave(user, name): (optional) called when leaving the area
 function Map.User:setArea(name,x,y,z,radius,height,cb_enter,cb_leave)
   self:removeArea(name)
   self.map_areas[name] = {enter=cb_enter,leave=cb_leave}

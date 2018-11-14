@@ -15,7 +15,7 @@ Mission.User = class("User")
 ----- position: {x,y,z}
 ----- radius: (optional) area radius (affect default PoI)
 ----- height: (optional) area height (affect default PoI)
------ onenter: see Map.User:setArea
+----- onenter: (optional) see Map.User:setArea
 ----- onleave: (optional) see Map.User:setArea
 ----- map_entity: (optional) a simple PoI by default
 function Mission.User:startMission(mission)
@@ -38,13 +38,8 @@ function Mission.User:nextMissionStep()
     else -- mission step
       local step = self.mission.steps[self.mission_step]
       local x,y,z = table.unpack(step.position)
-      local radius, height = 1, 1.5
-      local onleave = function() end
-      if step.onleave then onleave = step.onleave end
-      if step.radius then radius = step.radius end
-      if step.height then height = step.height end
-      local ment = {"PoI", {blip_id = 1, blip_color = 5, marker_id = 1, color = {255,226,0,125}, scale = {0.7*radius,0.7*radius,0.5*height}}}
-      if step.map_entity then ment = step.map_entity end
+      local radius, height = step.radius or 1, step.height or 1.5
+      local ment = clone(step.map_entity) or {"PoI", {blip_id = 1, blip_color = 5, marker_id = 1, color = {255,226,0,125}, scale = {0.7*radius,0.7*radius,0.33*height}}}
 
       -- display
       vRP.EXT.GUI.remote._setDivContent(self.source,"mission",lang.mission.display({self.mission.name,self.mission_step-1,#self.mission.steps,step.text}))

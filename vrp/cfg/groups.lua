@@ -100,6 +100,7 @@ cfg.groups = {
     "police.chest_seized",
     "-player.store_weapons",
     "-police.seizable" -- negative permission, police can't seize itself, even if another group add the permission
+--    "mission.paycheck.police" -- basic mission
   },
   ["emergency"] = {
     _config = {

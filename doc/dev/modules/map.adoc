@@ -48,8 +48,8 @@ Entity:frame(time)
 self.map_areas
 
 -- create/update a player area
--- cb_enter(user, name): called when entering the area
--- cb_leave(user, name): called when leaving the area
+-- cb_enter(user, name): (optional) called when entering the area
+-- cb_leave(user, name): (optional) called when leaving the area
 User:setArea(name,x,y,z,radius,height,cb_enter,cb_leave)
 
 User:removeArea(name)
@@ -112,7 +112,7 @@ Map:setStateOfClosestDoor(doordef, locked, doorswing)
 -- TUNNEL
 
 Map.tunnel.addEntity = Map.addEntity
-Map.tunnel.setEntity = Map.setNamedEntity
+Map.tunnel.setEntity = Map.setEntity
 Map.tunnel.removeEntity = Map.removeEntity
 Map.tunnel.commandEntity = Map.commandEntity
 Map.tunnel.setGPS = Map.setGPS
