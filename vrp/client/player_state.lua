@@ -59,12 +59,12 @@ function PlayerState:__construct()
   vRP.Extension.__construct(self)
 
   self.state_ready = false
-  self.save_interval = 30
+  self.update_interval = 30
 
   -- update task
   Citizen.CreateThread(function()
     while true do
-      Citizen.Wait(self.save_interval*1000)
+      Citizen.Wait(self.update_interval*1000)
 
       if self.state_ready then
         local x,y,z = vRP.EXT.Base:getPosition()
@@ -300,8 +300,8 @@ function PlayerState.tunnel:setStateReady(state)
   self.state_ready = state
 end
 
-function PlayerState.tunnel:setSaveInterval(value)
-  self.save_interval = value
+function PlayerState.tunnel:setUpdateInterval(value)
+  self.update_interval = value
 end
 
 PlayerState.tunnel.getWeapons = PlayerState.getWeapons

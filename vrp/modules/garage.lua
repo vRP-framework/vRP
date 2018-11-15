@@ -549,7 +549,7 @@ end
 function Garage.event:playerSpawn(user, first_spawn)
   if first_spawn then
     -- config
-    self.remote._setConfig(user.source, self.cfg.vehicle_state_save_interval, self.cfg.vehicle_check_interval, self.cfg.vehicle_respawn_radius)
+    self.remote._setConfig(user.source, self.cfg.vehicle_update_interval, self.cfg.vehicle_check_interval, self.cfg.vehicle_respawn_radius)
 
     -- register models
     self.remote._registerModels(user.source, self.models)

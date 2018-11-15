@@ -141,7 +141,7 @@ PlayerState.event = {}
 
 function PlayerState.event:playerSpawn(user, first_spawn)
   if first_spawn then
-    self.remote._setSaveInterval(user.source, self.cfg.save_interval)
+    self.remote._setUpdateInterval(user.source, self.cfg.update_interval)
   end
   self.remote._setStateReady(user.source, false)
 

@@ -38,7 +38,6 @@ self.cfg
 [source,lua]
 ----
 self.state_ready 
-self.save_interval
 
 -- WEAPONS
 

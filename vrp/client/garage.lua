@@ -12,7 +12,7 @@ function Garage:__construct()
   self.vehicles = {} -- map of vehicle model => veh id (owned vehicles)
   self.hash_models = {} -- map of hash => model
 
-  self.save_interval = 30 -- seconds
+  self.update_interval = 30 -- seconds
   self.check_interval = 15 -- seconds
   self.respawn_radius = 200
 
@@ -21,7 +21,7 @@ function Garage:__construct()
   -- task: save vehicle states
   Citizen.CreateThread(function()
     while true do
-      Citizen.Wait(self.save_interval*1000)
+      Citizen.Wait(self.update_interval*1000)
 
       local states = {}
       
@@ -576,8 +576,8 @@ end
 -- TUNNEL
 Garage.tunnel = {}
 
-function Garage.tunnel:setConfig(save_interval, check_interval, respawn_radius)
-  self.save_interval = save_interval
+function Garage.tunnel:setConfig(update_interval, check_interval, respawn_radius)
+  self.update_interval = update_interval
   self.check_interval = check_interval
   self.respawn_radius = respawn_radius
 end
