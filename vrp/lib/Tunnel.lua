@@ -19,7 +19,9 @@ local Tunnel = {}
 -- define per dest regulator
 Tunnel.delays = {}
 
--- set the base delay between Triggers for this destination in milliseconds (0 for instant trigger)
+-- set the base delay between Triggers for a destination
+-- dest: player source
+-- delay: milliseconds (0 for instant trigger)
 function Tunnel.setDestDelay(dest, delay)
   Tunnel.delays[dest] = {delay, 0}
 end
@@ -138,7 +140,7 @@ end
 
 -- get a tunnel interface to send requests 
 -- name: interface name
--- identifier: unique string to identify this tunnel interface access (if nil, will be the name of the resource)
+-- identifier: (optional) unique string to identify this tunnel interface access; if nil, will be the name of the resource
 function Tunnel.getInterface(name,identifier)
   if not identifier then identifier = GetCurrentResourceName() end
   

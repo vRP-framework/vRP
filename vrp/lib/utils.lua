@@ -5,6 +5,7 @@
 SERVER = not IsVehicleEngineStarting
 CLIENT = not SERVER
 
+-- table.maxn replacement
 function table_maxn(t)
   local max = 0
   for k,v in pairs(t) do
@@ -16,6 +17,7 @@ function table_maxn(t)
 end
 
 local modules = {}
+
 -- load a lua resource file as module
 -- rsc: resource name
 -- path: lua file path without extension
@@ -76,7 +78,8 @@ local function areturn(self, ...)
   self.p:resolve(self.r)
 end
 
--- create an async returner
+-- create an async returner or a thread (Citizen.CreateThreadNow)
+-- func: if passed, will create a thread, otherwise will return an async returner
 function async(func)
   if func then
     Citizen.CreateThreadNow(func)
@@ -89,6 +92,7 @@ local function hex_conv(c)
   return string.format('%02X', string.byte(c))
 end
 
+-- convert Lua string to hexadecimal
 function tohex(str)
   return string.gsub(str, '.', hex_conv)
 end
@@ -130,7 +134,7 @@ function parseFloat(v)
 end
 
 -- will remove chars not allowed/disabled by strchars
--- if allow_policy is true, will allow all strchars, if false, will allow everything except the strchars
+-- allow_policy: if true, will allow all strchars, if false, will allow everything except the strchars
 local sanitize_tmp = {}
 function sanitizeString(str, strchars, allow_policy)
   local r = ""

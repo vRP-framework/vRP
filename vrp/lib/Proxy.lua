@@ -47,7 +47,9 @@ local function proxy_resolve(itable,key)
   return fcall
 end
 
---- Add event handler to call interface functions (can be called multiple times for the same interface name with different tables)
+-- add event handler to call interface functions 
+-- name: interface name
+-- itable: table containing functions
 function Proxy.addInterface(name, itable)
   AddEventHandler(name..":proxy", function(member,args,identifier,rid)
     local f = itable[member]
@@ -68,7 +70,7 @@ end
 
 -- get a proxy interface 
 -- name: interface name
--- identifier: unique string to identify this proxy interface access (if nil, will be the name of the resource)
+-- identifier: (optional) unique string to identify this proxy interface access; if nil, will be the name of the resource
 function Proxy.getInterface(name, identifier)
   if not identifier then identifier = GetCurrentResourceName() end
 

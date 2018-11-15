@@ -154,6 +154,109 @@ The content of `server_vrp.lua` is now executed in the vRP context and can now u
 
 == General API
 
+=== utils
+
+`lib/utils.lua` defines some useful globals.
+
+[source,lua]
+----
+-- side detection
+SERVER -- boolean
+CLIENT -- boolean
+
+-- load a lua resource file as module
+-- rsc: resource name
+-- path: lua file path without extension
+module(rsc, path)
+
+class -- Luaoop class
+
+-- create an async returner or a thread (Citizen.CreateThreadNow)
+-- func: if passed, will create a thread, otherwise will return an async returner
+async(func)
+
+-- convert Lua string to hexadecimal
+tohex(str)
+
+-- basic deep clone function (doesn't handle circular references)
+clone(t)
+
+parseInt(v)
+
+parseDouble(v)
+
+-- will remove chars not allowed/disabled by strchars
+-- allow_policy: if true, will allow all strchars, if false, will allow everything except the strchars
+sanitizeString(str, strchars, allow_policy)
+
+splitString(str, sep)
+----
+
+=== Proxy and Tunnel
+
+==== Proxy
+
+[source,lua]
+----
+-- add event handler to call interface functions 
+-- name: interface name
+-- itable: table containing functions
+Proxy.addInterface(name, itable)
+
+-- get a proxy interface 
+-- name: interface name
+-- identifier: (optional) unique string to identify this proxy interface access; if nil, will be the name of the resource
+Proxy.getInterface(name, identifier)
+----
+
+==== Tunnel
+
+[source,lua]
+----
+-- set the base delay between Triggers for a destination
+-- dest: player source
+-- delay: milliseconds (0 for instant trigger)
+Tunnel.setDestDelay(dest, delay)
+
+-- bind an interface (listen to net requests)
+-- name: interface name
+-- interface: table containing functions
+Tunnel.bindInterface(name,interface)
+
+-- get a tunnel interface to send requests 
+-- name: interface name
+-- identifier: (optional) unique string to identify this tunnel interface access; if nil, will be the name of the resource
+Tunnel.getInterface(name,identifier)
+----
+
+==== Interface
+
+* interface defined function names should not start with an underscore (`_`)
+* the tunnel server-side call requires the player source as first parameter
+* the tunnel server-side called function can use the global `source` (correct until a TriggerEvent/yield/etc) as the remote player source
+* using an underscore to call a remote function interface ignores (no wait) the returned values
+
+[source,lua]
+----
+-- PROXY any side, TUNNEL client-side
+
+-- call and wait for returned values
+-- ...: arguments
+-- return values
+interface.func(...)
+
+-- call without waiting
+-- ...: arguments
+interface._func(...)
+
+-- TUNNEL server-side
+
+-- call and wait for returned values
+-- ...: arguments
+-- return values
+interface.func(player, ...) -- or _func to ignores returned values
+----
+
 === DBDriver
 
 [source,lua]
