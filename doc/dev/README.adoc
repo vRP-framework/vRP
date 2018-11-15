@@ -254,7 +254,7 @@ interface._func(...)
 -- call and wait for returned values
 -- ...: arguments
 -- return values
-interface.func(player, ...) -- or _func to ignores returned values
+interface.func(player, ...) -- or _func to ignore returned values
 ----
 
 === DBDriver
