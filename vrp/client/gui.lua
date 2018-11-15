@@ -22,8 +22,22 @@ function GUI:__construct()
       end
 
       -- open general menu
-      if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.open)) and ((vRP.EXT.Survival and not vRP.EXT.Survival:isInComa() or true) or not vRP.cfg.coma_disable_menu) and ((vRP.EXT.Police and not vRP.EXT.Police:isHandcuffed() or true) or not vRP.cfg.handcuff_disable_menu) and not self.menu_data then 
-        self.remote._openMainMenu() 
+      if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.open)) and not self.menu_data then
+        local ok = true
+
+        -- coma check
+        if vRP.EXT.Survival and vRP.cfg.coma_disable_menu and vRP.EXT.Survival:isInComa() then
+          ok = false
+        end
+
+        -- handcuff check
+        if ok and vRP.EXT.Police and vRP.cfg.handcuff_disable_menu and vRP.EXT.Police:isHandcuffed() then 
+          ok = false
+        end
+
+        if ok then
+          self.remote._openMainMenu() 
+        end
       end
 
       -- F5,F6 (default: control michael, control franklin)

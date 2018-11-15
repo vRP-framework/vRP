@@ -9,4 +9,11 @@ cfg.channels = {
   {"police"}
 }
 
+-- map entities used to display player radio GPS signal per group
+-- map of group => map_entity (with PlayerMark behavior)
+--- map_entity: {ent, cfg} will fill cfg.player, cfg.title
+cfg.group_map_entities = {
+  police = {"PlayerMark", {blip_id = 60, blip_color = 38}}
+}
+
 return cfg

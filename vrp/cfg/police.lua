@@ -19,9 +19,9 @@ cfg.trackveh = {
 }
 
 -- wanted display
+-- map_entity: {ent,cfg} will fill cfg.pos, cfg.title
 cfg.wanted = {
-  blipid = 458,
-  blipcolor = 38,
+  map_entity = {"PoI", {blip_id = 458, blip_color = 38}},
   service = "police"
 }
 

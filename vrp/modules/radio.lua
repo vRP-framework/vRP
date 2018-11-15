@@ -105,7 +105,7 @@ end
 -- EVENT
 Radio.event = {}
 
-function Radio.event:playerLeave(user)
+function Radio.event:characterUnload(user)
   user:disconnectRadio()
 end
 

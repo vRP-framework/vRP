@@ -602,8 +602,12 @@ function Police:__construct()
     for user, v in pairs(self.wantedlvl_users) do -- each wanted player
       if v > 0 then
         local x,y,z = vRP.EXT.Base.remote.getPosition(user.source)
+        local ment = clone(self.cfg.wanted.map_entity)
+        ment[2].pos = {x,y,z}
+        ment[2].title = lang.police.wanted({v})
+
         for _,listener in pairs(listeners) do -- each listening player
-          vRP.EXT.Map.remote._setNamedBlip(listener.source, "vRP:police:wanted:"..user.id,x,y,z,self.cfg.wanted.blipid,self.cfg.wanted.blipcolor,lang.police.wanted({v}))
+          vRP.EXT.Map.remote._setEntity(listener.source, "vRP:police:wanted:"..user.id, ment[1], ment[2])
         end
       end
     end
@@ -659,7 +663,7 @@ end
 
 function Police.event:playerLeave(user)
   self.wantedlvl_users[user] = nil
-  vRP.EXT.Map.remote._removeNamedBlip(-1, "vRP:police:wanted:"..user.id)  -- remove wanted blip (all to prevent phantom blip)
+  vRP.EXT.Map.remote._removeEntity(-1, "vRP:police:wanted:"..user.id)  -- remove wanted blip (all to prevent phantom blip)
 end
 
 -- TUNNEL

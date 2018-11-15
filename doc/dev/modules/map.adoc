@@ -137,8 +137,8 @@ Inherits from `Map.PosEntity`.
 
 .config
 [horizontal]
-blip_id:: (optional) blip id (ex: https://wiki.gtanet.work/index.php?title=Blips)
-blip_color:: (optional) blip color 
+blip_id, blip_color:: (optional) blip id/color (ex: https://wiki.gtanet.work/index.php?title=Blips)
+title:: (optional) title (used for the blip)
 marker_id:: (optional) marker id (ex: https://wiki.gtanet.work/index.php?title=Marker)
 scale:: (optional) `{sx,sy,sz}` marker scale
 color:: (optional) `{r,g,b,a}` marker color
@@ -148,3 +148,13 @@ rotate_speed:: (optional) number of z-axis rotations per second
 .commands
 [horizontal]
 `setBlipRoute()`:: set player blip route to `PoI` blip
+
+=== PlayerMark
+
+Mark on player ped.
+
+.config
+[horizontal]
+player:: player server id
+blip_id, blip_color:: (optional) blip id/color (ex: https://wiki.gtanet.work/index.php?title=Blips)
+title:: (optional) title (used for the blip)

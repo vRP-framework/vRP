@@ -80,7 +80,9 @@ function PoI:load()
 end
 
 function PoI:unload()
-  RemoveBlip(self.blip)
+  if self.blip then
+    RemoveBlip(self.blip)
+  end
 end
 
 function PoI:active(px,py,pz)
@@ -103,6 +105,37 @@ function PoI.command:setBlipRoute()
   end
 end
 
+-- PlayerMark
+local PlayerMark = class("PlayerMark", Map.Entity)
+
+function PlayerMark:load()
+  -- get target ped
+  local player = GetPlayerFromServerId(self.cfg.player)
+  if player and NetworkIsPlayerConnected(player) then
+    self.ped = GetPlayerPed(player)
+  end
+
+  -- blip
+  if self.ped and self.cfg.blip_id and self.cfg.blip_color then
+    self.blip = AddBlipForEntity(self)
+    SetBlipSprite(self.blip, self.cfg.blip_id)
+    SetBlipAsShortRange(self.blip, true)
+    SetBlipColour(self.blip, self.cfg.blip_color)
+
+    if self.cfg.title then
+      BeginTextCommandSetBlipName("STRING")
+      AddTextComponentString(self.cfg.title)
+      EndTextCommandSetBlipName(self.blip)
+    end
+  end
+end
+
+function PlayerMark:unload()
+  if self.blip then
+    RemoveBlip(self.blip)
+  end
+end
+
 -- METHODS
 
 function Map:__construct()
@@ -117,6 +150,7 @@ function Map:__construct()
 
   -- basic entities
   self:registerEntity(PoI)
+  self:registerEntity(PlayerMark)
 
   -- task: entities active check
   Citizen.CreateThread(function()
