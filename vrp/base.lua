@@ -208,24 +208,21 @@ function Base.event:extensionLoad(ext)
   end
 end
 
-function Base.event:playerJoin(user)
-  self.remote._setUserId(user.id)
-end
-
-function Base.event:playerRejoin(user)
-  self.remote._setUserId(user.id)
-end
-
 function Base.event:characterLoad(user)
-  self.remote._setCharacterId(user.cid)
+  self.remote._setCharacterId(user.source, user.cid)
 end
 
 function Base.event:playerSpawn(user, first_spawn)
-  -- notify last login
-  if user.last_login then
-    SetTimeout(15000,function()
-      self.remote._notify(user.source,lang.common.welcome({user.last_login}))
-    end)
+  if first_spawn then
+    self.remote._setUserId(user.source, user.id)
+    self.remote._setCharacterId(user.source, user.cid)
+
+    -- notify last login
+    if user.last_login then
+      SetTimeout(15000,function()
+        self.remote._notify(user.source,lang.common.welcome({user.last_login}))
+      end)
+    end
   end
 end
 

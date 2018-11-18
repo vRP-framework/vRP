@@ -36,6 +36,7 @@ function Garage:__construct()
       end
 
       self.remote._updateVehicleStates(states)
+      vRP.EXT.PlayerState.remote._update({ in_owned_vehicle = self:getInOwnedVehicleModel() or false})
     end
   end)
 
@@ -105,7 +106,7 @@ function Garage:spawnVehicle(model, state, position, rotation)
       SetVehicleHasBeenOwnedByPlayer(nveh,true)
 
       -- set decorators
-      DecorSetInt(veh, "vRP.owner", vRP.EXT.Base.id)
+      DecorSetInt(nveh, "vRP.owner", vRP.EXT.Base.cid)
       self.vehicles[model] = nveh -- mark as owned
       self.out_vehicles[model] = nil
 
@@ -290,6 +291,13 @@ function Garage:getOwnedVehiclePosition(model)
   end
 end
 
+function Garage:putInOwnedVehicle(model)
+  local veh = self.vehicles[model]
+  if veh then
+    SetPedIntoVehicle(GetPlayerPed(-1),veh,-1) -- put player inside
+  end
+end
+
 -- eject the ped from the vehicle
 function Garage:ejectVehicle()
   local ped = GetPlayerPed(-1)
@@ -306,7 +314,7 @@ end
 
 -- return model or nil if not in owned vehicle
 function Garage:getInOwnedVehicleModel()
-  local veh = GetVehiclePedIsIn(ped,false)
+  local veh = GetVehiclePedIsIn(GetPlayerPed(-1),false)
   local cid, model = self:getVehicleInfo(veh)
   if cid and cid == vRP.EXT.Base.cid then
     return model
@@ -604,6 +612,7 @@ Garage.tunnel.replaceNearestVehicle = Garage.replaceNearestVehicle
 Garage.tunnel.getNearestOwnedVehicle = Garage.getNearestOwnedVehicle
 Garage.tunnel.getAnyOwnedVehiclePosition = Garage.getAnyOwnedVehiclePosition
 Garage.tunnel.getOwnedVehiclePosition = Garage.getOwnedVehiclePosition
+Garage.tunnel.putInOwnedVehicle = Garage.putInOwnedVehicle
 Garage.tunnel.getInOwnedVehicleModel = Garage.getInOwnedVehicleModel
 Garage.tunnel.tryOwnVehicles = Garage.tryOwnVehicles
 Garage.tunnel.trySpawnOutVehicles = Garage.trySpawnOutVehicles

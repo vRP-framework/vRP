@@ -591,7 +591,11 @@ end
 
 function Garage.event:playerStateLoaded(user)
   self.remote._tryOwnVehicles(user.source)
-  self.remote._trySpawnOutVehicles(user.source)
+  self.remote.trySpawnOutVehicles(user.source)
+
+  if user.cdata.state.in_owned_vehicle then
+    self.remote._putInOwnedVehicle(user.source, user.cdata.state.in_owned_vehicle)
+  end
 end
 
 -- TUNNEL
