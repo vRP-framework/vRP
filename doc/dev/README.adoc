@@ -58,6 +58,8 @@ function MyExt.event:playerSpawn(user, first_spawn)
 end
 ----
 
+NOTE: Events marked with `(sync)` in the documentation may be called using `vRP:triggerEventSync` which will wait for the listeners to complete, meaning that listeners must return (mostly in a short time frame) in order to let the execution continue normally.
+
 ==== Proxy and Tunnel
 
 Extensions can listen to proxy/tunnel calls by defining methods in the `proxy` or `tunnel` table.
