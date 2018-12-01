@@ -113,6 +113,14 @@ Police fine sub-menu.
 tuser:: target user
 money:: target maximum available money
 
+=== police.check
+
+Police check report menu.
+
+.data
+[horizontal]
+tuser:: target user
+
 === police_pc
 
 Police PC menu.

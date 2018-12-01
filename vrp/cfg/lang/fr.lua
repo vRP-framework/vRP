@@ -303,23 +303,17 @@ local lang = {
       },
       check = {
         title = "Fouiller le joueur",
-        description = "Fouiller l'argent, les objets et les armes du joueur le plus proche.",
-        request_hide = "Fermer le rapport de fouille.",
-        info = "<em>Argent: </em>{1} $<br /><br /><em>Inventaire: </em>{2}<br /><br /><em>Armes: </em>{3}",
-        checked = "Vous avez été fouillé."
+        description = "Fouiller le portefeuille, les objets et les armes du joueur le plus proche.",
+        checked = "~b~Vous avez été fouillé.",
+        info = {
+          title = "Info",
+          description = "<em>Portefeuille: </em>{1} $"
+        }
       },
       seize = {
-        seized = "Saisis {2} ~r~{1}",
-        weapons = {
-          title = "Saisir armes",
-          description = "Saisir les armes du joueur à proximité.",
-          seized = "~b~Vos armes ont été saisies."
-        },
-        items = {
-          title = "Saisir illégaux",
-          description = "Saisir les objets illégaux.",
-          seized = "~b~Vos objets illégaux ont été saisis."
-        }
+        seized = "~b~Vos armes et objets illégaux ont été saisis.",
+        title = "Saisir armes/illégaux",
+        description = "Saisir les armes et objets illégaux du joueur à proximité."
       },
       jail = {
         title = "Prison",

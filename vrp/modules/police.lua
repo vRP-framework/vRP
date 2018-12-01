@@ -184,7 +184,7 @@ local function menu_police_fine(self)
       if tuser:tryFullPayment(amount) then
         tuser:insertPoliceRecord(lang.police.menu.fine.record({name,amount}))
         vRP.EXT.Base.remote._notify(user.source,lang.police.menu.fine.fined({name,amount}))
-        vRP.EXT.Base.remote._notify(nuser.source,lang.police.menu.fine.notify_fined({name,amount}))
+        vRP.EXT.Base.remote._notify(tuser.source,lang.police.menu.fine.notify_fined({name,amount}))
 
         user:closeMenu(menu)
       else
@@ -197,9 +197,51 @@ local function menu_police_fine(self)
     menu.title = lang.police.menu.fine.title()
     menu.css.header_color = "rgba(0,125,255,0.75)"
 
-    for name,amount in pairs(self.cfg.fines) do -- add fines in function of money available
+    local money = menu.data.money
+
+    for _,fine in ipairs(self.sorted_fines) do -- add fines in function of money available
+      local name, amount = fine[1], fine[2]
+
       if amount <= money then
         menu:addOption(name, m_fine, amount, name)
+      end
+    end
+  end)
+end
+
+-- menu: police check
+local function menu_police_check(self)
+  vRP.EXT.GUI:registerMenuBuilder("police.check", function(menu)
+    menu.title = lang.police.menu.check.title()
+    menu.css.header_color = "rgba(0,125,255,0.75)"
+
+    local tuser = menu.data.tuser
+
+    local wallet = tuser:getWallet()
+    local items = clone(tuser:getInventory())
+
+    -- add worn weapons to items
+    local weapons = vRP.EXT.PlayerState.remote.getWeapons(tuser.source)
+    for id, weapon in pairs(weapons) do
+      local b_id = "wbody|"..id
+      local b_amount = items[b_id] or 0
+      items[b_id] = b_amount+1
+
+      if weapon.ammo > 0 then
+        local a_id = "wammo|"..id
+        local a_amount = items[a_id] or 0
+        items[a_id] = a_amount+weapon.ammo
+      end
+    end
+
+    -- general info
+    menu:addOption(lang.police.menu.check.info.title(), nil, lang.police.menu.check.info.description({wallet}))
+
+    -- items
+    for fullid, amount in pairs(items) do
+      local citem = vRP.EXT.Inventory:computeItem(fullid)
+      if citem then
+        menu:addOption(htmlEntities.encode(citem.name), nil, lang.inventory.iteminfo({amount,citem.description, string.format("%.2f",citem.weight)}))
       end
     end
   end)
@@ -295,19 +337,6 @@ local function menu_police(self)
     end
   end
 
-  local m_check_css = [[
-.div_police_check{ 
-  background-color: 
-  rgba(0,0,0,0.75); 
-  color: white; 
-  font-weight: bold; 
-  width: 500px; 
-  padding: 10px; 
-  margin: auto; 
-  margin-top: 150px; 
-}
-  ]]
-
   local function m_check(menu)
     local user = menu.user
 
@@ -316,33 +345,18 @@ local function menu_police(self)
     if nplayer then nuser = vRP.users_by_source[nplayer] end
 
     if nuser then
-      vRP.EXT.Base.remote._notify(nuser.source,lang.police.menu.check.checked())
-      local weapons = vRP.EXT.PlayerState.remote.getWeapons(nuser.source)
-      -- prepare display data (money, items, weapons)
-      local money = nuser:getWallet()
-      local items = ""
-      for fullid,amount in pairs(nuser:getInventory()) do
-        local citem = vRP.EXT.Inventory:computeItem(fullid)
-        if citem then
-          items = items.."<br />"..citem.name.." ("..amount..")"
-        end
+      if self.remote.isHandcuffed(nuser.source) then  -- check handcuffed
+        user:openMenu("police.check", {tuser = nuser})
+        vRP.EXT.Base.remote._notify(nuser.source,lang.police.menu.check.checked())
+      else
+        vRP.EXT.Base.remote._notify(user.source,lang.police.not_handcuffed())
       end
-
-      local weapons_info = ""
-      for k,v in pairs(weapons) do
-        weapons_info = weapons_info.."<br />"..k.." ("..v.ammo..")"
-      end
-
-      vRP.EXT.GUI.remote._setDiv(user.source,"police_check",m_check_css,lang.police.menu.check.info({money,items,weapons_info}))
-      -- request to hide div
-      user:request(lang.police.menu.check.request_hide(), 1000)
-      vRP.EXT.GUI.remote._removeDiv(user.source,"police_check")
     else
       vRP.EXT.Base.remote._notify(user.source,lang.common.no_player_near())
     end
   end
 
-  local function m_seize_weapons(menu)
+  local function m_seize(menu)
     local user = menu.user
 
     local nuser
@@ -352,10 +366,10 @@ local function menu_police(self)
     if nuser then
       if nuser:hasPermission("police.seizable") then
         if self.remote.isHandcuffed(nuser.source) then  -- check handcuffed
+          -- weapons
           local weapons = vRP.EXT.PlayerState.remote.replaceWeapons(nuser.source, {})
 
-          for k,v in pairs(weapons) do -- display seized weapons
-            -- vRPclient._notify(player,lang.police.menu.seize.seized({k,v.ammo}))
+          for k,v in pairs(weapons) do 
             -- convert weapons to parametric weapon items
             user:tryGiveItem("wbody|"..k, 1)
             if v.ammo > 0 then
@@ -363,26 +377,8 @@ local function menu_police(self)
             end
           end
 
-          vRP.EXT.Base.remote._notify(nuser.source,lang.police.menu.seize.weapons.seized())
-        else
-          vRP.EXT.Base.remote._notify(user.source,lang.police.not_handcuffed())
-        end
-      end
-    else
-      vRP.EXT.Base.remote._notify(user.source,lang.common.no_player_near())
-    end
-  end
 
-  local function m_seize_items(menu)
-    local user = menu.user
-
-    local nuser
-    local nplayer = vRP.EXT.Base.remote.getNearestPlayer(user.source,5)
-    if nplayer then nuser = vRP.users_by_source[nplayer] end
-
-    if nuser then
-      if nuser:hasPermission("police.seizable") then
-        if self.remote.isHandcuffed(nuser.source) then  -- check handcuffed
+          -- items
           local inventory = nuser:getInventory()
 
           for key in pairs(self.cfg.seizable_items) do -- transfer seizable items
@@ -404,15 +400,14 @@ local function menu_police(self)
                 local citem = vRP.EXT.Inventory:computeItem(fullid)
                 if citem then -- do transfer
                   if nuser:tryTakeItem(fullid,amount) then
-                    user:tryGiveItem(fullid,amount,nil,true)
-                    vRP.EXT.Base.remote._notify(user.source,lang.police.menu.seize.seized({citem.name,amount}))
+                    user:tryGiveItem(fullid,amount)
                   end
                 end
               end
             end
           end
 
-          vRP.EXT.Base.remote._notify(nuser.source,lang.police.menu.seize.items.seized())
+          vRP.EXT.Base.remote._notify(nuser.source,lang.police.menu.seize.seized())
         else
           vRP.EXT.Base.remote._notify(user.source,lang.police.not_handcuffed())
         end
@@ -506,12 +501,8 @@ local function menu_police(self)
       menu:addOption(lang.police.menu.check.title(), m_check, lang.police.menu.check.description())
     end
 
-    if user:hasPermission("police.seize.weapons") then
-      menu:addOption(lang.police.menu.seize.weapons.title(), m_seize_weapons, lang.police.menu.seize.weapons.description())
-    end
-
-    if user:hasPermission("police.seize.items") then
-      menu:addOption(lang.police.menu.seize.items.title(), m_seize_items, lang.police.menu.seize.items.description())
+    if user:hasPermission("police.seize") then
+      menu:addOption(lang.police.menu.seize.title(), m_seize, lang.police.menu.seize.description())
     end
 
     if user:hasPermission("police.jail") then
@@ -554,7 +545,15 @@ function Police:__construct()
   vRP.Extension.__construct(self)
 
   self.cfg = module("cfg/police")
-  self:log(#self.cfg.pcs.." PCs "..#self.cfg.jails.." jails")
+
+  -- sort fines
+  self.sorted_fines = {}
+  for name, amount in pairs(self.cfg.fines) do
+    table.insert(self.sorted_fines, {name, amount})
+  end
+  table.sort(self.sorted_fines, function(a,b) return a[2] < b[2] end)
+
+  self:log(#self.cfg.pcs.." PCs "..#self.cfg.jails.." jails "..#self.sorted_fines.." fines")
 
   self.wantedlvl_users = {} -- map of user => wanted level
 
@@ -565,6 +564,7 @@ function Police:__construct()
   menu_police_pc_records(self)
   menu_police_pc(self)
   menu_police_fine(self)
+  menu_police_check(self)
   menu_police(self)
 
   -- main menu

@@ -64,11 +64,15 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 .TODO list
 * handle weapon components
 * admin: tp to marker
-* clients <=> server scheme for VoIP
+* clients <= => server scheme for VoIP
 * props, NPC
 * parcel delivery basic mission
 * radio position display
 * mission event/API/cfg for custom display
+* groups count display
+* module enable/disable config
+* missing doc (ex: STUN/TURN VoIP)
+* vehicle name in vehicle menu
 
 .vRP 2 dev' phases
 * refactoring (done)

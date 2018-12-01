@@ -303,23 +303,17 @@ local lang = {
       },
       check = {
         title = "Check player",
-        description = "Check money, inventory and weapons of the nearest player.",
-        request_hide = "Hide the check report.",
-        info = "<em>money: </em>{1} $<br /><br /><em>inventory: </em>{2}<br /><br /><em>weapons: </em>{3}",
-        checked = "You have being checked."
+        description = "Check wallet, inventory and weapons of the nearest player.",
+        checked = "~b~You have been checked.",
+        info = {
+          title = "Info",
+          description = "<em>Wallet: </em>{1} $"
+        }
       },
       seize = {
-        seized = "Seized {2} ~r~{1}",
-        weapons = {
-          title = "Seize weapons",
-          description = "Seize nearest player weapons",
-          seized = "~b~Your weapons have been seized."
-        },
-        items = {
-          title = "Seize illegals",
-          description = "Seize illegal items",
-          seized = "~b~Your illegal stuff has been seized."
-        }
+        seized = "~b~Your weapons and illegal items have been seized.",
+        title = "Seize weapons/illegals",
+        description = "Seize nearest player weapons and illegal items."
       },
       jail = {
         title = "Jail",
