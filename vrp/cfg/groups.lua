@@ -178,5 +178,43 @@ cfg.identity_gtypes = {
   job = "Job"
 }
 
+-- count display
+
+cfg.count_display_interval = 15 -- seconds
+
+cfg.count_display_css = [[
+.div_group_count_display{
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  padding: 2px;
+  padding-right: 5px;
+}
+
+.div_group_count_display > div{
+  padding-left: 7px;
+  color: white;
+  font-weight: bold;
+  line-height: 22px;
+}
+
+.div_group_count_display > div > img{
+  margin-right: 2px;
+  vertical-align: bottom;
+}
+]]
+
+-- list of {group, img_src}
+cfg.count_display_groups = {
+  {"user", "https://i.imgur.com/tQ2VHAi.png"},
+  {"admin", "https://i.imgur.com/cpSYyN0.png"},
+  {"police", "https://i.imgur.com/dygLDfC.png"},
+  {"emergency", "https://i.imgur.com/K5lXutO.png"},
+  {"repair", "https://i.imgur.com/QEjFgzM.png"},
+  {"taxi", "https://i.imgur.com/yY4yrZN.png"}
+}
+
 return cfg
 
