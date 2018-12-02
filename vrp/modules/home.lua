@@ -126,7 +126,7 @@ function EntryComponent:enter(user)
     end
   end
 
-  local ment = clone(vRP.EXT.home.cfg.entry_map_entity)
+  local ment = clone(vRP.EXT.Home.cfg.entry_map_entity)
   ment[2].pos = {x,y,z-1}
   vRP.EXT.Map.remote._setEntity(user.source,self.point_id,ment[1],ment[2])
 
