@@ -13,9 +13,6 @@ function AudioEngine()
 
   this.sources = {};
   this.listener = this.c.listener;
-  this.listener.upX.value = 0;
-  this.listener.upY.value = 0;
-  this.listener.upZ.value = 1;
 
   this.last_check = new Date().getTime();
 
@@ -133,13 +130,8 @@ function AudioEngine()
 
 AudioEngine.prototype.setListenerData = function(data)
 {
-  var l = this.listener;
-  l.positionX.value = data.x;
-  l.positionY.value = data.y;
-  l.positionZ.value = data.z;
-  l.forwardX.value = data.fx;
-  l.forwardY.value = data.fy;
-  l.forwardZ.value = data.fz;
+  this.listener.setPosition(data.x, data.y, data.z);
+  this.listener.setOrientation(data.fx,data.fy,data.fz,0,0,1);
 
   var time = new Date().getTime();
   if(time-this.last_check >= 2000){ // every 2s
