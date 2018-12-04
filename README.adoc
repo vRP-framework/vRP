@@ -58,6 +58,8 @@ radio:: https://freesound.org/people/JustinBW/sounds/70107/
 phone sms:: https://freesound.org/people/SpiceProgram/sounds/399191/
 phone ringing:: https://freesound.org/people/Framing_Noise/sounds/223183/
 phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
+drinking:: https://freesound.org/people/freakinbehemoth/sounds/243635/
+eating:: https://freesound.org/people/ryanharding95/sounds/272440/
 
 == WIP
 
@@ -71,7 +73,6 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * mission event/API/cfg for custom display
 * module enable/disable config
 * missing doc (ex: STUN/TURN VoIP)
-* play audio/set audio source attached to player
 * add more sound effects
 ** edible
 ** handcuff

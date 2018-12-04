@@ -1,6 +1,9 @@
 
 local cfg = {}
 
+cfg.solid_sound = "sounds/eating.ogg"
+cfg.liquid_sound = "sounds/drinking.ogg"
+
 -- (see vRP.EXT.Edible:defineEdible)
 -- map of id => {type, effects, name, description, weight}
 --- type
