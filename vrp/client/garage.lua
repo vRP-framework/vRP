@@ -331,6 +331,7 @@ function Garage:getVehicleCustomization(veh)
   custom.plate_index = GetVehicleNumberPlateTextIndex(veh)
   custom.wheel_type = GetVehicleWheelType(veh)
   custom.window_tint = GetVehicleWindowTint(veh)
+  custom.livery = GetVehicleLivery(veh)
   custom.neons = {}
   for i=0,3 do
     custom.neons[i] = IsVehicleNeonLightEnabled(veh, i)
@@ -372,6 +373,10 @@ function Garage:setVehicleCustomization(veh, custom)
 
   if custom.window_tint then
     SetVehicleWindowTint(veh, custom.window_tint)
+  end
+
+  if custom.livery then
+    SetVehicleLivery(veh, custom.livery)
   end
 
   if custom.neons then
