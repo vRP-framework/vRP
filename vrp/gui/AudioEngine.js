@@ -12,6 +12,7 @@ function AudioEngine()
   this.processor_buffer_size = Math.pow(2, clamp(Math.floor(Math.log(this.c.sampleRate*0.1)/Math.log(2)), 8, 14));
 
   this.sources = {};
+  this.player_sources = {};
   this.listener = this.c.listener;
 
   this.last_check = new Date().getTime();
@@ -130,6 +131,7 @@ function AudioEngine()
 
 AudioEngine.prototype.setListenerData = function(data)
 {
+  this.listener.pos = [data.x, data.y, data.z];
   this.listener.setPosition(data.x, data.y, data.z);
   this.listener.setOrientation(data.fx,data.fy,data.fz,0,0,1);
 
@@ -142,9 +144,9 @@ AudioEngine.prototype.setListenerData = function(data)
       var source = this.sources[name];
 
       if(source[3]){ //spatialized
-        var dx = data.x-source[2].positionX.value;
-        var dy = data.y-source[2].positionY.value;
-        var dz = data.z-source[2].positionZ.value;
+        var dx = data.x-source[2].pos[0];
+        var dy = data.y-source[2].pos[1];
+        var dz = data.z-source[2].pos[2];
         var dist = Math.sqrt(dx*dx+dy*dy+dz*dz);
         var active_dist = source[2].maxDistance*2;
 
@@ -180,39 +182,79 @@ AudioEngine.prototype.setupAudioSource = function(data)
     panner.coneInnerAngle = 360;
     panner.coneOuterAngle = 0;
     panner.coneOuterGain = 0;
-    panner.positionX.value = data.x;
-    panner.positionY.value = data.y;
-    panner.positionZ.value = data.z;
+
+    var ppos = null;
+    if(data.player != null)
+      ppos = this.player_positions[data.player];
+    if(ppos){
+      panner.pos = [ppos[0]+data.x, ppos[1]+data.y, ppos[2]+data.z];
+      panner.setPosition(ppos[0]+data.x, ppos[1]+data.y, ppos[2]+data.z);
+    }
+    else{
+      panner.pos = [data.x, data.y, data.z];
+      panner.setPosition(data.x, data.y, data.z);
+    }
 
     node.connect(panner);
     panner.connect(this.c.destination);
   }
 
-  return [audio, node, panner, spatialized];
+  return [audio, node, panner, spatialized, data];
+}
+
+AudioEngine.prototype.bindPlayerSource = function(source)
+{
+  var player = source[4].player;
+  if(player != null){
+    var sources = this.player_sources[player];
+    if(sources == null){
+      sources = [];
+      this.player_sources[player] = sources;
+    }
+
+    sources.push(source);
+  }
+}
+
+AudioEngine.prototype.unbindPlayerSource = function(source)
+{
+  var player = source[4].player;
+  if(player != null){
+    var sources = this.player_sources[player];
+    if(sources != null){
+      var idx = sources.indexOf(source);
+      if(idx >= 0)
+        sources.splice(idx, 1);
+
+      if(sources.length <= 0)
+        delete this.player_sources[player];
+    }
+  }
 }
 
 AudioEngine.prototype.playAudioSource = function(data)
 {
   var _this = this;
 
-  var spatialized = (data.x != null && data.y != null && data.z != null && data.max_dist != null);
+  var source = this.setupAudioSource(data);
+  var spatialized = source[3];
   var dist = 10;
   var active_dist = 0;
 
   if(spatialized){
-    var dx = this.listener.positionX.value-data.x;
-    var dy = this.listener.positionY.value-data.y;
-    var dz = this.listener.positionZ.value-data.z;
+    var dx = this.listener.pos[0]-source[2].pos[0];
+    var dy = this.listener.pos[1]-source[2].pos[1];
+    var dz = this.listener.pos[2]-source[2].pos[2];
     dist = Math.sqrt(dx*dx+dy*dy+dz*dz);
-    active_dist = data.max_dist*2;
+    active_dist = source[2].maxDistance*2;
   }
 
-  if(!spatialized || dist <= active_dist){
-    var source = this.setupAudioSource(data);
-
-    // bind deleter
+  if(!spatialized || dist <= active_dist){ //valid to play
     if(spatialized){
+      // bind deleter
+      this.bindPlayerSource(source);
       source[0].onended = function(){
+        _this.unbindPlayerSource(source);
         source[2].disconnect(_this.c.destination);
       }
     }
@@ -227,21 +269,26 @@ AudioEngine.prototype.setAudioSource = function(data)
   this.removeAudioSource(data);
 
   var source = this.setupAudioSource(data);
+  this.bindPlayerSource(source);
+
+  var spatialized = source[3];
+
   source[0].loop = true;
   this.sources[data.name] = source;
+
 
   // play
   var dist = 10;
   var active_dist = 0;
-  if(source[3]){ // spatialized
-    var dx = this.listener.positionX.value-source[2].positionX.value;
-    var dy = this.listener.positionY.value-source[2].positionY.value;
-    var dz = this.listener.positionZ.value-source[2].positionZ.value;
+  if(spatialized){
+    var dx = this.listener.pos[0]-source[2].pos[0];
+    var dy = this.listener.pos[1]-source[2].pos[1];
+    var dz = this.listener.pos[2]-source[2].pos[2];
     dist = Math.sqrt(dx*dx+dy*dy+dz*dz);
     active_dist = source[2].maxDistance*2;
   }
 
-  if(!source[3] || dist <= active_dist)
+  if(!spatialized || dist <= active_dist)
     source[0].play();
 }
 
@@ -249,6 +296,8 @@ AudioEngine.prototype.removeAudioSource = function(data)
 {
   var source = this.sources[data.name];
   if(source){
+    this.unbindPlayerSource(source);
+
     delete this.sources[data.name];
     source[0].src = "";
     source[0].loop = false;
@@ -270,7 +319,7 @@ AudioEngine.prototype.setPlayerPositions = function(data)
 {
   this.player_positions = data.positions;
 
-  //update panners (spatialization effect)
+  //update VoIP panners (spatialization effect)
   for(var nchannel in this.voice_channels){
     var channel = this.voice_channels[nchannel];
     for(var player in channel){
@@ -279,9 +328,27 @@ AudioEngine.prototype.setPlayerPositions = function(data)
         if(peer.panner){
           var pos = data.positions[player];
           if(pos){
-            peer.panner.positionX.value = pos[0];
-            peer.panner.positionY.value = pos[1];
-            peer.panner.positionZ.value = pos[2];
+            peer.panner.pos = pos;
+            peer.panner.setPosition(pos[0], pos[1], pos[2]);
+          }
+        }
+      }
+    }
+  }
+
+  //update player sources panners
+  for(var player in this.player_positions){
+    var sources = this.player_sources[player];
+    if(sources){
+      for(var i = 0; i < sources.length; i++){
+        var source = sources[i];
+        var panner = source[2];
+        if(panner){
+          var pos = this.player_positions[player];
+          if(pos){
+            var data = source[4];
+            panner.pos = [pos[0]+data.x, pos[1]+data.y, pos[2]+data.z];
+            panner.setPosition(pos[0]+data.x, pos[1]+data.y, pos[2]+data.z);
           }
         }
       }
@@ -349,9 +416,8 @@ AudioEngine.prototype.setupPeer = function(peer)
 
     var pos = this.player_positions[peer.player];
     if(pos){
-      panner.positionX.value = pos[0];
-      panner.positionY.value = pos[1];
-      panner.positionZ.value = pos[2];
+      panner.pos = pos;
+      panner.setPosition(pos[0],pos[1],pos[2]);
     }
 
     peer.panner = panner;

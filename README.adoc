@@ -71,6 +71,10 @@ phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 * mission event/API/cfg for custom display
 * module enable/disable config
 * missing doc (ex: STUN/TURN VoIP)
+* play audio/set audio source attached to player
+* add more sound effects
+** edible
+** handcuff
 
 .vRP 2 dev' phases
 * refactoring (done)

@@ -18,7 +18,6 @@ function Audio:__construct()
     while true do
       Citizen.Wait(self.listener_wait)
 
-
       local x,y,z
       if vRP.cfg.audio_listener_on_player then
         local ped = GetPlayerPed(PlayerId())
@@ -84,12 +83,12 @@ function Audio:__construct()
       for k,v in pairs(players) do
         local player = GetPlayerFromServerId(k)
 
-        if player ~= pid and NetworkIsPlayerConnected(player) then
+        if NetworkIsPlayerConnected(player) or player == pid then
           local oped = GetPlayerPed(player)
           local x,y,z = table.unpack(GetPedBoneCoords(oped, 31086, 0,0,0)) -- head pos
           positions[k] = {x,y,z} -- add position
 
-          if vRP.cfg.vrp_voip and voip_check then -- vRP voip detection/connection
+          if player ~= pid and vRP.cfg.vrp_voip and voip_check then -- vRP voip detection/connection
             local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
             local in_radius = (distance <= cfg.voip_proximity)
             local linked = self:isVoiceConnected("world", k)
@@ -155,8 +154,9 @@ end
 --- volume: 0-1 
 --- x,y,z: position (omit for unspatialized)
 --- max_dist  (omit for unspatialized)
-function Audio:playAudioSource(url, volume, x, y, z, max_dist)
-  SendNUIMessage({act="play_audio_source", url = url, x = x, y = y, z = z, volume = volume, max_dist = max_dist})
+--- player: (optional) player source id, if passed the spatialized source will be relative to the player (parented)
+function Audio:playAudioSource(url, volume, x, y, z, max_dist, player)
+  SendNUIMessage({act="play_audio_source", url = url, x = x, y = y, z = z, volume = volume, max_dist = max_dist, player = player})
 end
 
 -- set named audio source (looping)
@@ -165,8 +165,9 @@ end
 --- volume: 0-1 
 --- x,y,z: position (omit for unspatialized)
 --- max_dist  (omit for unspatialized)
-function Audio:setAudioSource(name, url, volume, x, y, z, max_dist)
-  SendNUIMessage({act="set_audio_source", name = name, url = url, x = x, y = y, z = z, volume = volume, max_dist = max_dist})
+--- player: (optional) player source id, if passed the spatialized source will be relative to the player (parented)
+function Audio:setAudioSource(name, url, volume, x, y, z, max_dist, player)
+  SendNUIMessage({act="set_audio_source", name = name, url = url, x = x, y = y, z = z, volume = volume, max_dist = max_dist, player = player})
 end
 
 -- remove named audio source

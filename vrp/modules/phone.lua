@@ -27,7 +27,7 @@ function Phone.User:sendSMS(phone, msg)
         local from = tuser:getPhoneDirectoryName(self.identity.phone).." ("..self.identity.phone..")"
 
         vRP.EXT.Base.remote._notify(tuser.source,lang.phone.sms.notify({from, msg}))
-        vRP.EXT.Audio.remote._playAudioSource(tuser.source, cfg.sms_sound, 0.5)
+        vRP.EXT.Audio.remote._playAudioSource(-1, cfg.sms_sound, 0.5, 0,0,0, 30, tuser.source)
         tuser:addSMS(self.identity.phone, msg)
         return true
       end
@@ -69,8 +69,8 @@ function Phone.User:phoneCall(phone)
       vRP.EXT.Base.remote._notify(tuser.source,lang.phone.call.notify_from({from}))
 
       -- play dialing sound
-      vRP.EXT.Audio.remote._setAudioSource(self.source, "vRP:phone:dialing", cfg.dialing_sound, 0.5)
-      vRP.EXT.Audio.remote._setAudioSource(tuser.source, "vRP:phone:dialing", cfg.ringing_sound, 0.5)
+      vRP.EXT.Audio.remote._setAudioSource(-1, "vRP:phone:dialing:"..self.source, cfg.dialing_sound, 1, 0,0,0, 30, self.source)
+      vRP.EXT.Audio.remote._setAudioSource(-1, "vRP:phone:dialing:"..tuser.source, cfg.ringing_sound, 1, 0,0,0, 30, tuser.source)
 
       local ok = false
 
@@ -85,8 +85,8 @@ function Phone.User:phoneCall(phone)
       end
 
       -- remove dialing sound
-      vRP.EXT.Audio.remote._removeAudioSource(self.source, "vRP:phone:dialing")
-      vRP.EXT.Audio.remote._removeAudioSource(tuser.source, "vRP:phone:dialing")
+      vRP.EXT.Audio.remote._removeAudioSource(-1, "vRP:phone:dialing:"..self.source)
+      vRP.EXT.Audio.remote._removeAudioSource(-1, "vRP:phone:dialing:"..tuser.source)
 
       return ok
     end
@@ -103,7 +103,7 @@ function Phone.User:sendSMSPos(phone, x,y,z)
     local tuser = vRP.users_by_cid[cid]
     if tuser then
       local from = tuser:getPhoneDirectoryName(self.identity.phone).." ("..self.identity.phone..")"
-      vRP.EXT.Audio.remote._playAudioSource(tuser.source, cfg.sms_sound, 0.5)
+      vRP.EXT.Audio.remote._playAudioSource(-1, cfg.sms_sound, 0.5, 0,0,0, 30, tuser.source)
       vRP.EXT.Base.remote._notify(tuser.source,lang.phone.smspos.notify({from})) -- notify
       -- add position for 5 minutes
       local ment = clone(cfg.smspos_map_entity)
