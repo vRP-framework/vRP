@@ -5,8 +5,10 @@ local cfg = {}
 local dcfg = {
   parts = {
     ["Face"] = 0,
+    ["Face+"] = 1,
     ["Hair"] = 2,
     ["Hand"] = 3,
+    ["Neck"] = 7,
     ["Legs"] = 4,
     ["Shirt"] = 8,
     ["Shoes"] = 6,
@@ -14,7 +16,8 @@ local dcfg = {
     ["Hats"] = "p0",
     ["Glasses"] = "p1",
     ["Ears"] = "p2",
-    ["Watches"] = "p6"
+    ["Watches"] = "p6",
+    ["Bracelets"] = "p7"
   },
   map_entity = {"PoI", {blip_id = 73, blip_color = 3, marker_id = 1}}
 }

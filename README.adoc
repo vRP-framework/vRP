@@ -73,6 +73,10 @@ eating:: https://freesound.org/people/ryanharding95/sounds/272440/
 * mission event/API/cfg for custom display
 * module enable/disable config
 * missing doc (ex: STUN/TURN VoIP)
+* skinshop/character customization rework
+** better textures/drawables/palettes loading
+** prop/component sub-menu (drawable/texture/palette)
+** advanced features (beard, head/face, etc)
 * add more sound effects
 ** handcuff
 
