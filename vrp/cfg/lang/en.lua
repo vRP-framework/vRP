@@ -552,7 +552,15 @@ local lang = {
     info = "{1} $<br /><br />{2}"
   },
   skinshop = {
-    title = "Skinshop"
+    title = "Skinshop",
+    info = {
+      title = "Info",
+      description = "Select a skin part below.<br /><br /><em>Current price: </em>{1} $"
+    },
+    model = "Model",
+    texture = "Texture",
+    palette = "Palette",
+    select_description = "{1}/{2} (left/right to select)",
   },
   cloakroom = {
     title = "Cloakroom ({1})",

@@ -274,7 +274,7 @@ function PlayerState:setCustomization(custom)
             if v[1] < 0 then
               ClearPedProp(ped,index)
             else
-              SetPedPropIndex(ped,index,v[1],v[2],v[3] or 2)
+              SetPedPropIndex(ped,index,v[1],v[2],true)
             end
           else
             SetPedComponentVariation(ped,index,v[1],v[2],v[3] or 2)

@@ -18,69 +18,147 @@ end
 -- PRIVATE METHODS
 
 -- menu: shinshop
-local function menu_skinshop(self)
-  local function close(menu) -- menu closed
+local function menu_skinshop_part(self)
+  local function update_part(menu, part)
+    -- apply change
+    local custom = {}
+    local data = {menu.drawable[1],menu.texture[1],menu.palette and menu.palette[1]}
+    custom[part] = data
+    menu.data.custom[part] = data -- update current menu customization
+    vRP.EXT.PlayerState.remote.setCustomization(menu.user.source,custom)
+  end
+
+  local function m_model(menu, value, mod, index)
+    local user = menu.user
+    local part = menu.data.part
+    local drawable = menu.drawable
+    local texture = menu.texture
+
+    local isprop = SkinShop.parsePart(part)
+
+    -- change drawable
+    drawable[1] = drawable[1]+mod
+
+    if isprop then
+      if drawable[1] >= drawable[2] then drawable[1] = -1 -- circular selection (-1 for prop parts)
+      elseif drawable[1] < -1 then drawable[1] = drawable[2]-1 end 
+    else
+      if drawable[1] >= drawable[2] then drawable[1] = 0 -- circular selection
+      elseif drawable[1] < 0 then drawable[1] = drawable[2]-1 end 
+    end
+
+    menu:updateOption(index, nil, lang.skinshop.select_description({drawable[1]+1,drawable[2]}))
+
+    -- update max textures
+    texture[2] = vRP.EXT.PlayerState.remote.getDrawableTextures(user.source,part,drawable[1])
+
+    if texture[1] >= texture[2] then texture[1] = 0 -- circular selection
+    elseif texture[1] < 0 then texture[1] = texture[2]-1 end 
+
+    menu:updateOption(index+1, nil, lang.skinshop.select_description({texture[1]+1,texture[2]}))
+
+    update_part(menu, part)
+  end
+
+  local function m_texture(menu, value, mod, index)
+    local user = menu.user
+    local part = menu.data.part
+    local texture = menu.texture
+
+    -- change texture
+    texture[1] = texture[1]+mod
+
+    if texture[1] >= texture[2] then texture[1] = 0 -- circular selection
+    elseif texture[1] < 0 then texture[1] = texture[2]-1 end 
+
+    menu:updateOption(index, nil, lang.skinshop.select_description({texture[1]+1,texture[2]}))
+
+    update_part(menu, part)
+  end
+
+  local function m_palette(menu, value, mod, index)
+    local user = menu.user
+    local part = menu.data.part
+    local palette = menu.palette
+
+    -- change palette
+    palette[1] = palette[1]+mod
+
+    if palette[1] >= palette[2] then palette[1] = 0 -- circular selection
+    elseif palette[1] < 0 then palette[1] = palette[2]-1 end 
+
+    menu:updateOption(index, nil, lang.skinshop.select_description({palette[1]+1,palette[2]}))
+
+    update_part(menu, part)
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("skinshop.part", function(menu)
     local user = menu.user
 
+    menu.title = menu.data.title
+    menu.css.header_color="rgba(0,255,125,0.75)"
+
+    local part = menu.data.part
+    local isprop, index = SkinShop.parsePart(part)
+
+    local current_part = menu.data.custom[part]
+
+    menu.drawable = {current_part and current_part[1] or 0, vRP.EXT.PlayerState.remote.getDrawables(user.source, part)}
+    menu.texture = {current_part and current_part[2] or 0, vRP.EXT.PlayerState.remote.getDrawableTextures(user.source, part, menu.drawable[1])}
+
+    if not isprop then
+      menu.palette = {current_part and current_part[3] or 2, 4}
+    end
+
+    menu:addOption(lang.skinshop.model(), m_model, lang.skinshop.select_description({menu.drawable[1], menu.drawable[2]}))
+    menu:addOption(lang.skinshop.texture(), m_texture, lang.skinshop.select_description({menu.texture[1], menu.texture[2]}))
+    if not isprop then 
+      menu:addOption(lang.skinshop.palette(), m_palette, lang.skinshop.select_description({menu.palette[1], menu.palette[2]}))
+    end
+  end)
+end
+
+-- menu: shinshop
+local function menu_skinshop(self)
+  -- return price of customization changes
+  local function compute_price(menu)
     -- compute price
-    local custom = vRP.EXT.PlayerState.remote.getCustomization(user.source)
     local price = 0
-    custom.modelhash = nil
-    for k,v in pairs(custom) do
+    for k,v in pairs(menu.custom) do
       local old = menu.old_custom[k]
       if v[1] ~= old[1] then price = price+self.cfg.drawable_change_price end -- change of drawable
       if v[2] ~= old[2] then price = price+self.cfg.texture_change_price end -- change of texture
     end
 
-    if user:tryPayment(price) then
-      if price > 0 then
+    return price
+  end
+
+  local function close(menu) -- menu closed
+    local user = menu.user
+
+    local price = compute_price(menu)
+
+    if price > 0 then
+      if user:tryPayment(price) then
         vRP.EXT.Base.remote._notify(user.source,lang.money.paid({price}))
+      else
+        vRP.EXT.Base.remote._notify(user.source,lang.money.not_enough())
+        -- revert changes
+        vRP.EXT.PlayerState.remote._setCustomization(user.source, menu.old_custom)
       end
-    else
-      vRP.EXT.Base.remote._notify(user.source,lang.money.not_enough())
-      -- revert changes
-      vRP.EXT.PlayerState.remote._setCustomization(user.source, old_custom)
     end
   end
 
-  local function m_part(menu, part, mod)
-    local user = menu.user
-    local drawable = menu.drawables[part]
+  local function m_part(menu, title)
+    local smenu = menu.user:openMenu("skinshop.part", {
+      title = title, 
+      part = menu.data.parts[title], 
+      custom = menu.custom
+    })
 
-    if mod == 0 then -- texture select
-      -- change texture
-      drawable[3] = drawable[3]+1
-      if drawable[3] >= drawable[4] then drawable[3] = 0 end -- circular selection
-
-      -- apply change
-      local custom = {}
-      custom[part] = {drawable[1],drawable[3]}
-      vRP.EXT.PlayerState.remote._setCustomization(user.source,custom)
-    else -- drawable select
-      local isprop, index = SkinShop.parsePart(part)
-
-      -- change drawable
-      drawable[1] = drawable[1]+mod
-
-      if isprop then
-        if drawable[1] >= drawable[2] then drawable[1] = -1 -- circular selection (-1 for prop parts)
-        elseif drawable[1] < -1 then drawable[1] = drawable[2]-1 end 
-      else
-        if drawable[1] >= drawable[2] then drawable[1] = 0 -- circular selection
-        elseif drawable[1] < 0 then drawable[1] = drawable[2] end 
-      end
-
-      -- apply change
-      local custom = {}
-      custom[part] = {drawable[1],drawable[3]}
-      vRP.EXT.PlayerState.remote.setCustomization(user.source,custom)
-
-      -- update max textures
-      drawable[4] = vRP.EXT.PlayerState.remote.getDrawableTextures(user.source,part,drawable[1])
-      if drawable[3] >= drawable[4] then
-        drawable[3] = 0 -- reset texture number
-      end
-    end
+    menu:listen("remove", function(menu)
+      menu.user:closeMenu(smenu)
+    end)
   end
 
   vRP.EXT.GUI:registerMenuBuilder("skinshop", function(menu)
@@ -89,35 +167,27 @@ local function menu_skinshop(self)
     menu.title = lang.skinshop.title()
     menu.css.header_color="rgba(0,255,125,0.75)"
 
-    -- notify player if wearing a uniform
-    if user:hasCloak() then
-      vRP.EXT.Base.remote._notify(user.source,lang.common.wearing_uniform())
+    if not menu.old_custom then -- first time opening the menu
+      -- notify player if wearing a uniform
+      if user:hasCloak() then
+        vRP.EXT.Base.remote._notify(user.source,lang.common.wearing_uniform())
+      end
+
+      -- get old customization to compute the price
+      menu.old_custom = vRP.EXT.PlayerState.remote.getCustomization(menu.user.source)
+      menu.old_custom.modelhash = nil
+
+      menu.custom = clone(menu.old_custom) -- current customization state
     end
 
-    -- get old customization to compute the price
-    menu.old_custom = vRP.EXT.PlayerState.remote.getCustomization(menu.user.source)
-    menu.old_custom.modelhash = nil
-    menu.drawables = {} -- map of part => {dcurrent, dmax, tcurrent, tmax}
+    menu:addOption(lang.skinshop.info.title(), nil, lang.skinshop.info.description({compute_price(menu)}))
 
     -- parts
     for title,part in pairs(menu.data.parts) do
-      menu:addOption(title, m_part, nil, part)
-
-      -- initilize drawable selection
-      local drawable = {0,0,0,0}
-      local old_part = menu.old_custom[part]
-      if old_part then
-        drawable[1], drawable[3] = old_part[1], old_part[2]
-      end
-
-      -- init max drawables and max textures
-      drawable[2] = vRP.EXT.PlayerState.remote.getDrawables(menu.user.source, part)
-      drawable[4] = vRP.EXT.PlayerState.remote.getDrawableTextures(menu.user.source, part, drawable[1])
-
-      menu.drawables[part] = drawable
+      menu:addOption(title, m_part, nil, title)
     end
 
-    menu:listen("close", close)
+    menu:listen("remove", close)
   end)
 end
 
@@ -129,6 +199,7 @@ function SkinShop:__construct()
   self.cfg = module("cfg/skinshops")
   self:log(#self.cfg.skinshops.." skinshops")
 
+  menu_skinshop_part(self)
   menu_skinshop(self)
 end
 

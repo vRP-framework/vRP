@@ -34,3 +34,13 @@ Skinshop menu.
 .data
 [horizontal]
 parts:: skinshop config parts
+
+=== skinshop.part
+
+Shinshop part sub-menu.
+
+.data
+[horizontal]
+title:: part title
+part:: part name
+custom:: current skinshop customization state
