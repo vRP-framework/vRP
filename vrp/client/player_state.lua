@@ -266,6 +266,12 @@ function PlayerState:setCustomization(custom)
 
       ped = GetPlayerPed(-1)
 
+      -- face blend data
+      local face = custom[0] or custom["0"]
+      if face then
+        SetPedHeadBlendData(ped, face[1], face[1], 0, face[1], face[1], 0, 0.5, 0.5, 0.0, false)
+      end
+
       -- parts
       for k,v in pairs(custom) do
         if k ~= "model" and k ~= "modelhash" then

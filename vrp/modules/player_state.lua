@@ -154,7 +154,7 @@ function PlayerState.event:playerSpawn(user, first_spawn)
   if not user.cdata.state.position and self.cfg.spawn_enabled then
     local x = self.cfg.spawn_position[1]+math.random()*self.cfg.spawn_radius*2-self.cfg.spawn_radius
     local y = self.cfg.spawn_position[2]+math.random()*self.cfg.spawn_radius*2-self.cfg.spawn_radius
-    local z = self.cfg.spawn_position[3]+math.random()*self.cfg.spawn_radius*2-self.cfg.spawn_radius
+    local z = self.cfg.spawn_position[3]
     user.cdata.state.position = {x=x,y=y,z=z}
   end
 

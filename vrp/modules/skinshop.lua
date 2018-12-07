@@ -110,10 +110,10 @@ local function menu_skinshop_part(self)
       menu.palette = {current_part and current_part[3] or 2, 4}
     end
 
-    menu:addOption(lang.skinshop.model(), m_model, lang.skinshop.select_description({menu.drawable[1], menu.drawable[2]}))
-    menu:addOption(lang.skinshop.texture(), m_texture, lang.skinshop.select_description({menu.texture[1], menu.texture[2]}))
+    menu:addOption(lang.skinshop.model(), m_model, lang.skinshop.select_description({menu.drawable[1]+1, menu.drawable[2]}))
+    menu:addOption(lang.skinshop.texture(), m_texture, lang.skinshop.select_description({menu.texture[1]+1, menu.texture[2]}))
     if not isprop then 
-      menu:addOption(lang.skinshop.palette(), m_palette, lang.skinshop.select_description({menu.palette[1], menu.palette[2]}))
+      menu:addOption(lang.skinshop.palette(), m_palette, lang.skinshop.select_description({menu.palette[1]+1, menu.palette[2]}))
     end
   end)
 end
