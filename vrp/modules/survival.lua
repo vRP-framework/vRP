@@ -19,11 +19,11 @@ function Survival.User:setVital(name, value)
 
     -- clamp
     if value < 0 then
-      value = 0 
       overflow = value
+      value = 0 
     elseif value > 1 then 
-      value = 1
       overflow = value-1
+      value = 1
     end
 
     -- set
@@ -170,11 +170,11 @@ function Survival.event:playerVitalChange(user, vital)
     if vital == "water" then
       local value = user:getVital(vital)
       GUI.remote._setProgressBarValue(user.source, "vRP:Survival:water", value)
-      GUI.remote._setProgressBarText(user.source, "vRP:Survival:water", (water == 0) and lang.survival.thirsty() or "")
+      GUI.remote._setProgressBarText(user.source, "vRP:Survival:water", (value == 0) and lang.survival.thirsty() or "")
     elseif vital == "food" then
       local value = user:getVital(vital)
       GUI.remote._setProgressBarValue(user.source, "vRP:Survival:food", value)
-      GUI.remote._setProgressBarText(user.source, "vRP:Survival:food", (food == 0) and lang.survival.starving() or "")
+      GUI.remote._setProgressBarText(user.source, "vRP:Survival:food", (value == 0) and lang.survival.starving() or "")
     end
   end
 end
@@ -182,7 +182,7 @@ end
 function Survival.event:playerVitalOverflow(user, vital, overflow)
   if vital == "water" or vital == "food" then
     if overflow < 0 then
-      self.remote._varyHealth(user.source, -overflow*100*self.cfg.overflow_damage_factor)
+      self.remote._varyHealth(user.source, overflow*100*self.cfg.overflow_damage_factor)
     end
   end
 end
