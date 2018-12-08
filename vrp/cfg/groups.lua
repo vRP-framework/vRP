@@ -206,14 +206,14 @@ cfg.count_display_css = [[
 }
 ]]
 
--- list of {group, img_src}
-cfg.count_display_groups = {
-  {"user", "https://i.imgur.com/tQ2VHAi.png"},
-  {"admin", "https://i.imgur.com/cpSYyN0.png"},
-  {"police", "https://i.imgur.com/dygLDfC.png"},
-  {"emergency", "https://i.imgur.com/K5lXutO.png"},
-  {"repair", "https://i.imgur.com/QEjFgzM.png"},
-  {"taxi", "https://i.imgur.com/yY4yrZN.png"}
+-- list of {permission, img_src}
+cfg.count_display_permissions = {
+  {"!group.user", "https://i.imgur.com/tQ2VHAi.png"},
+  {"!group.admin", "https://i.imgur.com/cpSYyN0.png"},
+  {"!group.police", "https://i.imgur.com/dygLDfC.png"},
+  {"!group.emergency", "https://i.imgur.com/K5lXutO.png"},
+  {"!group.repair", "https://i.imgur.com/QEjFgzM.png"},
+  {"!group.taxi", "https://i.imgur.com/yY4yrZN.png"}
 }
 
 return cfg

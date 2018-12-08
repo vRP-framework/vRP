@@ -217,29 +217,16 @@ function Group:__construct()
   end)
 
   -- task: group count display
-  if next(self.cfg.count_display_groups) then
+  if next(self.cfg.count_display_permissions) then
     Citizen.CreateThread(function()
       while true do
         Citizen.Wait(self.cfg.count_display_interval*1000)
 
-        local gcounts = {}
-
-        -- count
-        for id, user in pairs(vRP.users) do
-          if user:isReady() then
-            local groups = user:getGroups()
-            for group in pairs(groups) do
-              local gcount = gcounts[group] or 0
-              gcounts[group] = gcount+1
-            end
-          end
-        end
-
         -- display
         local content = ""
-        for _, dgroup in ipairs(self.cfg.count_display_groups) do
-          local count = gcounts[dgroup[1]] or 0
-          local img = dgroup[2]
+        for _, dperm in ipairs(self.cfg.count_display_permissions) do
+          local count = #self:getUsersByPermission(dperm[1])
+          local img = dperm[2]
 
           content = content.."<div><img src=\""..img.."\" />"..count.."</div>"
         end
@@ -334,7 +321,7 @@ function Group.event:playerSpawn(user, first_spawn)
     end
 
     -- group count display
-    if next(self.cfg.count_display_groups) then
+    if next(self.cfg.count_display_permissions) then
       vRP.EXT.GUI.remote.setDiv(user.source, "group_count_display", self.cfg.count_display_css, "")
     end
   end
