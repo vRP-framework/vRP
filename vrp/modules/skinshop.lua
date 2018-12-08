@@ -149,10 +149,12 @@ local function menu_skinshop(self)
     end
   end
 
-  local function m_part(menu, title)
+  local function m_part(menu, idx)
+    local entry = menu.data.parts[idx]
+
     local smenu = menu.user:openMenu("skinshop.part", {
-      title = title, 
-      part = menu.data.parts[title], 
+      title = entry[1],
+      part = entry[2], 
       custom = menu.custom
     })
 
@@ -183,8 +185,8 @@ local function menu_skinshop(self)
     menu:addOption(lang.skinshop.info.title(), nil, lang.skinshop.info.description({compute_price(menu)}))
 
     -- parts
-    for title,part in pairs(menu.data.parts) do
-      menu:addOption(title, m_part, nil, title)
+    for idx, entry in ipairs(menu.data.parts) do
+      menu:addOption(entry[1], m_part, nil, idx)
     end
 
     menu:listen("remove", close)

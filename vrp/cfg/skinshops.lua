@@ -1,23 +1,24 @@
 
 local cfg = {}
 
--- define customization parts
+-- define skinshop config
 local dcfg = {
+  -- customization parts list {title, part}
   parts = {
-    ["Face"] = 0,
-    ["Face+"] = 1,
-    ["Hair"] = 2,
-    ["Hand"] = 3,
-    ["Neck"] = 7,
-    ["Legs"] = 4,
-    ["Shirt"] = 8,
-    ["Shoes"] = 6,
-    ["Jacket"] = 11,
-    ["Hats"] = "p0",
-    ["Glasses"] = "p1",
-    ["Ears"] = "p2",
-    ["Watches"] = "p6",
-    ["Bracelets"] = "p7"
+    {"Hats", "p0"},
+    {"Hair", 2},
+    {"Face", 0},
+    {"Face+", 1},
+    {"Ears", "p2"},
+    {"Glasses", "p1"},
+    {"Neck", 7},
+    {"Hand", 3},
+    {"Watches", "p6"},
+    {"Bracelets", "p7"},
+    {"Shirt", 8},
+    {"Jacket", 11},
+    {"Legs", 4},
+    {"Shoes", 6}
   },
   map_entity = {"PoI", {blip_id = 73, blip_color = 3, marker_id = 1}}
 }
