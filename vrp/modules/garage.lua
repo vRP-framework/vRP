@@ -528,6 +528,8 @@ function Garage.event:characterLoad(user)
 end
 
 function Garage.event:characterUnload(user)
+  self.remote._setStateReady(user.source, false)
+
   -- save vehicle states
   for model, state in pairs(user.vehicle_states) do
     vRP:setCData(user.cid, "vRP:vehicle_state:"..model, msgpack.pack(state))
@@ -596,6 +598,8 @@ function Garage.event:playerStateLoaded(user)
   if user.cdata.state.in_owned_vehicle then
     self.remote._putInOwnedVehicle(user.source, user.cdata.state.in_owned_vehicle)
   end
+
+  self.remote._setStateReady(user.source, true)
 end
 
 -- TUNNEL

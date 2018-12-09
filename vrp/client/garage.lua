@@ -16,6 +16,8 @@ function Garage:__construct()
   self.check_interval = 15 -- seconds
   self.respawn_radius = 200
 
+  self.state_ready = false -- flag, if true will try to re-own/spawn periodically out vehicles
+
   self.out_vehicles = {} -- map of vehicle model => {cstate, position, rotation}, unloaded out vehicles to spawn
 
   -- task: save vehicle states
@@ -45,8 +47,10 @@ function Garage:__construct()
     while true do
       Citizen.Wait(self.check_interval*1000)
 
-      self:tryOwnVehicles() -- get back network lost vehicles
-      self:trySpawnOutVehicles()
+      if self.state_ready then
+        self:tryOwnVehicles() -- get back network lost vehicles
+        self:trySpawnOutVehicles()
+      end
     end
   end)
 end
@@ -593,6 +597,10 @@ function Garage.tunnel:setConfig(update_interval, check_interval, respawn_radius
   self.update_interval = update_interval
   self.check_interval = check_interval
   self.respawn_radius = respawn_radius
+end
+
+function Garage.tunnel:setStateReady(state)
+  self.state_ready = state
 end
 
 function Garage.tunnel:registerModels(models)
