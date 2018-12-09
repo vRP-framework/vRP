@@ -145,10 +145,10 @@ function Base:getNearestPlayers(radius)
   end
   --]]
 
-  for k,v in pairs(self.players) do
+  for k in pairs(self.players) do
     local player = GetPlayerFromServerId(k)
 
-    if v and player ~= pid and NetworkIsPlayerConnected(player) then
+    if player ~= pid and NetworkIsPlayerConnected(player) then
       local oped = GetPlayerPed(player)
       local x,y,z = table.unpack(GetEntityCoords(oped,true))
       local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
