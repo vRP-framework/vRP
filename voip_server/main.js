@@ -49,14 +49,15 @@ wss.on("connection", function(ws){
       if(!players[data.id]){
         players[data.id] = {ws: ws, peer: peer, channel: channel};
         ws.server_id = data.id;
+        console.log("identitified ", data.id);
       }
     }
   });
 
   ws.on("close", function(){
     peer.close();
-    if(players[data.id])
-      delete players[data.id];
+    if(ws.server_id != null && players[ws.server_id])
+      delete players[ws.server_id];
   });
 
   peer.createOffer().then(function(offer){

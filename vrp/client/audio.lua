@@ -31,36 +31,6 @@ function Audio:__construct()
     end
   end)
 
-  if vRP.cfg.vrp_voip then -- setup voip world channel
-    -- world channel behavior
-    self:registerVoiceCallbacks("world", function(player)
-      self:log("(vRPvoice-world) requested by "..player)
-
-      -- check connection distance
-
-      local pid = PlayerId()
-      local px,py,pz = vRP.EXT.Base:getPosition()
-
-      local cplayer = GetPlayerFromServerId(player)
-
-      if NetworkIsPlayerConnected(cplayer) then
-        local oped = GetPlayerPed(cplayer)
-        local x,y,z = table.unpack(GetEntityCoords(oped,true))
-
-        local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
-        return (distance <= cfg.voip_proximity*1.5) -- valid connection
-      end
-    end,
-    function(player, is_origin)
-      self:log("(vRPvoice-world) connected to "..player)
-      self:setVoiceState("world", nil, self.speaking)
-    end,
-    function(player)
-      self:log("(vRPvoice-world) disconnected from "..player)
-    end)
-
-  end
-
   -- task: detect players near, give positions to AudioEngine
   Citizen.CreateThread(function()
     local n = 0
@@ -91,11 +61,9 @@ function Audio:__construct()
           if player ~= pid and vRP.cfg.vrp_voip and voip_check then -- vRP voip detection/connection
             local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
             local in_radius = (distance <= cfg.voip_proximity)
-            local linked = self:isVoiceConnected("world", k)
-            local initiator = (spid < k)
-            if in_radius and not linked and initiator then -- join radius
-              self:connectVoice("world", k)
-            elseif not in_radius and linked then -- leave radius
+            if in_radius then -- join radius
+              self:connectVoice("world", k, self.speaking)
+            elseif not in_radius then -- leave radius
               self:disconnectVoice("world", k)
             end
           end
@@ -178,64 +146,24 @@ end
 -- VoIP
 
 function Audio:connectVoIP(ws)
-  SendNUIMessage({act="connect_voip", ws=ws})
+  SendNUIMessage({act="connect_voip", ws = ws, id = GetPlayerServerId(PlayerId())})
 end
 
--- request connection to another player for a specific channel
+-- create connection to another player for a specific channel
 function Audio:connectVoice(channel, player)
-  -- register channel/player
-  local _channel = self.voice_channels[channel]
-  if not _channel then
-    _channel = {}
-    self.voice_channels[channel] = _channel
-  end
-
-  if _channel[player] == nil then -- check if not already connecting/connected
-    SendNUIMessage({act="connect_voice", channel=channel, player=player})
-  end
+  SendNUIMessage({act="connect_voice", channel=channel, player=player})
 end
 
--- disconnect from another player for a specific channel
+-- delete connection to another player for a specific channel
 -- player: nil to disconnect from all players
 function Audio:disconnectVoice(channel, player)
   SendNUIMessage({act="disconnect_voice", channel=channel, player=player})
 end
 
--- register callbacks for a specific channel
---- on_offer(player): should return true to accept the connection
---- on_connect(player, is_origin): is_origin is true if it's the local peer (not an answer)
---- on_disconnect(player)
-function Audio:registerVoiceCallbacks(channel, on_offer, on_connect, on_disconnect)
-  if not self.channel_callbacks[channel] then
-    self.channel_callbacks[channel] = {on_offer, on_connect, on_disconnect}
-  else
-    self:log("[vRP] VoIP channel callbacks for <"..channel.."> already registered.")
-  end
-end
-
--- check if there is an active connection
--- return boolean or nil
-function Audio:isVoiceConnected(channel, player)
-  local channel = self.voice_channels[channel]
-  if channel then
-    return channel[player] == 1
-  end
-end
-
--- check if there is a pending connection
--- return boolean or nil
-function Audio:isVoiceConnecting(channel, player)
-  local channel = self.voice_channels[channel]
-  if channel then
-    return channel[player] == 0
-  end
-end
-
--- enable/disable speaking
---- player: nil to affect all channel peers
+-- enable/disable speaking for a specific channel
 --- active: true/false 
-function Audio:setVoiceState(channel, player, active)
-  SendNUIMessage({act="set_voice_state", channel=channel, player=player, active=active})
+function Audio:setVoiceState(channel, active)
+  SendNUIMessage({act="set_voice_state", channel=channel, active=active})
 end
 
 -- configure channel (can only be called once per channel)
@@ -247,31 +175,6 @@ end
 ----- gain => { gain: ... }
 function Audio:configureVoice(channel, config)
   SendNUIMessage({act="configure_voice", channel=channel, config=config})
-end
-
--- receive voice peer signal
-function Audio:signalVoicePeer(player, data)
-  if data.sdp_offer then -- check offer
-    -- register channel/player
-    local channel = self.voice_channels[data.channel]
-    if not channel then
-      channel = {}
-      self.voice_channels[data.channel] = channel
-    end
-
-    if channel[player] == nil then -- check if not already connecting
-      local cbs = self.channel_callbacks[data.channel]
-      if cbs then
-        local cb = cbs[1]
-        if cb and cb(player) then
-          channel[player] = 0 -- wait connection
-          SendNUIMessage({act="voice_peer_signal", player=player, data=data})
-        end
-      end
-    end
-  else -- other signal
-    SendNUIMessage({act="voice_peer_signal", player=player, data=data})
-  end
 end
 
 function Audio:isSpeaking()
@@ -298,48 +201,14 @@ end
 -- TUNNEL
 Audio.tunnel = {}
 
-Audio.tunnel.connectVoIP = Audio.connectVoIP
-Audio.tunnel.signalVoicePeer = Audio.signalVoicePeer
 Audio.tunnel.playAudioSource = Audio.playAudioSource
 Audio.tunnel.setAudioSource = Audio.setAudioSource
 Audio.tunnel.removeAudioSource = Audio.removeAudioSource
 
--- NUI
-
--- VoIP
-
-RegisterNUICallback("audio",function(data,cb)
-  if data.act == "voice_connected" then
-    -- register channel/player
-    local channel = vRP.EXT.Audio.voice_channels[data.channel]
-    if not channel then
-      channel = {}
-      vRP.EXT.Audio.voice_channels[data.channel] = channel
-    end
-    channel[data.player] = 1 -- connected
-
-    -- callback
-    local cbs = vRP.EXT.Audio.channel_callbacks[data.channel]
-    if cbs then
-      local cb = cbs[2]
-      if cb then cb(data.player, data.origin) end
-    end
-  elseif data.act == "voice_disconnected" then
-    -- unregister channel/player
-    local channel = vRP.EXT.Audio.voice_channels[data.channel]
-    if channel then
-      channel[data.player] = nil
-    end
-
-    -- callback
-    local cbs = vRP.EXT.Audio.channel_callbacks[data.channel]
-    if cbs then
-      local cb = cbs[3]
-      if cb then cb(data.player) end
-    end
-  elseif data.act == "voice_peer_signal" then
-    vRP.EXT.Audio.remote._signalVoicePeer(data.player, data.data)
-  end
-end)
+Audio.tunnel.connectVoIP = Audio.connectVoIP
+Audio.tunnel.configureVoice = Audio.configureVoice
+Audio.tunnel.connectVoice = Audio.connectVoice
+Audio.tunnel.disconnectVoice = Audio.disconnectVoice
+Audio.tunnel.setVoiceState = Audio.setVoiceState
 
 vRP:registerExtension(Audio)

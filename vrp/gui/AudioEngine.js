@@ -342,11 +342,54 @@ AudioEngine.prototype.connectVoIP = function(data)
   }
 
   this.voip_channel.onmessage = function(e){
-    console.log("channel msg", e.data);
+    var buffer = e.data;
+    var header = new Int16Array(buffer, 0, 4);
+    var id = 
+    var 
+
+    if(peer.dec){
+      //receive opus packet
+      peer.dec.input(new Uint8Array(e.data));
+      var data;
+      while(data = peer.dec.output()){
+        //create buffer from samples
+        var buffer = _this.c.createBuffer(1, data.length, 48000);
+        var samples = buffer.getChannelData(0);
+
+        for(var k = 0; k < data.length; k++){
+          //convert from int16 to float
+          var s = data[k];
+          s /= 32768 ;
+          if(s > 1) 
+            s = 1;
+          else if(s < -1) 
+            s = -1;
+
+          samples[k] = s;
+        }
+
+        //resample to AudioContext samplerate if necessary
+        if(_this.c.sampleRate != 48000){
+          var ratio = _this.c.sampleRate/48000;
+          var oac = new OfflineAudioContext(1,Math.floor(ratio*buffer.length),_this.c.sampleRate);
+          var sbuff = oac.createBufferSource();
+          sbuff.buffer = buffer;
+          sbuff.connect(oac.destination);
+          sbuff.start();
+
+          oac.startRendering().then(function(out_buffer){
+            peer.psamples.push(out_buffer.getChannelData(0));
+          });
+        }
+        else 
+          peer.psamples.push(samples);
+      }
+    }
   }
 
   this.voip_ws.addEventListener("open", function(){
     console.log("ws connected");
+    _this.voip_ws.send(JSON.stringify({act: "identification", id: data.id}));
   });
 
   this.voip_ws.addEventListener("message", function(e){
@@ -479,70 +522,6 @@ AudioEngine.prototype.setupPeer = function(peer)
   peer.final_node = node;
   node.connect(config.in_node || this.c.destination); //connect to channel node or destination
 
-  //setup data channel (UDP-like)
-  peer.data_channel = peer.conn.createDataChannel(peer.channel, {
-    ordered: false,
-    negotiated: true,
-    maxRetransmits: 0,
-    id: 0
-  });
-  peer.data_channel.binaryType = "arraybuffer";
-
-  peer.data_channel.onopen = function(){
-    $.post("http://vrp/audio",JSON.stringify({act: "voice_connected", player: peer.player, channel: peer.channel, origin: peer.origin})); 
-    peer.connected = true;
-  }
-
-  peer.data_channel.onclose = function(){
-    $.post("http://vrp/audio",JSON.stringify({act: "voice_disconnected", player: peer.player, channel: peer.channel})); 
-    _this.disconnectVoice({channel: peer.channel, player: peer.player});
-  }
-
-  peer.data_channel.onmessage = function(e){
-    if(peer.dec){
-      //receive opus packet
-      peer.dec.input(new Uint8Array(e.data));
-      var data;
-      while(data = peer.dec.output()){
-        //create buffer from samples
-        var buffer = _this.c.createBuffer(1, data.length, 48000);
-        var samples = buffer.getChannelData(0);
-
-        for(var k = 0; k < data.length; k++){
-          //convert from int16 to float
-          var s = data[k];
-          s /= 32768 ;
-          if(s > 1) 
-            s = 1;
-          else if(s < -1) 
-            s = -1;
-
-          samples[k] = s;
-        }
-
-        //resample to AudioContext samplerate if necessary
-        if(_this.c.sampleRate != 48000){
-          var ratio = _this.c.sampleRate/48000;
-          var oac = new OfflineAudioContext(1,Math.floor(ratio*buffer.length),_this.c.sampleRate);
-          var sbuff = oac.createBufferSource();
-          sbuff.buffer = buffer;
-          sbuff.connect(oac.destination);
-          sbuff.start();
-
-          oac.startRendering().then(function(out_buffer){
-            peer.psamples.push(out_buffer.getChannelData(0));
-          });
-        }
-        else 
-          peer.psamples.push(samples);
-      }
-    }
-  }
-
-  //ice
-  peer.conn.onicecandidate = function(e){
-    $.post("http://vrp/audio",JSON.stringify({act: "voice_peer_signal", player: peer.player, data: {channel: peer.channel, candidate: e.candidate}})); 
-  }
 }
 
 AudioEngine.prototype.getChannel = function(channel)
@@ -565,22 +544,12 @@ AudioEngine.prototype.connectVoice = function(data)
 
   //setup new peer
   var peer = {
-    conn: new RTCPeerConnection(this.peer_config),
     channel: data.channel,
-    player: data.player,
-    origin: true,
-    candidate_queue: []
+    player: data.player
   }
   channel[data.player] = peer;
 
-  //create data channel
   this.setupPeer(peer);
-
-  //SDP
-  peer.conn.createOffer().then(function(sdp){
-    $.post("http://vrp/audio",JSON.stringify({act: "voice_peer_signal", player: data.player, data: {channel: data.channel, sdp_offer: sdp}})); 
-    peer.conn.setLocalDescription(sdp);
-  });
 }
 
 AudioEngine.prototype.disconnectVoice = function(data)
@@ -603,10 +572,6 @@ AudioEngine.prototype.disconnectVoice = function(data)
     var player = players[i];
     var peer = channel[player];
     if(peer){
-      if(peer.data_channel)
-        peer.data_channel.close();
-      if(peer.conn.connectionState != "closed")
-        peer.conn.close();
       if(peer.final_node) //disconnect from channel node or destination
         peer.final_node.disconnect(config.in_node || this.c.destination);
       if(peer.dec){
@@ -622,67 +587,10 @@ AudioEngine.prototype.disconnectVoice = function(data)
   this.updateVoiceIndicator();
 }
 
-AudioEngine.prototype.voicePeerSignal = function(data)
-{
-  var channel = this.getChannel(data.data.channel);
-  if(data.data.candidate){ //candidate
-    var peer = channel[data.player];
-    if(peer){
-      if(peer.initialized) //valid remote description
-        peer.conn.addIceCandidate(new RTCIceCandidate(data.data.candidate));
-      else if(peer.candidate_queue)
-        peer.candidate_queue.push(new RTCIceCandidate(data.data.candidate));
-    }
-  }
-  else if(data.data.sdp_offer){ //offer
-    //disconnect peer
-    this.disconnectVoice({channel: data.data.channel, player: data.player});
-
-    //setup answer peer
-    var peer = {
-      conn: new RTCPeerConnection(this.peer_config),
-      channel: data.data.channel,
-      player: data.player
-    }
-
-    channel[data.player] = peer;
-    this.setupPeer(peer);
-
-    //SDP
-    peer.conn.setRemoteDescription(data.data.sdp_offer);
-    peer.initialized = true;
-    peer.conn.createAnswer().then(function(sdp){
-      $.post("http://vrp/audio",JSON.stringify({act: "voice_peer_signal", player: data.player, data: {channel: data.data.channel, sdp_answer: sdp}})); 
-      peer.conn.setLocalDescription(sdp);
-    });
-  }
-  else if(data.data.sdp_answer){ //answer
-    var peer = channel[data.player];
-    if(peer){
-      peer.conn.setRemoteDescription(data.data.sdp_answer);
-      peer.initialized = true;
-      //add candidates
-      for(var i = 0; i < peer.candidate_queue.length; i++)
-        peer.conn.addIceCandidate(peer.candidate_queue[i]);
-      peer.candidate_queue = [];
-    }
-  }
-}
-
 AudioEngine.prototype.setVoiceState = function(data)
 {
   var channel = this.getChannel(data.channel);
-  if(data.player != null){ //specific player
-    var peer = channel[data.player];
-    if(peer)
-      peer.active = data.active;
-  }
-  else{ //entire channel
-    for(var player in channel){
-      if(player != "_config")
-        channel[player].active = data.active;
-    }
-  }
+  channel._config.active = data.active;
 
   //update indicator
   this.updateVoiceIndicator();
@@ -743,12 +651,8 @@ AudioEngine.prototype.isVoiceActive = function()
 {
   for(var name in this.voice_channels){
     var channel = this.voice_channels[name];
-    for(var player in channel){
-      if(player != "_config"){
-        if(channel[player].active)
-          return true;
-      }
-    }
+    if(channel._config.active)
+      return true;
   }
 
   return false;
