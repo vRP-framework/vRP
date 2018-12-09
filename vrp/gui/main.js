@@ -50,7 +50,7 @@ window.addEventListener("load",function(){
     var data = evt.data;
 
     if(data.act == "cfg"){
-      cfg = data.cfg
+      cfg = data.cfg;
     }
     else if(data.act == "set_visible"){
       if(data.flag)
@@ -150,6 +150,8 @@ window.addEventListener("load",function(){
     else if(data.act == "audio_listener")
       aengine.setListenerData(data);
     //VoIP
+    else if(data.act == "connect_voip")
+      aengine.connectVoIP(data);
     else if(data.act == "connect_voice")
       aengine.connectVoice(data);
     else if(data.act == "disconnect_voice")
@@ -162,8 +164,6 @@ window.addEventListener("load",function(){
       aengine.setVoiceState(data);
     else if(data.act == "configure_voice")
       aengine.configureVoice(data);
-    else if(data.act == "set_peer_configuration")
-      aengine.setPeerConfiguration(data);
     else if(data.act == "set_player_positions")
       aengine.setPlayerPositions(data);
     // CONTROLS

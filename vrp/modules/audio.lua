@@ -12,8 +12,8 @@ Audio.event = {}
 
 function Audio.event:playerSpawn(user, first_spawn)
   if first_spawn then
-    -- send peer config
-    self.remote._setPeerConfiguration(user.source, self.cfg.voip_peer_configuration)
+    -- connect VoIP
+    self.remote._connectVoIP(user.source, self.cfg.voip_server)
   end
 end
 

@@ -3,11 +3,7 @@ local cfg = {}
 
 -- VoIP
 
--- configuration passed to RTCPeerConnection
-cfg.voip_peer_configuration = {
-  iceServers = {
-    {urls = {"stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"}}
-  }
-}
+-- VoIP websocket server
+cfg.voip_server = "ws://localhost:4400"
 
 return cfg

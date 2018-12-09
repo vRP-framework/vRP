@@ -49,7 +49,7 @@ Audio:removeAudioSource(name)
 
 -- VoIP
 
-Audio:setPeerConfiguration(config)
+Audio:connectVoIP(ws)
 
 -- request connection to another player for a specific channel
 Audio:connectVoice(channel, player)
@@ -93,7 +93,7 @@ Audio:isSpeaking()
 
 -- TUNNEL
 
-Audio.tunnel.setPeerConfiguration = Audio.setPeerConfiguration
+Audio.tunnel.connectVoIP = Audio.connectVoIP
 Audio.tunnel.signalVoicePeer = Audio.signalVoicePeer
 Audio.tunnel.playAudioSource = Audio.playAudioSource
 Audio.tunnel.setAudioSource = Audio.setAudioSource

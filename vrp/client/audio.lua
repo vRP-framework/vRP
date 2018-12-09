@@ -177,8 +177,8 @@ end
 
 -- VoIP
 
-function Audio:setPeerConfiguration(config)
-  SendNUIMessage({act="set_peer_configuration", config=config})
+function Audio:connectVoIP(ws)
+  SendNUIMessage({act="connect_voip", ws=ws})
 end
 
 -- request connection to another player for a specific channel
@@ -298,7 +298,7 @@ end
 -- TUNNEL
 Audio.tunnel = {}
 
-Audio.tunnel.setPeerConfiguration = Audio.setPeerConfiguration
+Audio.tunnel.connectVoIP = Audio.connectVoIP
 Audio.tunnel.signalVoicePeer = Audio.signalVoicePeer
 Audio.tunnel.playAudioSource = Audio.playAudioSource
 Audio.tunnel.setAudioSource = Audio.setAudioSource

@@ -7,6 +7,8 @@ var is_playing = function(media)
 
 function AudioEngine()
 {
+  var _this = this;
+
   this.c = new AudioContext();
   //choose processor buffer size (2^(8-14))
   this.processor_buffer_size = Math.pow(2, clamp(Math.floor(Math.log(this.c.sampleRate*0.1)/Math.log(2)), 8, 14));
@@ -23,8 +25,6 @@ function AudioEngine()
   document.body.appendChild(this.voice_indicator_div);
 
   this.voice_channels = {}; 
-
-  var _this = this;
 
   libopus.onload = function(){
     //encoder
@@ -310,9 +310,58 @@ AudioEngine.prototype.removeAudioSource = function(data)
 
 //VoIP
 
-AudioEngine.prototype.setPeerConfiguration = function(data)
+AudioEngine.prototype.connectVoIP = function(data)
 {
-  this.peer_config = data.config;
+  var _this = this;
+
+  // connect to websocket server
+  this.voip_ws = new WebSocket(data.ws);
+
+  // create peer
+  this.voip_peer = new RTCPeerConnection({
+    iceServers: []
+  });
+
+  this.voip_peer.onicecandidate = function(e){
+    console.log(e);
+    _this.voip_ws.send(JSON.stringify({act: "candidate", data: e.candidate}));
+  }
+
+  // create channel
+  this.voip_channel = this.voip_peer.createDataChannel("voip", {
+    ordered: false,
+    negotiated: true,
+    maxRetransmits: 0,
+    id: 0
+  });
+
+  this.voip_channel.binaryType = "arraybuffer";
+
+  this.voip_channel.onopen = function(){
+    console.log("channel ready");
+  }
+
+  this.voip_channel.onmessage = function(e){
+    console.log("channel msg", e.data);
+  }
+
+  this.voip_ws.addEventListener("open", function(){
+    console.log("ws connected");
+  });
+
+  this.voip_ws.addEventListener("message", function(e){
+    var data = JSON.parse(e.data);
+    console.log(data);
+    if(data.act == "offer"){
+      _this.voip_peer.setRemoteDescription(data.data);
+      _this.voip_peer.createAnswer().then(function(answer){
+        _this.voip_peer.setLocalDescription(answer);
+        _this.voip_ws.send(JSON.stringify({act: "answer", data: answer}));
+      });
+    }
+    else if(data.act == "candidate" && data.data != null)
+      _this.voip_peer.addIceCandidate(data.data);
+  });
 }
 
 AudioEngine.prototype.setPlayerPositions = function(data)
