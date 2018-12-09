@@ -69,6 +69,11 @@ function GUI:isMenuOpen()
   return self.menu_data ~= nil
 end
 
+-- hide/show GUI
+function GUI:setVisible(flag)
+  SendNUIMessage({act="set_visible", flag=flag})
+end
+
 -- ANNOUNCE
 
 -- add an announce to the queue
@@ -142,7 +147,7 @@ GUI.event = {}
 
 -- pause
 function GUI.event:pauseChange(paused)
-  SendNUIMessage({act="pause_change", paused=paused})
+  self:setVisible(not paused)
 end
 
 -- TUNNEL

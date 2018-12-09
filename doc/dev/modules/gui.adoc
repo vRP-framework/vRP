@@ -141,6 +141,9 @@ self.menu_data
 
 GUI:isPaused()
 
+-- hide/show GUI
+GUI:setVisible(flag)
+
 -- MENU
 
 GUI:isMenuOpen()
