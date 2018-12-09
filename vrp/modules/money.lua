@@ -177,7 +177,7 @@ function Money:__construct()
     if nuser then
       -- prompt number
       local amount = parseInt(user:prompt(lang.money.give.prompt(),""))
-      if amount > 0 and self:tryPayment(amount) then
+      if amount > 0 and user:tryPayment(amount) then
         nuser:giveWallet(amount)
         vRP.EXT.Base.remote._notify(user.source,lang.money.given({amount}))
         vRP.EXT.Base.remote._notify(nuser.source,lang.money.received({amount}))
