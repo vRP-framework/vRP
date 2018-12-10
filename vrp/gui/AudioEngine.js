@@ -24,7 +24,7 @@ function AudioEngine()
   this.voice_indicator_div.id = "voice_indicator";
   document.body.appendChild(this.voice_indicator_div);
 
-  this.voice_channels = {}; 
+  this.voice_channels = {}; // map of idx => channel 
 
   libopus.onload = function(){
     //encoder
@@ -310,12 +310,67 @@ AudioEngine.prototype.removeAudioSource = function(data)
 
 //VoIP
 
-AudioEngine.prototype.connectVoIP = function(data)
+AudioEngine.prototype.configureVoIP = function(data)
 {
   var _this = this;
 
+  this.voip_config = data.config;
+
+  // create channels
+  for(var id in this.voip_config.channels){
+    var cdata = this.voip_config.channels[id];
+
+    var idx = cdata[0];
+    var config = cdata[1];
+
+    // create channel
+    var channel = {index: idx, id: id, players: {}};
+    this.voice_channels[idx] = channel;
+
+    // build channel effects
+    var effects = config.effects || {};
+    var node = null;
+
+    if(effects.biquad){ //biquad filter
+      var biquad = this.c.createBiquadFilter();
+      if(effects.biquad.frequency != null)
+        biquad.frequency.value = effects.biquad.frequency;
+      if(effects.biquad.Q != null)
+        biquad.Q.value = effects.biquad.Q;
+      if(effects.biquad.detune != null)
+        biquad.detune.value = effects.biquad.detune;
+      if(effects.biquad.gain != null)
+        biquad.gain.value = effects.biquad.gain;
+
+      if(effects.biquad.type != null)
+        biquad.type = effects.biquad.type;
+
+      if(node)
+        node.connect(biquad);
+      node = biquad;
+      if(!channel.in_node)
+        channel.in_node = node;
+    }
+
+    if(effects.gain){ //gain
+      var gain = this.c.createGain();
+      if(effects.gain.gain != null)
+        gain.gain.value = effects.gain.gain;
+
+      if(node)
+        node.connect(gain);
+      node = gain;
+      if(!channel.in_node)
+        channel.in_node = node;
+    }
+
+    //connect final node to output
+    if(node) 
+      node.connect(this.c.destination);
+  }
+
   // connect to websocket server
-  this.voip_ws = new WebSocket(data.ws);
+  this.voip_ws = new WebSocket(this.voip_config.server);
 
   // create peer
   this.voip_peer = new RTCPeerConnection({
@@ -343,21 +398,24 @@ AudioEngine.prototype.connectVoIP = function(data)
 
   this.voip_channel.onmessage = function(e){
     var buffer = e.data;
-    var header = new Int16Array(buffer, 0, 4);
-    var id = 
-    var 
+    var view = new DataView(buffer);
+
+    var tplayer = view.getInt32(0);
+    var nchannels = view.getUint8(4);
+    var channels = new Uint8Array(buffer, 5, nchannels);
 
     if(peer.dec){
-      //receive opus packet
-      peer.dec.input(new Uint8Array(e.data));
+      // decode opus packet
+      var raw = new Uint8Array(buffer, 5+nchannels);
+      peer.dec.input(raw);
       var data;
       while(data = peer.dec.output()){
-        //create buffer from samples
+        // create buffer from samples
         var buffer = _this.c.createBuffer(1, data.length, 48000);
         var samples = buffer.getChannelData(0);
 
         for(var k = 0; k < data.length; k++){
-          //convert from int16 to float
+          // convert from int16 to float
           var s = data[k];
           s /= 32768 ;
           if(s > 1) 
@@ -368,7 +426,7 @@ AudioEngine.prototype.connectVoIP = function(data)
           samples[k] = s;
         }
 
-        //resample to AudioContext samplerate if necessary
+        // resample to AudioContext samplerate if necessary
         if(_this.c.sampleRate != 48000){
           var ratio = _this.c.sampleRate/48000;
           var oac = new OfflineAudioContext(1,Math.floor(ratio*buffer.length),_this.c.sampleRate);
@@ -412,17 +470,15 @@ AudioEngine.prototype.setPlayerPositions = function(data)
   this.player_positions = data.positions;
 
   //update VoIP panners (spatialization effect)
-  for(var nchannel in this.voice_channels){
-    var channel = this.voice_channels[nchannel];
-    for(var player in channel){
-      if(player != "_config"){
-        var peer = channel[player];
-        if(peer.panner){
-          var pos = data.positions[player];
-          if(pos){
-            peer.panner.pos = pos;
-            peer.panner.setPosition(pos[0], pos[1], pos[2]);
-          }
+  for(var idx in this.voice_channels){
+    var channel = this.voice_channels[idx];
+    for(var player in channel.players){
+      var peer = channel.players[player];
+      if(peer.panner){
+        var pos = data.positions[player];
+        if(pos){
+          peer.panner.pos = pos;
+          peer.panner.setPosition(pos[0], pos[1], pos[2]);
         }
       }
     }
@@ -493,7 +549,8 @@ AudioEngine.prototype.setupPeer = function(peer)
 
   //add peer effects
   var node = peer.processor;
-  var config = this.getChannel(peer.channel)._config || {};
+  var config = this.voip_config.channels[peer.channel][1];
+  var channel = this.voice_channels[this.getChannelIndex(peer.channel)];
   var effects = config.effects || {};
 
   if(effects.spatialization){ //spatialization
@@ -520,19 +577,16 @@ AudioEngine.prototype.setupPeer = function(peer)
 
   //connect final node
   peer.final_node = node;
-  node.connect(config.in_node || this.c.destination); //connect to channel node or destination
+  node.connect(channel.in_node || this.c.destination); //connect to channel node or destination
 
 }
 
-AudioEngine.prototype.getChannel = function(channel)
+AudioEngine.prototype.getChannelIndex = function(id)
 {
-  var r = this.voice_channels[channel];
-  if(!r){
-    r = {};
-    this.voice_channels[channel] = r;
-  }
+  if(this.voip_config && this.voip_config.channels[id])
+    return this.voip_config.channels[id][0];
 
-  return r;
+  return -1;
 }
 
 AudioEngine.prototype.connectVoice = function(data)
@@ -540,118 +594,69 @@ AudioEngine.prototype.connectVoice = function(data)
   //close previous peer
   this.disconnectVoice(data);
 
-  var channel = this.getChannel(data.channel);
+  var channel = this.voice_channels[this.getChannelIndex(data.channel)];
+  if(channel){
+    //setup new peer
+    var peer = {
+      channel: data.channel,
+      player: data.player
+    }
 
-  //setup new peer
-  var peer = {
-    channel: data.channel,
-    player: data.player
+    channel.players[data.player] = peer;
+
+    this.setupPeer(peer);
   }
-  channel[data.player] = peer;
-
-  this.setupPeer(peer);
 }
 
 AudioEngine.prototype.disconnectVoice = function(data)
 {
-  var channel = this.getChannel(data.channel);
-  var config = channel._config || {};
-
-  var players = [];
-  if(data.player != null)
-    players.push(data.player);
-  else{ //add all players
-    for(var player in channel){
-      if(player != "_config")
+  var channel = this.voice_channels[this.getChannelIndex(data.channel)];
+  if(channel){
+    var players = [];
+    if(data.player != null)
+      players.push(data.player);
+    else{ //add all players
+      for(var player in channel.players)
         players.push(player);
     }
-  }
 
-  //close peers
-  for(var i = 0; i < players.length; i++){
-    var player = players[i];
-    var peer = channel[player];
-    if(peer){
-      if(peer.final_node) //disconnect from channel node or destination
-        peer.final_node.disconnect(config.in_node || this.c.destination);
-      if(peer.dec){
-        peer.dec.destroy();
-        delete peer.dec;
+    //remove peers
+    for(var i = 0; i < players.length; i++){
+      var player = players[i];
+      var peer = channel.players[player];
+      if(peer){
+        if(peer.final_node) //disconnect from channel node or destination
+          peer.final_node.disconnect(channel.in_node || this.c.destination);
+        if(peer.dec){
+          peer.dec.destroy();
+          delete peer.dec;
+        }
       }
+
+      delete channel.players[player];
     }
 
-    delete channel[player];
+    //update indicator
+    this.updateVoiceIndicator();
   }
-
-  //update indicator
-  this.updateVoiceIndicator();
 }
 
 AudioEngine.prototype.setVoiceState = function(data)
 {
-  var channel = this.getChannel(data.channel);
-  channel._config.active = data.active;
+  var channel = this.voice_channels[this.getChannelIndex(data.channel)];
+  if(channel){
+    channel.active = data.active;
 
-  //update indicator
-  this.updateVoiceIndicator();
-}
-
-AudioEngine.prototype.configureVoice = function(data)
-{
-  var channel = this.getChannel(data.channel);
-  if(!channel._config)
-    channel._config = data.config; //bind config
-
-  var config = data.config;
-  var effects = config.effects || {};
-
-
-  var node = null;
-
-  //build channel effects
-  if(effects.biquad){ //biquad filter
-    var biquad = this.c.createBiquadFilter();
-    if(effects.biquad.frequency != null)
-      biquad.frequency.value = effects.biquad.frequency;
-    if(effects.biquad.Q != null)
-      biquad.Q.value = effects.biquad.Q;
-    if(effects.biquad.detune != null)
-      biquad.detune.value = effects.biquad.detune;
-    if(effects.biquad.gain != null)
-      biquad.gain.value = effects.biquad.gain;
-
-    if(effects.biquad.type != null)
-      biquad.type = effects.biquad.type;
-
-    if(node)
-      node.connect(biquad);
-    node = biquad;
-    if(!config.in_node)
-      config.in_node = node;
+    //update indicator
+    this.updateVoiceIndicator();
   }
-
-  if(effects.gain){ //gain
-    var gain = this.c.createGain();
-    if(effects.gain.gain != null)
-      gain.gain.value = effects.gain.gain;
-
-    if(node)
-      node.connect(gain);
-    node = gain;
-    if(!config.in_node)
-      config.in_node = node;
-  }
-
-  //connect final node to output
-  if(node) 
-    node.connect(this.c.destination);
 }
 
 AudioEngine.prototype.isVoiceActive = function()
 {
-  for(var name in this.voice_channels){
-    var channel = this.voice_channels[name];
-    if(channel._config.active)
+  for(var idx in this.voice_channels){
+    var channel = this.voice_channels[idx];
+    if(channel.active)
       return true;
   }
 

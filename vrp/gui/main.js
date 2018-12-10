@@ -150,8 +150,8 @@ window.addEventListener("load",function(){
     else if(data.act == "audio_listener")
       aengine.setListenerData(data);
     //VoIP
-    else if(data.act == "connect_voip")
-      aengine.connectVoIP(data);
+    else if(data.act == "configure_voip")
+      aengine.configureVoIP(data);
     else if(data.act == "connect_voice")
       aengine.connectVoice(data);
     else if(data.act == "disconnect_voice")

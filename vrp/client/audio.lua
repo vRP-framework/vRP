@@ -145,10 +145,6 @@ end
 
 -- VoIP
 
-function Audio:connectVoIP(ws)
-  SendNUIMessage({act="connect_voip", ws = ws, id = GetPlayerServerId(PlayerId())})
-end
-
 -- create connection to another player for a specific channel
 function Audio:connectVoice(channel, player)
   SendNUIMessage({act="connect_voice", channel=channel, player=player})
@@ -201,12 +197,13 @@ end
 -- TUNNEL
 Audio.tunnel = {}
 
+function Audio.tunnel:configureVoIP(config)
+  SendNUIMessage({act="configure_voip", config = config, id = GetPlayerServerId(PlayerId())})
+end
+
 Audio.tunnel.playAudioSource = Audio.playAudioSource
 Audio.tunnel.setAudioSource = Audio.setAudioSource
 Audio.tunnel.removeAudioSource = Audio.removeAudioSource
-
-Audio.tunnel.connectVoIP = Audio.connectVoIP
-Audio.tunnel.configureVoice = Audio.configureVoice
 Audio.tunnel.connectVoice = Audio.connectVoice
 Audio.tunnel.disconnectVoice = Audio.disconnectVoice
 Audio.tunnel.setVoiceState = Audio.setVoiceState
