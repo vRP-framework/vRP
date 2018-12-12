@@ -53,6 +53,8 @@ function Radio:__construct()
 
   self.cfg = module("cfg/radio")
 
+  vRP.EXT.Audio:registerVoiceChannel("radio", self.cfg.radio_voice)
+
   self.cgroups = {} -- groups connect graph
   self.rusers = {} -- radio users, map of user
 

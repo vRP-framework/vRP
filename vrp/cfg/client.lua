@@ -56,32 +56,4 @@ cfg.coma_disable_menu = true
 -- see https://wiki.fivem.net/wiki/Screen_Effects
 cfg.coma_effect = "DeathFailMPIn"
 
--- set to true to disable the default voice chat and use vRP voip instead (world channel) 
-cfg.vrp_voip = false
-
--- radius to establish VoIP connections
-cfg.voip_proximity = 100
-
--- connect/disconnect interval in milliseconds
-cfg.voip_interval = 5000
-
--- vRP.configureVoice settings
--- world
-cfg.world_voice_config = {
-  effects = {
-    spatialization = { max_dist = cfg.voip_proximity }
-  }
-}
-
--- phone
-cfg.phone_voice_config = {
-}
-
--- radio
-cfg.radio_voice_config = {
-  effects = {
-    biquad = { type = "bandpass", frequency = 1700, Q = 2, gain = 1.2 }
-  }
-}
-
 return cfg

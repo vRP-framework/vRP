@@ -9,6 +9,10 @@ function Audio:__construct()
   self.channel_callbacks = {}
   self.voice_channels = {} -- map of channel => map of player => state (0-1)
 
+  self.vrp_voip = false
+  self.voip_interval = 5000
+  self.voip_proximity = 100 
+
   self.speaking = false
 
   -- listener task
@@ -34,7 +38,7 @@ function Audio:__construct()
   -- task: detect players near, give positions to AudioEngine
   Citizen.CreateThread(function()
     local n = 0
-    local ns = math.ceil(vRP.cfg.voip_interval/self.listener_wait) -- connect/disconnect every x milliseconds
+    local ns = math.ceil(self.voip_interval/self.listener_wait) -- connect/disconnect every x milliseconds
 
     while true do
       Citizen.Wait(self.listener_wait)
@@ -58,9 +62,9 @@ function Audio:__construct()
           local x,y,z = table.unpack(GetPedBoneCoords(oped, 31086, 0,0,0)) -- head pos
           positions[k] = {x,y,z} -- add position
 
-          if player ~= pid and vRP.cfg.vrp_voip and voip_check then -- vRP voip detection/connection
+          if player ~= pid and self.vrp_voip and voip_check then -- vRP voip detection/connection
             local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
-            local in_radius = (distance <= cfg.voip_proximity)
+            local in_radius = (distance <= self.voip_proximity)
             if in_radius then -- join radius
               self:connectVoice("world", k, self.speaking)
             elseif not in_radius then -- leave radius
@@ -94,7 +98,7 @@ function Audio:__construct()
   Citizen.CreateThread(function()
     while true do
       Citizen.Wait(500)
-      if vRP.cfg.vrp_voip then -- vRP voip
+      if self.vrp_voip then -- vRP voip
         NetworkSetTalkerProximity(0) -- disable voice chat
       else -- regular voice chat
         local ped = GetPlayerPed(-1)
@@ -171,7 +175,7 @@ Audio.event = {}
 
 function Audio.event:speakingChange(speaking)
   -- voip
-  if vRP.cfg.vrp_voip then
+  if self.vrp_voip then
     self:setVoiceState("world", speaking)
   end
 end
@@ -179,7 +183,11 @@ end
 -- TUNNEL
 Audio.tunnel = {}
 
-function Audio.tunnel:configureVoIP(config)
+function Audio.tunnel:configureVoIP(config, vrp_voip, interval, proximity)
+  self.vrp_voip = vrp_voip
+  self.voip_interval = interval
+  self.voip_proximity = proximity
+
   SendNUIMessage({act="configure_voip", config = config, id = GetPlayerServerId(PlayerId())})
 end
 

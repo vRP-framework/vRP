@@ -7,6 +7,8 @@ function Audio:__construct()
   self.cfg = module("vrp", "cfg/audio")
 
   self.reg_channels = {} -- map of id => config
+
+  self:registerVoiceChannel("world", self.cfg.world_voice)
 end
 
 -- register VoIP channel
@@ -55,7 +57,7 @@ Audio.event = {}
 function Audio.event:playerSpawn(user, first_spawn)
   if first_spawn then
     -- connect VoIP
-    self.remote._configureVoIP(user.source, {server = self.cfg.voip_server, channels = self:getChannels()})
+    self.remote._configureVoIP(user.source, {server = self.cfg.voip_server, channels = self:getChannels()}, self.cfg.vrp_voip, self.cfg.voip_interval, self.cfg.voip_proximity)
   end
 end
 

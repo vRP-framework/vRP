@@ -33,23 +33,22 @@ wss.on("connection", function(ws){
   }
 
   // create channel
-  var channel = peer.createDataChannel("voip", {
+  var dchannel = peer.createDataChannel("voip", {
     ordered: false,
     negotiated: true,
     maxRetransmits: 0,
     id: 0
   });
 
-  channel.binaryType = "arraybuffer";
+  dchannel.binaryType = "arraybuffer";
 
-  channel.onopen = function(){
+  dchannel.onopen = function(){
     console.log("channel ready");
   }
 
-  channel.onmessage = function(e){
+  dchannel.onmessage = function(e){
     var player = ws.player;
     var buffer = e.data;
-    console.log("received packet from "+player.id+" of "+buffer.byteLength+" bytes");
 
     if(player){ // identified
       // read packet
@@ -62,13 +61,13 @@ wss.on("connection", function(ws){
       var out_data = new Uint8Array(4+buffer.byteLength);
       var out_view = new DataView(out_data.buffer);
       out_view.setInt32(0, player.id); // write player id
-      out_data.set(4, new Uint8Array(buffer)); // write packet data
+      out_data.set(new Uint8Array(buffer), 4); // write packet data
 
       // send to channel connected players
       for(var id in players){
         var out_player = players[id];
         if(checkConnected(player, out_player, channels))
-          out_player.channel.send(out_data.buffer);
+          out_player.dchannel.send(out_data.buffer);
       }
     }
   }
@@ -76,14 +75,15 @@ wss.on("connection", function(ws){
   ws.on("message", function(data){
     data = JSON.parse(data);
 
-    console.log("msg", data);
+    console.log("message ", data);
+
     if(data.act == "answer")
       peer.setRemoteDescription(data.data);
     else if(data.act == "candidate" && data.data != null)
       peer.addIceCandidate(data.data);
     else if(data.act == "identification" && data.id != null){
       if(!players[data.id]){
-        var player = {ws: ws, peer: peer, channel: channel, id: data.id, channels: {}};
+        var player = {ws: ws, peer: peer, dchannel: dchannel, id: data.id, channels: {}};
         players[data.id] = player;
         ws.player = player;
         console.log("identitified ", data.id);
@@ -120,6 +120,7 @@ wss.on("connection", function(ws){
     var player = ws.player;
     if(player)
       delete players[player.id];
+    console.log("disconnection");
   });
 
   peer.createOffer().then(function(offer){

@@ -4,6 +4,13 @@ local cfg = {}
 cfg.on_sound = "sounds/radio_on.ogg" 
 cfg.off_sound = "sounds/radio_off.ogg" 
 
+-- radio voice config (see Audio:registerVoiceChannel)
+cfg.radio_voice = {
+  effects = {
+    biquad = { type = "bandpass", frequency = 1700, Q = 2, gain = 1.2 }
+  }
+}
+
 -- list of list of groups (each list define a channel of speaker/listener groups, an ensemble)
 cfg.channels = {
   {"police"}

@@ -57,16 +57,17 @@ function AudioEngine()
       var buffer = new Uint8Array(1+channels.length+data.length);
 
       // write header (channels)
-      var view = new DataView(buffer);
-      buffer.setUint8(0, channels.length);
+      var view = new DataView(buffer.buffer);
+      view.setUint8(0, channels.length);
       for(var i = 0; i < channels.length; i++)
-        buffer.setUint8(i+1, channels[i]);
+        view.setUint8(i+1, channels[i]);
 
       // write audio data
-      buffer.set(1+channels.length, data);
+      buffer.set(data, 1+channels.length);
 
+      console.log("send packet of "+buffer.length+" bytes");
       // send packet
-      _this.voip_channel.send(buffer);
+      _this.voip_channel.send(buffer.buffer);
     }
   }
 
@@ -78,16 +79,15 @@ function AudioEngine()
     // prepare dest channels
     var channels = [];
     for(var idx in _this.voice_channels){
-      var channel = _this.voice_channels[idx];
-      if(channel.active)
+      if(_this.isChannelActive(idx))
         channels.push(idx);
     }
 
     if(channels.length > 0){
       //resample to 48kHz if necessary
       if(buffer.sampleRate != 48000){
-        var ratio = 48000/buffer.sampleRate;
-        var oac = new OfflineAudioContext(1,Math.floor(ratio*buffer.length),48000);
+        var oac = new OfflineAudioContext(1,buffer.duration*48000,48000);
+
         var sbuff = oac.createBufferSource();
         sbuff.buffer = buffer;
         sbuff.connect(oac.destination);
@@ -105,6 +105,8 @@ function AudioEngine()
     var out = e.outputBuffer.getChannelData(0);
     for(var k = 0; k < out.length; k++)
       out[k] = 0;
+
+//    e.outputBuffer.copyToChannel(buffer.getChannelData(0), 0); // debug
   }
 
   this.mic_processor.connect(this.c.destination); //make the processor running
@@ -122,7 +124,7 @@ function AudioEngine()
     _this.mic_comp = _this.c.createDynamicsCompressor();
     _this.mic_node.connect(_this.mic_comp);
     _this.mic_comp.connect(_this.mic_processor);
-    //_this.mic_comp.connect(_this.c.destination);
+//    _this.mic_comp.connect(_this.c.destination); // debug
   });
 
   this.player_positions = {};
@@ -313,6 +315,7 @@ AudioEngine.prototype.configureVoIP = function(data)
 {
   var _this = this;
 
+  console.log(data);
   this.voip_config = data.config;
 
   // create channels
@@ -323,7 +326,7 @@ AudioEngine.prototype.configureVoIP = function(data)
     var config = cdata[1];
 
     // create channel
-    var channel = {index: idx, id: id, players: {}};
+    var channel = {idx: idx, id: id, players: {}};
     this.voice_channels[idx] = channel;
 
     // build channel effects
@@ -418,7 +421,7 @@ AudioEngine.prototype.configureVoIP = function(data)
         for(var k = 0; k < data.length; k++){
           // convert from int16 to float
           var s = data[k];
-          s /= 32768 ;
+          s /= 32767 ;
           if(s > 1) 
             s = 1;
           else if(s < -1) 
@@ -429,8 +432,7 @@ AudioEngine.prototype.configureVoIP = function(data)
 
         // resample to AudioContext samplerate if necessary
         if(_this.c.sampleRate != 48000){
-          var ratio = _this.c.sampleRate/48000;
-          var oac = new OfflineAudioContext(1,Math.floor(ratio*buffer.length),_this.c.sampleRate);
+          var oac = new OfflineAudioContext(1,buffer.duration*_this.c.sampleRate,_this.c.sampleRate);
           var sbuff = oac.createBufferSource();
           sbuff.buffer = buffer;
           sbuff.connect(oac.destination);
@@ -533,7 +535,7 @@ AudioEngine.prototype.setupPeer = function(peer)
   }
 
   peer.psamples = []; //packets samples
-  peer.processor = this.c.createScriptProcessor(this.processor_buffer_size,0,1);
+  peer.processor = this.c.createScriptProcessor(this.processor_buffer_size,1,1);
   peer.processor.onaudioprocess = function(e){
     var out = e.outputBuffer.getChannelData(0);
 
@@ -627,7 +629,7 @@ AudioEngine.prototype.connectVoice = function(data)
 
     this.setupPeer(peer);
 
-    this.voip_ws.send(JSON.stringify({act: "connect", channel: data.channel, player: data.player}));
+    this.voip_ws.send(JSON.stringify({act: "connect", channel: channel.idx, player: data.player}));
   }
 }
 
@@ -666,12 +668,12 @@ AudioEngine.prototype.disconnectVoice = function(data)
             delete this.voice_players[player];
           }
         }
+
+        this.voip_ws.send(JSON.stringify({act: "disconnect", channel: channel.idx, player: player}));
       }
 
       delete channel.players[player];
     }
-
-    this.voip_ws.send(JSON.stringify({act: "disconnect", channel: data.channel, player: data.player}));
 
     //update indicator
     this.updateVoiceIndicator();
@@ -689,11 +691,19 @@ AudioEngine.prototype.setVoiceState = function(data)
   }
 }
 
+AudioEngine.prototype.isChannelActive = function(idx)
+{
+  var channel = this.voice_channels[idx];
+  if(channel)
+    return channel.active && Object.keys(channel.players).length > 0;
+
+  return false;
+}
+
 AudioEngine.prototype.isVoiceActive = function()
 {
   for(var idx in this.voice_channels){
-    var channel = this.voice_channels[idx];
-    if(channel.active)
+    if(this.isChannelActive(idx))
       return true;
   }
 

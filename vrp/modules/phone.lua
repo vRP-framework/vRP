@@ -51,7 +51,7 @@ end
 
 function Phone.User:phoneHangUp()
   if self.phone_call then
-    vRP.EXT.Phone.remote._disconnectVoice(self.source, "phone") -- hangup phone of the caller
+    vRP.EXT.Audio.remote._disconnectVoice(self.source, "phone") -- hangup phone of the caller
 
     local tuser = vRP.users_by_source[self.phone_call]
     self.phone_call = nil
@@ -359,6 +359,8 @@ function Phone:__construct()
 
   self.cfg = module("cfg/phone")
   self.sanitizes = module("cfg/sanitizes")
+
+  vRP.EXT.Audio:registerVoiceChannel("phone", self.cfg.phone_voice)
 
   -- menu builders
 
