@@ -39,7 +39,7 @@ function Audio:getChannels()
       table.insert(list, {id, config})
     end
 
-    table.sort(list, function(a,b) a[1] < b[1] end)
+    table.sort(list, function(a,b) return a[1] < b[1] end)
 
     for idx, el in ipairs(list) do
       self.channels[el[1]] = {idx, el[2]}
@@ -55,7 +55,7 @@ Audio.event = {}
 function Audio.event:playerSpawn(user, first_spawn)
   if first_spawn then
     -- connect VoIP
-    self.remote._configureVoIP(user.source, {server = self.cfg.voip_server, channels = self.channels})
+    self.remote._configureVoIP(user.source, {server = self.cfg.voip_server, channels = self:getChannels()})
   end
 end
 

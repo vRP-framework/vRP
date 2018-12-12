@@ -20,6 +20,7 @@ This module adds a phone.
 ----
 self.phone_sms
 self.cdata.phone_directory
+self.phone_call -- source of correspondent if in phone call
 
 -- send an sms to a phone number
 -- return true on success
@@ -30,6 +31,8 @@ User:addSMS(phone, msg)
 
 -- get directory name by number for a specific user
 User:getPhoneDirectoryName(phone)
+
+User:phoneHangUp()
 
 -- call a phone number
 -- return true if the communication is established
@@ -58,13 +61,6 @@ Phone:sendServiceAlert(sender,service_name,x,y,z,msg)
 
 [source,lua]
 ----
-self.in_call 
-
-Phone:hangUp()
-
--- TUNNEL
-
-Phone.tunnel.hangUp = Phone.hangUp
 ----
 
 == Menu

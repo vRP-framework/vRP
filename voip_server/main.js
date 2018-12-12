@@ -5,7 +5,19 @@ var wrtc = require("wrtc");
 
 // create websocket server
 var wss = new ws.Server({port: cfg.ports.websocket});
-var players = {}; // map of id => {.ws, .peer, .channel}
+var players = {}; // map of id => {.ws, .peer, .channel, .channels}
+
+// return true if player 1 and player 2 are connected by at least one channel
+function checkConnected(p1, p2, channels)
+{
+  for(var i = 0; i < channels.length; i++){
+    var channel_id = channels[i];
+    if(p1.channels[channel_id] && p2.channels[channel_id] && p1.channels[channel_id][p2.id] && p2.channels[channel_id][p1.id])
+      return true;
+  }
+
+  return false;
+}
 
 console.log("Server started.");
 console.log("config = ", cfg);
@@ -35,29 +47,79 @@ wss.on("connection", function(ws){
   }
 
   channel.onmessage = function(e){
-//    console.log("channel msg", e.data);
+    var player = ws.player;
+    var buffer = e.data;
+    console.log("received packet from "+player.id+" of "+buffer.byteLength+" bytes");
+
+    if(player){ // identified
+      // read packet
+      // header
+      var view = new DataView(buffer);
+      var nchannels = view.getUint8(0);
+      var channels = new Uint8Array(buffer, 1, nchannels);
+
+      // build out packet
+      var out_data = new Uint8Array(4+buffer.byteLength);
+      var out_view = new DataView(out_data.buffer);
+      out_view.setInt32(0, player.id); // write player id
+      out_data.set(4, new Uint8Array(buffer)); // write packet data
+
+      // send to channel connected players
+      for(var id in players){
+        var out_player = players[id];
+        if(checkConnected(player, out_player, channels))
+          out_player.channel.send(out_data.buffer);
+      }
+    }
   }
 
   ws.on("message", function(data){
     data = JSON.parse(data);
-    console.log("msg",data);
+
+    console.log("msg", data);
     if(data.act == "answer")
       peer.setRemoteDescription(data.data);
     else if(data.act == "candidate" && data.data != null)
       peer.addIceCandidate(data.data);
     else if(data.act == "identification" && data.id != null){
       if(!players[data.id]){
-        players[data.id] = {ws: ws, peer: peer, channel: channel};
-        ws.server_id = data.id;
+        var player = {ws: ws, peer: peer, channel: channel, id: data.id, channels: {}};
+        players[data.id] = player;
+        ws.player = player;
         console.log("identitified ", data.id);
+      }
+    }
+    else if(data.act == "connect" && data.channel != null && data.player != null){
+      var player = ws.player;
+      if(player){
+        var channel = player.channels[data.channel];
+        if(!channel){ // create channel
+          channel = {};
+          player.channels[data.channel] = channel;
+        }
+
+        channel[data.player] = true;
+      }
+    }
+    else if(data.act == "disconnect" && data.channel != null && data.player != null){
+      var player = ws.player;
+      if(player){
+        var channel = player.channels[data.channel];
+        if(channel){
+          delete channel[data.player]; // remove player
+
+          if(Object.keys(channel).length == 0) // empty, remove channel
+            delete player.channels[data.channel];
+        }
       }
     }
   });
 
   ws.on("close", function(){
     peer.close();
-    if(ws.server_id != null && players[ws.server_id])
-      delete players[ws.server_id];
+    var player = ws.player;
+    if(player)
+      delete players[player.id];
   });
 
   peer.createOffer().then(function(offer){

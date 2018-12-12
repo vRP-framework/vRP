@@ -52,7 +52,7 @@ end
 
 function Radio.tunnel:disconnectRadio()
   self.rplayers = {}
-  vRP.EXT.Audio:disconnectVoice("radio", nil)
+  vRP.EXT.Audio:disconnectVoice("radio")
 end
 
 vRP:registerExtension(Radio)

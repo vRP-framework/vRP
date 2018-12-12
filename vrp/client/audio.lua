@@ -162,17 +162,6 @@ function Audio:setVoiceState(channel, active)
   SendNUIMessage({act="set_voice_state", channel=channel, active=active})
 end
 
--- configure channel (can only be called once per channel)
---- config:
----- effects: map of name => true/options
------ spatialization => { max_dist: ..., rolloff: ..., dist_model: ... } (per peer effect)
------ biquad => { frequency: ..., Q: ..., type: ..., detune: ..., gain: ...} see WebAudioAPI BiquadFilter
------- freq = 1700, Q = 3, type = "bandpass" (idea for radio effect)
------ gain => { gain: ... }
-function Audio:configureVoice(channel, config)
-  SendNUIMessage({act="configure_voice", channel=channel, config=config})
-end
-
 function Audio:isSpeaking()
   return self.speaking
 end
@@ -183,14 +172,7 @@ Audio.event = {}
 function Audio.event:speakingChange(speaking)
   -- voip
   if vRP.cfg.vrp_voip then
-    self:setVoiceState("world", nil, speaking)
-  end
-end
-
-function Audio.event:NUIready()
-  if vRP.cfg.vrp_voip then
-    -- world channel config
-    self:configureVoice("world", vRP.cfg.world_voice_config)
+    self:setVoiceState("world", speaking)
   end
 end
 

@@ -24,7 +24,8 @@ function AudioEngine()
   this.voice_indicator_div.id = "voice_indicator";
   document.body.appendChild(this.voice_indicator_div);
 
-  this.voice_channels = {}; // map of idx => channel 
+  this.voice_channels = {}; // map of idx => channel  data
+  this.voice_players = {}; // map of player => global player data
 
   libopus.onload = function(){
     //encoder
@@ -35,7 +36,7 @@ function AudioEngine()
 
   //processor
   //prepare process function
-  var processOut = function(peers, samples){
+  var processOut = function(channels, samples){
     //convert to Int16 pcm
     var isamples = new Int16Array(samples.length);
     for(var i = 0; i < samples.length; i++){
@@ -53,16 +54,19 @@ function AudioEngine()
     _this.mic_enc.input(isamples);
     var data;
     while(data = _this.mic_enc.output()){ //generate packets
-      var buffer = data.slice().buffer;
+      var buffer = new Uint8Array(1+channels.length+data.length);
 
-      //send packet to active/connected peers
-      for(var i = 0; i < peers.length; i++){
-        try{
-          peers[i].data_channel.send(buffer);
-        }catch(e){
-          console.log("vRP-VoIP send error to player "+peers[i].player);
-        }
-      }
+      // write header (channels)
+      var view = new DataView(buffer);
+      buffer.setUint8(0, channels.length);
+      for(var i = 0; i < channels.length; i++)
+        buffer.setUint8(i+1, channels[i]);
+
+      // write audio data
+      buffer.set(1+channels.length, data);
+
+      // send packet
+      _this.voip_channel.send(buffer);
     }
   }
 
@@ -71,20 +75,15 @@ function AudioEngine()
   this.mic_processor.onaudioprocess = function(e){
     var buffer = e.inputBuffer;
 
-    var peers = [];
-    //prepare list of active/connected peers
-    for(var nchannel in _this.voice_channels){
-      var channel = _this.voice_channels[nchannel];
-      for(var player in channel){
-        if(player != "_config"){
-          var peer = channel[player];
-          if(peer.connected && peer.active)
-            peers.push(peer);
-        }
-      }
+    // prepare dest channels
+    var channels = [];
+    for(var idx in _this.voice_channels){
+      var channel = _this.voice_channels[idx];
+      if(channel.active)
+        channels.push(idx);
     }
 
-    if(peers.length > 0){
+    if(channels.length > 0){
       //resample to 48kHz if necessary
       if(buffer.sampleRate != 48000){
         var ratio = 48000/buffer.sampleRate;
@@ -95,11 +94,11 @@ function AudioEngine()
         sbuff.start();
 
         oac.startRendering().then(function(out_buffer){
-          processOut(peers, out_buffer.getChannelData(0));
+          processOut(channels, out_buffer.getChannelData(0));
         });
       }
       else 
-        processOut(peers, buffer.getChannelData(0)); 
+        processOut(channels, buffer.getChannelData(0)); 
     }
 
     //silent output
@@ -404,12 +403,14 @@ AudioEngine.prototype.configureVoIP = function(data)
     var nchannels = view.getUint8(4);
     var channels = new Uint8Array(buffer, 5, nchannels);
 
-    if(peer.dec){
+    var pdata = _this.voice_players[tplayer];
+
+    if(pdata){
       // decode opus packet
       var raw = new Uint8Array(buffer, 5+nchannels);
-      peer.dec.input(raw);
+      pdata.dec.input(raw);
       var data;
-      while(data = peer.dec.output()){
+      while(data = pdata.dec.output()){
         // create buffer from samples
         var buffer = _this.c.createBuffer(1, data.length, 48000);
         var samples = buffer.getChannelData(0);
@@ -436,11 +437,22 @@ AudioEngine.prototype.configureVoIP = function(data)
           sbuff.start();
 
           oac.startRendering().then(function(out_buffer){
-            peer.psamples.push(out_buffer.getChannelData(0));
+            // feed peer channels
+            for(var i = 0; i < channels.length; i++){
+              var peer = pdata.channels[channels[i]];
+              if(peer)
+                peer.psamples.push(out_buffer.getChannelData(0));
+            }
           });
         }
-        else 
-          peer.psamples.push(samples);
+        else{
+          // feed peer channels
+          for(var i = 0; i < channels.length; i++){
+            var peer = pdata.channels[channels[i]];
+            if(peer)
+              peer.psamples.push(samples);
+          }
+        }
       }
     }
   }
@@ -508,8 +520,18 @@ AudioEngine.prototype.setupPeer = function(peer)
 {
   var _this = this;
 
-  //decoder
-  peer.dec = new libopus.Decoder(1,48000);
+  var pdata = this.voice_players[peer.player];
+  if(!pdata){
+    pdata = {channels: {}};
+    this.voice_players[peer.player] = pdata;
+
+    // create decoder
+    pdata.dec = new libopus.Decoder(1,48000);
+
+    // reference channel
+    pdata.channels[this.getChannelIndex(peer.channel)] = peer;
+  }
+
   peer.psamples = []; //packets samples
   peer.processor = this.c.createScriptProcessor(this.processor_buffer_size,0,1);
   peer.processor.onaudioprocess = function(e){
@@ -578,7 +600,6 @@ AudioEngine.prototype.setupPeer = function(peer)
   //connect final node
   peer.final_node = node;
   node.connect(channel.in_node || this.c.destination); //connect to channel node or destination
-
 }
 
 AudioEngine.prototype.getChannelIndex = function(id)
@@ -605,6 +626,8 @@ AudioEngine.prototype.connectVoice = function(data)
     channel.players[data.player] = peer;
 
     this.setupPeer(peer);
+
+    this.voip_ws.send(JSON.stringify({act: "connect", channel: data.channel, player: data.player}));
   }
 }
 
@@ -627,14 +650,28 @@ AudioEngine.prototype.disconnectVoice = function(data)
       if(peer){
         if(peer.final_node) //disconnect from channel node or destination
           peer.final_node.disconnect(channel.in_node || this.c.destination);
-        if(peer.dec){
-          peer.dec.destroy();
-          delete peer.dec;
+
+        // dereference channel
+        var pdata = this.voice_players[player];
+        if(pdata){
+          delete pdata.channels[this.getChannelIndex(data.channel)];
+
+          if(Object.keys(pdata.channels).length == 0){ // not referenced in any channels
+            // remove/destroy player reference
+            if(pdata.dec){
+              pdata.dec.destroy();
+              delete pdata.dec;
+            }
+
+            delete this.voice_players[player];
+          }
         }
       }
 
       delete channel.players[player];
     }
+
+    this.voip_ws.send(JSON.stringify({act: "disconnect", channel: data.channel, player: data.player}));
 
     //update indicator
     this.updateVoiceIndicator();
