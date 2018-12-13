@@ -32,7 +32,8 @@ self.ragdoll -- flag
 -- trigger vRP respawn
 Base:triggerRespawn()
 
-Base:teleport(x,y,z)
+-- heading: (optional) entity heading
+Base:teleport(x,y,z,heading)
 
 -- return x,y,z
 Base:getPosition()

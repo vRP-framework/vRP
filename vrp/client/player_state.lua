@@ -71,6 +71,7 @@ function PlayerState:__construct()
 
         self.remote._update({
           position = {x=x,y=y,z=z},
+          heading = GetEntityHeading(GetPlayerPed(-1)),
           weapons = self:getWeapons(),
           customization = self:getCustomization(),
           health = self:getHealth(),

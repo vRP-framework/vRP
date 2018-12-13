@@ -159,7 +159,7 @@ function PlayerState.event:playerSpawn(user, first_spawn)
   end
 
   if user.cdata.state.position then -- teleport to saved pos
-    vRP.EXT.Base.remote.teleport(user.source,user.cdata.state.position.x,user.cdata.state.position.y,user.cdata.state.position.z)
+    vRP.EXT.Base.remote.teleport(user.source,user.cdata.state.position.x,user.cdata.state.position.y,user.cdata.state.position.z, user.cdata.state.heading)
   end
 
   if user.cdata.state.customization then -- customization
@@ -184,6 +184,7 @@ end
 
 function PlayerState.event:playerDeath(user)
   user.cdata.state.position = nil
+  user.cdata.state.heading = nil
   user.cdata.state.weapons = nil
   user.cdata.state.health = nil
   user.cdata.state.armour = nil
