@@ -89,6 +89,8 @@ function Garage:spawnVehicle(model, state, position, rotation)
 
     -- spawn car
     if HasModelLoaded(mhash) then
+      local ped = GetPlayerPed(-1)
+
       local x,y,z
       if position then
         x,y,z = table.unpack(position)
@@ -100,10 +102,14 @@ function Garage:spawnVehicle(model, state, position, rotation)
       if position and rotation then
         SetEntityQuaternion(nveh, table.unpack(rotation))
       end
+      if not position then -- set vehicle heading same as player
+        SetEntityHeading(nveh, GetEntityHeading(ped))
+      end
+
       SetVehicleOnGroundProperly(nveh)
       SetEntityInvincible(nveh,false)
       if not position then
-        SetPedIntoVehicle(GetPlayerPed(-1),nveh,-1) -- put player inside
+        SetPedIntoVehicle(ped,nveh,-1) -- put player inside
       end
       SetVehicleNumberPlateText(nveh, "P "..vRP.EXT.Identity.registration)
       SetEntityAsMissionEntity(nveh, true, true)

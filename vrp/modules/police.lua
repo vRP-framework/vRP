@@ -150,7 +150,7 @@ local function menu_police_pc(self)
       local seconds = math.random(self.cfg.trackveh.min_time,self.cfg.trackveh.max_time)
 
       SetTimeout(seconds*1000,function()
-        local ok,x,y,z = vRP.EXT.Garage.remote.getAnyOwnedVehiclePosition(nuser.source)
+        local ok,x,y,z = vRP.EXT.Garage.remote.getAnyOwnedVehiclePosition(tuser.source)
         if ok then -- track success
           vRP.EXT.Phone:sendServiceAlert(nil, self.cfg.trackveh.service,x,y,z,lang.police.pc.trackveh.tracked({reg,note}))
         else
