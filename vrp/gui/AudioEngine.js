@@ -113,7 +113,7 @@ function AudioEngine()
   //mic stream
   navigator.mediaDevices.getUserMedia({
     audio: {
-      autoGainControl: false,
+      autoGainControl: true,
       echoCancellation: false,
       noiseSuppression: false,
       latency: 0
@@ -314,7 +314,6 @@ AudioEngine.prototype.configureVoIP = function(data)
 {
   var _this = this;
 
-  console.log(data);
   this.voip_config = data.config;
 
   // create channels
@@ -379,7 +378,6 @@ AudioEngine.prototype.configureVoIP = function(data)
   });
 
   this.voip_peer.onicecandidate = function(e){
-    console.log(e);
     _this.voip_ws.send(JSON.stringify({act: "candidate", data: e.candidate}));
   }
 
@@ -394,7 +392,7 @@ AudioEngine.prototype.configureVoIP = function(data)
   this.voip_channel.binaryType = "arraybuffer";
 
   this.voip_channel.onopen = function(){
-    console.log("channel ready");
+    console.log("vRP: VoIP UDP channel ready");
   }
 
   this.voip_channel.onmessage = function(e){
@@ -459,13 +457,12 @@ AudioEngine.prototype.configureVoIP = function(data)
   }
 
   this.voip_ws.addEventListener("open", function(){
-    console.log("ws connected");
+    console.log("vRP: VoIP websocket ready");
     _this.voip_ws.send(JSON.stringify({act: "identification", id: data.id}));
   });
 
   this.voip_ws.addEventListener("message", function(e){
     var data = JSON.parse(e.data);
-    console.log(data);
     if(data.act == "offer"){
       _this.voip_peer.setRemoteDescription(data.data);
       _this.voip_peer.createAnswer().then(function(answer){

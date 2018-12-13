@@ -22,8 +22,8 @@ function checkConnected(p1, p2, channels)
 console.log("Server started.");
 console.log("config = ", cfg);
 
-wss.on("connection", function(ws){
-  console.log("connection");
+wss.on("connection", function(ws, req){
+  console.log("connection from "+req.connection.remoteAddress);
 
   // create peer
   var peer = new wrtc.RTCPeerConnection({iceServers: cfg.iceServers, portRange: {min: cfg.ports.udp_range[0], max: cfg.ports.udp_range[1]}});
@@ -43,7 +43,7 @@ wss.on("connection", function(ws){
   dchannel.binaryType = "arraybuffer";
 
   dchannel.onopen = function(){
-    console.log("channel ready");
+    console.log("UDP channel ready for "+req.connection.remoteAddress);
   }
 
   dchannel.onmessage = function(e){
@@ -75,8 +75,6 @@ wss.on("connection", function(ws){
   ws.on("message", function(data){
     data = JSON.parse(data);
 
-    console.log("message ", data);
-
     if(data.act == "answer")
       peer.setRemoteDescription(data.data);
     else if(data.act == "candidate" && data.data != null)
@@ -86,7 +84,7 @@ wss.on("connection", function(ws){
         var player = {ws: ws, peer: peer, dchannel: dchannel, id: data.id, channels: {}};
         players[data.id] = player;
         ws.player = player;
-        console.log("identitified ", data.id);
+        console.log("identification for "+req.connection.remoteAddress+" player id "+data.id);
       }
     }
     else if(data.act == "connect" && data.channel != null && data.player != null){
@@ -120,7 +118,7 @@ wss.on("connection", function(ws){
     var player = ws.player;
     if(player)
       delete players[player.id];
-    console.log("disconnection");
+    console.log("disconnection of "+req.connection.remoteAddress);
   });
 
   peer.createOffer().then(function(offer){

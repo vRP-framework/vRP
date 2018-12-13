@@ -34,6 +34,9 @@ self.cfg
 
 [source,lua]
 ----
-self.rplayers -- radio players that can be accepted
 self.talking
 ----
+
+.Events
+[horizontal]
+`radioSpeakingChange(speaking)`:: called when radio speaking state changes
