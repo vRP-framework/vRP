@@ -28,8 +28,8 @@ function AudioEngine()
   this.voice_players = {}; // map of player => global player data
 
   libopus.onload = function(){
-    //encoder
-    _this.mic_enc = new libopus.Encoder(1,48000,24000,true);
+   //encoder
+    _this.mic_enc = new libopus.Encoder(1,48000,24000,20,true);
   }
   if(libopus.loaded) //force loading if already loaded
     libopus.onload();
@@ -65,7 +65,6 @@ function AudioEngine()
       // write audio data
       buffer.set(data, 1+channels.length);
 
-      console.log("send packet of "+buffer.length+" bytes");
       // send packet
       _this.voip_channel.send(buffer.buffer);
     }
