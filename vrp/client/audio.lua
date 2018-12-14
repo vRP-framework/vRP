@@ -198,4 +198,12 @@ Audio.tunnel.connectVoice = Audio.connectVoice
 Audio.tunnel.disconnectVoice = Audio.disconnectVoice
 Audio.tunnel.setVoiceState = Audio.setVoiceState
 
+-- NUI
+
+RegisterNUICallback("audio",function(data,cb)
+  if data.act == "voice_channel_player_speaking_change" then
+    vRP:triggerEvent("voiceChannelPlayerSpeakingChange", data.channel, tonumber(data.player), data.speaking)
+  end
+end)
+
 vRP:registerExtension(Audio)

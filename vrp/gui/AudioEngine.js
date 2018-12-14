@@ -127,6 +127,22 @@ function AudioEngine()
   });
 
   this.player_positions = {};
+
+  // task: peers speaking check
+  setInterval(function(){
+    var time = new Date().getTime();
+
+    for(var idx in _this.voice_channels){
+      var channel = _this.voice_channels[idx];
+      for(var player in channel.players){
+        var peer = channel.players[player];
+        if(peer.speaking && time - peer.last_packet_time >= 500){ // event
+          peer.speaking = false;
+          $.post("http://vrp/audio", JSON.stringify({act: "voice_channel_player_speaking_change", channel: peer.channel, player: peer.player, speaking: peer.speaking}));
+        }
+      }
+    }
+  }, 500);
 }
 
 AudioEngine.prototype.setListenerData = function(data)
@@ -400,6 +416,23 @@ AudioEngine.prototype.configureVoIP = function(data)
     console.log("vRP: VoIP UDP channel ready");
   }
 
+  var feed_peers = function(pdata, channels, samples)
+  {
+    for(var i = 0; i < channels.length; i++){
+      var peer = pdata.channels[channels[i]];
+      if(peer){
+        // speaking event
+        peer.last_packet_time = new Date().getTime();
+        if(!peer.speaking){
+          peer.speaking = true;
+          $.post("http://vrp/audio", JSON.stringify({act: "voice_channel_player_speaking_change", channel: peer.channel, player: peer.player, speaking: peer.speaking}));
+        }
+
+        peer.psamples.push(samples);
+      }
+    }
+  }
+
   this.voip_channel.onmessage = function(e){
     var buffer = e.data;
     var view = new DataView(buffer);
@@ -441,22 +474,11 @@ AudioEngine.prototype.configureVoIP = function(data)
           sbuff.start();
 
           oac.startRendering().then(function(out_buffer){
-            // feed peer channels
-            for(var i = 0; i < channels.length; i++){
-              var peer = pdata.channels[channels[i]];
-              if(peer)
-                peer.psamples.push(out_buffer.getChannelData(0));
-            }
+            feed_peers(pdata, channels, out_buffer.getChannelData(0));
           });
         }
-        else{
-          // feed peer channels
-          for(var i = 0; i < channels.length; i++){
-            var peer = pdata.channels[channels[i]];
-            if(peer)
-              peer.psamples.push(samples);
-          }
-        }
+        else
+          feed_peers(pdata, channels, samples);
       }
     }
   }
@@ -653,6 +675,11 @@ AudioEngine.prototype.disconnectVoice = function(data)
       if(peer){
         if(peer.final_node) //disconnect from channel node or destination
           peer.final_node.disconnect(channel.in_node || this.c.destination);
+
+        if(peer.speaking){ // event
+          peer.speaking = false;
+          $.post("http://vrp/audio", JSON.stringify({act: "voice_channel_player_speaking_change", channel: peer.channel, player: peer.player, speaking: peer.speaking}));
+        }
 
         // dereference channel
         var pdata = this.voice_players[player];
