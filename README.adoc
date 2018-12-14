@@ -76,8 +76,12 @@ eating:: https://freesound.org/people/ryanharding95/sounds/272440/
 ** advanced features (beard, head/face, etc)
 * add more sound effects
 ** handcuff
+** phone hangup feedback
 * VoIP reconnect/finishing/doc
-* phone hangup feedback
+** networked player speaking on channel event
+** VoIP ped talking animation
+** properly disable default FiveM VoIP
+* radio player talking display
 
 .vRP 2 dev' phases
 * refactoring (done)

@@ -13,7 +13,7 @@ cfg.voip_proximity = 100
 cfg.voip_interval = 5000
 
 -- VoIP websocket server
-cfg.voip_server = "ws://localhost:4400"
+cfg.voip_server = "ws://localhost:40120"
 
 -- world voice config (see Audio:registerVoiceChannel)
 cfg.world_voice = {

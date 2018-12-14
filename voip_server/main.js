@@ -26,7 +26,7 @@ wss.on("connection", function(ws, req){
   console.log("connection from "+req.connection.remoteAddress);
 
   // create peer
-  var peer = new wrtc.RTCPeerConnection({iceServers: cfg.iceServers, portRange: {min: cfg.ports.udp_range[0], max: cfg.ports.udp_range[1]}});
+  var peer = new wrtc.RTCPeerConnection({iceServers: cfg.iceServers, portRange: {min: cfg.ports.webrtc_range[0], max: cfg.ports.webrtc_range[1]}});
 
   peer.onicecandidate = function(e){
     ws.send(JSON.stringify({act: "candidate", data: e.candidate}));
