@@ -57,7 +57,7 @@ Audio.event = {}
 function Audio.event:playerSpawn(user, first_spawn)
   if first_spawn then
     -- connect VoIP
-    self.remote._configureVoIP(user.source, {server = self.cfg.voip_server, channels = self:getChannels()}, self.cfg.vrp_voip, self.cfg.voip_interval, self.cfg.voip_proximity)
+    self.remote._configureVoIP(user.source, {bitrate = self.cfg.voip_bitrate, frame_size = self.cfg.voip_frame_size, server = self.cfg.voip_server, channels = self:getChannels()}, self.cfg.vrp_voip, self.cfg.voip_interval, self.cfg.voip_proximity)
   end
 end
 

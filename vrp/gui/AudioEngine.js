@@ -29,7 +29,7 @@ function AudioEngine()
 
   libopus.onload = function(){
    //encoder
-    _this.mic_enc = new libopus.Encoder(1,48000,24000,20,true);
+    _this.mic_enc = new libopus.Encoder(1,48000,24000,60,true);
   }
   if(libopus.loaded) //force loading if already loaded
     libopus.onload();
@@ -315,6 +315,11 @@ AudioEngine.prototype.configureVoIP = function(data)
   var _this = this;
 
   this.voip_config = data.config;
+
+  // re-create mic encoder
+  if(this.mic_enc)
+    this.mic_enc.destroy();
+  this.mic_enc = new libopus.Encoder(1,48000,this.voip_config.bitrate,this.voip_config.frame_size,true);
 
   // create channels
   for(var id in this.voip_config.channels){
