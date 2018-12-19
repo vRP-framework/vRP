@@ -78,10 +78,12 @@ eating:: https://freesound.org/people/ryanharding95/sounds/272440/
 ** handcuff
 ** phone hangup feedback
 * VoIP reconnect/finishing/doc
-** networked player speaking on channel event
+** better world connect/disconnect task
+** voice channel transmitting event
 ** VoIP ped talking animation
 ** properly disable default FiveM VoIP
 * radio player talking display
+* improved users list (online/offline/by id menu)
 
 .vRP 2 dev' phases
 * refactoring (done)
