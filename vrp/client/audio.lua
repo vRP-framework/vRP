@@ -13,6 +13,8 @@ function Audio:__construct()
   self.voip_interval = 5000
   self.voip_proximity = 100 
 
+  self.active_channels = {}
+
   self.speaking = false
 
   -- listener task
@@ -180,6 +182,21 @@ function Audio.event:speakingChange(speaking)
   end
 end
 
+function Audio.event:voiceChannelTransmittingChange(channel, transmitting)
+  local old_state = (next(self.active_channels) ~= nil)
+
+  if transmitting then
+    self.active_channels[channel] = true
+  else
+    self.active_channels[channel] = nil
+  end
+
+  local state = next(self.active_channels) ~= nil
+  if old_state ~= state then
+    SendNUIMessage({act="set_voice_indicator", state = state})
+  end
+end
+
 -- TUNNEL
 Audio.tunnel = {}
 
@@ -203,6 +220,8 @@ Audio.tunnel.setVoiceState = Audio.setVoiceState
 RegisterNUICallback("audio",function(data,cb)
   if data.act == "voice_channel_player_speaking_change" then
     vRP:triggerEvent("voiceChannelPlayerSpeakingChange", data.channel, tonumber(data.player), data.speaking)
+  elseif data.act == "voice_channel_transmitting_change" then
+    vRP:triggerEvent("voiceChannelTransmittingChange", data.channel, data.transmitting)
   end
 end)
 

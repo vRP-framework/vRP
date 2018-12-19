@@ -80,7 +80,8 @@ function AudioEngine()
     // prepare dest channels
     var channels = [];
     for(var idx in _this.voice_channels){
-      if(_this.isChannelActive(idx))
+      var channel = _this.voice_channels[idx];
+      if(channel.transmitting)
         channels.push(idx);
     }
 
@@ -681,6 +682,8 @@ AudioEngine.prototype.connectVoice = function(data)
       if(this.voip_ws && this.voip_ws.readyState == 1)
         this.voip_ws.send(JSON.stringify({act: "connect", channel: channel.idx, player: data.player}));
     }
+
+    this.channelTransmittingCheck(channel);
   }
 }
 
@@ -732,8 +735,7 @@ AudioEngine.prototype.disconnectVoice = function(data)
       delete channel.players[player];
     }
 
-    //update indicator
-    this.updateVoiceIndicator();
+    this.channelTransmittingCheck(channel);
   }
 }
 
@@ -743,34 +745,24 @@ AudioEngine.prototype.setVoiceState = function(data)
   if(channel){
     channel.active = data.active;
 
-    //update indicator
-    this.updateVoiceIndicator();
+    this.channelTransmittingCheck(channel);
   }
 }
 
-AudioEngine.prototype.isChannelActive = function(idx)
+AudioEngine.prototype.setVoiceIndicator = function(data)
 {
-  var channel = this.voice_channels[idx];
-  if(channel)
-    return channel.active && Object.keys(channel.players).length > 0;
-
-  return false;
-}
-
-AudioEngine.prototype.isVoiceActive = function()
-{
-  for(var idx in this.voice_channels){
-    if(this.isChannelActive(idx))
-      return true;
-  }
-
-  return false;
-}
-
-AudioEngine.prototype.updateVoiceIndicator = function()
-{
-  if(this.isVoiceActive())
+  if(data.state)
     this.voice_indicator_div.classList.add("active");
   else
     this.voice_indicator_div.classList.remove("active");
+}
+
+AudioEngine.prototype.channelTransmittingCheck = function(channel)
+{
+  var old_transmitting = channel.transmitting;
+  channel.transmitting = (channel.active && Object.keys(channel.players).length > 0);
+
+  // event
+  if(channel.transmitting != old_transmitting)
+    $.post("http://vrp/audio", JSON.stringify({act: "voice_channel_transmitting_change", channel: channel.id, transmitting: channel.transmitting}));
 }

@@ -160,6 +160,8 @@ window.addEventListener("load",function(){
       aengine.setVoiceState(data);
     else if(data.act == "configure_voice")
       aengine.configureVoice(data);
+    else if(data.act == "set_voice_indicator")
+      aengine.setVoiceIndicator(data);
     else if(data.act == "set_player_positions")
       aengine.setPlayerPositions(data);
     // CONTROLS
