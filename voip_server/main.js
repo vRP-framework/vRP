@@ -19,6 +19,11 @@ function checkConnected(p1, p2, channels)
   return false;
 }
 
+function errorHandler(e)
+{
+  console.log("error", e);
+}
+
 console.log("Server started.");
 console.log("config = ", cfg);
 
@@ -29,7 +34,9 @@ wss.on("connection", function(ws, req){
   var peer = new wrtc.RTCPeerConnection({iceServers: cfg.iceServers, portRange: {min: cfg.ports.webrtc_range[0], max: cfg.ports.webrtc_range[1]}});
 
   peer.onicecandidate = function(e){
-    ws.send(JSON.stringify({act: "candidate", data: e.candidate}));
+    try{
+      ws.send(JSON.stringify({act: "candidate", data: e.candidate}));
+    }catch(e){ errorHandler(e); }
   }
 
   // create channel
@@ -66,8 +73,11 @@ wss.on("connection", function(ws, req){
       // send to channel connected players
       for(var id in players){
         var out_player = players[id];
-        if(checkConnected(player, out_player, channels))
-          out_player.dchannel.send(out_data.buffer);
+        if(checkConnected(player, out_player, channels)){
+          try{
+            out_player.dchannel.send(out_data.buffer);
+          }catch(e){ errorHandler(e); }
+        }
       }
     }
   }
@@ -76,9 +86,9 @@ wss.on("connection", function(ws, req){
     data = JSON.parse(data);
 
     if(data.act == "answer")
-      peer.setRemoteDescription(data.data);
+      peer.setRemoteDescription(data.data).catch(errorHandler);
     else if(data.act == "candidate" && data.data != null)
-      peer.addIceCandidate(data.data);
+      peer.addIceCandidate(data.data).catch(errorHandler);
     else if(data.act == "identification" && data.id != null){
       if(!players[data.id]){
         var player = {ws: ws, peer: peer, dchannel: dchannel, id: data.id, channels: {}};
@@ -122,7 +132,9 @@ wss.on("connection", function(ws, req){
   });
 
   peer.createOffer().then(function(offer){
-    peer.setLocalDescription(offer);
-    ws.send(JSON.stringify({act: "offer", data: offer}));
-  });
+    peer.setLocalDescription(offer).catch(errorHandler);
+    try{
+      ws.send(JSON.stringify({act: "offer", data: offer}));
+    }catch(e){ errorHandler(e); }
+  }).catch(errorHandler);
 });

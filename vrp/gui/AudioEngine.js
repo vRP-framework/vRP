@@ -66,7 +66,9 @@ function AudioEngine()
       buffer.set(data, 1+channels.length);
 
       // send packet
-      _this.voip_channel.send(buffer.buffer);
+      try{
+        _this.voip_channel.send(buffer.buffer);
+      }catch(e){}
     }
   }
 
@@ -390,116 +392,142 @@ AudioEngine.prototype.configureVoIP = function(data)
       node.connect(this.c.destination);
   }
 
-  // connect to websocket server
-  this.voip_ws = new WebSocket(this.voip_config.server);
+  setInterval(function(){
+    _this.connectVoIP();
+  }, 10000);
 
-  // create peer
-  this.voip_peer = new RTCPeerConnection({
-    iceServers: []
-  });
+  _this.connectVoIP();
+}
 
-  this.voip_peer.onicecandidate = function(e){
-    _this.voip_ws.send(JSON.stringify({act: "candidate", data: e.candidate}));
-  }
+AudioEngine.prototype.connectVoIP = function()
+{
+  var _this = this;
 
-  // create channel
-  this.voip_channel = this.voip_peer.createDataChannel("voip", {
-    ordered: false,
-    negotiated: true,
-    maxRetransmits: 0,
-    id: 0
-  });
+  if(!this.voip_ws || this.voip_ws.readyState == 3){
+    // connect to websocket server
+    this.voip_ws = new WebSocket(this.voip_config.server);
 
-  this.voip_channel.binaryType = "arraybuffer";
+    // create peer
+    this.voip_peer = new RTCPeerConnection({
+      iceServers: []
+    });
 
-  this.voip_channel.onopen = function(){
-    console.log("vRP: VoIP UDP channel ready");
-  }
+    this.voip_peer.onicecandidate = function(e){
+      if(_this.voip_ws && _this.voip_ws.readyState == 1)
+        _this.voip_ws.send(JSON.stringify({act: "candidate", data: e.candidate}));
+    }
 
-  var feed_peers = function(pdata, channels, samples)
-  {
-    for(var i = 0; i < channels.length; i++){
-      var peer = pdata.channels[channels[i]];
-      if(peer){
-        // speaking event
-        peer.last_packet_time = new Date().getTime();
-        if(!peer.speaking){
-          peer.speaking = true;
-          $.post("http://vrp/audio", JSON.stringify({act: "voice_channel_player_speaking_change", channel: peer.channel, player: peer.player, speaking: peer.speaking}));
+    // create channel
+    this.voip_channel = this.voip_peer.createDataChannel("voip", {
+      ordered: false,
+      negotiated: true,
+      maxRetransmits: 0,
+      id: 0
+    });
+
+    this.voip_channel.binaryType = "arraybuffer";
+
+    this.voip_channel.onopen = function(){
+      console.log("vRP: VoIP UDP channel ready");
+    }
+
+    var feed_peers = function(pdata, channels, samples)
+    {
+      for(var i = 0; i < channels.length; i++){
+        var peer = pdata.channels[channels[i]];
+        if(peer){
+          // speaking event
+          peer.last_packet_time = new Date().getTime();
+          if(!peer.speaking){
+            peer.speaking = true;
+            $.post("http://vrp/audio", JSON.stringify({act: "voice_channel_player_speaking_change", channel: peer.channel, player: peer.player, speaking: peer.speaking}));
+          }
+
+          peer.psamples.push(samples);
         }
-
-        peer.psamples.push(samples);
       }
     }
-  }
 
-  this.voip_channel.onmessage = function(e){
-    var buffer = e.data;
-    var view = new DataView(buffer);
+    this.voip_channel.onmessage = function(e){
+      var buffer = e.data;
+      var view = new DataView(buffer);
 
-    var tplayer = view.getInt32(0);
-    var nchannels = view.getUint8(4);
-    var channels = new Uint8Array(buffer, 5, nchannels);
+      var tplayer = view.getInt32(0);
+      var nchannels = view.getUint8(4);
+      var channels = new Uint8Array(buffer, 5, nchannels);
 
-    var pdata = _this.voice_players[tplayer];
+      var pdata = _this.voice_players[tplayer];
 
-    if(pdata){
-      // decode opus packet
-      var raw = new Uint8Array(buffer, 5+nchannels);
-      pdata.dec.input(raw);
-      var data;
-      while(data = pdata.dec.output()){
-        // create buffer from samples
-        var buffer = _this.c.createBuffer(1, data.length, 48000);
-        var samples = buffer.getChannelData(0);
+      if(pdata){
+        // decode opus packet
+        var raw = new Uint8Array(buffer, 5+nchannels);
+        pdata.dec.input(raw);
+        var data;
+        while(data = pdata.dec.output()){
+          // create buffer from samples
+          var buffer = _this.c.createBuffer(1, data.length, 48000);
+          var samples = buffer.getChannelData(0);
 
-        for(var k = 0; k < data.length; k++){
-          // convert from int16 to float
-          var s = data[k];
-          s /= 32767 ;
-          if(s > 1) 
-            s = 1;
-          else if(s < -1) 
-            s = -1;
+          for(var k = 0; k < data.length; k++){
+            // convert from int16 to float
+            var s = data[k];
+            s /= 32767 ;
+            if(s > 1) 
+              s = 1;
+            else if(s < -1) 
+              s = -1;
 
-          samples[k] = s;
+            samples[k] = s;
+          }
+
+          // resample to AudioContext samplerate if necessary
+          if(_this.c.sampleRate != 48000){
+            var oac = new OfflineAudioContext(1,buffer.duration*_this.c.sampleRate,_this.c.sampleRate);
+            var sbuff = oac.createBufferSource();
+            sbuff.buffer = buffer;
+            sbuff.connect(oac.destination);
+            sbuff.start();
+
+            oac.startRendering().then(function(out_buffer){
+              feed_peers(pdata, channels, out_buffer.getChannelData(0));
+            });
+          }
+          else
+            feed_peers(pdata, channels, samples);
         }
-
-        // resample to AudioContext samplerate if necessary
-        if(_this.c.sampleRate != 48000){
-          var oac = new OfflineAudioContext(1,buffer.duration*_this.c.sampleRate,_this.c.sampleRate);
-          var sbuff = oac.createBufferSource();
-          sbuff.buffer = buffer;
-          sbuff.connect(oac.destination);
-          sbuff.start();
-
-          oac.startRendering().then(function(out_buffer){
-            feed_peers(pdata, channels, out_buffer.getChannelData(0));
-          });
-        }
-        else
-          feed_peers(pdata, channels, samples);
       }
     }
+
+    this.voip_ws.addEventListener("open", function(){
+      console.log("vRP: VoIP websocket ready");
+      // identify
+      _this.voip_ws.send(JSON.stringify({act: "identification", id: _this.voip_config.id}));
+
+      // setup already connected peers
+      for(var idx in _this.voice_channels){
+        var channel = _this.voice_channels[idx];
+        for(var player in channel.players)
+          _this.voip_ws.send(JSON.stringify({act: "connect", channel: idx, player: player}));
+      }
+    });
+
+    this.voip_ws.addEventListener("message", function(e){
+      var data = JSON.parse(e.data);
+      if(data.act == "offer"){
+        _this.voip_peer.setRemoteDescription(data.data);
+        _this.voip_peer.createAnswer().then(function(answer){
+          _this.voip_peer.setLocalDescription(answer);
+          _this.voip_ws.send(JSON.stringify({act: "answer", data: answer}));
+        });
+      }
+      else if(data.act == "candidate" && data.data != null)
+        _this.voip_peer.addIceCandidate(data.data);
+    });
+
+    this.voip_ws.addEventListener("close", function(){
+      console.log("vRP: VoIP disconnected");
+    })
   }
-
-  this.voip_ws.addEventListener("open", function(){
-    console.log("vRP: VoIP websocket ready");
-    _this.voip_ws.send(JSON.stringify({act: "identification", id: data.id}));
-  });
-
-  this.voip_ws.addEventListener("message", function(e){
-    var data = JSON.parse(e.data);
-    if(data.act == "offer"){
-      _this.voip_peer.setRemoteDescription(data.data);
-      _this.voip_peer.createAnswer().then(function(answer){
-        _this.voip_peer.setLocalDescription(answer);
-        _this.voip_ws.send(JSON.stringify({act: "answer", data: answer}));
-      });
-    }
-    else if(data.act == "candidate" && data.data != null)
-      _this.voip_peer.addIceCandidate(data.data);
-  });
 }
 
 AudioEngine.prototype.setPlayerPositions = function(data)
@@ -652,7 +680,8 @@ AudioEngine.prototype.connectVoice = function(data)
 
     this.setupPeer(peer);
 
-    this.voip_ws.send(JSON.stringify({act: "connect", channel: channel.idx, player: data.player}));
+    if(this.voip_ws && this.voip_ws.readyState == 1)
+      this.voip_ws.send(JSON.stringify({act: "connect", channel: channel.idx, player: data.player}));
   }
 }
 
@@ -697,7 +726,8 @@ AudioEngine.prototype.disconnectVoice = function(data)
           }
         }
 
-        this.voip_ws.send(JSON.stringify({act: "disconnect", channel: channel.idx, player: player}));
+        if(this.voip_ws && this.voip_ws.readyState == 1)
+          this.voip_ws.send(JSON.stringify({act: "disconnect", channel: channel.idx, player: player}));
       }
 
       delete channel.players[player];

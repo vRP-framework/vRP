@@ -188,7 +188,7 @@ function Audio.tunnel:configureVoIP(config, vrp_voip, interval, proximity)
   self.voip_interval = interval
   self.voip_proximity = proximity
 
-  SendNUIMessage({act="configure_voip", config = config, id = GetPlayerServerId(PlayerId())})
+  SendNUIMessage({act="configure_voip", config = config})
 end
 
 Audio.tunnel.playAudioSource = Audio.playAudioSource
