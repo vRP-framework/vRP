@@ -665,23 +665,22 @@ AudioEngine.prototype.getChannelIndex = function(id)
 
 AudioEngine.prototype.connectVoice = function(data)
 {
-  //close previous peer
-  this.disconnectVoice(data);
-
   var channel = this.voice_channels[this.getChannelIndex(data.channel)];
   if(channel){
-    //setup new peer
-    var peer = {
-      channel: data.channel,
-      player: data.player
+    if(data.player != null && !channel.players[data.player]){
+      //setup new peer
+      var peer = {
+        channel: data.channel,
+        player: data.player
+      }
+
+      channel.players[data.player] = peer;
+
+      this.setupPeer(peer);
+
+      if(this.voip_ws && this.voip_ws.readyState == 1)
+        this.voip_ws.send(JSON.stringify({act: "connect", channel: channel.idx, player: data.player}));
     }
-
-    channel.players[data.player] = peer;
-
-    this.setupPeer(peer);
-
-    if(this.voip_ws && this.voip_ws.readyState == 1)
-      this.voip_ws.send(JSON.stringify({act: "connect", channel: channel.idx, player: data.player}));
   }
 }
 

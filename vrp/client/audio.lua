@@ -66,7 +66,7 @@ function Audio:__construct()
             local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
             local in_radius = (distance <= self.voip_proximity)
             if in_radius then -- join radius
-              self:connectVoice("world", k, self.speaking)
+              self:connectVoice("world", k)
             elseif not in_radius then -- leave radius
               self:disconnectVoice("world", k)
             end
