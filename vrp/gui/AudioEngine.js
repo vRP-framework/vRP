@@ -580,10 +580,10 @@ AudioEngine.prototype.setupPeer = function(peer)
 
     // create decoder
     pdata.dec = new libopus.Decoder(1,48000);
-
-    // reference channel
-    pdata.channels[this.getChannelIndex(peer.channel)] = peer;
   }
+
+  // reference channel
+  pdata.channels[this.getChannelIndex(peer.channel)] = peer;
 
   peer.psamples = []; //packets samples
   peer.processor = this.c.createScriptProcessor(this.processor_buffer_size,1,1);

@@ -7,7 +7,8 @@ cfg.off_sound = "sounds/radio_off.ogg"
 -- radio voice config (see Audio:registerVoiceChannel)
 cfg.radio_voice = {
   effects = {
-    biquad = { type = "bandpass", frequency = 1700, Q = 2, gain = 1.2 }
+    biquad = { type = "bandpass", frequency = 1700, Q = 2},
+    gain = { gain = 2}
   }
 }
 
