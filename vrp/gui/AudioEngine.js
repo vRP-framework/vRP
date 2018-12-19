@@ -163,6 +163,7 @@ AudioEngine.prototype.setListenerData = function(data)
 AudioEngine.prototype.setupAudioSource = function(data)
 {
   var audio = new Audio();
+  audio.crossOrigin = "anonymous";
   audio.src = data.url;
   audio.volume = data.volume;
 
