@@ -24,7 +24,7 @@ end
 -- EVENT
 Radio.event = {}
 
-function Radio.event.radioSpeakingChange(speaking)
+function Radio.event:radioSpeakingChange(speaking)
   vRP.EXT.Audio:setVoiceState("world", speaking)
   vRP.EXT.Audio:setVoiceState("radio", speaking)
 end
