@@ -192,8 +192,15 @@ function Audio.event:voiceChannelTransmittingChange(channel, transmitting)
   end
 
   local state = next(self.active_channels) ~= nil
-  if old_state ~= state then
+  if old_state ~= state then -- update indicator/local player talking
     SendNUIMessage({act="set_voice_indicator", state = state})
+    SetPlayerTalkingOverride(PlayerId(), state)
+  end
+end
+
+function Audio.event:voiceChannelPlayerSpeakingChange(channel, player, speaking)
+  if channel == "world" then -- remote player talking
+    SetPlayerTalkingOverride(GetPlayerFromServerId(player), speaking)
   end
 end
 

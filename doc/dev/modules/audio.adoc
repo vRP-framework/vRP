@@ -94,5 +94,5 @@ Audio.tunnel.setVoiceState = Audio.setVoiceState
 .Events
 [horizontal]
 `speakingChange(speaking)`:: called when speaking state changes
-`voiceChannelPlayerSpeakingChange(channel, player, speaking)`:: called when the speaking state of a player for a specific channel changes (VoIP)
+`voiceChannelPlayerSpeakingChange(channel, player, speaking)`:: called when the speaking state of a remote player for a specific channel changes (VoIP)
 `voiceChannelTransmittingChange(channel, transmitting)`:: called when the transmitting state of the local player for a specific channel changes (VoIP)
