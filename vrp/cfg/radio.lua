@@ -17,6 +17,17 @@ cfg.channels = {
   {"police"}
 }
 
+-- radio additional CSS
+cfg.css = [[
+.radio_display > div[data-group="police"] > .group{
+  color: #1971ff;
+}
+
+.radio_display > div[data-group="police"]{
+  background-image: linear-gradient(to bottom, rgb(25, 58, 112, 0.75), rgba(0,0,0,0.75));
+}
+]]
+
 -- map entities used to display player radio GPS signal per group
 -- map of group => map_entity (with PlayerMark behavior)
 --- map_entity: {ent, cfg} will fill cfg.player, cfg.title

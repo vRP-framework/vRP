@@ -5,6 +5,7 @@ function Radio:__construct()
   vRP.Extension.__construct(self)
 
   self.talking = false
+  self.players = {}
 
   -- task: radio push to talk
   Citizen.CreateThread(function()
@@ -29,13 +30,32 @@ function Radio.event:radioSpeakingChange(speaking)
   vRP.EXT.Audio:setVoiceState("radio", speaking)
 end
 
+function Radio.event:voiceChannelPlayerSpeakingChange(channel, player, speaking)
+  if channel == "radio" then
+    if speaking then
+      local data = self.players[player]
+      if data then
+      SendNUIMessage({act="set_radio_player_speaking_state", player = player, state = speaking, data = data})
+      end
+    else
+      SendNUIMessage({act="set_radio_player_speaking_state", player = player, state = speaking})
+    end
+  end
+end
+
 -- TUNNEL
 Radio.tunnel = {}
 
-function Radio.tunnel:setupRadio(players)
-  for player in pairs(players) do
+function Radio.tunnel:setupPlayers(players)
+  for player, data in pairs(players) do
     vRP.EXT.Audio:connectVoice("radio", player)
+    self.players[player] = data
   end
+end
+
+function Radio.tunnel:clearPlayers()
+  vRP.EXT.Audio:disconnectVoice("radio")
+  self.players = {}
 end
 
 vRP:registerExtension(Radio)

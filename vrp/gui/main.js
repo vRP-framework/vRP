@@ -19,6 +19,7 @@ window.addEventListener("load",function(){
   var wprompt = new WPrompt();
   var requestmgr = new RequestManager();
   var announcemgr = new AnnounceManager();
+  var radio_display = new RadioDisplay();
   var aengine = new AudioEngine();
 
   requestmgr.onResponse = function(id,ok){ $.post("http://vrp/request",JSON.stringify({act: "response", id: id, ok: ok})); }
@@ -164,6 +165,9 @@ window.addEventListener("load",function(){
       aengine.setVoiceIndicator(data);
     else if(data.act == "set_player_positions")
       aengine.setPlayerPositions(data);
+    // Radio
+    else if(data.act == "set_radio_player_speaking_state")
+      radio_display.setPlayerSpeakingState(data);
     // CONTROLS
     else if(data.act == "event"){ //EVENTS
       if(data.event == "UP"){

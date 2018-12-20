@@ -7,32 +7,54 @@ local Radio = class("Radio", vRP.Extension)
 
 Radio.User = class("User")
 
+-- get group which makes a specific user a radio peer
+-- return group name or nil if not a valid peer
+function Radio.User:getRadioPeerGroup(user)
+  for group in pairs(self:getGroups()) do -- each player group
+    local cgroups = vRP.EXT.Radio.cgroups[group]
+    if cgroups then
+      for cgroup in pairs(cgroups) do -- each group from connect graph for this group
+        if user:hasGroup(cgroup) then -- if in group
+          return cgroup
+        end
+      end
+    end
+  end
+end
+
 function Radio.User:connectRadio()
   local rusers = vRP.EXT.Radio.rusers
 
   if not rusers[self] then
     -- send map of players to connect to for this radio
-    local groups = self:getGroups()
     local players = {}
     for ruser in pairs(rusers) do -- each radio user
-      for group in pairs(groups) do -- each player group
-        for cgroup in pairs(vRP.EXT.Radio.cgroups[group] or {}) do -- each group from connect graph for this group
-          if ruser:hasGroup(cgroup) then -- if in group
-            players[ruser.source] = true
-          end
-        end
+      local group = self:getRadioPeerGroup(ruser)
+      if group then
+        players[ruser.source] = {
+          group = group,
+          group_title = vRP.EXT.Group:getGroupTitle(group),
+          title = ruser.identity.firstname.." "..ruser.identity.name
+        }
+      end
+
+      -- connect all radio players to this new radio player
+      local rgroup = ruser:getRadioPeerGroup(self)
+      if rgroup then
+        vRP.EXT.Radio.remote._setupPlayers(ruser.source, {
+          [self.source] = {
+            group = rgroup,
+            group_title = vRP.EXT.Group:getGroupTitle(rgroup),
+            title = self.identity.firstname.." "..self.identity.name
+          }
+        })
       end
     end
 
     vRP.EXT.Audio.remote._playAudioSource(-1, vRP.EXT.Radio.cfg.on_sound, 1, 0,0,0, 30, self.source)
 
     -- connect to all radio players
-    vRP.EXT.Radio.remote._setupRadio(self.source, players)
-
-    -- connect all radio players to this new one
-    for player in pairs(players) do
-      vRP.EXT.Audio.remote._connectVoice(self.source, "radio", player)
-    end
+    vRP.EXT.Radio.remote._setupPlayers(self.source, players)
 
     rusers[self] = true
   end
@@ -45,7 +67,7 @@ function Radio.User:disconnectRadio()
     rusers[self] = nil
 
     vRP.EXT.Audio.remote._playAudioSource(-1, vRP.EXT.Radio.cfg.off_sound, 1, 0,0,0, 30, self.source)
-    vRP.EXT.Radio.remote._disconnectVoice(self.source, "radio")
+    vRP.EXT.Radio.remote._clearPlayers(self.source)
   end
 end
 
@@ -109,6 +131,14 @@ end
 
 -- EVENT
 Radio.event = {}
+
+function Radio.event:playerSpawn(user, first_spawn)
+  if first_spawn then
+    -- load additional css using the div api
+    vRP.EXT.GUI.remote._setDiv(user.source, "radio_additional_css",".div_radio_additional_css{ display: none; }\n\n"..self.cfg.css,"")
+  end
+end
+
 
 function Radio.event:characterUnload(user)
   user:disconnectRadio()

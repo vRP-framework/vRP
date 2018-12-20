@@ -210,3 +210,30 @@ html, body {
 #voice_indicator.active{
   display: block;
 }
+
+/* Radio */
+
+.radio_display{
+  position: absolute;
+  right: 0;
+  top: 15%;
+  margin: 6px;
+  width: 200px;
+}
+
+.radio_display > div{
+  overflow: hidden;
+  margin-top: 3px;
+  font-weight: bold;
+  border-radius: 8px;
+  padding: 5px;
+  color: white;
+  background-image: linear-gradient(to bottom, rgba(50,50,50,0.75), rgba(0,0,0,0.75));
+}
+
+.radio_display > div > .group{
+  text-decoration: underline;
+}
+
+.radio_display > div > .title{
+}
