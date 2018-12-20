@@ -454,10 +454,10 @@ end
 -- get slot instance by address
 -- return slot or nil
 function Home:getSlotByAddress(home, number)
-  for k,v in pairs(self.slots) do
-    for l,w in pairs(v) do
-      if w.home_name == home and w.home_number == number then
-        return w
+  for stype,slots in pairs(self.slots) do
+    for sid,slot in pairs(slots) do
+      if slot.home == home and slot.number == number then
+        return slot
       end
     end
   end
@@ -468,7 +468,7 @@ function Home:findFreeSlot(stype)
   local group = self.slots[stype]
   local group_cfg = self.cfg.slot_types[stype]
   if group_cfg then
-    for sid in pairs(group_cfg) do
+    for sid in ipairs(group_cfg) do
       if not group[sid] then
         return sid
       end
