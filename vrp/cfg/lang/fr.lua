@@ -218,7 +218,7 @@ local lang = {
     title = "Identité",
     citizenship = {
       title = "Citoyenneté",
-      info = "<em>Name: </em>{1}<br /><em>First name: </em>{2}<br /><em>Age: </em>{3}<br /><em>Registration n°: </em>{4}<br /><em>Phone: </em>{5}",
+      info = "<em>Nom: </em>{1}<br /><em>Prénom: </em>{2}<br /><em>Age: </em>{3}<br /><em>N° d'immatriculation: </em>{4}<br /><em>Téléphone: </em>{5}",
     },
     cityhall = {
       title = "Hôtel de ville",
