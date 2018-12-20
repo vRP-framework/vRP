@@ -74,6 +74,7 @@ files{
   "gui/WPrompt.js",
   "gui/RequestManager.js",
   "gui/AnnounceManager.js",
+  "gui/RadioDisplay.js",
   "gui/Div.js",
   "gui/dynamic_classes.js",
   "gui/AudioEngine.js",

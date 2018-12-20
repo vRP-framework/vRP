@@ -20,6 +20,10 @@ cfg.dialing_sound = "sounds/phone_dialing.ogg" -- loop
 cfg.ringing_sound = "sounds/phone_ringing.ogg" -- loop
 cfg.sms_sound = "sounds/phone_sms.ogg"
 
+-- phone voice config (see Audio:registerVoiceChannel)
+cfg.phone_voice = {
+}
+
 -- define phone services
 -- map_entity: {ent,cfg} will fill cfg.title, cfg.pos
 -- alert_time (alert blip display duration in seconds)

@@ -12,6 +12,12 @@ endif::[]
 
 This module handles audio features.
 
+.VoIP 
+* a `voip_server` (nodejs) must be launched for each vRP server
+* nodejs `ws` and `wrtc` packages are required
+* the TCP websocket and UDP webrtc range of ports must be opened by firewalls
+* see `voip_server/config.js` and `cfg/audio.lua`
+
 == Extension
 
 === Server
@@ -19,6 +25,19 @@ This module handles audio features.
 [source,lua]
 ----
 self.cfg
+self.channels -- map of id => {index, config} (available after the first player connection)
+
+-- register VoIP channel
+-- all channels should be registered before any player joins the server
+--
+-- id: channel name/id (string)
+-- config:
+--- effects: map of name => true/options
+---- spatialization => { max_dist: ..., rolloff: ..., dist_model: ... } (per peer effect)
+---- biquad => { frequency: ..., Q: ..., type: ..., detune: ..., gain: ...} see WebAudioAPI BiquadFilter
+----- freq = 1700, Q = 3, type = "bandpass" (idea for radio effect)
+---- gain => { gain: ... }
+Audio:registerVoiceChannel(id, config)
 ----
 
 === Client
@@ -49,57 +68,31 @@ Audio:removeAudioSource(name)
 
 -- VoIP
 
-Audio:setPeerConfiguration(config)
-
--- request connection to another player for a specific channel
+-- create connection to another player for a specific channel
 Audio:connectVoice(channel, player)
 
--- disconnect from another player for a specific channel
+-- delete connection to another player for a specific channel
 -- player: nil to disconnect from all players
 Audio:disconnectVoice(channel, player)
 
--- register callbacks for a specific channel
---- on_offer(player): should return true to accept the connection
---- on_connect(player, is_origin): is_origin is true if it's the local peer (not an answer)
---- on_disconnect(player)
-Audio:registerVoiceCallbacks(channel, on_offer, on_connect, on_disconnect)
-
--- check if there is an active connection
--- return boolean or nil
-Audio:isVoiceConnected(channel, player)
-
--- check if there is a pending connection
--- return boolean or nil
-Audio:isVoiceConnecting(channel, player)
-
--- enable/disable speaking
---- player: nil to affect all channel peers
+-- enable/disable speaking for a specific channel
 --- active: true/false 
-Audio:setVoiceState(channel, player, active)
-
--- configure channel (can only be called once per channel)
---- config:
----- effects: map of name => true/options
------ spatialization => { max_dist: ..., rolloff: ..., dist_model: ... } (per peer effect)
------ biquad => { frequency: ..., Q: ..., type: ..., detune: ..., gain: ...} see WebAudioAPI BiquadFilter
------- freq = 1700, Q = 3, type = "bandpass" (idea for radio effect)
------ gain => { gain: ... }
-Audio:configureVoice(channel, config)
-
--- receive voice peer signal
-Audio:signalVoicePeer(player, data)
+Audio:setVoiceState(channel, active)
 
 Audio:isSpeaking()
 
 -- TUNNEL
 
-Audio.tunnel.setPeerConfiguration = Audio.setPeerConfiguration
-Audio.tunnel.signalVoicePeer = Audio.signalVoicePeer
 Audio.tunnel.playAudioSource = Audio.playAudioSource
 Audio.tunnel.setAudioSource = Audio.setAudioSource
 Audio.tunnel.removeAudioSource = Audio.removeAudioSource
+Audio.tunnel.connectVoice = Audio.connectVoice
+Audio.tunnel.disconnectVoice = Audio.disconnectVoice
+Audio.tunnel.setVoiceState = Audio.setVoiceState
 ----
 
 .Events
 [horizontal]
 `speakingChange(speaking)`:: called when speaking state changes
+`voiceChannelPlayerSpeakingChange(channel, player, speaking)`:: called when the speaking state of a remote player for a specific channel changes (VoIP)
+`voiceChannelTransmittingChange(channel, transmitting)`:: called when the transmitting state of the local player for a specific channel changes (VoIP)

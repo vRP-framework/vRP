@@ -78,7 +78,9 @@ function Survival:__construct()
           SetEntityHealth(ped, vRP.cfg.coma_threshold)
           SetEntityInvincible(ped,true)
           vRP.EXT.Base:playScreenEffect(vRP.cfg.coma_effect,-1)
-          --tvRP.ejectVehicle()
+          if vRP.EXT.Garage then
+            vRP.EXT.Garage:ejectVehicle()
+          end
           vRP.EXT.Base:setRagdoll(true)
 
           vRP:triggerEvent("playerComaState", self.in_coma)

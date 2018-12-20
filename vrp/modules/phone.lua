@@ -49,6 +49,19 @@ function Phone.User:getPhoneDirectoryName(phone)
   return self.cdata.phone_directory[phone] or "unknown"
 end
 
+function Phone.User:phoneHangUp()
+  if self.phone_call then
+    vRP.EXT.Audio.remote._disconnectVoice(self.source, "phone") -- hangup phone of the caller
+
+    local tuser = vRP.users_by_source[self.phone_call]
+    self.phone_call = nil
+
+    if tuser then
+      tuser:phoneHangUp()
+    end
+  end
+end
+
 -- call a phone number
 -- return true if the communication is established
 function Phone.User:phoneCall(phone)
@@ -61,8 +74,7 @@ function Phone.User:phoneCall(phone)
       local to = self:getPhoneDirectoryName(phone).." ("..phone..")"
       local from = tuser:getPhoneDirectoryName(self.identity.phone).." ("..self.identity.phone..")"
 
-      vRP.EXT.Phone.remote._hangUp(self.source) -- hangup phone of the caller
-      vRP.EXT.Phone.remote._setCallWaiting(self.source, tuser.source, true) -- make caller to wait the answer
+      self:phoneHangUp()
 
       -- notify
       vRP.EXT.Base.remote._notify(self.source,lang.phone.call.notify_to({to}))
@@ -76,12 +88,14 @@ function Phone.User:phoneCall(phone)
 
       -- send request to called
       if tuser:request(lang.phone.call.ask({from}), 15) then -- accepted
-        vRP.EXT.Phone.remote._hangUp(tuser.source) -- hangup phone of the receiver
+        tuser:phoneHangUp() -- hangup phone of the receiver
+        vRP.EXT.Audio.remote._connectVoice(self.source, "phone", tuser.source) -- connect voice
+        self.phone_call = tuser.source
         vRP.EXT.Audio.remote._connectVoice(tuser.source, "phone", self.source) -- connect voice
+        tuser.phone_call = self.source
         ok = true
       else -- refused
         vRP.EXT.Base.remote._notify(self.source,lang.phone.call.notify_refused({to})) 
-        vRP.EXT.Phone.remote._setCallWaiting(self.source, tuser.source, false) 
       end
 
       -- remove dialing sound
@@ -323,7 +337,7 @@ local function menu_phone(self)
   end
 
   local function m_hangup(menu)
-    self.remote._hangUp(menu.user.source)
+    menu.user:phoneHangUp()
   end
 
   vRP.EXT.GUI:registerMenuBuilder("phone", function(menu)
@@ -345,6 +359,8 @@ function Phone:__construct()
 
   self.cfg = module("cfg/phone")
   self.sanitizes = module("cfg/sanitizes")
+
+  vRP.EXT.Audio:registerVoiceChannel("phone", self.cfg.phone_voice)
 
   -- menu builders
 

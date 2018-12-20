@@ -4,20 +4,8 @@ local Radio = class("Radio", vRP.Extension)
 function Radio:__construct()
   vRP.Extension.__construct(self)
 
-  self.rplayers = {} -- radio players that can be accepted
   self.talking = false
-
-  -- radio channel behavior
-  vRP.EXT.Audio:registerVoiceCallbacks("radio", function(player)
-    self:log("(vRPvoice-radio) requested by "..player)
-    return (self.rplayers[player] ~= nil)
-  end,
-  function(player, is_origin)
-    self:log("(vRPvoice-radio) connected to "..player)
-  end,
-  function(player)
-    self:log("(vRPvoice-radio) disconnected from "..player)
-  end)
+  self.players = {}
 
   -- task: radio push to talk
   Citizen.CreateThread(function()
@@ -28,8 +16,7 @@ function Radio:__construct()
       self.talking = IsControlPressed(table.unpack(vRP.cfg.controls.radio))
 
       if old_talking ~= self.talking then
-        vRP.EXT.Audio:setVoiceState("world", nil, talking)
-        vRP.EXT.Audio:setVoiceState("radio", nil, talking)
+        vRP:triggerEvent("radioSpeakingChange", self.talking)
       end
     end
   end)
@@ -38,21 +25,37 @@ end
 -- EVENT
 Radio.event = {}
 
-function Radio.event:NUIready()
-  -- radio channel config
-  vRP.EXT.Audio:configureVoice("radio", vRP.cfg.radio_voice_config)
+function Radio.event:radioSpeakingChange(speaking)
+  vRP.EXT.Audio:setVoiceState("world", speaking)
+  vRP.EXT.Audio:setVoiceState("radio", speaking)
+end
+
+function Radio.event:voiceChannelPlayerSpeakingChange(channel, player, speaking)
+  if channel == "radio" then
+    if speaking then
+      local data = self.players[player]
+      if data then
+      SendNUIMessage({act="set_radio_player_speaking_state", player = player, state = speaking, data = data})
+      end
+    else
+      SendNUIMessage({act="set_radio_player_speaking_state", player = player, state = speaking})
+    end
+  end
 end
 
 -- TUNNEL
 Radio.tunnel = {}
 
-function Radio.tunnel:setupRadio(players)
-  self.rplayers = players
+function Radio.tunnel:setupPlayers(players)
+  for player, data in pairs(players) do
+    vRP.EXT.Audio:connectVoice("radio", player)
+    self.players[player] = data
+  end
 end
 
-function Radio.tunnel:disconnectRadio()
-  self.rplayers = {}
-  vRP.EXT.Audio:disconnectVoice("radio", nil)
+function Radio.tunnel:clearPlayers()
+  vRP.EXT.Audio:disconnectVoice("radio")
+  self.players = {}
 end
 
 vRP:registerExtension(Radio)

@@ -19,6 +19,7 @@ window.addEventListener("load",function(){
   var wprompt = new WPrompt();
   var requestmgr = new RequestManager();
   var announcemgr = new AnnounceManager();
+  var radio_display = new RadioDisplay();
   var aengine = new AudioEngine();
 
   requestmgr.onResponse = function(id,ok){ $.post("http://vrp/request",JSON.stringify({act: "response", id: id, ok: ok})); }
@@ -50,7 +51,7 @@ window.addEventListener("load",function(){
     var data = evt.data;
 
     if(data.act == "cfg"){
-      cfg = data.cfg
+      cfg = data.cfg;
     }
     else if(data.act == "set_visible"){
       if(data.flag)
@@ -150,22 +151,23 @@ window.addEventListener("load",function(){
     else if(data.act == "audio_listener")
       aengine.setListenerData(data);
     //VoIP
+    else if(data.act == "configure_voip")
+      aengine.configureVoIP(data);
     else if(data.act == "connect_voice")
       aengine.connectVoice(data);
     else if(data.act == "disconnect_voice")
       aengine.disconnectVoice(data);
-    else if(data.act == "disconnect_voice")
-      aengine.disconnectVoice(data);
-    else if(data.act == "voice_peer_signal")
-      aengine.voicePeerSignal(data);
     else if(data.act == "set_voice_state")
       aengine.setVoiceState(data);
     else if(data.act == "configure_voice")
       aengine.configureVoice(data);
-    else if(data.act == "set_peer_configuration")
-      aengine.setPeerConfiguration(data);
+    else if(data.act == "set_voice_indicator")
+      aengine.setVoiceIndicator(data);
     else if(data.act == "set_player_positions")
       aengine.setPlayerPositions(data);
+    // Radio
+    else if(data.act == "set_radio_player_speaking_state")
+      radio_display.setPlayerSpeakingState(data);
     // CONTROLS
     else if(data.act == "event"){ //EVENTS
       if(data.event == "UP"){
