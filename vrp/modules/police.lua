@@ -273,7 +273,11 @@ local function menu_police(self)
     if nuser then
       local followed = self.remote.getFollowedPlayer(nuser.source)
       if followed ~= user.source then -- drag
-        self.remote._followPlayer(nuser.source, user.source)
+        if self.remote.isHandcuffed(nuser.source) then  -- check handcuffed
+          self.remote._followPlayer(nuser.source, user.source)
+        else
+          vRP.EXT.Base.remote._notify(user.source,lang.police.not_handcuffed())
+        end
       else -- stop follow
         self.remote._followPlayer(nuser.source)
       end
