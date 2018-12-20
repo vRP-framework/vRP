@@ -101,7 +101,7 @@ function Audio:__construct()
     while true do
       Citizen.Wait(500)
       if self.vrp_voip then -- vRP voip
-        NetworkSetTalkerProximity(0) -- disable voice chat
+        NetworkSetTalkerProximity(self.voip_proximity) -- disable voice chat
       else -- regular voice chat
         local ped = GetPlayerPed(-1)
         local proximity = vRP.cfg.voice_proximity
@@ -211,6 +211,10 @@ function Audio.tunnel:configureVoIP(config, vrp_voip, interval, proximity)
   self.vrp_voip = vrp_voip
   self.voip_interval = interval
   self.voip_proximity = proximity
+
+  if self.vrp_voip then
+    NetworkSetVoiceChannel(config.id)
+  end
 
   SendNUIMessage({act="configure_voip", config = config})
 end

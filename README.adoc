@@ -79,8 +79,6 @@ eating:: https://freesound.org/people/ryanharding95/sounds/272440/
 ** phone hangup feedback
 * VoIP reconnect/finishing/doc
 ** better world connect/disconnect task
-** VoIP ped talking animation
-** properly disable default FiveM VoIP
 ** push-to-talk end delay (prevent cut)
 * radio player talking display
 * improved users list (online/offline/by id menu)
