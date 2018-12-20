@@ -73,7 +73,7 @@ wss.on("connection", function(ws, req){
       // send to channel connected players
       for(var id in players){
         var out_player = players[id];
-        if(checkConnected(player, out_player, channels)){
+        if(out_player.dchannel.readyState == "open" && checkConnected(player, out_player, channels)){
           try{
             out_player.dchannel.send(out_data.buffer);
           }catch(e){ errorHandler(e); }
