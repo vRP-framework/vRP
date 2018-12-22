@@ -24,6 +24,28 @@ cfg.sms_sound = "sounds/phone_sms.ogg"
 cfg.phone_voice = {
 }
 
+cfg.phone_call_css = [[
+.div_phone_call{
+  position: absolute;
+  right: 0;
+  top: 35%;
+  margin: 6px;
+  width: 200px;
+  overflow: hidden;
+  font-weight: bold;
+  border-radius: 8px;
+  padding: 5px;
+  color: #3facff;
+  background-color: rgb(0,0,0,0.75);
+}
+
+.div_phone_call:before{
+  content: "\260E";
+  color: white;
+  padding-right: 5px;
+}
+]]
+
 -- define phone services
 -- map_entity: {ent,cfg} will fill cfg.title, cfg.pos
 -- alert_time (alert blip display duration in seconds)

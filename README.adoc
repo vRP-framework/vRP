@@ -75,7 +75,6 @@ eating:: https://freesound.org/people/ryanharding95/sounds/272440/
 ** advanced features (beard, head/face, etc)
 * add more sound effects
 ** handcuff
-** phone hangup feedback
 * VoIP reconnect/finishing/doc
 ** better world connect/disconnect task
 ** push-to-talk end delay (prevent cut)

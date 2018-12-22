@@ -51,6 +51,7 @@ end
 
 function Phone.User:phoneHangUp()
   if self.phone_call then
+    vRP.EXT.GUI.remote.removeDiv(self.source, "phone_call")
     vRP.EXT.Audio.remote._disconnectVoice(self.source, "phone") -- hangup phone of the caller
 
     local tuser = vRP.users_by_source[self.phone_call]
@@ -89,10 +90,16 @@ function Phone.User:phoneCall(phone)
       -- send request to called
       if tuser:request(lang.phone.call.ask({from}), 15) then -- accepted
         tuser:phoneHangUp() -- hangup phone of the receiver
+
+        -- setup phone call
         vRP.EXT.Audio.remote._connectVoice(self.source, "phone", tuser.source) -- connect voice
         self.phone_call = tuser.source
         vRP.EXT.Audio.remote._connectVoice(tuser.source, "phone", self.source) -- connect voice
         tuser.phone_call = self.source
+
+        vRP.EXT.GUI.remote.setDiv(self.source, "phone_call", cfg.phone_call_css, htmlEntities.encode(to))
+        vRP.EXT.GUI.remote.setDiv(tuser.source, "phone_call", cfg.phone_call_css, htmlEntities.encode(from))
+
         ok = true
       else -- refused
         vRP.EXT.Base.remote._notify(self.source,lang.phone.call.notify_refused({to})) 
