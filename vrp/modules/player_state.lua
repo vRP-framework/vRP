@@ -124,12 +124,44 @@ local function define_items(self)
   vRP.EXT.Inventory:defineItem("wammo", i_wammo_name,i_wammo_desc,i_wammo_menu,0.01)
 end
 
+-- PRIVATE METHODS
+
+-- menu: admin
+local function menu_admin(self)
+  local function m_model(menu)
+    local user = menu.user
+
+    if user:hasPermission("player.custom_model") then
+      local model = user:prompt(lang.admin.custom_model.prompt(),"")
+      local hash = tonumber(model)
+      local custom = {}
+      if hash then
+        custom.modelhash = hash
+      else
+        custom.model = model
+      end
+
+      self.remote._setCustomization(user.source, custom)
+    end
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("admin", function(menu)
+    local user = menu.user
+
+    if user:hasPermission("player.custom_model") then
+      menu:addOption(lang.admin.custom_model.title(), m_model)
+    end
+  end)
+end
+
 -- METHODS
 
 function PlayerState:__construct()
   vRP.Extension.__construct(self)
 
   self.cfg = module("vrp", "cfg/player_state")
+
+  menu_admin(self)
 
   -- items
   define_items(self)

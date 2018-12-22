@@ -32,6 +32,101 @@ local lang = {
       error = "~r~Couldn't delete character #{1}."
     }
   },
+  admin = {
+    title = "Admin",
+    call_admin = {
+      title = "Call admin",
+      prompt = "Describe your problem: ",
+      notify_taken = "An admin took your ticket.",
+      notify_already_taken = "Ticket already taken.",
+      request = "Admin ticket (user_id = {1}) take/TP to ?: {2}"
+    },
+    tptocoords = {
+      title = "TpToCoords",
+      prompt = "Coords x,y,z: "
+    },
+    noclip = {
+      title = "Noclip"
+    },
+    coords = {
+      title = "Coords",
+      hint = "Copy the coordinates using Ctrl-A Ctrl-C"
+    },
+    custom_upper_emote = {
+      title = "Custom upper emote",
+      prompt = "Animation sequence ('dict anim optional_loops' per line): "
+    },
+    custom_full_emote = {
+      title = "Custom full emote"
+    },
+    custom_emote_task = {
+      title = "Custom emote task",
+      prompt = "Task name: "
+    },
+    custom_sound = {
+      title = "Custom sound",
+      prompt = "Sound 'dict name': "
+    },
+    custom_model = {
+      title = "Custom model",
+      prompt = "Model hash or name: "
+    },
+    custom_audiosource = {
+      title = "Custom AudioSource",
+      prompt = "Audio source: name=url, omit url to delete the named source."
+    },
+    users = {
+      title = "Users",
+      by_id = {
+        title = "> By id",
+        prompt = "User id: "
+      },
+      user = {
+        title = "#{1}: {2}",
+        kick = {
+          title = "Kick",
+          prompt = "Reason: "
+        },
+        ban = {
+          title = "Ban",
+          prompt = "Reason: "
+        },
+        unban = {
+          title = "Unban"
+        },
+        whitelist = {
+          title = "Whitelist user"
+        },
+        unwhitelist = {
+          title = "Un-whitelist user"
+        },
+        tptome = {
+          title = "TpToMe"
+        },
+        tpto = {
+          title = "TpTo"
+        },
+        group_add = {
+          title = "Add group",
+          prompt = "Group to add: "
+        },
+        group_remove = {
+          title = "Remove group",
+          prompt = "Group to remove: "
+        },
+        give_money = {
+          title = "Give money",
+          prompt = "Amount: "
+        },
+        give_item = {
+          title = "Give item",
+          prompt = "Full id: ",
+          prompt_amount = "Amount: ",
+          notify_failed = "Invalid item or inventory is full."
+        }
+      }
+    }
+  },
   weapon = {
     -- weapon translation by GTA 5 weapon name (lower case)
     pistol = "Pistol"

@@ -156,6 +156,30 @@ local function define_items(self)
   vRP.EXT.Inventory:defineItem("money_binder", lang.item.money_binder.name(), lang.item.money_binder.description(), i_money_binder_menu, 0)
 end
 
+-- menu: admin users user
+local function menu_admin_users_user(self)
+  local function m_givemoney(menu)
+    local user = menu.user
+    local tuser = vRP.users[menu.data.id]
+
+    if tuser then
+      local amount = parseInt(user:prompt(lang.admin.users.user.give_money.prompt(),""))
+      tuser:giveWallet(amount)
+    end
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("admin.users.user", function(menu)
+    local user = menu.user
+    local tuser = vRP.users[menu.data.id]
+
+    if tuser then
+      if user:hasPermission("player.givemoney") then
+        menu:addOption(lang.admin.users.user.give_money.title(), m_givemoney)
+      end
+    end
+  end)
+end
+
 -- METHODS
 
 function Money:__construct()
@@ -165,6 +189,9 @@ function Money:__construct()
 
   -- items
   define_items(self)
+
+  -- menu
+  menu_admin_users_user(self)
 
   -- main menu
 

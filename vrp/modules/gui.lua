@@ -379,14 +379,10 @@ function GUI.tunnel:promptResult(text)
   local user = vRP.users_by_source[source]
   
   if user and user:isReady() then
-    if text == nil then
-      text = ""
-    end
-
     local r = user.prompt_r
     if r then
       user.prompt_r = nil
-      r(text)
+      r(text or "")
     end
   end
 end

@@ -17,3 +17,15 @@ The admin module adds an administration (kick,ban...) menu and functions.
 === admin
 
 Administration menu.
+
+=== admin.users
+
+Administration sub-menu: user list.
+
+=== admin.users.user
+
+Administration sub-menu: user.
+
+.data
+[horizontal]
+id:: user id (offline or online)

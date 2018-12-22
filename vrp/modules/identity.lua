@@ -87,6 +87,7 @@ local function menu_cityhall(self)
   end)
 end
 
+-- menu: identity
 local function menu_identity(self)
   vRP.EXT.GUI:registerMenuBuilder("identity", function(menu)
     menu.title = lang.identity.title()
@@ -96,6 +97,26 @@ local function menu_identity(self)
 
     if identity then
       menu:addOption(lang.identity.citizenship.title(), nil, lang.identity.citizenship.info({htmlEntities.encode(identity.name), htmlEntities.encode(identity.firstname), identity.age, identity.registration, identity.phone}))
+    end
+  end)
+end
+
+-- menu: admin users user
+local function menu_admin_users_user(self)
+  local function m_identity(menu)
+    local tuser = vRP.users[menu.data.id]
+
+    if tuser and tuser:isReady() then
+      menu.user:openMenu("identity", {cid = tuser.cid})
+    end
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("admin.users.user", function(menu)
+    local user = menu.user
+    local tuser = vRP.users[menu.data.id]
+
+    if tuser then
+      menu:addOption(lang.identity.title(), m_identity)
     end
   end)
 end
@@ -111,6 +132,7 @@ function Identity:__construct()
   -- menus
   menu_cityhall(self)
   menu_identity(self)
+  menu_admin_users_user(self)
 
   -- add identity to main menu
   local function m_identity(menu)

@@ -1,4 +1,6 @@
 
+local lang = vRP.lang
+
 -- this module define the group/permission system (per character)
 
 -- multiple groups can be set to the same player, but the gtype config option can be used to set some groups as unique
@@ -174,6 +176,43 @@ local function menu_group_selector(self)
   end)
 end
 
+-- menu: admin users user
+local function menu_admin_users_user(self)
+  local function m_addgroup(menu)
+    local user = menu.user
+    local tuser = vRP.users[menu.data.id]
+
+    if tuser then
+      local group = user:prompt(lang.admin.users.user.group_add.prompt(),"")
+      tuser:addGroup(group)
+    end
+  end
+
+  local function m_removegroup(menu)
+    local user = menu.user
+    local tuser = vRP.users[menu.data.id]
+
+    if tuser then
+      local group = user:prompt(lang.admin.users.user.group_remove.prompt(),"")
+      tuser:removeGroup(group)
+    end
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("admin.users.user", function(menu)
+    local user = menu.user
+    local tuser = vRP.users[menu.data.id]
+
+    if tuser then
+      if user:hasPermission("player.group.add") then
+        menu:addOption(lang.admin.users.user.group_add.title(), m_addgroup)
+      end
+      if user:hasPermission("player.group.remove") then
+        menu:addOption(lang.admin.users.user.group_remove.title(), m_removegroup)
+      end
+    end
+  end)
+end
+
 -- METHODS
 
 function Group:__construct()
@@ -199,6 +238,7 @@ function Group:__construct()
 
   -- menu
   menu_group_selector(self)
+  menu_admin_users_user(self)
 
   -- identity gtypes display
   vRP.EXT.GUI:registerMenuBuilder("identity", function(menu)

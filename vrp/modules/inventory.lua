@@ -380,6 +380,33 @@ local function menu_chest(self)
   end)
 end
 
+-- menu: admin users user
+local function menu_admin_users_user(self)
+  local function m_giveitem(menu)
+    local user = menu.user
+    local tuser = vRP.users[menu.data.id]
+
+    if tuser then
+      local fullid = user:prompt(lang.admin.users.user.give_item.prompt(),"")
+      local amount = parseInt(user:prompt(lang.admin.users.user.give_item.prompt_amount(),""))
+      if not tuser:tryGiveItem(fullid, amount) then
+        vRP.EXT.Base.remote._notify(user.source, "")
+      end
+    end
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("admin.users.user", function(menu)
+    local user = menu.user
+    local tuser = vRP.users[menu.data.id]
+
+    if tuser then
+      if user:hasPermission("player.giveitem") then
+        menu:addOption(lang.admin.users.user.give_item.title(), m_giveitem)
+      end
+    end
+  end)
+end
+
 -- METHODS
 
 function Inventory:__construct()
@@ -422,6 +449,7 @@ function Inventory:__construct()
   menu_chest(self)
   menu_chest_take(self)
   menu_chest_put(self)
+  menu_admin_users_user(self)
 
   local function m_inventory(menu)
     menu.user:openMenu("inventory")

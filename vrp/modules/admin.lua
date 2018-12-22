@@ -1,167 +1,151 @@
 local htmlEntities = module("lib/htmlEntities")
 
+local lang = vRP.lang
+
 local Admin = class("Admin", vRP.Extension)
 
 -- STATIC
 
-local m_list_css = [[
-.div_user_list{ 
-  margin: auto; 
-  padding: 8px; 
-  width: 650px; 
-  margin-top: 80px; 
-  background: black; 
-  color: white; 
-  font-weight: bold; 
-  font-size: 1.1em;
-} 
+-- PRIVATE METHODS
 
-.div_user_list .pseudo{ 
-  color: rgb(0,255,125);
-}
+-- menu: admin user user
+local function menu_admin_users_user(self)
+  local function m_kick(menu)
+    local user = menu.user
+    local tuser = vRP.users[menu.data.id]
 
-.div_user_list .endpoint{ 
-  color: rgb(255,0,0);
-}
-
-.div_user_list .name{ 
-  color: #309eff;
-}
-
-.div_user_list .reg{ 
-  color: rgb(0,125,255);
-}
-              
-.div_user_list .phone{ 
-  color: rgb(211, 0, 255);
-}
-]]
-
-local function m_list_close(menu)
-  vRP.EXT.GUI.remote._removeDiv(menu.user.source, "user_list")
-  menu.player_list = nil
-end
-
-local function m_list(menu)
-  local user = menu.user
-
-  if user:hasPermission("player.list") then
-    if menu.player_list then -- hide
-      m_list_close(menu)
-    else -- show
-      local content = ""
-      for id,user in pairs(vRP.users) do
---        local identity = vRP.getUserIdentity(k)
-        content = content.."<br />"..user.id.." => <span class=\"pseudo\">"..user.name.."</span> <span class=\"endpoint\">"..user.endpoint.."</span>"
-        if identity then
-          content = content.." <span class=\"name\">"..htmlEntities.encode(identity.firstname).." "..htmlEntities.encode(identity.name).."</span> <span class=\"reg\">"..identity.registration.."</span> <span class=\"phone\">"..identity.phone.."</span>"
-        end
-      end
-
-      vRP.EXT.GUI.remote._setDiv(user.source, "user_list", m_list_css, content)
-      menu.player_list = true
-    end
-  end
-end
-
-local function m_whitelist(menu)
-  local user = menu.user
-  if user:hasPermission("player.whitelist") then
-    local id = user:prompt("User id to whitelist: ","")
-    id = parseInt(id)
-    vRP:setWhitelisted(id,true)
-    vRP.EXT.Base.remote._notify(user.source, "whitelisted user "..id)
-  end
-end
-
-local function m_unwhitelist(menu)
-  local user = menu.user
-  if user:hasPermission("player.unwhitelist") then
-    local id = user:prompt("User id to un-whitelist: ","")
-    id = parseInt(id)
-    vRP:setWhitelisted(id,false)
-    vRP.EXT.Base.remote._notify(user.source, "un-whitelisted user "..id)
-  end
-end
-
-local function m_addgroup(menu)
-  local user = menu.user
-  if user:hasPermission("player.group.add") then
-    local id = user:prompt("User id: ","") 
-    id = parseInt(id) 
-    local tuser = vRP.users[id]
     if tuser then
-      local group = user:prompt("Group to add: ","")
-      if group then
-        tuser:addGroup(group)
-        vRP.EXT.Base.remote._notify(user.source, group.." added to user "..id)
-      end
-    end
-  end
-end
-
-local function m_removegroup(menu)
-  local user = menu.user
-  if user:hasPermission("player.group.remove") then
-    local id = user:prompt("User id: ","")
-    id = parseInt(id) 
-    local tuser = vRP.users[id]
-    if tuser then
-      local group = user:prompt("Group to remove: ","")
-      if group then
-        tuser:removeGroup(group)
-        vRP.EXT.Base.remote._notify(user.source, group.." removed from user "..id)
-      end
-    end
-  end
-end
-
-local function m_kick(menu)
-  local user = menu.user
-  if user:hasPermission("player.kick") then
-    local id = user:prompt("User id to kick: ","")
-    id = parseInt(id)
-    local tuser = vRP.users[id]
-    if tuser then
-      local reason = user:prompt("Reason: ","")
+      local reason = user:prompt(lang.admin.users.user.kick.prompt(),"")
       vRP:kick(tuser,reason)
-      vRP.EXT.Base.remote._notify(user.source, "kicked user "..id)
     end
   end
-end
 
-local function m_ban(menu)
-  local user = menu.user
-  if user:hasPermission("player.ban") then
-    local id = user:prompt("User id to ban: ","")
-    id = parseInt(id) 
+  local function m_ban(menu)
+    local user = menu.user
+    local id = menu.data.id
     local tuser = vRP.users[id]
 
     if tuser then -- online
-      local reason = user:prompt("Reason: ","")
+      local reason = user:prompt(lang.admin.users.user.ban.prompt(),"")
       vRP:ban(tuser,reason)
     else -- offline
       vRP:setBanned(id,true)
     end
-
-    vRP.EXT.Base.remote._notify(user.source, "banned user "..id)
   end
-end
 
-local function m_unban(menu)
-  local user = menu.user
-  if user:hasPermission("player.unban") then
-    local id = user:prompt("User id to unban: ","")
-    id = parseInt(id) 
+  local function m_unban(menu)
+    local user = menu.user
+    local id = menu.data.id
+
     vRP:setBanned(id,false)
-    vRP.EXT.Base.remote._notify(user.source, "un-banned user "..id)
   end
+
+  local function m_whitelist(menu)
+    local user = menu.user
+    local id = menu.data.id
+
+    vRP:setWhitelisted(id,true)
+  end
+
+  local function m_unwhitelist(menu)
+    local user = menu.user
+    local id = menu.data.id
+
+    vRP:setWhitelisted(id,false)
+  end
+
+  local function m_tptome(menu)
+    local user = menu.user
+    local id = menu.data.id
+    local tuser = vRP.users[id]
+
+    if tuser then
+      local x,y,z = vRP.EXT.Base.remote.getPosition(user.source)
+      vRP.EXT.Base.remote._teleport(tuser.source,x,y,z)
+    end
+  end
+
+  local function m_tpto(menu)
+    local user = menu.user
+    local id = menu.data.id
+    local tuser = vRP.users[id]
+
+    if tuser then
+      vRP.EXT.Base.remote._teleport(user.source, vRP.EXT.Base.remote.getPosition(tuser.source))
+    end
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("admin.users.user", function(menu)
+    local user = menu.user
+    local tuser = vRP.users[menu.data.id]
+
+    if tuser then -- online
+      menu.title = lang.admin.users.user.title({menu.data.id, tuser.name})
+    else
+      menu.title = lang.admin.users.user.title({menu.data.id, htmlEntities.encode("<offline>")})
+    end
+
+    menu.css.header_color = "rgba(200,0,0,0.75)"
+
+    if tuser and user:hasPermission("player.kick") then
+      menu:addOption(lang.admin.users.user.kick.title(), m_kick)
+    end
+
+    if user:hasPermission("player.ban") then
+      menu:addOption(lang.admin.users.user.ban.title(), m_ban)
+    end
+    if user:hasPermission("player.unban") then
+      menu:addOption(lang.admin.users.user.unban.title(), m_unban)
+    end
+    if user:hasPermission("player.whitelist") then
+      menu:addOption(lang.admin.users.user.whitelist.title(), m_whitelist)
+    end
+    if user:hasPermission("player.unwhitelist") then
+      menu:addOption(lang.admin.users.user.unwhitelist.title(), m_unwhitelist)
+    end
+    if tuser and user:hasPermission("player.tptome") then
+      menu:addOption(lang.admin.users.user.tptome.title(), m_tptome)
+    end
+    if tuser and user:hasPermission("player.tpto") then
+      menu:addOption(lang.admin.users.user.tpto.title(), m_tpto)
+    end
+  end)
 end
 
-local function m_emote(menu, upper)
-  local user = menu.user
-  if user:hasPermission("player.custom_emote") then
-    local content = user:prompt("Animation sequence ('dict anim optional_loops' per line): ","")
+-- menu: admin users
+local function menu_admin_users(self)
+  local function m_user(menu, id)
+    menu.user:openMenu("admin.users.user", {id = id})
+  end
+  
+  local function m_by_id(menu)
+    local id = parseInt(menu.user:prompt(lang.admin.users.by_id.prompt(),""))
+    menu.user:openMenu("admin.users.user", {id = id})
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("admin.users", function(menu)
+    local user = menu.user
+
+    menu.title = lang.admin.users.title()
+    menu.css.header_color = "rgba(200,0,0,0.75)"
+
+    menu:addOption(lang.admin.users.by_id.title(), m_by_id)
+
+    for id, user in pairs(vRP.users) do
+      menu:addOption(lang.admin.users.user.title({id, htmlEntities.encode(user.name)}), m_user, nil, id)
+    end
+  end)
+end
+
+-- menu: admin
+local function menu_admin(self)
+  local function m_users(menu)
+    menu.user:openMenu("admin.users")
+  end
+
+  local function m_emote(menu, upper)
+    local user = menu.user
+    local content = user:prompt(lang.admin.custom_upper_emote.prompt(),"")
     local seq = {}
     for line in string.gmatch(content,"[^\n]+") do
       local args = {}
@@ -174,184 +158,111 @@ local function m_emote(menu, upper)
 
     vRP.EXT.Base.remote._playAnim(user.source, upper, seq, false)
   end
-end
 
-local function m_emote_task(menu)
-  local user = menu.user
-  if user:hasPermission("player.custom_emote") then
-    local content = user:prompt("Task name: ","")
+  local function m_emote_task(menu)
+    local user = menu.user
+    local content = user:prompt(lang.admin.custom_emote_task.prompt(),"")
     local seq = {task = content or ""}
 
     vRP.EXT.Base.remote._playAnim(user.source, false, seq, false)
   end
-end
 
-local function m_model(menu)
-  local user = menu.user
-  if user:hasPermission("player.custom_model") then
-    local model = user:prompt("Model hash or name: ","")
-    local hash = tonumber(model)
-    local custom = {}
-    if hash then
-      custom.modelhash = hash
-    else
-      custom.model = model
-    end
-
-    vRP.EXT.PlayerState.remote._setCustomization(user.source, custom)
-  end
-end
-
-local function m_sound(menu)
-  local user = menu.user
-  if user:hasPermission("player.custom_sound") then
-    local content = user:prompt("Sound 'dict name': ","")
+  local function m_sound(menu)
+    local user = menu.user
+    local content = user:prompt(lang.admin.custom_sound.prompt(),"")
     local args = {}
     for arg in string.gmatch(content,"[^%s]+") do
       table.insert(args,arg)
     end
     vRP.EXT.Base.remote._playSound(user.source, args[1] or "", args[2] or "")
   end
-end
 
-local function m_coords(menu)
-  local user = menu.user
-  local x,y,z = vRP.EXT.Base.remote.getPosition(user.source)
-  user:prompt("Copy the coordinates using Ctrl-A Ctrl-C",x..","..y..","..z)
-end
-
-local function m_tptome(menu)
-  local user = menu.user
-  local x,y,z = vRP.EXT.Base.remote.getPosition(user.source)
-  local id = parseInt(user:prompt("User id:",""))
-  local tuser = vRP.users[id]
-  if tuser then
-    vRP.EXT.Base.remote._teleport(tuser.source,x,y,z)
-  end
-end
-
-local function m_tpto(menu)
-  local user = menu.user
-  local id = parseInt(user:prompt("User id:",""))
-  local tuser = vRP.users[id]
-  if tuser then
-    vRP.EXT.Base.remote._teleport(user.source, vRP.EXT.Base.remote.getPosition(tuser.source))
-  end
-end
-
-local function m_tptocoords(menu)
-  local user = menu.user
-  local fcoords = user:prompt("Coords x,y,z:","")
-  local coords = {}
-  for coord in string.gmatch(fcoords or "0,0,0","[^,]+") do
-    table.insert(coords,tonumber(coord))
+  local function m_coords(menu)
+    local user = menu.user
+    local x,y,z = vRP.EXT.Base.remote.getPosition(user.source)
+    user:prompt(lang.admin.coords.hint(),x..","..y..","..z)
   end
 
-  vRP.EXT.Base.remote._teleport(user.source, coords[1] or 0, coords[2] or 0, coords[3] or 0)
-end
-
-local function m_givemoney(menu)
-  local user = menu.user
-  if user:hasPermission("player.givemoney") then 
-    local amount = parseInt(user:prompt("Amount:",""))
-    user:giveWallet(amount)
-  end
-end
-
-local function m_giveitem(menu)
-  local user = menu.user
-  local fullid = user:prompt("Full id:","") or ""
-  local amount = parseInt(user:prompt("Amount:",""))
-  if not user:tryGiveItem(fullid, amount) then
-    vRP.EXT.Base.remote._notify(user.source, "invalid item or inventory full")
-  end
-end
-
-local function m_calladmin(menu)
-  local user = menu.user
-  local desc = user:prompt("Describe your problem:","") or ""
-  local answered = false
-
-  local admins = {} 
-  for id,user in pairs(vRP.users) do
-    -- check admin
-    if user:isReady() and user:hasPermission("admin.tickets") then
-      table.insert(admins, user)
+  local function m_tptocoords(menu)
+    local user = menu.user
+    local fcoords = user:prompt(lang.admin.tptocoords.prompt(),"")
+    local coords = {}
+    for coord in string.gmatch(fcoords or "0,0,0","[^,]+") do
+      table.insert(coords,tonumber(coord))
     end
+
+    vRP.EXT.Base.remote._teleport(user.source, coords[1] or 0, coords[2] or 0, coords[3] or 0)
   end
 
-  -- send notify and alert to all admins
-  for _,admin in pairs(admins) do
-    async(function()
-      local ok = admin:request("Admin ticket (user_id = "..user.id..") take/TP to ?: "..htmlEntities.encode(desc), 60)
-      if ok then -- take the call
-        if not answered then
-          -- answer the call
-          vRP.EXT.Base.remote._notify(user.source,"An admin took your ticket.")
-          vRP.EXT.Base.remote._teleport(admin.source, vRP.EXT.Base.remote.getPosition(user.source))
-          answered = true
-        else
-          vRP.EXT.Base.remote._notify(admin.source,"Ticket already taken.")
-        end
+  local function m_calladmin(menu)
+    local user = menu.user
+    local desc = user:prompt(lang.admin.call_admin.prompt(),"") or ""
+    local answered = false
+
+    local admins = {} 
+    for id,user in pairs(vRP.users) do
+      -- check admin
+      if user:isReady() and user:hasPermission("admin.tickets") then
+        table.insert(admins, user)
       end
-    end)
-  end
-end
-
-local m_display_custom_css = [[
-.div_customization_display{ 
-  margin: auto; 
-  padding: 8px; 
-  width: 500px; 
-  margin-top: 80px; 
-  background: black; 
-  color: white; 
-  font-weight: bold;
-}
-]]
-
-local function m_display_custom_close(menu)
-  menu.custom_display = nil
-  vRP.EXT.GUI.remote._removeDiv(menu.user.source,"customization_display")
-end
-
-local function m_display_custom(menu)
-  local user = menu.user
-
-
-  if menu.custom_display then -- hide
-    m_display_custom_close(menu)
-  else -- show
-    local custom = vRP.EXT.PlayerState.remote.getCustomization(user.source)
-    local content = ""
-    for k,v in pairs(custom) do
-      content = content..k.." => "..json.encode(v).."<br />" 
     end
 
-    menu.custom_display = true
-    vRP.EXT.GUI.remote._setDiv(user.source,"customization_display", m_display_custom_css, content)
-  end
-end
-
-local function m_noclip(menu)
-  vRP.EXT.Admin.remote._toggleNoclip(menu.user.source)
-end
-
-local function m_audiosource(menu)
-  local user = menu.user
-
-  local infos = splitString(user:prompt("Audio source: name=url, omit url to delete the named source.", ""), "=")
-  local name = infos[1]
-  local url = infos[2]
-
-  if name and string.len(name) > 0 then
-    if url and string.len(url) > 0 then
-      local x,y,z = vRP.EXT.Base.remote.getPosition(user.source)
-      vRP.EXT.Audio.remote._setAudioSource(-1,"vRP:admin:"..name,url,0.5,x,y,z,125)
-    else
-      vRP.EXT.Audio.remote._removeAudioSource(-1,"vRP:admin:"..name)
+    -- send notify and alert to all admins
+    for _,admin in pairs(admins) do
+      async(function()
+        local ok = admin:request(lang.admin.call_admin.request({user.id, htmlEntities.encode(desc)}), 60)
+        if ok then -- take the call
+          if not answered then
+            -- answer the call
+            vRP.EXT.Base.remote._notify(user.source,lang.admin.call_admin.notify_taken())
+            vRP.EXT.Base.remote._teleport(admin.source, vRP.EXT.Base.remote.getPosition(user.source))
+            answered = true
+          else
+            vRP.EXT.Base.remote._notify(admin.source,lang.admin.call_admin.notify_already_taken())
+          end
+        end
+      end)
     end
   end
+
+  local function m_noclip(menu)
+    vRP.EXT.Admin.remote._toggleNoclip(menu.user.source)
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("admin", function(menu)
+    local user = menu.user
+
+    menu.title = lang.admin.title()
+    menu.css.header_color = "rgba(200,0,0,0.75)"
+
+    if user:hasPermission("player.calladmin") then
+      menu:addOption(lang.admin.call_admin.title(), m_calladmin)
+    end
+    if user:hasPermission("player.list") then
+      menu:addOption(lang.admin.users.title(), m_users)
+    end
+    if user:hasPermission("player.tpto") then
+      menu:addOption(lang.admin.tptocoords.title(), m_tptocoords)
+    end
+    if user:hasPermission("player.noclip") then
+      menu:addOption(lang.admin.noclip.title(), m_noclip)
+    end
+    if user:hasPermission("player.coords") then
+      menu:addOption(lang.admin.coords.title(), m_coords)
+    end
+    if user:hasPermission("player.custom_emote") then
+      menu:addOption(lang.admin.custom_upper_emote.title(), m_emote, nil, true)
+    end
+    if user:hasPermission("player.custom_emote") then
+      menu:addOption(lang.admin.custom_full_emote.title(), m_emote, nil, false)
+    end
+    if user:hasPermission("player.custom_emote") then
+      menu:addOption(lang.admin.custom_emote_task.title(), m_emote_task)
+    end
+    if user:hasPermission("player.custom_sound") then
+      menu:addOption(lang.admin.custom_sound.title(), m_sound)
+    end
+  end)
 end
 
 -- METHODS
@@ -359,91 +270,15 @@ end
 function Admin:__construct()
   vRP.Extension.__construct(self)
 
+  menu_admin(self)
+  menu_admin_users(self)
+  menu_admin_users_user(self)
+
   -- main menu
   vRP.EXT.GUI:registerMenuBuilder("main", function(menu)
     menu:addOption("Admin", function(menu)
       menu.user:openMenu("admin")
     end)
-  end)
-
-  -- admin menu
-  vRP.EXT.GUI:registerMenuBuilder("admin", function(menu)
-    local user = menu.user
-
-    menu.title = "Admin"
-    menu.css.header_color = "rgba(200,0,0,0.75)"
-
-    if user:hasPermission("player.calladmin") then
-      menu:addOption("Call admin", m_calladmin)
-    end
-    if user:hasPermission("player.list") then
-      menu:addOption("User list", m_list, "Show/hide user list.")
-      menu:listen("close", m_list_close)
-    end
-    if user:hasPermission("player.kick") then
-      menu:addOption("Kick", m_kick)
-    end
-    if user:hasPermission("player.ban") then
-      menu:addOption("Ban", m_ban)
-    end
-    if user:hasPermission("player.unban") then
-      menu:addOption("Unban", m_unban)
-    end
-    if user:hasPermission("player.whitelist") then
-      menu:addOption("Whitelist user", m_whitelist)
-    end
-    if user:hasPermission("player.unwhitelist") then
-      menu:addOption("Un-whitelist user", m_unwhitelist)
-    end
-    if user:hasPermission("player.group.add") then
-      menu:addOption("Add group", m_addgroup)
-    end
-    if user:hasPermission("player.group.remove") then
-      menu:addOption("Remove group", m_removegroup)
-    end
-    if user:hasPermission("player.tptome") then
-      menu:addOption("TpToMe", m_tptome)
-    end
-    if user:hasPermission("player.tpto") then
-      menu:addOption("TpTo", m_tpto)
-    end
-    if user:hasPermission("player.tpto") then
-      menu:addOption("TpToCoords", m_tptocoords)
-    end
-    if user:hasPermission("player.noclip") then
-      menu:addOption("Noclip", m_noclip)
-    end
-    if user:hasPermission("player.coords") then
-      menu:addOption("Coords", m_coords)
-    end
-    if user:hasPermission("player.givemoney") then
-      menu:addOption("Give money", m_givemoney)
-    end
-    if user:hasPermission("player.giveitem") then
-      menu:addOption("Give item", m_giveitem)
-    end
-    if user:hasPermission("player.custom_emote") then
-      menu:addOption("Custom upper emote", m_emote, nil, true)
-    end
-    if user:hasPermission("player.custom_emote") then
-      menu:addOption("Custom full emote", m_emote, nil, false)
-    end
-    if user:hasPermission("player.custom_emote") then
-      menu:addOption("Custom emote task", m_emote_task)
-    end
-    if user:hasPermission("player.custom_model") then
-      menu:addOption("Custom model", m_model)
-    end
-    if user:hasPermission("player.custom_sound") then
-      menu:addOption("Custom sound", m_sound)
-    end
-    if user:hasPermission("player.custom_sound") then
-      menu:addOption("Custom audiosource", m_audiosource)
-    end
-    if user:hasPermission("player.display_custom") then
-      menu:addOption("Display customization", m_display_custom)
-      menu:listen("close", m_display_custom_close)
-    end
   end)
 
   -- admin god mode task

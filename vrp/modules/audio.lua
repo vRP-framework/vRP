@@ -1,10 +1,44 @@
 
 local Audio = class("Audio", vRP.Extension)
+local lang = vRP.lang
+
+-- PRIVATE METHODS
+
+-- menu: admin
+local function menu_admin(self)
+  local function m_audiosource(menu)
+    local user = menu.user
+
+    local infos = splitString(user:prompt(lang.admin.custom_audiosource.prompt(), ""), "=")
+    local name = infos[1]
+    local url = infos[2]
+
+    if name and string.len(name) > 0 then
+      if url and string.len(url) > 0 then
+        local x,y,z = vRP.EXT.Base.remote.getPosition(user.source)
+        vRP.EXT.Audio.remote._setAudioSource(-1,"vRP:admin:"..name,url,0.5,x,y,z,125)
+      else
+        vRP.EXT.Audio.remote._removeAudioSource(-1,"vRP:admin:"..name)
+      end
+    end
+  end
+
+  vRP.EXT.GUI:registerMenuBuilder("admin", function(menu)
+    local user = menu.user
+
+    if user:hasPermission("player.custom_sound") then
+      menu:addOption(lang.admin.custom_audiosource.title(), m_audiosource)
+    end
+  end)
+end
+
+-- METHODS
 
 function Audio:__construct()
   vRP.Extension.__construct(self)
 
   self.cfg = module("vrp", "cfg/audio")
+
 
   self.reg_channels = {} -- map of id => config
 
@@ -58,6 +92,12 @@ function Audio.event:playerSpawn(user, first_spawn)
   if first_spawn then
     -- connect VoIP
     self.remote._configureVoIP(user.source, {bitrate = self.cfg.voip_bitrate, frame_size = self.cfg.voip_frame_size, server = self.cfg.voip_server, channels = self:getChannels(), id = user.source}, self.cfg.vrp_voip, self.cfg.voip_interval, self.cfg.voip_proximity)
+  end
+end
+
+function Audio.event:extensionLoad(ext)
+  if ext == vRP.EXT.Admin then
+    menu_admin(self)
   end
 end
 
