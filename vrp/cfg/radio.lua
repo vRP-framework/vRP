@@ -31,7 +31,9 @@ cfg.css = [[
 -- map entities used to display player radio GPS signal per group
 -- map of group => map_entity (with PlayerMark behavior)
 --- map_entity: {ent, cfg} will fill cfg.player, cfg.title
+-- _default: default map entity for undefined groups
 cfg.group_map_entities = {
+  _default = {"PlayerMark", {blip_id = 1, blip_color = 4}},
   police = {"PlayerMark", {blip_id = 60, blip_color = 38}}
 }
 

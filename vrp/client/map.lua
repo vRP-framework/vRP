@@ -108,7 +108,7 @@ end
 -- PlayerMark
 local PlayerMark = class("PlayerMark", Map.Entity)
 
-function PlayerMark:load()
+function PlayerMark:setup()
   -- get target ped
   local player = GetPlayerFromServerId(self.cfg.player)
   if player and NetworkIsPlayerConnected(player) then
@@ -117,7 +117,7 @@ function PlayerMark:load()
 
   -- blip
   if self.ped and self.cfg.blip_id and self.cfg.blip_color then
-    self.blip = AddBlipForEntity(self)
+    self.blip = AddBlipForEntity(self.ped)
     SetBlipSprite(self.blip, self.cfg.blip_id)
     SetBlipAsShortRange(self.blip, true)
     SetBlipColour(self.blip, self.cfg.blip_color)
@@ -130,10 +130,22 @@ function PlayerMark:load()
   end
 end
 
+function PlayerMark:load()
+  self:setup()
+end
+
 function PlayerMark:unload()
   if self.blip then
     RemoveBlip(self.blip)
   end
+end
+
+function PlayerMark:active()
+  if not DoesBlipExist(self.blip) then
+    self:setup()
+  end
+
+  return false
 end
 
 -- METHODS

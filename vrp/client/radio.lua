@@ -5,7 +5,7 @@ function Radio:__construct()
   vRP.Extension.__construct(self)
 
   self.talking = false
-  self.players = {}
+  self.players = {} -- radio players, map of player server id => {.group, .group_title, .title, .map_entity}
 
   -- task: radio push to talk
   Citizen.CreateThread(function()
@@ -48,14 +48,33 @@ Radio.tunnel = {}
 
 function Radio.tunnel:setupPlayers(players)
   for player, data in pairs(players) do
+    -- add player marker
+    local ment = data.map_entity[2]
+    ment.player = player
+    ment.title = "["..data.group_title.."] "..data.title
+    vRP.EXT.Map:setEntity("vRP:radio:player_marker:"..player, data.map_entity[1], ment)
+
     vRP.EXT.Audio:connectVoice("radio", player)
     self.players[player] = data
   end
 end
 
-function Radio.tunnel:clearPlayers()
-  vRP.EXT.Audio:disconnectVoice("radio")
-  self.players = {}
+-- players: (optional) map of player server id to remove, if nil, will clear all players
+function Radio.tunnel:clearPlayers(players)
+  -- remove player markers
+  for player, data in pairs(players or self.players) do
+    vRP.EXT.Map:removeEntity("vRP:radio:player_marker:"..player)
+  end
+
+  if players then
+    for player in pairs(players) do
+      vRP.EXT.Audio:disconnectVoice("radio", player)
+      self.players[player] = nil
+    end
+  else
+    vRP.EXT.Audio:disconnectVoice("radio")
+    self.players = {}
+  end
 end
 
 vRP:registerExtension(Radio)

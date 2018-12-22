@@ -68,7 +68,6 @@ eating:: https://freesound.org/people/ryanharding95/sounds/272440/
 * admin: tp to marker
 * props, NPC
 * parcel delivery basic mission
-* radio position display
 * mission event/API/cfg for custom display
 * module enable/disable config
 * missing doc (ex: STUN/TURN VoIP)

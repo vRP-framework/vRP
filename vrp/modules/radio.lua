@@ -23,7 +23,8 @@ function Radio.User:getRadioPeerGroup(user)
 end
 
 function Radio.User:connectRadio()
-  local rusers = vRP.EXT.Radio.rusers
+  local Radio = vRP.EXT.Radio
+  local rusers = Radio.rusers
 
   if not rusers[self] then
     -- send map of players to connect to for this radio
@@ -34,7 +35,8 @@ function Radio.User:connectRadio()
         players[ruser.source] = {
           group = group,
           group_title = vRP.EXT.Group:getGroupTitle(group),
-          title = ruser.identity.firstname.." "..ruser.identity.name
+          title = ruser.identity.firstname.." "..ruser.identity.name,
+          map_entity = Radio.cfg.group_map_entities[group] or Radio.cfg.group_map_entities._default
         }
       end
 
@@ -45,16 +47,17 @@ function Radio.User:connectRadio()
           [self.source] = {
             group = rgroup,
             group_title = vRP.EXT.Group:getGroupTitle(rgroup),
-            title = self.identity.firstname.." "..self.identity.name
+            title = self.identity.firstname.." "..self.identity.name,
+            map_entity = Radio.cfg.group_map_entities[rgroup] or Radio.cfg.group_map_entities._default
           }
         })
       end
     end
 
-    vRP.EXT.Audio.remote._playAudioSource(-1, vRP.EXT.Radio.cfg.on_sound, 1, 0,0,0, 30, self.source)
+    vRP.EXT.Audio.remote._playAudioSource(-1, Radio.cfg.on_sound, 1, 0,0,0, 30, self.source)
 
     -- connect to all radio players
-    vRP.EXT.Radio.remote._setupPlayers(self.source, players)
+    Radio.remote._setupPlayers(self.source, players)
 
     rusers[self] = true
   end
@@ -65,6 +68,16 @@ function Radio.User:disconnectRadio()
 
   if rusers[self] then
     rusers[self] = nil
+
+    -- disconnect all radio players from this radio player
+    for ruser in pairs(rusers) do -- each radio user
+      local rgroup = ruser:getRadioPeerGroup(self)
+      if rgroup then
+        vRP.EXT.Radio.remote._clearPlayers(ruser.source, {
+          [self.source] = true
+        })
+      end
+    end
 
     vRP.EXT.Audio.remote._playAudioSource(-1, vRP.EXT.Radio.cfg.off_sound, 1, 0,0,0, 30, self.source)
     vRP.EXT.Radio.remote._clearPlayers(self.source)
