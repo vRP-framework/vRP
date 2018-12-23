@@ -65,7 +65,6 @@ cfg.groups = {
   ["god"] = {
     "admin.god" -- reset survivals/health periodically
   },
-  -- the group user is auto added to all logged players
   ["user"] = {
     "player.phone",
     "player.calladmin",
@@ -139,9 +138,16 @@ cfg.groups = {
   }
 }
 
--- groups are added dynamically using the API or the menu, but you can add group when an user join here
+-- groups are added dynamically using the API or the menu, but you can add group when a character is loaded here
+-- groups for everyone
+cfg.default_groups = {
+  "user"
+}
+
+-- groups per user
+-- map of user id => list of groups
 cfg.users = {
-  [1] = { -- give superadmin and admin group to the first created user on the database
+  [1] = { -- give superadmin and admin group to the first created user in the database
     "superadmin",
     "admin"
   }

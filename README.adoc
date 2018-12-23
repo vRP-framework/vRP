@@ -77,7 +77,6 @@ eating:: https://freesound.org/people/ryanharding95/sounds/272440/
 * VoIP reconnect/finishing/doc
 ** better world connect/disconnect task
 ** push-to-talk end delay (prevent cut)
-* improved users list (online/offline/by id menu)
 
 .vRP 2 dev' phases
 * refactoring (done)

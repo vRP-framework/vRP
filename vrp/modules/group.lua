@@ -402,13 +402,15 @@ function Group.event:characterLoad(user)
   -- add config user forced groups
   local groups = self.cfg.users[user.id]
   if groups then
-    for _,group in pairs(groups) do
+    for _,group in ipairs(groups) do
       user:addGroup(group)
     end
   end
 
-  -- add default group user
-  user:addGroup("user")
+  -- add default groups
+  for _, group in ipairs(self.cfg.default_groups) do
+    user:addGroup(group)
+  end
 end
 
 vRP:registerExtension(Group)
