@@ -689,7 +689,7 @@ function Police.tunnel:updateWantedLevel(level)
     end
 
     if was_wanted and not is_wanted then
-      vRP.EXT.Map.remote._removeNamedBlip(-1, "vRP:police:wanted:"..user.id) -- remove wanted blip (all to prevent phantom blip)
+      vRP.EXT.Map.remote._removeEntity(-1, "vRP:police:wanted:"..user.id) -- remove wanted blip (all to prevent phantom blip)
     end
   end
 end
