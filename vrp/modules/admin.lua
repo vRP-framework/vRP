@@ -31,6 +31,8 @@ local function menu_admin_users_user(self)
     else -- offline
       vRP:setBanned(id,true)
     end
+
+    user:actualizeMenu()
   end
 
   local function m_unban(menu)
@@ -38,6 +40,7 @@ local function menu_admin_users_user(self)
     local id = menu.data.id
 
     vRP:setBanned(id,false)
+    user:actualizeMenu()
   end
 
   local function m_whitelist(menu)
@@ -45,6 +48,7 @@ local function menu_admin_users_user(self)
     local id = menu.data.id
 
     vRP:setWhitelisted(id,true)
+    user:actualizeMenu()
   end
 
   local function m_unwhitelist(menu)
@@ -52,6 +56,7 @@ local function menu_admin_users_user(self)
     local id = menu.data.id
 
     vRP:setWhitelisted(id,false)
+    user:actualizeMenu()
   end
 
   local function m_tptome(menu)
@@ -77,15 +82,24 @@ local function menu_admin_users_user(self)
 
   vRP.EXT.GUI:registerMenuBuilder("admin.users.user", function(menu)
     local user = menu.user
-    local tuser = vRP.users[menu.data.id]
+    local id = menu.data.id
+    local tuser = vRP.users[id]
 
     if tuser then -- online
-      menu.title = lang.admin.users.user.title({menu.data.id, tuser.name})
+      menu.title = lang.admin.users.user.title({id, tuser.name})
     else
-      menu.title = lang.admin.users.user.title({menu.data.id, htmlEntities.encode("<offline>")})
+      menu.title = lang.admin.users.user.title({id, htmlEntities.encode("<offline>")})
     end
 
     menu.css.header_color = "rgba(200,0,0,0.75)"
+
+    menu:addOption(lang.admin.users.user.info.title(), nil, lang.admin.users.user.info.description({
+      htmlEntities.encode(tuser and tuser.endpoint or "offline"), -- endpoint
+      tuser and tuser.last_login or "offline", -- last login
+      tuser and tuser.cid or "none", -- character id
+      vRP:isBanned(id) and "true" or "false", -- banned
+      vRP:isWhitelisted(id) and "true" or "false" -- whitelisted
+    }))
 
     if tuser and user:hasPermission("player.kick") then
       menu:addOption(lang.admin.users.user.kick.title(), m_kick)

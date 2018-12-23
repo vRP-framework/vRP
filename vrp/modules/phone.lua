@@ -320,7 +320,9 @@ local function menu_phone_announce(self)
     menu.css.header_color="rgba(0,125,255,0.75)"
 
     for k,announce in pairs(self.cfg.announces) do
-      menu:addOption(k, m_announce, lang.phone.announce.item_desc({announce.price,announce.description or ""}), announce)
+      if not announce.permission or menu.user:hasPermission(announce.permission) then
+        menu:addOption(k, m_announce, lang.phone.announce.item_desc({announce.price,announce.description or ""}), announce)
+      end
     end
   end)
 end

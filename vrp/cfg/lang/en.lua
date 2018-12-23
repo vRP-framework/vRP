@@ -83,6 +83,10 @@ local lang = {
       },
       user = {
         title = "#{1}: {2}",
+        info = {
+          title = "Info",
+          description = "<em>Endpoint: </em>{1}<br /><em>Last login: </em>{2}<br /><em>Character id: </em>{3}<br /><em>Banned: </em>{4}<br /><em>Whitelisted: </em>{5}"
+        },
         kick = {
           title = "Kick",
           prompt = "Reason: "
