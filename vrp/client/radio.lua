@@ -15,8 +15,20 @@ function Radio:__construct()
       local old_talking = self.talking
       self.talking = IsControlPressed(table.unpack(vRP.cfg.controls.radio))
 
-      if old_talking ~= self.talking then
-        vRP:triggerEvent("radioSpeakingChange", self.talking)
+      if old_talking ~= self.talking then -- change
+        if not self.talking then -- delay off
+          self.talking = true
+          SetTimeout(vRP.cfg.push_to_talk_end_delay+1, function()
+            if self.talking_time and GetGameTimer()-self.talking_time >= vRP.cfg.push_to_talk_end_delay then
+              self.talking = false
+              vRP:triggerEvent("radioSpeakingChange", self.talking)
+              self.talking_time = nil
+            end
+          end)
+        else -- instantaneous
+          vRP:triggerEvent("radioSpeakingChange", self.talking)
+          self.talking_time = GetGameTimer()
+        end
       end
     end
   end)

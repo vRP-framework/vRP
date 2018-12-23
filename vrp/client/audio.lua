@@ -90,8 +90,20 @@ function Audio:__construct()
       local old_speaking = self.speaking
       self.speaking = IsControlPressed(1,249)
 
-      if old_speaking ~= self.speaking then
-        vRP:triggerEvent("speakingChange", self.speaking)
+      if old_speaking ~= self.speaking then -- change
+        if not self.speaking then -- delay off
+          self.speaking = true
+          SetTimeout(vRP.cfg.push_to_talk_end_delay+1, function()
+            if self.speaking_time and GetGameTimer()-self.speaking_time >= vRP.cfg.push_to_talk_end_delay then
+              self.speaking = false
+              vRP:triggerEvent("speakingChange", self.speaking)
+              self.speaking_time = nil
+            end
+          end)
+        else -- instantaneous
+          vRP:triggerEvent("speakingChange", self.speaking)
+          self.speaking_time = GetGameTimer()
+        end
       end
     end
   end)
