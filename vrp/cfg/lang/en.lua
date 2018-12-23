@@ -85,7 +85,7 @@ local lang = {
         title = "#{1}: {2}",
         info = {
           title = "Info",
-          description = "<em>Endpoint: </em>{1}<br /><em>Last login: </em>{2}<br /><em>Character id: </em>{3}<br /><em>Banned: </em>{4}<br /><em>Whitelisted: </em>{5}"
+          description = "<em>Endpoint: </em>{1}<br /><em>Source: </em>{2}<br /><em>Last login: </em>{3}<br /><em>Character id: </em>{4}<br /><em>Banned: </em>{5}<br /><em>Whitelisted: </em>{6}<br /><br />(valid to update)"
         },
         kick = {
           title = "Kick",
@@ -109,6 +109,10 @@ local lang = {
         },
         tpto = {
           title = "TpTo"
+        },
+        groups = {
+          title = "Groups",
+          description = "{1}<br /><br />(valid to update)"
         },
         group_add = {
           title = "Add group",

@@ -390,7 +390,7 @@ local function menu_admin_users_user(self)
       local fullid = user:prompt(lang.admin.users.user.give_item.prompt(),"")
       local amount = parseInt(user:prompt(lang.admin.users.user.give_item.prompt_amount(),""))
       if not tuser:tryGiveItem(fullid, amount) then
-        vRP.EXT.Base.remote._notify(user.source, "")
+        vRP.EXT.Base.remote._notify(user.source, lang.admin.users.user.give_item.notify_failed())
       end
     end
   end

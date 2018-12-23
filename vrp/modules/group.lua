@@ -178,6 +178,20 @@ end
 
 -- menu: admin users user
 local function menu_admin_users_user(self)
+  local function m_groups(menu, value, mod, index)
+    local user = menu.user
+    local tuser = vRP.users[menu.data.id]
+
+    local groups = ""
+    if tuser and tuser:isReady() then
+      for group in pairs(tuser.cdata.groups) do
+        groups = groups..group.." "
+      end
+    end
+
+    menu:updateOption(index, nil, lang.admin.users.user.groups.description({groups}))
+  end
+
   local function m_addgroup(menu)
     local user = menu.user
     local tuser = vRP.users[menu.data.id]
@@ -203,6 +217,8 @@ local function menu_admin_users_user(self)
     local tuser = vRP.users[menu.data.id]
 
     if tuser then
+      menu:addOption(lang.admin.users.user.groups.title(), m_groups, lang.admin.users.user.groups.description())
+
       if user:hasPermission("player.group.add") then
         menu:addOption(lang.admin.users.user.group_add.title(), m_addgroup)
       end
