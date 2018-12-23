@@ -633,7 +633,7 @@ AudioEngine.prototype.setupPeer = function(peer)
   if(effects.spatialization){ //spatialization
     var panner = this.c.createPanner();
     panner.distanceModel = effects.spatialization.dist_model || "inverse";
-    panner.refDistance = 1;
+    panner.refDistance = effects.spatialization.ref_dist || 1;
     panner.maxDistance = effects.spatialization.max_dist;
     panner.rolloffFactor = effects.spatialization.rolloff || 1;
     panner.coneInnerAngle = 360;

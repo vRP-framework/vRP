@@ -41,6 +41,7 @@ function Audio:__construct()
   Citizen.CreateThread(function()
     local n = 0
     local ns = math.ceil(self.voip_interval/self.listener_wait) -- connect/disconnect every x milliseconds
+    local connections = {}
 
     while true do
       Citizen.Wait(self.listener_wait)
@@ -67,10 +68,12 @@ function Audio:__construct()
           if player ~= pid and self.vrp_voip and voip_check then -- vRP voip detection/connection
             local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
             local in_radius = (distance <= self.voip_proximity)
-            if in_radius then -- join radius
+            if not connections[k] and in_radius then -- join radius
               self:connectVoice("world", k)
-            elseif not in_radius then -- leave radius
+              connections[k] = true
+            elseif connections[k] and not in_radius then -- leave radius
               self:disconnectVoice("world", k)
+              connections[k] = nil
             end
           end
         end

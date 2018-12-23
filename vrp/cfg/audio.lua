@@ -28,7 +28,7 @@ cfg.voip_interval = 5000
 -- world voice config (see Audio:registerVoiceChannel)
 cfg.world_voice = {
   effects = {
-    spatialization = { max_dist = cfg.voip_proximity }
+    spatialization = { max_dist = cfg.voip_proximity, ref_dist = 3 }
   }
 }
 

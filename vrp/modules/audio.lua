@@ -51,7 +51,7 @@ end
 -- id: channel name/id (string)
 -- config:
 --- effects: map of name => true/options
----- spatialization => { max_dist: ..., rolloff: ..., dist_model: ... } (per peer effect)
+---- spatialization => { max_dist: ..., rolloff: ..., dist_model: ..., ref_dist: ...} (per peer effect)
 ---- biquad => { frequency: ..., Q: ..., type: ..., detune: ..., gain: ...} see WebAudioAPI BiquadFilter
 ----- freq = 1700, Q = 3, type = "bandpass" (idea for radio effect)
 ---- gain => { gain: ... }
