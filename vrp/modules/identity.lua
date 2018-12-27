@@ -275,7 +275,7 @@ function Identity.event:playerSpawn(user, first_spawn)
     local x,y,z = table.unpack(self.cfg.city_hall)
 
     local ment = clone(self.cfg.city_hall_map_entity)
-    ment[2].title = lang.cityhall.title()
+    ment[2].title = lang.identity.cityhall.title()
     ment[2].pos = {x,y,z-1}
     vRP.EXT.Map.remote._addEntity(user.source,ment[1],ment[2])
     user:setArea("vRP:cityhall",x,y,z,1,1.5,enter,leave)
