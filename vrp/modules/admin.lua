@@ -303,10 +303,12 @@ function Admin:__construct()
   local function task_god()
     SetTimeout(10000, task_god)
 
-    for _,user in pairs(vRP.EXT.Group:getUsersByPermission("admin.god")) do
-      user:setVital("water", 1)
-      user:setVital("food", 1)
-      vRP.EXT.PlayerState.remote._setHealth(user.source, 200)
+    if vRP.EXT.Group then
+      for _,user in pairs(vRP.EXT.Group:getUsersByPermission("admin.god")) do
+        user:setVital("water", 1)
+        user:setVital("food", 1)
+        vRP.EXT.PlayerState.remote._setHealth(user.source, 200)
+      end
     end
   end
   task_god()
