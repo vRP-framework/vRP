@@ -37,6 +37,7 @@ end
 
 
 -- basic entities
+
 local PosEntity = class("PosEntity", Map.Entity)
 Map.PosEntity = PosEntity
 
@@ -62,6 +63,18 @@ function PoI:load()
     SetBlipSprite(self.blip, self.cfg.blip_id)
     SetBlipAsShortRange(self.blip, true)
     SetBlipColour(self.blip, self.cfg.blip_color)
+
+    if self.cfg.blip_scale then
+      SetBlipScale(self.blip, self.cfg.blip_scale)
+    end
+
+    if self.cfg.blip_flashes then
+      if self.cfg.blip_flashes == 2 then
+        SetBlipFlashesAlternate(self.blip, true)
+      else
+        SetBlipFlashes(self.blip, true)
+      end
+    end
 
     if self.cfg.title then
       BeginTextCommandSetBlipName("STRING")
@@ -121,6 +134,18 @@ function PlayerMark:setup()
     SetBlipSprite(self.blip, self.cfg.blip_id)
     SetBlipAsShortRange(self.blip, true)
     SetBlipColour(self.blip, self.cfg.blip_color)
+
+    if self.cfg.blip_scale then
+      SetBlipScale(self.blip, self.cfg.blip_scale)
+    end
+
+    if self.cfg.blip_flashes then
+      if self.cfg.blip_flashes == 2 then
+        SetBlipFlashesAlternate(self.blip, true)
+      else
+        SetBlipFlashes(self.blip, true)
+      end
+    end
 
     if self.cfg.title then
       BeginTextCommandSetBlipName("STRING")
