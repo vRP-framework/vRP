@@ -33,6 +33,13 @@ A framework code should not be customized by definition, because a framework is 
 
 Clone the repository or download the master https://github.com/ImagicTheCat/vRP/archive/master.zip[archive] and copy the `vrp` directory to your resource folder. Add `vrp` to the loading resource list (first after the basic FiveM resources is better).
 
+[CAUTION]
+====
+The FiveM coroutines usage has issues which prevent vRP 2 to work properly (especially server-side), it may print this error `async wait(): Citizen.Await returned (nil) before the areturn call`.
+
+Until this https://github.com/citizenfx/fivem/pull/157[pull request] is accepted, you can apply it yourself by replacing the `fxserver/citizen/scripting/lua/scheduler.lua` file with this https://github.com/ImagicTheCat/fivem/blob/scheduler/data/shared/citizen/scripting/lua/scheduler.lua[one].
+====
+
 === Configuration
 
 WARNING: Only the files in the `cfg/` directory should be modified. 
@@ -52,6 +59,10 @@ NOTE: Some maintained DB drivers: https://github.com/ImagicTheCat/vRP-db-drivers
 DB drivers will register themselves with a specific name to use in `cfg/base.lua`. Since there is no guarantee about when the driver will be registered, all queries will be cached until that moment. 
 
 NOTE: `[vRP] DB driver "driver_name" not initialized yet (X prepares cached, Y queries cached).`  is not an error, but a warning that the driver is not registered yet and will stop being outputted if the driver is loaded (a message will also say that the driver is loaded).
+
+==== VoIP
+
+See link:dev/modules/audio.adoc[audio module].
 
 === Update
 
@@ -73,7 +84,7 @@ This way, you will know when config files should be updated and what exactly has
 When submitting an issue, add any information you can find, with all details. Saying that something doesn't work is almost useless and will probably not be enough to solve the issue.
 If you have errors in your console BEFORE the issue happens, things could be corrupted, so the error is probably irrelevant. You should solve all unrelated errors before submitting issues.
 
-WARNING: The issue section is only for bug reports and feature requests. Issues not related to the core of vRP or about vRP modifications will be closed without warning.
+WARNING: The issue section is only for bug reports and feature requests. Issues not related to the core of vRP, about old verions (no backwards update) or vRP modifications will be closed without warning.
 
 NOTE: For questions, help, discussions around the project, please go instead on the vRP thread of the FiveM forum here: https://forum.fivem.net/t/release-vrp-framework/22894
 
