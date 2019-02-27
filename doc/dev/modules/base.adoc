@@ -35,6 +35,10 @@ Base:triggerRespawn()
 -- heading: (optional) entity heading
 Base:teleport(x,y,z,heading)
 
+-- teleport vehicle when inside one (placed on ground)
+-- heading: (optional) entity heading
+Base:vehicleTeleport(x,y,z,heading)
+
 -- return x,y,z
 Base:getPosition()
 
@@ -104,6 +108,7 @@ Base:playSound(dict,name)
 
 Base.tunnel.triggerRespawn = Base.triggerRespawn
 Base.tunnel.teleport = Base.teleport
+Base.tunnel.vehicleTeleport = Base.vehicleTeleport
 Base.tunnel.getPosition = Base.getPosition
 Base.tunnel.isInside = Base.isInside
 Base.tunnel.getSpeed = Base.getSpeed
