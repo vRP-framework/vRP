@@ -18,6 +18,8 @@ This module handles audio features.
 * the TCP websocket and UDP webrtc range of ports must be opened by firewalls
 * see `voip_server/config.js` and `cfg/audio.lua`
 
+TIP: The clients will automatically connect/reconnect themselves to the VoIP server (can be started after, shutdown, restarted).
+
 == Extension
 
 === Server
