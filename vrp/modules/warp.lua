@@ -46,7 +46,7 @@ function Warp.event:playerSpawn(user, first_spawn)
       ment[2].pos = {x,y,z-1}
       vRP.EXT.Map.remote._addEntity(user.source, ment[1], ment[2])
 
-      user:setArea("vRP:warp:"..k,x,y,z,2,1.5,enter)
+      user:setArea("vRP:warp:"..k,x,y,z,1.5,1.5,enter)
     end
   end
 end

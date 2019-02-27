@@ -20,3 +20,14 @@ This module spawns warp points for player/vehicle teleportation.
 ----
 self.cfg
 ----
+
+== Map entity
+
+=== Warp
+
+Default animated entity for the warp module.
+Inherits from `Map.PosEntity`.
+
+.config
+[horizontal]
+color:: (optional) `{r,g,b,a}` marker color

@@ -10,7 +10,7 @@ endif::[]
 
 = Radio
 
-This module adds groups radio.
+This module adds groups radio (voice and GPS signal).
 
 == Extension
 

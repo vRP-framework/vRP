@@ -5,9 +5,9 @@ cfg.warp_delay = 3 -- seconds, delay before being able to trigger another warp (
 -- default warp map entities by mode
 -- map of mode => {ent,cfg} (will fill cfg.pos)
 cfg.default_map_entities = {
-  [0] = {"PoI", {marker_id = 1, color = {255,0,0,125}}},
-  [1] = {"PoI", {marker_id = 1, color = {0,255,0,125}}},
-  [2] = {"PoI", {marker_id = 1, color = {0,0,255,125}}}
+  [0] = {"Warp", {color = {255,0,0,125}}},
+  [1] = {"Warp", {color = {0,255,0,125}}},
+  [2] = {"Warp", {color = {0,0,255,125}}}
 }
 
 -- list of warps {pos, target, cfg}
