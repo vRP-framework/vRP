@@ -81,10 +81,21 @@ end
 
 -- heading: (optional) entity heading
 function Base:teleport(x,y,z,heading)
---  vRP.EXT.Police:unjail() -- force unjail before a teleportation
   local ped = GetPlayerPed(-1)
   SetEntityCoords(ped, x+0.0001, y+0.0001, z+0.0001, 1,0,0,1)
   if heading then SetEntityHeading(ped, heading) end
+  vRP:triggerEvent("playerTeleport")
+end
+
+-- teleport vehicle when inside one (placed on ground)
+-- heading: (optional) entity heading
+function Base:vehicleTeleport(x,y,z,heading)
+  local ped = GetPlayerPed(-1)
+  local veh = GetVehiclePedIsIn(ped,false)
+
+  SetEntityCoords(veh, x+0.0001, y+0.0001, z+0.0001, 1,0,0,1)
+  if heading then SetEntityHeading(veh, heading) end
+  SetVehicleOnGroundProperly(veh)
   vRP:triggerEvent("playerTeleport")
 end
 
@@ -347,6 +358,7 @@ end
 
 Base.tunnel.triggerRespawn = Base.triggerRespawn
 Base.tunnel.teleport = Base.teleport
+Base.tunnel.vehicleTeleport = Base.vehicleTeleport
 Base.tunnel.getPosition = Base.getPosition
 Base.tunnel.isInside = Base.isInside
 Base.tunnel.getSpeed = Base.getSpeed
