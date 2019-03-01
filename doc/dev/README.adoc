@@ -338,6 +338,7 @@ User:deleteCharacter(id)
 [source,lua]
 ----
 self.EXT -- map of name => ext
+self.modules -- cfg/modules
 
 vRP.Extension
 
