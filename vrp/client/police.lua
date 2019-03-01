@@ -97,7 +97,7 @@ function Police:__construct()
   -- task: update wanted level
   Citizen.CreateThread(function()
     while true do
-      Citizen.Wait(2000)
+      Citizen.Wait(5000)
 
       -- if cop, reset wanted level
       if self.cop then

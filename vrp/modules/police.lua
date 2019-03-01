@@ -543,6 +543,35 @@ local function define_items(self)
   vRP.EXT.Inventory:defineItem("bulletproof_vest", lang.item.bulletproof_vest.name(), lang.item.bulletproof_vest.description(), i_bulletproof_vest_menu, 1.5)
 end
 
+-- targets: map of wanted users
+-- listeners: map of user
+function listen_wanted(self, targets, listeners)
+  local Map = vRP.EXT.Map
+
+  for target in pairs(targets) do
+    local x,y,z = vRP.EXT.Base.remote.getPosition(target.source)
+    local ment = clone(self.cfg.wanted.map_entity)
+    ment[2].player = target.source
+    ment[2].title = lang.police.wanted({self:getUserWantedLevel(target)})
+
+    for listener in pairs(listeners) do
+      Map.remote._setEntity(listener.source, "vRP:police:wanted:"..target.id, ment[1], ment[2])
+    end
+  end
+end
+
+-- targets: map of wanted users
+-- listeners: map of user
+function unlisten_wanted(self, targets, listeners)
+  local Map = vRP.EXT.Map
+
+  for target in pairs(targets) do
+    for listener in pairs(listeners) do
+      Map.remote._removeEntity(listener.source, "vRP:police:wanted:"..target.id)
+    end
+  end
+end
+
 -- METHODS
 
 function Police:__construct()
@@ -560,6 +589,7 @@ function Police:__construct()
   self:log(#self.cfg.pcs.." PCs "..#self.cfg.jails.." jails "..#self.sorted_fines.." fines")
 
   self.wantedlvl_users = {} -- map of user => wanted level
+  self.wanted_listeners = {} -- map of user
 
   -- items
   define_items(self)
@@ -599,27 +629,42 @@ function Police:__construct()
     end
   end)
 
-  -- task: display wanted positions
-  local function task_wanted_positions()
+
+  -- task: wanted listening
+  local function task_wanted()
     local listeners = vRP.EXT.Group:getUsersByPermission("police.wanted")
 
-    for user, v in pairs(self.wantedlvl_users) do -- each wanted player
-      if v > 0 then
-        local x,y,z = vRP.EXT.Base.remote.getPosition(user.source)
-        local ment = clone(self.cfg.wanted.map_entity)
-        ment[2].pos = {x,y,z}
-        ment[2].title = lang.police.wanted({v})
+    local wanted_listeners = {} -- new wanted listeners
+    for _,listener in pairs(listeners) do
+      wanted_listeners[listener] = true
+    end
 
-        for _,listener in pairs(listeners) do -- each listening player
-          vRP.EXT.Map.remote._setEntity(listener.source, "vRP:police:wanted:"..user.id, ment[1], ment[2])
-        end
+    -- added listeners
+    local added = {}
+    for listener in pairs(wanted_listeners) do
+      if not self.wanted_listeners[listener] then
+        added[listener] = true
       end
     end
-    SetTimeout(5000, task_wanted_positions)
+
+    -- deleted listeners
+    local deleted = {}
+    for listener in pairs(self.wanted_listeners) do
+      if not wanted_listeners[listener] then
+        deleted[listener] = true
+      end
+    end
+
+    self.wanted_listeners = wanted_listeners -- update
+
+    listen_wanted(self, self.wantedlvl_users, added)
+    unlisten_wanted(self, self.wantedlvl_users, deleted)
+
+    SetTimeout(5000, task_wanted)
   end
 
   async(function()
-    task_wanted_positions()
+    task_wanted()
   end)
 end
 
@@ -667,7 +712,7 @@ end
 
 function Police.event:playerLeave(user)
   self.wantedlvl_users[user] = nil
-  vRP.EXT.Map.remote._removeEntity(-1, "vRP:police:wanted:"..user.id)  -- remove wanted blip (all to prevent phantom blip)
+  unlisten_wanted(self, {[user] = true}, self.wanted_listeners)
 end
 
 -- TUNNEL
@@ -679,17 +724,26 @@ function Police.tunnel:updateWantedLevel(level)
 
   if user and user:isReady() then
     local was_wanted = (self:getUserWantedLevel(user) > 0)
-    self.wantedlvl_users[user] = level
     local is_wanted = (level > 0)
+    local lvl_changed = level ~= self:getUserWantedLevel(user)
 
-    -- send wanted to listening service
-    if not was_wanted and is_wanted then
-      local x,y,z = vRP.EXT.Base.remote.getPosition(user.source)
-      vRP.EXT.Phone:sendServiceAlert(nil, self.cfg.wanted.service,x,y,z,lang.police.wanted({level}))
-    end
+    if lvl_changed then
+      -- send wanted to listening service
+      if not was_wanted and is_wanted then -- add to wanted
+        self.wantedlvl_users[user] = level
 
-    if was_wanted and not is_wanted then
-      vRP.EXT.Map.remote._removeEntity(-1, "vRP:police:wanted:"..user.id) -- remove wanted blip (all to prevent phantom blip)
+        listen_wanted(self, {[user] = level}, self.wanted_listeners)
+
+        -- alert
+        local x,y,z = vRP.EXT.Base.remote.getPosition(user.source)
+        vRP.EXT.Phone:sendServiceAlert(nil, self.cfg.wanted.service,x,y,z,lang.police.wanted({level}))
+      elseif was_wanted and not is_wanted then -- remove from wanted
+        self.wantedlvl_users[user] = nil
+        unlisten_wanted(self, {[user] = true}, self.wanted_listeners)
+      elseif is_wanted then -- level changed
+        self.wantedlvl_users[user] = level
+        listen_wanted(self, {[user] = level}, self.wanted_listeners)
+      end
     end
   end
 end
