@@ -281,9 +281,15 @@ local function menu_vehicle(self)
 
     -- open chest
     self.remote._vc_openDoor(user.source, model, 5)
-    user:openChest(chestid, max_weight, function()
+    local smenu = user:openChest(chestid, max_weight, function()
       self.remote._vc_closeDoor(user.source, model, 5)
     end)
+
+    if smenu then
+      menu:listen("remove", function()
+        user:closeMenu(smenu)
+      end)
+    end
   end
 
   -- detach trailer
@@ -421,7 +427,23 @@ function Garage:__construct()
     -- check vehicle
     local model = self.remote.getNearestOwnedVehicle(user.source, 7)
     if model then
-      user:openMenu("vehicle", {model = model})
+      local menu = user:openMenu("vehicle", {model = model})
+
+      local running = true
+      menu:listen("remove", function(menu)
+        running = false
+      end)
+
+      -- task: close menu if not next to the vehicle
+      Citizen.CreateThread(function()
+        while running do
+          Citizen.Wait(8000)
+          local check_model = self.remote.getNearestOwnedVehicle(user.source, 7)
+          if model ~= check_model then
+            user:closeMenu(menu)
+          end
+        end
+      end)
     else
       vRP.EXT.Base.remote._notify(user.source,lang.vehicle.no_owned_near())
     end
@@ -459,9 +481,25 @@ function Garage:__construct()
           end
 
           self.remote._vc_openDoor(nuser.source, model, 5)
-          user:openChest(chestid, max_weight, function()
+          local smenu = user:openChest(chestid, max_weight, function()
             self.remote._vc_closeDoor(nuser.source, model, 5)
           end,cb_in,cb_out)
+
+          local running = true
+          smenu:listen("remove", function(menu)
+            running = false
+          end)
+
+          -- task: close menu if not next to the vehicle
+          Citizen.CreateThread(function()
+            while running do
+              Citizen.Wait(8000)
+              local check_model = self.remote.getNearestOwnedVehicle(user.source, 7)
+              if model ~= check_model then
+                user:closeMenu(menu)
+              end
+            end
+          end)
         else
           vRP.EXT.Base.remote._notify(user.source,lang.vehicle.no_owned_near())
           vRP.EXT.Base.remote._notify(nuser.source,lang.vehicle.no_owned_near())
