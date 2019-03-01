@@ -1,3 +1,5 @@
+if not vRP.modules.police then return end
+
 local lang = vRP.lang
 local htmlEntities = module("vrp", "lib/htmlEntities")
 

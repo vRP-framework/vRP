@@ -1,3 +1,4 @@
+if not vRP.modules.audio then return end
 
 local Audio = class("Audio", vRP.Extension)
 local lang = vRP.lang

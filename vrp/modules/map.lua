@@ -1,3 +1,4 @@
+if not vRP.modules.map then return end
 
 local Map = class("Map", vRP.Extension)
 

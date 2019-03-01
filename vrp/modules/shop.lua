@@ -1,3 +1,5 @@
+if not vRP.modules.shop then return end
+
 local htmlEntities = module("vrp", "lib/htmlEntities")
 local lang = vRP.lang
 

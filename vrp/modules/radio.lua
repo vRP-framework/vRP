@@ -1,3 +1,4 @@
+if not vRP.modules.radio then return end
 
 local lang = vRP.lang
 

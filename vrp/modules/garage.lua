@@ -1,3 +1,5 @@
+if not vRP.modules.garage then return end
+
 local lang = vRP.lang
 
 -- a basic garage implementation

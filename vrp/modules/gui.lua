@@ -1,9 +1,9 @@
+if not vRP.modules.gui then return end
+
 local IDManager = module("vrp", "lib/IDManager")
 local htmlEntities = module("vrp", "lib/htmlEntities")
 local EventDispatcher = module("vrp", "lib/EventDispatcher")
 local lang = vRP.lang
-
-local cfg = module("cfg/gui")
 
 -- Menu
 local Menu = class("Menu", EventDispatcher)

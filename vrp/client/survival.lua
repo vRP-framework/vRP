@@ -1,3 +1,5 @@
+if not vRP.modules.survival then return end
+
 local Survival = class("Survival", vRP.Extension)
 
 function Survival:__construct()

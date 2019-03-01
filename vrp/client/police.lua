@@ -1,4 +1,6 @@
 
+if not vRP.modules.police then return end
+
 -- this module define some police tools and functions
 local Police = class("Police", vRP.Extension)
 

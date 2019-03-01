@@ -63,6 +63,8 @@ function vRPShared:__construct()
   self.EXT = {} -- map of name => ext
   self.ext_listeners = {} -- map of name => map of ext => callback
 
+  self.modules = module("vrp", "cfg/modules")
+
   self.log_level = 0
 end
 

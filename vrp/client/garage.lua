@@ -1,3 +1,4 @@
+if not vRP.modules.garage then return end
 
 local Garage = class("Garage", vRP.Extension)
 

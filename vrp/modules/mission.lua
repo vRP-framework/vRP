@@ -1,3 +1,5 @@
+if not vRP.modules.mission then return end
+
 local lang = vRP.lang
 
 -- mission system module

@@ -1,3 +1,5 @@
+if not vRP.modules.identity then return end
+
 local Identity = class("Identity", vRP.Extension)
 
 -- METHODS

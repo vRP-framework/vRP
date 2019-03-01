@@ -1,3 +1,4 @@
+if not vRP.modules.gui then return end
 
 local GUI = class("GUI", vRP.Extension)
 

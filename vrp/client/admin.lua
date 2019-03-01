@@ -1,3 +1,4 @@
+if not vRP.modules.admin then return end
 
 local Admin = class("Admin", vRP.Extension)
 

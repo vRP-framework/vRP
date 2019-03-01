@@ -1,3 +1,5 @@
+if not vRP.modules.edible then return end
+
 local lang = vRP.lang
 
 local Edible = class("Edible", vRP.Extension)

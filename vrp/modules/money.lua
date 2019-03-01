@@ -1,3 +1,5 @@
+if not vRP.modules.money then return end
+
 local lang = vRP.lang
 
 -- Money module, wallet/bank

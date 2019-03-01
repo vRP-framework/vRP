@@ -1,3 +1,5 @@
+if not vRP.modules.map then return end
+
 -- BLIPS: see https://wiki.gtanet.work/index.php?title=Blips for blip id/color
 
 local IDManager = module("vrp", "lib/IDManager")

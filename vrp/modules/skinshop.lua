@@ -1,3 +1,5 @@
+if not vRP.modules.skinshop then return end
+  
 local lang = vRP.lang
 
 -- a basic skinshop implementation

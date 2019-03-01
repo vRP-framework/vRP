@@ -1,3 +1,4 @@
+if not vRP.modules.home_components then return end
 
 local lang = vRP.lang
 

@@ -1,3 +1,4 @@
+if not vRP.modules.phone then return end
 
 local Phone = class("Phone", vRP.Extension)
 

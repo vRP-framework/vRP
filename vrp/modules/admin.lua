@@ -1,3 +1,5 @@
+if not vRP.modules.admin then return end
+
 local htmlEntities = module("lib/htmlEntities")
 
 local lang = vRP.lang

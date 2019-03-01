@@ -54,8 +54,8 @@ client_scripts{
   "client/police.lua",
   "client/radio.lua",
   "client/ped_blacklist.lua",
-  "client/iplloader.lua",
-  "client/warp.lua"
+  "client/warp.lua",
+  "client/iplloader.lua"
 }
 
 -- client files
@@ -68,6 +68,7 @@ files{
   "client/vRP.lua",
   "vRPShared.lua",
   "cfg/client.lua",
+  "cfg/modules.lua",
   "gui/index.html",
   "gui/design.css",
   "gui/main.js",

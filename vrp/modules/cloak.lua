@@ -1,3 +1,5 @@
+if not vRP.modules.cloak then return end
+
 local lang = vRP.lang
 
 -- cloak system (uniform, disguise, etc)

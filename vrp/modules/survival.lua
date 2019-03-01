@@ -1,3 +1,5 @@
+if not vRP.modules.survival then return end
+
 local lang = vRP.lang
 
 local Survival = class("Survival", vRP.Extension)

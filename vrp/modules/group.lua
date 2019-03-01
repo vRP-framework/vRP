@@ -1,3 +1,4 @@
+if not vRP.modules.group then return end
 
 local lang = vRP.lang
 
@@ -414,5 +415,3 @@ function Group.event:characterLoad(user)
 end
 
 vRP:registerExtension(Group)
-
-

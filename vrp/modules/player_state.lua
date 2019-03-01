@@ -1,3 +1,5 @@
+if not vRP.modules.player_state then return end
+
 local lang = vRP.lang
 
 local PlayerState = class("PlayerState", vRP.Extension)

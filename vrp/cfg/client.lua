@@ -1,4 +1,5 @@
 -- client-side vRP configuration
+-- (loaded client-side)
 
 local cfg = {}
 

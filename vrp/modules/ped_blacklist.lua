@@ -1,3 +1,4 @@
+if not vRP.modules.ped_blacklist then return end
 
 local PedBlacklist = class("PedBlacklist", vRP.Extension)
 

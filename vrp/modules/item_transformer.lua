@@ -1,3 +1,4 @@
+if not vRP.modules.item_transformer then return end
 
 local lang = vRP.lang
 

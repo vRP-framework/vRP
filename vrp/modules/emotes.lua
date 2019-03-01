@@ -1,3 +1,4 @@
+if not vRP.modules.emotes then return end
 
 -- this module define the emotes menu
 

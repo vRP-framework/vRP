@@ -1,3 +1,6 @@
+
+if not vRP.modules.warp then return end
+
 local Warp = class("Warp", vRP.Extension)
 
 -- SUBCLASS

@@ -1,3 +1,4 @@
+if not vRP.modules.phone then return end
 
 local lang = vRP.lang
 local htmlEntities = module("lib/htmlEntities")

@@ -1,4 +1,6 @@
 
+if not vRP.modules.radio then return end
+
 local Radio = class("Radio", vRP.Extension)
 
 function Radio:__construct()

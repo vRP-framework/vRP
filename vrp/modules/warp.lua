@@ -1,4 +1,6 @@
 
+if not vRP.modules.warp then return end
+
 local Warp = class("Warp", vRP.Extension)
 local ActionDelay = module("lib/ActionDelay")
 

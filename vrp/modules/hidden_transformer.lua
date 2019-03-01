@@ -1,3 +1,5 @@
+if not vRP.modules.hidden_transformer then return end
+
 local lang = vRP.lang
 
 local HiddenTransformer = class("HiddenTransformer", vRP.Extension)

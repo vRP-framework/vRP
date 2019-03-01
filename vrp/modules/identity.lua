@@ -1,3 +1,5 @@
+if not vRP.modules.identity then return end
+
 -- this module describe the identity system
 
 local htmlEntities = module("lib/htmlEntities")
