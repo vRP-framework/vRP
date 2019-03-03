@@ -210,7 +210,8 @@ local lang = {
   },
   survival = {
     starving = "starving",
-    thirsty = "thirsty"
+    thirsty = "thirsty",
+    coma_display = [[You are in a coma, you can give up on life <span class="key">[JUMP]</span> or wait for help.<br /> <span class="countdown" data-duration="{1}"></span> remaining.]]
   },
   money = {
     display = "{1} <span class=\"symbol\">$</span>",

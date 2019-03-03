@@ -139,6 +139,7 @@ function Survival.event:playerSpawn(user, first_spawn)
   if first_spawn then
     self.remote._setPolice(user.source, self.cfg.police)
     self.remote._setFriendlyFire(user.source, self.cfg.pvp)
+    self.remote._setConfig(user.source, lang.survival.coma_display())
 
     if self.cfg.vital_display then
       local GUI = vRP.EXT.GUI
@@ -150,12 +151,6 @@ function Survival.event:playerSpawn(user, first_spawn)
       GUI.remote._setProgressBar(user.source,"vRP:Survival:water","minimap",(water == 0) and lang.survival.thirsty() or "",0,125,255,water)
     end
   end
-
-end
-
-function Survival.event:playerStateLoaded(user)
-  -- kill if in coma
-  self.remote._killComa(user.source)
 end
 
 function Survival.event:playerDeath(user)

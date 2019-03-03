@@ -1,5 +1,7 @@
 if not vRP.modules.survival then return end
 
+local Luang = module("vrp", "lib/Luang")
+
 local Survival = class("Survival", vRP.Extension)
 
 function Survival:__construct()
@@ -7,6 +9,9 @@ function Survival:__construct()
 
   self.in_coma = false -- flag
   self.coma_left = vRP.cfg.coma_duration*60 -- seconds
+
+  self.luang = Luang()
+  self.lang = self.luang.lang
 
   -- task: impact water and food when the player is running, etc (every 5 seconds)
   Citizen.CreateThread(function()
@@ -61,6 +66,8 @@ function Survival:__construct()
 
   -- task: coma
   Citizen.CreateThread(function() 
+    local PlayerState = vRP.EXT.PlayerState
+
     while true do
       Citizen.Wait(0)
       local ped = GetPlayerPed(-1)
@@ -93,7 +100,7 @@ function Survival:__construct()
           end
         end
       else
-        if self.in_coma then -- get out of coma state
+        if self.in_coma and PlayerState.state_ready then -- get out of coma state
           self.in_coma = false
           SetEntityInvincible(ped,false)
           vRP.EXT.Base:setRagdoll(false)
@@ -132,6 +139,15 @@ function Survival:__construct()
       SetPlayerHealthRechargeMultiplier(PlayerId(), 0)
     end
   end)
+
+  -- task: controls
+  Citizen.CreateThread(function()
+    while true do
+      Citizen.Wait(0)
+      -- coma controls
+      if IsControlJustPressed(table.unpack(vRP.cfg.controls.survival.leave_coma)) then self:killComa() end
+    end
+  end)
 end
 
 function Survival:varyHealth(variation)
@@ -165,9 +181,47 @@ function Survival:killComa()
   end
 end
 
--- TUNNEL
+-- EVENT
+Survival.event = {}
 
+
+local coma_css = [[
+.div_coma_display{
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  margin: auto;
+  background-color: rgba(0,0,0,0.75);
+  color: white;
+  font-weight: bold;
+  font-size: 1.2em;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  text-align: center;
+}
+
+.countdown, .key{
+  color: red;
+}
+]]
+
+function Survival.event:playerComaState(coma)
+  -- display
+
+  if coma then
+    vRP.EXT.GUI:setDiv("coma_display", coma_css, self.lang.coma_display({self.coma_left}))
+  else
+    vRP.EXT.GUI:removeDiv("coma_display")
+  end
+end
+
+-- TUNNEL
 Survival.tunnel = {}
+
+function Survival.tunnel:setConfig(coma_display)
+  self.luang:load({coma_display = coma_display})
+end
 
 Survival.tunnel.isInComa = Survival.isInComa
 Survival.tunnel.killComa = Survival.killComa

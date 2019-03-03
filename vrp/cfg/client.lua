@@ -40,7 +40,10 @@ cfg.controls = {
     yes = {1,166}, -- Michael, F5
     no = {1,167} -- Franklin, F6
   },
-  radio = {1,246} -- team chat (Y)
+  radio = {1,246}, -- team chat (Y)
+  survival = {
+    leave_coma = {0, 22} -- jump
+  }
 }
 
 -- disable menu if handcuffed
@@ -51,7 +54,7 @@ cfg.handcuff_disable_menu = true
 cfg.coma_threshold = 120
 
 -- maximum duration of the coma in minutes
-cfg.coma_duration = 10
+cfg.coma_duration = 30
 
 -- if true, a player in coma will not be able to open the main menu
 cfg.coma_disable_menu = true

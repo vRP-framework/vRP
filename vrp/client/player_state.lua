@@ -301,6 +301,10 @@ end
 
 PlayerState.event = {}
 
+function PlayerState.event:playerDeath()
+  self.state_ready = false
+end
+
 -- TUNNEL
 PlayerState.tunnel = {}
 
