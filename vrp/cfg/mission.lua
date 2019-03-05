@@ -1,6 +1,8 @@
 
 local cfg = {}
 
+cfg.default_display = true
+
 -- mission display css
 cfg.display_css = [[
 .div_mission{

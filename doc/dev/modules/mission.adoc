@@ -50,3 +50,9 @@ User:hasMission()
 ----
 self.cfg
 ----
+
+.Events
+[horizontal]
+`playerMissionStart(user)`:: called when the player start a mission (the mission data is attached to the player at the beginning of the call)
+`playerMissionStep(user)`:: called when the player start a new mission step
+`playerMissionStop(user)`:: called when the player stop the mission (the mission data is still attached to the player at the beginning of the call)

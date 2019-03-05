@@ -25,7 +25,9 @@ function Mission.User:startMission(mission)
   if #mission.steps > 0 then
     self.mission_step = 0
     self.mission = mission
-    vRP.EXT.GUI.remote._setDiv(self.source,"mission",vRP.EXT.Mission.cfg.display_css,"")
+
+    vRP:triggerEvent("playerMissionStart", self)
+
     self:nextMissionStep() -- do first step
   end
 end
@@ -43,8 +45,7 @@ function Mission.User:nextMissionStep()
       local radius, height = step.radius or 1, step.height or 1.5
       local ment = clone(step.map_entity) or {"PoI", {blip_id = 1, blip_color = 5, marker_id = 1, color = {255,226,0,125}, scale = {0.7*radius,0.7*radius,0.33*height}}}
 
-      -- display
-      vRP.EXT.GUI.remote._setDivContent(self.source,"mission",lang.mission.display({self.mission.name,self.mission_step-1,#self.mission.steps,step.text}))
+      vRP:triggerEvent("playerMissionStep", self)
 
       -- map entity/route
       ment[2].title = lang.mission.title({self.mission.name,self.mission_step,#self.mission.steps})
@@ -61,12 +62,13 @@ end
 -- stop the player mission
 function Mission.User:stopMission()
   if self.mission then
+    vRP.EXT.Map.remote._removeEntity(self.source,"vRP:mission")
+    self:removeArea("vRP:mission")
+
+    vRP:triggerEvent("playerMissionStop", self)
+
     self.mission_step = nil
     self.mission = nil
-
-    vRP.EXT.Map.remote._removeEntity(self.source,"vRP:mission")
-    vRP.EXT.GUI.remote._removeDiv(self.source,"mission")
-    self:removeArea("vRP:mission")
   end
 end
 
@@ -97,6 +99,25 @@ Mission.event = {}
 
 function Mission.event:characterUnload(user)
   user:stopMission()
+end
+
+function Mission.event:playerMissionStart(user)
+  if self.cfg.default_display then
+    vRP.EXT.GUI.remote._setDiv(user.source,"mission",self.cfg.display_css,"")
+  end
+end
+
+function Mission.event:playerMissionStep(user)
+  if self.cfg.default_display then
+    local step = user.mission.steps[user.mission_step]
+    vRP.EXT.GUI.remote._setDivContent(user.source,"mission",lang.mission.display({user.mission.name,user.mission_step-1,#user.mission.steps,step.text}))
+  end
+end
+
+function Mission.event:playerMissionStop(user)
+  if self.cfg.default_display then
+    vRP.EXT.GUI.remote._removeDiv(user.source, "mission")
+  end
 end
 
 vRP:registerExtension(Mission)
