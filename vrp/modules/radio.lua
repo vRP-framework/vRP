@@ -138,7 +138,7 @@ function Radio:__construct()
     end
 
     if ok then
-      menu:addOption(lang.radio.title(), m_radio)
+      menu:addOption(lang.radio.title(), m_radio, lang.radio.description())
     end
   end)
 end

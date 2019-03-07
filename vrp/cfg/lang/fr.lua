@@ -706,7 +706,8 @@ local lang = {
     }
   },
   radio = {
-    title = "Radio ON/OFF"
+    title = "Radio ON/OFF",
+    description = "Permet de parler avec [CHAT TEXTUEL EQUIPE] et diffuse un signal GPS quand elle est allumée."
   }
 }
 

@@ -706,7 +706,8 @@ local lang = {
     }
   },
   radio = {
-    title = "Radio ON/OFF"
+    title = "Radio ON/OFF",
+    description = "Allow to speak with [TEAM TEXT CHAT] and broadcast a GPS signal when ON."
   }
 }
 
