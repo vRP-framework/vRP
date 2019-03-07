@@ -12,7 +12,22 @@ endif::[]
 
 The admin module adds an administration (kick,ban...) menu and functions.
 
-== Menus
+== Extension
+
+=== Client
+
+[source,lua]
+----
+Admin:toggleNoclip()
+Admin:teleportToMarker()
+
+-- TUNNEL
+
+Admin.tunnel.toggleNoclip = Admin.toggleNoclip
+Admin.tunnel.teleportToMarker = Admin.teleportToMarker
+----
+
+== Menu
 
 === admin
 

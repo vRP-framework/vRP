@@ -214,6 +214,10 @@ local function menu_admin(self)
     vRP.EXT.Base.remote._teleport(user.source, coords[1] or 0, coords[2] or 0, coords[3] or 0)
   end
 
+  local function m_tptomarker(menu)
+    self.remote._teleportToMarker(menu.user.source)
+  end
+
   local function m_calladmin(menu)
     local user = menu.user
     local desc = user:prompt(lang.admin.call_admin.prompt(),"") or ""
@@ -260,6 +264,9 @@ local function menu_admin(self)
     end
     if user:hasPermission("player.list") then
       menu:addOption(lang.admin.users.title(), m_users)
+    end
+    if user:hasPermission("player.tpto") then
+      menu:addOption(lang.admin.tptomarker.title(), m_tptomarker)
     end
     if user:hasPermission("player.tpto") then
       menu:addOption(lang.admin.tptocoords.title(), m_tptocoords)

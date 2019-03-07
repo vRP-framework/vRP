@@ -45,6 +45,9 @@ local lang = {
       title = "TpToCoords",
       prompt = "Coords x,y,z: "
     },
+    tptomarker = {
+      title = "TpToMarker"
+    },
     noclip = {
       title = "Noclip"
     },

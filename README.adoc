@@ -65,7 +65,6 @@ eating:: https://freesound.org/people/ryanharding95/sounds/272440/
 
 .TODO list
 * handle weapon components
-* admin: tp to marker
 * props, NPC
 * parcel delivery basic mission
 * skinshop/character customization rework
