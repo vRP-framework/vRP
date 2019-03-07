@@ -11,12 +11,12 @@ local function menu_informer(self)
   local function m_buy(menu, id)
     local user = menu.user
 
-    local itemtr = vRP.EXT.ItemTransformer.transformers["vRP:cfg_hidden:"..id]
+    local tr = vRP.EXT.Transformer.transformers["vRP:cfg_hidden:"..id]
     local price = self.cfg.informer.infos[id]
 
-    if itemtr then
+    if tr then
       if user:tryPayment(price) then
-        vRP.EXT.Map.remote._setGPS(user.source, itemtr.cfg.x, itemtr.cfg.y) -- set gps marker
+        vRP.EXT.Map.remote._setGPS(user.source, tr.cfg.x, tr.cfg.y) -- set gps marker
         vRP.EXT.Base.remote._notify(user.source, lang.money.paid({price}))
         vRP.EXT.Base.remote._notify(user.source, lang.hidden_transformer.informer.bought())
       else
@@ -90,19 +90,17 @@ function HiddenTransformer:__construct()
       -- remove hidden transformer if needs respawn
       if os.time()-htr.timestamp >= self.cfg.hidden_transformer_duration*60 then
         htr.timestamp = os.time()
-        vRP.EXT.ItemTransformer:remove("vRP:cfg_hidden:"..id)
+        vRP.EXT.Transformer:remove("vRP:cfg_hidden:"..id)
 
         -- generate new position
         htr.position = cfg_htr.positions[math.random(1, #cfg_htr.positions)]
       end
 
       -- spawn if unspawned 
-      if not vRP.EXT.ItemTransformer.transformers["vRP:cfg_hidden:"..id] then
-        cfg_htr.def.x = htr.position[1]
-        cfg_htr.def.y = htr.position[2]
-        cfg_htr.def.z = htr.position[3]
+      if not vRP.EXT.Transformer.transformers["vRP:cfg_hidden:"..id] then
+        cfg_htr.def.position = htr.position
 
-        vRP.EXT.ItemTransformer:set("vRP:cfg_hidden:"..id, cfg_htr.def)
+        vRP.EXT.Transformer:set("vRP:cfg_hidden:"..id, cfg_htr.def)
       end
     end
 

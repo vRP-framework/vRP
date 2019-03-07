@@ -465,6 +465,51 @@ function Inventory:__construct()
   for id,v in pairs(cfg_items.items) do
     self:defineItem(id,v[1],v[2],v[3],v[4])
   end
+
+  -- transformer processor
+
+  vRP.EXT.Transformer:registerProcessor("items", function(user, reagents, data) -- on display
+    local info = ""
+    for fullid,amount in pairs(data) do
+      local citem = vRP.EXT.Inventory:computeItem(fullid)
+      if citem then
+        info = info.."<br />"..amount.." "..citem.name
+      end
+    end
+
+    return info
+  end, function(user, reagents, data) -- on check
+    local ok = true
+
+    if reagents then
+      for fullid,amount in pairs(data) do
+        ok = ok and (user:getItemAmount(fullid) >= amount)
+      end
+
+      if not ok then
+        vRP.EXT.Base.remote._notify(user.source, lang.transformer.not_enough_reagents())
+      end
+    else -- products
+      local new_weight = user:getInventoryWeight()+self:computeItemsWeight(data)
+      ok = (new_weight <= user:getInventoryMaxWeight())
+
+      if not ok then
+        vRP.EXT.Base.remote._notify(user.source, lang.inventory.full())
+      end
+    end
+
+    return ok
+  end, function(user, reagents, data) -- on process
+    if reagents then
+      for fullid,amount in pairs(data) do
+        user:tryTakeItem(fullid,amount)
+      end
+    else -- products
+      for fullid,amount in pairs(data) do
+        user:tryGiveItem(fullid,amount)
+      end
+    end
+  end)
 end
 
 -- define an inventory item (parametric or plain text data)

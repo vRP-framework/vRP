@@ -184,6 +184,38 @@ function Aptitude:__construct()
   vRP.EXT.GUI:registerMenuBuilder("main", function(menu)
     menu:addOption(lang.aptitude.title(), m_aptitude, lang.aptitude.description())
   end)
+
+  -- transformer processor
+
+  vRP.EXT.Transformer:registerProcessor("aptitudes", function(user, reagents, data) -- on display
+    local info = ""
+
+    if not reagents then
+      for apt,exp in pairs(data) do
+        local parts = splitString(apt,".")
+        if #parts == 2 then
+          local def = self:getAptitude(parts[1],parts[2])
+          if def then
+            info = info.."<br />[EXP] "..exp.." "..self:getGroupTitle(parts[1]).."/"..def[1]
+          end
+        end
+      end
+    end
+
+    return info
+  end, function(user, reagents, data) -- on check
+    return true
+  end, function(user, reagents, data) -- on process
+    if not reagents then
+      -- give exp
+      for apt,amount in pairs(data) do
+        local parts = splitString(apt,".")
+        if #parts == 2 then
+          user:varyExp(parts[1],parts[2],amount)
+        end
+      end
+    end
+  end)
 end
 
 -- define aptitude group

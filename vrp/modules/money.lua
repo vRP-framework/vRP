@@ -222,6 +222,38 @@ function Money:__construct()
   vRP.EXT.GUI:registerMenuBuilder("main", function(menu)
     menu:addOption(lang.money.give.title(), m_give, lang.money.give.description())
   end)
+
+  -- transformer processor
+
+  vRP.EXT.Transformer:registerProcessor("money", function(user, reagents, data) -- on display
+    local info = ""
+
+    if reagents then
+      if data > 0 then info = info.."<br />- "..data.." $" end
+    else -- products
+      if data > 0 then info = info.."<br />+ "..data.." $" end
+    end
+
+    return info
+  end, function(user, reagents, data) -- on check
+    local ok = true
+
+    if reagents then
+      ok = (data > 0 and user:getWallet() >= data)
+
+      if not ok then
+        vRP.EXT.Base.remote._notify(user.source, lang.money.not_enough())
+      end
+    end
+
+    return ok
+  end, function(user, reagents, data) -- on process
+    if reagents then
+      if data > 0 then user:tryPayment(data) end
+    else -- products
+      if data > 0 then user:giveWallet(data) end
+    end
+  end)
 end
 
 -- EVENT

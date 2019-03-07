@@ -6,20 +6,20 @@ local cfg = {}
 cfg.hidden_transformers = {
   ["Weed field"] = {
     def = {
-      name="Weed field", -- menu name
-      r=0,g=200,b=0, -- color
+      title="Weed field", -- menu name
+      color={0,200,0}, -- color
       max_units=500,
       units_per_minute=10,
-      x=0,y=0,z=0, -- pos
+      position={0,0,0}
       radius=10, height=1.8, -- area
       recipes = {
         ["Harvest"] = { -- action name
           description="Harvest weed.", -- action description
-          in_money=0, -- money taken per unit
-          out_money=0, -- money earned per unit
           reagents={}, -- items taken per unit
           products={ -- items given per unit
-            ["weed"] = 10
+            items = {
+              ["weed"] = 10
+            }
           }
         }
       }
@@ -32,23 +32,25 @@ cfg.hidden_transformers = {
   },
   ["Weed processing"] = {
     def = {
-      name="Weed processing", -- menu name
-      r=0,g=200,b=0, -- color
+      title="Weed processing", -- menu name
+      color={0,200,0}, -- color
       max_units=1000,
       units_per_minute=1000,
-      x=0,y=0,z=0, -- pos
+      position={0,0,0},
       radius=8, height=1.8, -- area
       recipes = {
         ["Process"] = { -- action name
           description="Process weed.", -- action description
-          in_money=0, -- money taken per unit
-          out_money=0, -- money earned per unit
           reagents={
-            ["weed"] = 2,
-            ["demineralized_water"] = 1
+            items = {
+              ["weed"] = 2,
+              ["demineralized_water"] = 1
+            }
           }, -- items taken per unit
           products={ -- items given per unit
-            ["weed_processed"] = 1
+            items = {
+              ["weed_processed"] = 1
+            }
           }
         }
       },
@@ -64,22 +66,24 @@ cfg.hidden_transformers = {
   },
   ["Weed resale"] = {
     def = {
-      name="Weed resale", -- menu name
-      r=0,g=200,b=0, -- color
+      title="Weed resale", -- menu name
+      color={0,200,0}, -- color
       max_units=1000,
       units_per_minute=1000,
-      x=0,y=0,z=0, -- pos
+      position={0,0,0}, -- pos
       radius=5, height=1.8, -- area
       recipes = {
         ["Sell"] = { -- action name
           description="Sell processed weed.", -- action description
-          in_money=0, -- money taken per unit
-          out_money=0, -- money earned per unit
           reagents={
-            ["weed_processed"] = 10
+            items = {
+              ["weed_processed"] = 10
+            }
           }, -- items taken per unit
           products={ -- items given per unit
-            ["dirty_money"] = 5000
+            items = {
+              ["dirty_money"] = 5000
+            }
           }
         }
       }
