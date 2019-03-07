@@ -84,3 +84,9 @@ op:: >x, <x, x (equal) level
 .Example
 [horizontal]
 `!aptitude.physical.strength.>3`:: strength level superior to 3
+
+== Menu
+
+=== aptitudes
+
+Aptitudes display menu.

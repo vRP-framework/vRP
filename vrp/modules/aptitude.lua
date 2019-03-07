@@ -98,6 +98,35 @@ function Aptitude.User:setExp(group, aptitude, amount)
   self:varyExp(group, aptitude, amount-exp)
 end
 
+-- PRIVATE METHODS
+
+-- menu: aptitudes
+local function menu_aptitudes(self)
+  vRP.EXT.GUI:registerMenuBuilder("aptitudes", function(menu)
+    local user = menu.user
+    menu.title = lang.aptitude.title()
+    menu.css.header_color = "rgba(0,125,255,0.75)"
+
+    local aptitudes = user:getAptitudes()
+    for k,v in pairs(aptitudes) do -- each group
+      local content = ""
+
+      for l,w in pairs(v) do -- each aptitude
+        local def = self:getAptitude(k,l)
+        if def then
+          -- display aptitude
+          local exp = aptitudes[k][l]
+          local flvl = self:expToLevel(exp)
+          local lvl = math.floor(flvl)
+          local percent = math.floor((flvl-lvl)*100)
+          content = content.."<div style=\"width: 500px; height: 25px; margin-bottom: 3px;\" class=\"dprogressbar\" data-value=\""..(percent/100).."\" data-color=\"rgba(0,125,255,0.7)\" data-bgcolor=\"rgba(0,125,255,0.3)\">"..lang.aptitude.display.aptitude({def[1], exp, lvl, percent}).."</div>"
+        end
+      end
+
+      menu:addOption(lang.aptitude.display.group({self:getGroupTitle(k)}), nil, content)
+    end
+  end)
+end
 
 -- METHODS
 
@@ -146,61 +175,14 @@ function Aptitude:__construct()
 
   -- menu
 
-  local m_aptitude_css = [[
-.div_user_aptitudes{
-margin: auto;
-padding: 8px;
-width: 500px;
-margin-top: 80px;
-background: black;
-color: white;
-font-weight: bold;
-}
-
-.div_user_aptitudes .dprogressbar{
-width: 100%;
-height: 20px;
-}
-  ]]
-
-  local function m_aptitude_close(menu)
-    vRP.EXT.GUI.remote._removeDiv(menu.user.source, "user_aptitudes")
-    menu.aptitudes_opened = nil
-  end
+  menu_aptitudes(self)
 
   local function m_aptitude(menu)
-    local user = menu.user
-
-    -- display aptitudes
-    if menu.aptitudes_opened then -- hide
-      m_aptitude_close(menu)
-    else -- show
-      local content = ""
-      local aptitudes = user:getAptitudes()
-      for k,v in pairs(aptitudes) do
-        -- display group
-        content = content..lang.aptitude.display.group({self:getGroupTitle(k)}).."<br />"
-        for l,w in pairs(v) do
-          local def = self:getAptitude(k,l)
-          if def then
-            -- display aptitude
-            local exp = aptitudes[k][l]
-            local flvl = self:expToLevel(exp)
-            local lvl = math.floor(flvl)
-            local percent = math.floor((flvl-lvl)*100)
-            content = content.."<div class=\"dprogressbar\" data-value=\""..(percent/100).."\" data-color=\"rgba(0,125,255,0.7)\" data-bgcolor=\"rgba(0,125,255,0.3)\">"..lang.aptitude.display.aptitude({def[1], exp, lvl, percent}).."</div>"
-          end
-        end
-      end
-
-      vRP.EXT.GUI.remote._setDiv(user.source,"user_aptitudes",m_aptitude_css, content)
-      menu.aptitudes_opened = true
-    end
+    menu.user:openMenu("aptitudes")
   end
 
   vRP.EXT.GUI:registerMenuBuilder("main", function(menu)
     menu:addOption(lang.aptitude.title(), m_aptitude, lang.aptitude.description())
-    menu:listen("close", m_aptitude_close)
   end)
 end
 

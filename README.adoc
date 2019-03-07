@@ -72,7 +72,6 @@ eating:: https://freesound.org/people/ryanharding95/sounds/272440/
 ** advanced features (beard, head/face, etc)
 * add more sound effects
 ** handcuff
-* aptitudes as menu ?
 * coma emergency ped awareness
 * citizenship, government
 * item transformer reagents/products rework
