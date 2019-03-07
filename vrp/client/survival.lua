@@ -8,7 +8,7 @@ function Survival:__construct()
   vRP.Extension.__construct(self)
 
   self.in_coma = false -- flag
-  self.coma_left = vRP.cfg.coma_duration*60 -- seconds
+  self.coma_left = vRP.cfg.coma_max_duration*60 -- seconds
 
   self.luang = Luang()
   self.lang = self.luang.lang
@@ -111,7 +111,7 @@ function Survival:__construct()
           end
 
           SetTimeout(5000, function()  -- able to be in coma again after coma death after 5 seconds
-            self.coma_left = vRP.cfg.coma_duration*60
+            self.coma_left = vRP.cfg.coma_max_duration*60
           end)
 
           vRP:triggerEvent("playerComaState", self.in_coma)
@@ -145,7 +145,10 @@ function Survival:__construct()
     while true do
       Citizen.Wait(0)
       -- coma controls
-      if IsControlJustPressed(table.unpack(vRP.cfg.controls.survival.leave_coma)) then self:killComa() end
+      if IsControlJustPressed(table.unpack(vRP.cfg.controls.survival.leave_coma))
+        and self.coma_left <= (vRP.cfg.coma_max_duration-vRP.cfg.coma_min_duration)*60 then -- min check
+        self:killComa()
+      end
     end
   end)
 end
@@ -210,7 +213,7 @@ function Survival.event:playerComaState(coma)
   -- display
 
   if coma then
-    vRP.EXT.GUI:setDiv("coma_display", coma_css, self.lang.coma_display({self.coma_left}))
+    vRP.EXT.GUI:setDiv("coma_display", coma_css, self.lang.coma_display({vRP.cfg.coma_min_duration*60, self.coma_left}))
   else
     vRP.EXT.GUI:removeDiv("coma_display")
   end

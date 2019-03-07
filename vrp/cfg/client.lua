@@ -53,8 +53,12 @@ cfg.handcuff_disable_menu = true
 -- set to 0 to disable coma
 cfg.coma_threshold = 120
 
+-- minimum duration of the coma in minutes (can be 0)
+cfg.coma_min_duration = 1
+
 -- maximum duration of the coma in minutes
-cfg.coma_duration = 30
+cfg.coma_max_duration = 30
+
 
 -- if true, a player in coma will not be able to open the main menu
 cfg.coma_disable_menu = true

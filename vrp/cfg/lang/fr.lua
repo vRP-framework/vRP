@@ -214,7 +214,7 @@ local lang = {
   survival = {
     starving = "Affamé",
     thirsty = "Assoiffé",
-    coma_display = [[Vous êtes dans le coma, vous pouvez abandonner et mourir <span class="key">[SAUTER]</span> ou attendre de l'aide.<br /> <span class="countdown" data-duration="{1}"></span> restante(s).]]
+    coma_display = [[Vous êtes dans le coma, vous pouvez abandonner et mourir <span class="key">[SAUTER]</span> ou attendre de l'aide (min <span class="countdown" data-duration="{1}"></span>).<br /> <span class="countdown" data-duration="{2}"></span> restante(s).]]
   },
   money = {
     display = "{1} <span class=\"symbol\">$</span>",
