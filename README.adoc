@@ -73,7 +73,6 @@ eating:: https://freesound.org/people/ryanharding95/sounds/272440/
 ** handcuff
 * coma emergency ped awareness
 * citizenship, government
-* edible consume action delay
 
 .vRP 2 dev' phases
 * refactoring (done)

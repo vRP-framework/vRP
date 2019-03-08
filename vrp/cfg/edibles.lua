@@ -1,6 +1,8 @@
 
 local cfg = {}
 
+cfg.action_delay = 5 -- seconds, delay between two edible consume actions
+
 cfg.solid_sound = "sounds/eating.ogg"
 cfg.liquid_sound = "sounds/drinking.ogg"
 

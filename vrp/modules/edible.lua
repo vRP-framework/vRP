@@ -1,8 +1,17 @@
 if not vRP.modules.edible then return end
 
 local lang = vRP.lang
+local ActionDelay = module("vrp", "lib/ActionDelay")
 
 local Edible = class("Edible", vRP.Extension)
+
+-- SUBCLASS
+
+Edible.User = class("User")
+
+function Edible.User:__construct()
+  self.edible_action = ActionDelay()
+end
 
 -- PRIVATE METHODS
 
@@ -35,24 +44,28 @@ local function define_items(self)
 
     -- consume
     if user:tryTakeItem(fullid, 1, nil, true) then
-      -- menu update
-      local namount = user:getItemAmount(fullid)
-      if namount > 0 then
-        user:actualizeMenu()
-      else
-        user:closeMenu(menu)
-      end
-
-      -- on_consume
-      etype[2](user, edible)
-
-      -- effects
-      for id, value in pairs(edible.effects) do
-        local effect = self.effects[id]
-        if effect then
-          -- on_effect
-          effect(user, value)
+      if user.edible_action:perform(self.cfg.action_delay) then
+        -- menu update
+        local namount = user:getItemAmount(fullid)
+        if namount > 0 then
+          user:actualizeMenu()
+        else
+          user:closeMenu(menu)
         end
+
+        -- on_consume
+        etype[2](user, edible)
+
+        -- effects
+        for id, value in pairs(edible.effects) do
+          local effect = self.effects[id]
+          if effect then
+            -- on_effect
+            effect(user, value)
+          end
+        end
+      else
+        vRP.EXT.Base.remote._notify(user.source, lang.common.must_wait({user.edible_action:remaining()}))
       end
     end
   end
