@@ -10,7 +10,7 @@ cfg.hidden_transformers = {
       color={0,200,0}, -- color
       max_units=500,
       units_per_minute=10,
-      position={0,0,0}
+      position={0,0,0},
       radius=10, height=1.8, -- area
       recipes = {
         ["Harvest"] = { -- action name

@@ -225,21 +225,23 @@ function Money:__construct()
 
   -- transformer processor
 
-  vRP.EXT.Transformer:registerProcessor("money", function(user, reagents, data) -- on display
-    local info = ""
+  vRP.EXT.Transformer:registerProcessor("money", function(user, reagents, products) -- on display
+    local r_info, p_info = "", ""
 
     if reagents then
-      if data > 0 then info = info.."<br />- "..data.." $" end
-    else -- products
-      if data > 0 then info = info.."<br />+ "..data.." $" end
+      if reagents > 0 then r_info = r_info..lang.money.transformer_recipe({reagents}) end
     end
 
-    return info
-  end, function(user, reagents, data) -- on check
+    if products then
+      if products > 0 then p_info = p_info..lang.money.transformer_recipe({products}) end
+    end
+
+    return r_info, p_info
+  end, function(user, reagents, products) -- on check
     local ok = true
 
     if reagents then
-      ok = (data > 0 and user:getWallet() >= data)
+      ok = (reagents > 0 and user:getWallet() >= reagents)
 
       if not ok then
         vRP.EXT.Base.remote._notify(user.source, lang.money.not_enough())
@@ -247,11 +249,13 @@ function Money:__construct()
     end
 
     return ok
-  end, function(user, reagents, data) -- on process
+  end, function(user, reagents, products) -- on process
     if reagents then
-      if data > 0 then user:tryPayment(data) end
-    else -- products
-      if data > 0 then user:giveWallet(data) end
+      if reagents > 0 then user:tryPayment(reagents) end
+    end
+
+    if products then
+      if products > 0 then user:giveWallet(products) end
     end
   end)
 end

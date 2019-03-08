@@ -90,3 +90,17 @@ op:: >x, <x, x (equal) level
 === aptitudes
 
 Aptitudes display menu.
+
+== Transformer processor
+
+Produce experience in transformers.
+
+`aptitudes` (products only):: map of `group.aptitude` => amount of experience
+
+.Example
+----
+...
+aptitudes = {
+  ["physical.strength"] = 1
+}
+----

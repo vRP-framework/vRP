@@ -468,29 +468,46 @@ function Inventory:__construct()
 
   -- transformer processor
 
-  vRP.EXT.Transformer:registerProcessor("items", function(user, reagents, data) -- on display
-    local info = ""
-    for fullid,amount in pairs(data) do
-      local citem = vRP.EXT.Inventory:computeItem(fullid)
-      if citem then
-        info = info.."<br />"..amount.." "..citem.name
+  vRP.EXT.Transformer:registerProcessor("items", function(user, reagents, products) -- on display
+    local r_info = ""
+    if reagents then
+      for fullid,amount in pairs(reagents) do
+        local citem = vRP.EXT.Inventory:computeItem(fullid)
+        if citem then
+          r_info = r_info..lang.inventory.transformer_recipe({citem.name, amount})
+        end
       end
     end
 
-    return info
-  end, function(user, reagents, data) -- on check
+    local p_info = ""
+
+    if products then
+      for fullid,amount in pairs(products) do
+        local citem = vRP.EXT.Inventory:computeItem(fullid)
+        if citem then
+          p_info = p_info..lang.inventory.transformer_recipe({citem.name, amount})
+        end
+      end
+    end
+
+    return r_info, p_info
+  end, function(user, reagents, products) -- on check
     local ok = true
 
     if reagents then
-      for fullid,amount in pairs(data) do
+      for fullid,amount in pairs(reagents) do
         ok = ok and (user:getItemAmount(fullid) >= amount)
-      end
 
-      if not ok then
-        vRP.EXT.Base.remote._notify(user.source, lang.transformer.not_enough_reagents())
+        if not ok then
+          local citem = self:computeItem(fullid)
+          vRP.EXT.Base.remote._notify(user.source, lang.inventory.missing({citem.name, amount-user:getItemAmount(fullid)}))
+          break
+        end
       end
-    else -- products
-      local new_weight = user:getInventoryWeight()+self:computeItemsWeight(data)
+    end
+
+    if ok and products then
+      local new_weight = user:getInventoryWeight()-self:computeItemsWeight(reagents or {})+self:computeItemsWeight(products)
       ok = (new_weight <= user:getInventoryMaxWeight())
 
       if not ok then
@@ -501,11 +518,13 @@ function Inventory:__construct()
     return ok
   end, function(user, reagents, data) -- on process
     if reagents then
-      for fullid,amount in pairs(data) do
+      for fullid,amount in pairs(reagents) do
         user:tryTakeItem(fullid,amount)
       end
-    else -- products
-      for fullid,amount in pairs(data) do
+    end
+
+    if products then
+      for fullid,amount in pairs(products) do
         user:tryGiveItem(fullid,amount)
       end
     end

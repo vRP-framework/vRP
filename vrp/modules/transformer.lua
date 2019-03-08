@@ -5,7 +5,7 @@ local lang = vRP.lang
 -- this module define a generic system to transform (generate, process, convert) items/money/etc to items/money/etc in a specific area
 -- each transformer can take things to generate other things, using a unit of work
 -- units are generated periodically at a specific rate
--- reagents => products (reagents can be nothing for an harvest transformer)
+-- reagents => products (ex: reagents can be nothing for an harvest transformer)
 
 -- Transformer
 
@@ -27,7 +27,7 @@ function TransformerDef:unbindUser(user)
     vRP.EXT.GUI.remote._removeProgressBar(user.source,"vRP:transformer:"..self.id)
 
     -- onstop
-    if self.cfg.onstop then self.cfg.onstop(user, recipe_name) end
+    if self.cfg.onstop then self.cfg.onstop(self, user, recipe_name) end
   end
 end
 
@@ -39,7 +39,7 @@ function TransformerDef:bindUser(user, recipe_name)
   vRP.EXT.GUI.remote._setProgressBar(user.source,"vRP:transformer:"..self.id,"center",recipe_name.."...",r,g,b,0)
 
   -- onstart
-  if self.cfg.onstart then self.cfg.onstart(user,recipe_name) end
+  if self.cfg.onstart then self.cfg.onstart(self,user,recipe_name) end
 end
 
 function TransformerDef:unbindAll()
@@ -58,11 +58,11 @@ function TransformerDef:tick()
     if self.units > 0 and recipe then -- check units
       local ok = true
 
-      -- check reagents
-      for id, data in pairs(recipe.reagents) do
-        local processor = processors[id]
-        if processor then
-          local p_ok = processor[2](user, true, data)
+      -- check
+      for id, processor in pairs(processors) do
+        local reagents, products = recipe.reagents[id], recipe.products[id]
+        if reagents ~= nil or products ~= nil then
+          local p_ok = processor[2](user, reagents, products)
           if not p_ok then
             ok = false
             break
@@ -70,41 +70,19 @@ function TransformerDef:tick()
         end
       end
 
-      -- check products
-      if ok then
-        for id, data in pairs(recipe.products) do
-          local processor = processors[id]
-          if processor then
-            local p_ok = processor[2](user, false, data)
-            if not p_ok then
-              ok = false
-              break
-            end
-          end
-        end
-      end
-
       if ok then -- do transformation
         self.units = self.units-1 -- sub work unit
 
-        -- consume reagents
-        for id, data in pairs(recipe.reagents) do
-          local processor = processors[id]
-          if processor then
-            processor[3](user, true, data)
-          end
-        end
-
-        -- produce products
-        for id, data in pairs(recipe.products) do
-          local processor = processors[id]
-          if processor then
-            processor[3](user, false, data)
+        -- process
+        for id, processor in pairs(processors) do
+          local reagents, products = recipe.reagents[id], recipe.products[id]
+          if reagents ~= nil or products ~= nil then
+            processor[3](user, reagents, products)
           end
         end
 
         -- onstep
-        if self.cfg.onstep then self.cfg.onstep(user, self, recipe_name) end
+        if self.cfg.onstep then self.cfg.onstep(self, user, recipe_name) end
       end
     end
   end
@@ -116,7 +94,7 @@ function TransformerDef:tick()
     if self.units > 0 then -- display units left
       vRP.EXT.GUI.remote._setProgressBarText(user.source,"vRP:transformer:"..self.id, recipe_name.."... "..self.units.."/"..self.cfg.max_units)
     else
-      vRP.EXT.GUI.remote._setProgressBarText(user.source,"vRP:transformer:"..self.id, lang.transformer.empty())
+      vRP.EXT.GUI.remote._setProgressBarText(user.source,"vRP:transformer:"..self.id, lang.transformer.empty_bar())
     end
   end
 end
@@ -155,29 +133,22 @@ local function menu_transformer(self)
     -- add recipes
     for recipe_name,recipe in pairs(tr.cfg.recipes) do
       if user:hasPermissions(recipe.permissions or {}) then
+        local r_info, p_info = "", ""
+
         -- compute info
 
-        --- reagents
-        local info = "<div class=\"transformer_recipe\">"
-
-        for id, data in pairs(recipe.reagents) do
-          local processor = self.processors[id]
-          if processor then
-            info = info..processor[1](user, true, data)
+        for id, processor in pairs(self.processors) do
+          local reagents, products = recipe.reagents[id], recipe.products[id]
+          if reagents ~= nil or products ~= nil then
+            local r, p = processor[1](user, reagents, products)
+            r_info = r_info..r
+            p_info = p_info..p
           end
         end
 
-        info = info.."<div class=\"separator\" style=\"color: rgb(0,255,125)\">=></div>"
+        local info = lang.transformer.recipe_description({recipe.description, r_info, p_info})
 
-        --- products
-        for id, data in pairs(recipe.products) do
-          local processor = self.processors[id]
-          if processor then
-            info = info..processor[1](user, false, data)
-          end
-        end
-
-        menu:addOption(recipe_name, m_recipe, recipe.description..info.."</div>", recipe_name)
+        menu:addOption(recipe_name, m_recipe, info, recipe_name)
       end
     end
   end)
@@ -247,12 +218,12 @@ function Transformer:__construct()
 end
 
 -- register a transformer processor
--- on_display(user, reagents, data): should return html string to display info about the data
--- on_check(user, reagents, data): should return true if the processing can occur
--- on_process(user, reagents, data): should process the data
+-- on_display(user, reagents, products): should return r_info, p_info (two html strings to display info about the reagents and products)
+-- on_check(user, reagents, products): should return true if the processing can occur
+-- on_process(user, reagents, products): should process the transformation
 -- for the three callbacks:
---- reagents: boolean, true if reagents, false if products
---- data: processor data
+--- reagents: reagents data, can be nil
+--- products: products data, can be nil
 function Transformer:registerProcessor(id, on_display, on_check, on_process)
   self.processors[id] = {on_display, on_check, on_process}
 end

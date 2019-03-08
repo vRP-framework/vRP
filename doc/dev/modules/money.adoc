@@ -81,3 +81,15 @@ Money packed as item.
 === money_binder
 
 Used to pack an amount of wallet money into money item.
+
+== Transformer processor
+
+Consume and produce money in transformers.
+
+`money`:: amount
+
+.Example
+----
+...
+money = 200
+----

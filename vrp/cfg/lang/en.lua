@@ -226,7 +226,8 @@ local lang = {
       title = "Give money",
       description = "Give money to the nearest player.",
       prompt = "Amount to give:"
-    }
+    },
+    transformer_recipe = "{1} $<br />"
   },
   inventory = {
     title = "Inventory",
@@ -260,7 +261,8 @@ local lang = {
         title = "Put",
         prompt = "Amount to put (max {1}):"
       }
-    }
+    },
+    transformer_recipe = "{2} {1}<br />"
   },
   atm = {
     title = "ATM",
@@ -675,9 +677,9 @@ local lang = {
       title = "> Undress"
     }
   },
-  item_transformer = {
-    not_enough_reagents = "~r~Not enough reagents.",
-    empty = "empty"
+  transformer = {
+    recipe_description = [[{1}<br /><br />{2}<div style="color: rgb(0,255,125)">=></div>{3}]],
+    empty_bar = "empty"
   },
   hidden_transformer = {
     informer = {
@@ -703,7 +705,8 @@ local lang = {
     display = {
       group = "{1}",
       aptitude = "{1} LVL {3} EXP {2}"
-    }
+    },
+    transformer_recipe = "[EXP] {3} {1}/{2}<br />"
   },
   radio = {
     title = "Radio ON/OFF",

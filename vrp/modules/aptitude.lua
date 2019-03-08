@@ -187,28 +187,28 @@ function Aptitude:__construct()
 
   -- transformer processor
 
-  vRP.EXT.Transformer:registerProcessor("aptitudes", function(user, reagents, data) -- on display
-    local info = ""
+  vRP.EXT.Transformer:registerProcessor("aptitudes", function(user, reagents, products) -- on display
+    local r_info, p_info = "", ""
 
-    if not reagents then
-      for apt,exp in pairs(data) do
+    if products then
+      for apt,exp in pairs(products) do
         local parts = splitString(apt,".")
         if #parts == 2 then
           local def = self:getAptitude(parts[1],parts[2])
           if def then
-            info = info.."<br />[EXP] "..exp.." "..self:getGroupTitle(parts[1]).."/"..def[1]
+            p_info = p_info..lang.aptitude.transformer_recipe({self:getGroupTitle(parts[1]), def[1], exp})
           end
         end
       end
     end
 
-    return info
-  end, function(user, reagents, data) -- on check
+    return r_info, p_info
+  end, function(user, reagents, products) -- on check
     return true
-  end, function(user, reagents, data) -- on process
-    if not reagents then
+  end, function(user, reagents, products) -- on process
+    if products then
       -- give exp
-      for apt,amount in pairs(data) do
+      for apt,amount in pairs(products) do
         local parts = splitString(apt,".")
         if #parts == 2 then
           user:varyExp(parts[1],parts[2],amount)

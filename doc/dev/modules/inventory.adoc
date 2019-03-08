@@ -146,3 +146,17 @@ op:: >x, <x, x (equal) amount
 [horizontal]
 `!item.edible|tacos.>0`:: one or more tacos
 `!item.dirty_money.0`:: no dirty money
+
+== Transformer processor
+
+Consume and produce items in transformers.
+
+`items`:: map of item fullid => amount
+
+.Example
+----
+...
+items = {
+  ["edible|peach"] = 1
+}
+----
