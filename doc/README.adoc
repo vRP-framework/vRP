@@ -84,7 +84,7 @@ This way, you will know when config files should be updated and what exactly has
 When submitting an issue, add any information you can find, with all details. Saying that something doesn't work is almost useless and will probably not be enough to solve the issue.
 If you have errors in your console BEFORE the issue happens, things could be corrupted, so the error is probably irrelevant. You should solve all unrelated errors before submitting issues.
 
-WARNING: The issue section is only for bug reports and feature requests. Issues not related to the core of vRP, about old verions (no backwards update) or vRP modifications will be closed without warning.
+WARNING: The issue section is only for bug reports and feature requests. Issues not related to the core of vRP, about old versions (no backwards update) or vRP modifications will be closed without warning.
 
 NOTE: For questions, help, discussions around the project, please go instead on the vRP thread of the FiveM forum here: https://forum.fivem.net/t/release-vrp-framework/22894
 
