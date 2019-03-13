@@ -74,13 +74,17 @@ PlayerState:getDrawables(part)
 PlayerState:getDrawableTextures(part,drawable)
 
 -- get player skin customization
--- return custom {.modelhash, ...}
---- index keys: ped component => {drawable,texture,palette}
---- "pX" keys: props => {prop_index, prop_texture}
+-- return custom parts
 PlayerState:getCustomization()
 
 -- set partial customization (only what is set is changed)
--- custom: indexed {drawable,texture,palette} components or props (p0...) {prop_index, prop_texture} plus .modelhash or .model
+-- custom: indexed customization parts ("foo:arg1:arg2...")
+--- "modelhash": number, model hash
+--- or "model": string, model name
+--- "drawable:<index>": {drawable,texture,palette} ped components
+--- "prop:<index>": {prop_index, prop_texture}
+--- "hair_color": {primary, secondary}
+--- "overlay:<index>": {overlay_index, primary color, secondary color, opacity}
 PlayerState:setCustomization(custom) 
 
 -- TUNNEL

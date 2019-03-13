@@ -669,7 +669,10 @@ local lang = {
     model = "Model",
     texture = "Texture",
     palette = "Palette",
-    select_description = "{1}/{2} (left/right to select)",
+    color_primary = "Primary color",
+    color_secondary = "Secondary color",
+    opacity = "Opacity",
+    select_description = "{1}/{2} (left/right to select)"
   },
   cloakroom = {
     title = "Cloakroom ({1})",

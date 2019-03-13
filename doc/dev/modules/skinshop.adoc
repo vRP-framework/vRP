@@ -19,10 +19,6 @@ This module adds skin shops.
 [source,lua]
 ----
 self.cfg
-
--- parse part key (a ped part or a prop part)
--- return is_proppart, index
-SkinShop.parsePart(key)
 ----
 
 == Menu

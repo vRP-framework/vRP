@@ -21,42 +21,42 @@ cfg.cloakroom_types = {
   ["police"] = {
     _config = { permissions = {"police.cloakroom"}, map_entity = {"PoI", {marker_id = 1}} },
     ["Male uniform"] = {
-      [3] = {30,0},
-      [4] = {25,2},
-      [6] = {24,0},
-      [8] = {58,0},
-      [11] = {55,0},
-      ["p2"] = {2,0}
+      ["drawable:3"] = {30,0},
+      ["drawable:4"] = {25,2},
+      ["drawable:6"] = {24,0},
+      ["drawable:8"] = {58,0},
+      ["drawable:11"] = {55,0},
+      ["prop:2"] = {2,0}
     },
     ["Female uniform"] = {
-      [3] = {35,0},
-      [4] = {30,0},
-      [6] = {24,0},
-      [8] = {6,0},
-      [11] = {48,0},
-      ["p2"] = {2,0}
+      ["drawable:3"] = {35,0},
+      ["drawable:4"] = {30,0},
+      ["drawable:6"] = {24,0},
+      ["drawable:8"] = {6,0},
+      ["drawable:11"] = {48,0},
+      ["prop:2"] = {2,0}
     }
   },
   ["emergency"] = {
     _config = { permissions = {"emergency.cloakroom"}, map_entity = {"PoI", {marker_id = 1}} },
     ["Male uniform"] = {
-      [3] = {81,0},
-      [4] = {0,0},
-      [8] = {15,0},
-      [6] = {42,0},
-      [11] = {26,0},
-      ["p0"] = {6,1},
-      ["p6"] = {12,1}
+      ["drawable:3"] = {81,0},
+      ["drawable:4"] = {0,0},
+      ["drawable:8"] = {15,0},
+      ["drawable:6"] = {42,0},
+      ["drawable:11"] = {26,0},
+      ["prop:0"] = {6,1},
+      ["prop:6"] = {12,1}
     }
   },
   ["jail"] = {
     _config = { map_entity = {"PoI", {marker_id = 1}} },
     ["Male suit"] = {
-      [3] = {5,0},
-      [4] = {7,15},
-      [8] = {5,0},
-      [6] = {12,6},
-      [11] = {5,0}
+      ["drawable:3"] = {5,0},
+      ["drawable:4"] = {7,15},
+      ["drawable:8"] = {5,0},
+      ["drawable:6"] = {12,6},
+      ["drawable:11"] = {5,0}
     }
   },
   ["surgery"] = {

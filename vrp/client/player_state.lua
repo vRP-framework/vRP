@@ -167,6 +167,9 @@ end
 
 -- PLAYER CUSTOMIZATION
 
+local hair_color = {0,0}
+local ped_overlays = {}
+
 -- get number of drawables for a specific part
 function PlayerState:getDrawables(part)
   local args = splitString(part, ":")
@@ -176,6 +179,8 @@ function PlayerState:getDrawables(part)
     return GetNumberOfPedPropDrawableVariations(GetPlayerPed(-1),index)
   elseif args[1] == "drawable" then
     return GetNumberOfPedDrawableVariations(GetPlayerPed(-1),index)
+  elseif args[1] == "overlay" then
+    return GetNumHeadOverlayValues(index)
   end
 end
 
@@ -210,6 +215,12 @@ function PlayerState:getCustomization()
     custom["prop:"..i] = {GetPedPropIndex(ped,i), math.max(GetPedPropTextureIndex(ped,i),0)}
   end
 
+  custom.hair_color = hair_color
+
+  for index, overlay in pairs(ped_overlays) do
+    custom["overlay:"..index] = overlay
+  end
+
   return custom
 end
 
@@ -219,6 +230,8 @@ end
 --- or "model": string, model name
 --- "drawable:<index>": {drawable,texture,palette} ped components
 --- "prop:<index>": {prop_index, prop_texture}
+--- "hair_color": {primary, secondary}
+--- "overlay:<index>": {overlay_index, primary color, secondary color, opacity}
 function PlayerState:setCustomization(custom) 
   local r = async()
 
@@ -265,12 +278,10 @@ function PlayerState:setCustomization(custom)
       ped = GetPlayerPed(-1)
 
       -- face blend data
-      local face = custom["drawable:0"]
-      if face then
-        SetPedHeadBlendData(ped, face[1], face[1], 0, face[1], face[1], 0, 0.5, 0.5, 0.0, false)
-      end
+      local face = (custom["drawable:0"] and custom["drawable:0"][1]) or GetPedDrawableVariation(ped,0)
+      SetPedHeadBlendData(ped, face, face, 0, face, face, 0, 0.5, 0.5, 0.0, false)
 
-      -- parts
+      -- drawable, prop, overlay
       for k,v in pairs(custom) do
         local args = splitString(k, ":")
         local index = parseInt(args[2])
@@ -283,7 +294,23 @@ function PlayerState:setCustomization(custom)
           end
         elseif args[1] == "drawable" then
           SetPedComponentVariation(ped,index,v[1],v[2],v[3] or 2)
+        elseif args[1] == "overlay" then
+          local ctype = 0
+          if index == 1 or index == 2 or index == 10 then ctype = 1
+          elseif index == 5 or index == 8 then ctype = 2 end
+
+          local overlay = {v[1], v[2] or 0, v[3] or 0, v[4] or 1.0}
+          ped_overlays[index] = overlay
+
+          SetPedHeadOverlay(ped, index, overlay[1], overlay[4])
+          SetPedHeadOverlayColor(ped, index, ctype, overlay[2], overlay[3])
         end
+      end
+
+      if custom.hair_color then
+        hair_color[1] = custom.hair_color[1]
+        hair_color[2] = custom.hair_color[2]
+        SetPedHairColor(ped, table.unpack(hair_color))
       end
     end
 
