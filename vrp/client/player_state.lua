@@ -167,40 +167,32 @@ end
 
 -- PLAYER CUSTOMIZATION
 
--- parse part key (a ped part or a prop part)
--- return is_proppart, index
-local function parse_part(key)
-  if type(key) == "string" and string.sub(key,1,1) == "p" then
-    return true,tonumber(string.sub(key,2))
-  else
-    return false,tonumber(key)
-  end
-end
-
 -- get number of drawables for a specific part
 function PlayerState:getDrawables(part)
-  local isprop, index = parse_part(part)
-  if isprop then
+  local args = splitString(part, ":")
+  local index = parseInt(args[2])
+
+  if args[1] == "prop" then
     return GetNumberOfPedPropDrawableVariations(GetPlayerPed(-1),index)
-  else
+  elseif args[1] == "drawable" then
     return GetNumberOfPedDrawableVariations(GetPlayerPed(-1),index)
   end
 end
 
 -- get number of textures for a specific part and drawable
 function PlayerState:getDrawableTextures(part,drawable)
-  local isprop, index = parse_part(part)
-  if isprop then
+  local args = splitString(part, ":")
+  local index = parseInt(args[2])
+
+  if args[1] == "prop" then
     return GetNumberOfPedPropTextureVariations(GetPlayerPed(-1),index,drawable)
-  else
+  elseif args[1] == "drawable" then
     return GetNumberOfPedTextureVariations(GetPlayerPed(-1),index,drawable)
   end
 end
 
 -- get player skin customization
--- return custom {.modelhash, ...}
---- index keys: ped component => {drawable,texture,palette}
---- "pX" keys: props => {prop_index, prop_texture}
+-- return custom parts
 function PlayerState:getCustomization()
   local ped = GetPlayerPed(-1)
 
@@ -210,19 +202,23 @@ function PlayerState:getCustomization()
 
   -- ped parts
   for i=0,20 do -- index limit to 20
-    custom[i] = {GetPedDrawableVariation(ped,i), GetPedTextureVariation(ped,i), GetPedPaletteVariation(ped,i)}
+    custom["drawable:"..i] = {GetPedDrawableVariation(ped,i), GetPedTextureVariation(ped,i), GetPedPaletteVariation(ped,i)}
   end
 
   -- props
   for i=0,10 do -- index limit to 10
-    custom["p"..i] = {GetPedPropIndex(ped,i), math.max(GetPedPropTextureIndex(ped,i),0)}
+    custom["prop:"..i] = {GetPedPropIndex(ped,i), math.max(GetPedPropTextureIndex(ped,i),0)}
   end
 
   return custom
 end
 
 -- set partial customization (only what is set is changed)
--- custom: indexed {drawable,texture,palette} components or props (p0...) {prop_index, prop_texture} plus .modelhash or .model
+-- custom: indexed customization parts ("foo:arg1:arg2...")
+--- "modelhash": number, model hash
+--- or "model": string, model name
+--- "drawable:<index>": {drawable,texture,palette} ped components
+--- "prop:<index>": {prop_index, prop_texture}
 function PlayerState:setCustomization(custom) 
   local r = async()
 
@@ -269,24 +265,24 @@ function PlayerState:setCustomization(custom)
       ped = GetPlayerPed(-1)
 
       -- face blend data
-      local face = custom[0] or custom["0"]
+      local face = custom["drawable:0"]
       if face then
         SetPedHeadBlendData(ped, face[1], face[1], 0, face[1], face[1], 0, 0.5, 0.5, 0.0, false)
       end
 
       -- parts
       for k,v in pairs(custom) do
-        if k ~= "model" and k ~= "modelhash" then
-          local isprop, index = parse_part(k)
-          if isprop then
-            if v[1] < 0 then
-              ClearPedProp(ped,index)
-            else
-              SetPedPropIndex(ped,index,v[1],v[2],true)
-            end
+        local args = splitString(k, ":")
+        local index = parseInt(args[2])
+
+        if args[1] == "prop" then
+          if v[1] < 0 then
+            ClearPedProp(ped,index)
           else
-            SetPedComponentVariation(ped,index,v[1],v[2],v[3] or 2)
+            SetPedPropIndex(ped,index,v[1],v[2],true)
           end
+        elseif args[1] == "drawable" then
+          SetPedComponentVariation(ped,index,v[1],v[2],v[3] or 2)
         end
       end
     end

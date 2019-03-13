@@ -5,20 +5,20 @@ local cfg = {}
 local dcfg = {
   -- customization parts list {title, part}
   parts = {
-    {"Hats", "p0"},
-    {"Hair", 2},
-    {"Face", 0},
-    {"Face+", 1},
-    {"Ears", "p2"},
-    {"Glasses", "p1"},
-    {"Neck", 7},
-    {"Hand", 3},
-    {"Watches", "p6"},
-    {"Bracelets", "p7"},
-    {"Shirt", 8},
-    {"Jacket", 11},
-    {"Legs", 4},
-    {"Shoes", 6}
+    {"Hats", "prop:0"},
+    {"Hair", "drawable:2"},
+    {"Face", "drawable:0"},
+    {"Face+", "drawable:1"},
+    {"Ears", "prop:2"},
+    {"Glasses", "prop:1"},
+    {"Neck", "drawable:7"},
+    {"Hand", "drawable:3"},
+    {"Watches", "prop:6"},
+    {"Bracelets", "prop:7"},
+    {"Shirt", "drawable:8"},
+    {"Jacket", "drawable:11"},
+    {"Legs", "drawable:4"},
+    {"Shoes", "drawable:6"}
   },
   map_entity = {"PoI", {blip_id = 73, blip_color = 3, marker_id = 1}}
 }

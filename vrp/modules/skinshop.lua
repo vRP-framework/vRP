@@ -5,18 +5,6 @@ local lang = vRP.lang
 -- a basic skinshop implementation
 local SkinShop = class("SkinShop", vRP.Extension)
 
--- STATIC
-
--- parse part key (a ped part or a prop part)
--- return is_proppart, index
-function SkinShop.parsePart(key)
-  if type(key) == "string" and string.sub(key,1,1) == "p" then
-    return true,tonumber(string.sub(key,2))
-  else
-    return false,tonumber(key)
-  end
-end
-
 -- PRIVATE METHODS
 
 -- menu: shinshop
@@ -36,15 +24,15 @@ local function menu_skinshop_part(self)
     local drawable = menu.drawable
     local texture = menu.texture
 
-    local isprop = SkinShop.parsePart(part)
+    local args = splitString(part, ":")
 
     -- change drawable
     drawable[1] = drawable[1]+mod
 
-    if isprop then
+    if args[1] == "prop" then
       if drawable[1] >= drawable[2] then drawable[1] = -1 -- circular selection (-1 for prop parts)
       elseif drawable[1] < -1 then drawable[1] = drawable[2]-1 end 
-    else
+    elseif args[1] == "drawable" then
       if drawable[1] >= drawable[2] then drawable[1] = 0 -- circular selection
       elseif drawable[1] < 0 then drawable[1] = drawable[2]-1 end 
     end
@@ -101,20 +89,20 @@ local function menu_skinshop_part(self)
     menu.css.header_color="rgba(0,255,125,0.75)"
 
     local part = menu.data.part
-    local isprop, index = SkinShop.parsePart(part)
+    local args = splitString(part, ":")
 
     local current_part = menu.data.custom[part]
 
     menu.drawable = {current_part and current_part[1] or 0, vRP.EXT.PlayerState.remote.getDrawables(user.source, part)}
     menu.texture = {current_part and current_part[2] or 0, vRP.EXT.PlayerState.remote.getDrawableTextures(user.source, part, menu.drawable[1])}
 
-    if not isprop then
+    if args[1] == "drawable" then
       menu.palette = {current_part and current_part[3] or 2, 4}
     end
 
     menu:addOption(lang.skinshop.model(), m_model, lang.skinshop.select_description({menu.drawable[1]+1, menu.drawable[2]}))
     menu:addOption(lang.skinshop.texture(), m_texture, lang.skinshop.select_description({menu.texture[1]+1, menu.texture[2]}))
-    if not isprop then 
+    if args[1] == "drawable" then
       menu:addOption(lang.skinshop.palette(), m_palette, lang.skinshop.select_description({menu.palette[1]+1, menu.palette[2]}))
     end
   end)
