@@ -127,26 +127,24 @@ function Gametable:leave(user)
   user:removeArea(self.point_id)
 end
 
--- ItemTransformer
+-- Transformer
 
-local ItemTransformer = class("item_transformer", vRP.EXT.Home.Component)
+local Transformer = class("transformer", vRP.EXT.Home.Component)
 
-function ItemTransformer:load()
-  self.point_id = "vRP:home:component:item_transformer:"..self.index
-  self.transformer_id = "vRP:home:component:item_transformer:"..self.slot.type.."_"..self.slot.id.."_"..self.index
+function Transformer:load()
+  self.point_id = "vRP:home:component:transformer:"..self.index
+  self.transformer_id = "vRP:home:component:transformer:"..self.slot.type.."_"..self.slot.id.."_"..self.index
 
 
-  self.cfg.cfg.x = self.x
-  self.cfg.cfg.y = self.y
-  self.cfg.cfg.z = self.z
-  vRP.EXT.ItemTransformer:set(self.transformer_id, self.cfg.cfg)
+  self.cfg.cfg.position = {self.x, self.y, self.z}
+  vRP.EXT.Transformer:set(self.transformer_id, self.cfg.cfg)
 end
 
-function ItemTransformer:unload()
-  vRP.EXT.ItemTransformer:remove(self.transformer_id)
+function Transformer:unload()
+  vRP.EXT.Transformer:remove(self.transformer_id)
 end
 
-function ItemTransformer:enter(user)
+function Transformer:enter(user)
   local ment = clone(self.cfg.map_entity)
   if ment then
     ment[2].pos = {self.x,self.y,self.z-1}
@@ -154,7 +152,7 @@ function ItemTransformer:enter(user)
   end
 end
 
-function ItemTransformer:leave(user)
+function Transformer:leave(user)
   if self.cfg.map_entity then
     vRP.EXT.Map.remote._removeEntity(user.source, self.point_id)
   end
@@ -391,7 +389,7 @@ function home_components:__construct()
   vRP.EXT.Home:registerComponent(Chest)
   vRP.EXT.Home:registerComponent(Wardrobe)
   vRP.EXT.Home:registerComponent(Gametable)
-  vRP.EXT.Home:registerComponent(ItemTransformer)
+  vRP.EXT.Home:registerComponent(Transformer)
   vRP.EXT.Home:registerComponent(Radio)
 end
 

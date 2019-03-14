@@ -61,13 +61,13 @@ Wardrobe to save/restore clothes.
 
 Gametable to play simple games with other people (bet...).
 
-=== item_transformer
+=== transformer
 
-Item transformer component.
+Transformer component.
 
 .config
 [horizontal]
-cfg:: item transformer config
+cfg:: transformer config
 map_entity:: (optional) map entity at the component position
 
 === radio

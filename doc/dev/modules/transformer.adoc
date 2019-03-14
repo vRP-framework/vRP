@@ -73,7 +73,7 @@ Transformer:registerProcessor(id, on_display, on_check, on_process)
 Transformer:set(id, cfg)
 
 -- remove a transformer
-ItemTransformer:remove(id)
+Transformer:remove(id)
 ----
 
 == Menu
