@@ -71,7 +71,7 @@ eating:: https://freesound.org/people/ryanharding95/sounds/272440/
 * coma emergency ped awareness
 * citizenship, government
 * remove GUI error display
-* vehicles state fixes
+* rework vehicle rent feature
 
 .vRP 2 dev' phases
 * refactoring (done)

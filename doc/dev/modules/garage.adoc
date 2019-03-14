@@ -14,6 +14,15 @@ This module manages garages and character vehicles.
 
 Each owned vehicle has a saved state which can be extended with new properties.
 
+[NOTE]
+====
+.Vehicles in FiveM/GTA V are entities which can unload/load/despawn themselves on multiple clients, this module try to handle it this way.
+* it tracks the owned vehicles with a decorator and will try to re-own the vehicles when near them
+* if multiple versions of the same owned vehicle exist at the same place, it will try to delete the others
+* vehicles states are saved and it will try to re-spawn the vehicles if near their last saved position
+* if a vehicle is stuck or completely lost somewhere, players can force its re-spawn at the garage by paying a fee
+====
+
 == Extension
 
 === User
@@ -54,14 +63,13 @@ self.hash_models -- map of hash => model
 -- return owner character id and model or nil if not managed by vRP
 Garage:getVehicleInfo(veh)
 
--- spawn vehicle
+-- spawn vehicle (will despawn first)
 -- will be placed on ground properly
 -- one vehicle per model allowed at the same time
 --
 -- state: (optional) vehicle state (client)
 -- position: (optional) {x,y,z}, if not passed the vehicle will be spawned on the player (and will be put inside the vehicle)
 -- rotation: (optional) quaternion {x,y,z,w}, if passed with the position, will be applied to the vehicle entity
--- return true if spawned (if not already out)
 Garage:spawnVehicle(model, state, position, rotation) 
 
 -- return true if despawned

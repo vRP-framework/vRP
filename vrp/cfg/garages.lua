@@ -6,6 +6,8 @@ local cfg = {}
 cfg.rent_factor = 0.1 -- 10% of the original price if a rent
 cfg.sell_factor = 0.75 -- sell for 75% of the original price
 
+cfg.force_out_fee = 1000 -- amount of money (fee) to force re-spawn an already out vehicle
+
 -- default chest weight for vehicle trunks
 cfg.default_vehicle_chest_weight = 50
 

@@ -589,7 +589,10 @@ local lang = {
     owned = {
       title = "Owned",
       description = "Owned vehicles.",
-      already_out = "This vehicle is already out."
+      already_out = "This vehicle is already out.",
+      force_out = {
+        request = "This vehicle is already out, do you want to pay a {1} $ fee to fetch it ?"
+      }
     },
     buy = {
       title = "Buy",
