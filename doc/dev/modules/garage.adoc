@@ -92,6 +92,9 @@ Garage:trySpawnOutVehicles()
 -- try re-own vehicles
 Garage:tryOwnVehicles()
 
+-- cleanup invalid owned vehicles
+Garage:cleanupVehicles()
+
 Garage:fixNearestVehicle(radius)
 
 Garage:replaceNearestVehicle(radius)
@@ -157,6 +160,7 @@ Garage.tunnel.getOwnedVehiclePosition = Garage.getOwnedVehiclePosition
 Garage.tunnel.putInOwnedVehicle = Garage.putInOwnedVehicle
 Garage.tunnel.getInOwnedVehicleModel = Garage.getInOwnedVehicleModel
 Garage.tunnel.trySpawnOutVehicles = Garage.trySpawnOutVehicles
+Garage.tunnel.cleanupVehicles = Garage.cleanupVehicles
 Garage.tunnel.tryOwnVehicles = Garage.tryOwnVehicles
 Garage.tunnel.ejectVehicle = Garage.ejectVehicle
 Garage.tunnel.isInVehicle = Garage.isInVehicle

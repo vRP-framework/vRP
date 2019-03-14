@@ -10,12 +10,6 @@ html, body {
   overflow: hidden;
 }
 
-.console{
-  background-color: white;
-  color: red;
-  font-weight: bold;
-}
-
 /* menu */
 
 .menu{
