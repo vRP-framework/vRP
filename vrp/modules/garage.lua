@@ -49,7 +49,7 @@ local function menu_garage_owned(self)
 
     local vehicles = user:getVehicles()
 
-    if vehicles[model] == 1 then
+    if vehicles[model] == 1 then -- in
       local vstate = user:getVehicleState(model)
       local state = {
         customization = vstate.customization,
@@ -61,7 +61,7 @@ local function menu_garage_owned(self)
       self.remote._spawnVehicle(user.source, model, state)
       self.remote._setOutVehicles(user.source, {[model] = {}})
       user:closeMenu(menu)
-    else
+    elseif vehicles[model] == 0 then -- out
       vRP.EXT.Base.remote._notify(user.source, lang.garage.owned.already_out())
 
       -- force out request
@@ -90,16 +90,7 @@ local function menu_garage_owned(self)
     menu.css.header_color = "rgba(255,125,0,0.75)"
     local user = menu.user
 
-    -- vehicles: bought + rent
-    local vehicles = {}
     for model in pairs(user:getVehicles()) do
-      vehicles[model] = true
-    end
-    for model in pairs(user.rent_vehicles) do
-      vehicles[model] = true
-    end
-
-    for model in pairs(vehicles) do
       local veh = menu.data.vehicles[model]
       if veh then
         menu:addOption(veh[1], m_get, veh[3], model)
@@ -152,7 +143,7 @@ local function menu_garage_sell(self)
 
     local price = math.ceil(veh[2]*self.cfg.sell_factor)
 
-    if uvehicles[model] == 1 then -- has vehicle in
+    if uvehicles[model] == 1 and not user.rent_vehicles[model] then -- has vehicle in, not rented
       user:giveWallet(price)
       uvehicles[model] = nil
 
@@ -169,9 +160,9 @@ local function menu_garage_sell(self)
     local user = menu.user
     local uvehicles = user:getVehicles()
 
-    -- for each existing vehicle in the garage group and owned
+    -- for each existing vehicle in the garage group and owned (and not rented)
     for model,veh in pairs(menu.data.vehicles) do
-      if model ~= "_config" and uvehicles[model] then
+      if model ~= "_config" and uvehicles[model] and not user.rent_vehicles[model] then
         local price = math.ceil(veh[2]*self.cfg.sell_factor)
         menu:addOption(veh[1], m_sell, lang.garage.buy.info({price, veh[3]}), model)
       end
@@ -189,6 +180,7 @@ local function menu_garage_rent(self)
     local veh = menu.data.vehicles[model]
     local price = math.ceil(veh[2]*self.cfg.rent_factor)
     if user:tryPayment(price) then
+      uvehicles[model] = 1
       user.rent_vehicles[model] = true
 
       vRP.EXT.Base.remote._notify(user.source,lang.money.paid({price}))
@@ -204,18 +196,9 @@ local function menu_garage_rent(self)
     local user = menu.user
     local uvehicles = user:getVehicles()
 
-    -- vehicles: bought + rent (owned)
-    local vehicles = {}
-    for model in pairs(user:getVehicles()) do
-      vehicles[model] = true
-    end
-    for model in pairs(user.rent_vehicles) do
-      vehicles[model] = true
-    end
-
     -- for each existing vehicle in the garage group and not already owned
     for model,veh in pairs(menu.data.vehicles) do
-      if model ~= "_config" and not vehicles[model] then
+      if model ~= "_config" and not uvehicles[model] then
         local price = math.ceil(veh[2]*self.cfg.rent_factor)
         menu:addOption(veh[1], m_rent, lang.garage.buy.info({price,veh[3]}), model)
       end
@@ -289,7 +272,7 @@ local function menu_garage(self)
     menu:addOption(lang.garage.owned.title(), m_owned, lang.garage.owned.description())
     menu:addOption(lang.garage.buy.title(), m_buy, lang.garage.buy.description())
     menu:addOption(lang.garage.sell.title(), m_sell, lang.garage.sell.description())
---    menu:addOption(lang.garage.rent.title(), m_rent, lang.garage.rent.description())
+    menu:addOption(lang.garage.rent.title(), m_rent, lang.garage.rent.description())
     menu:addOption(lang.garage.store.title(), m_store, lang.garage.store.description())
   end)
 end
@@ -593,6 +576,12 @@ end
 function Garage.event:characterUnload(user)
   self.remote._setStateReady(user.source, false)
 
+  -- remove rented vehicles
+  local vehicles = user:getVehicles()
+  for model in pairs(user.rent_vehicles) do
+    vehicles[model] = nil
+  end
+
   -- save vehicle states
   for model, state in pairs(user.vehicle_states) do
     vRP:setCData(user.cid, "vRP:vehicle_state:"..model, msgpack.pack(state))
@@ -674,7 +663,7 @@ function Garage.tunnel:updateVehicleStates(states)
 
   if user then
     for model, state in pairs(states) do
-      if user.cdata.vehicles[model] or user.rent_vehicles[model] then -- has model
+      if user.cdata.vehicles[model] then -- has model
         local vstate = user:getVehicleState(model)
 
         if state.customization then
