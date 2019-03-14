@@ -264,6 +264,9 @@ function PlayerState:setCustomization(custom)
           local health = self:getHealth()
 
           SetPlayerModel(PlayerId(), mhash)
+          -- re-init additional model data
+          hair_color = {0,0}
+          ped_overlays = {}
 
           self:giveWeapons(weapons,true)
           self:setArmour(armour)
