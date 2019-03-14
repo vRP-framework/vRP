@@ -516,7 +516,7 @@ function Inventory:__construct()
     end
 
     return ok
-  end, function(user, reagents, data) -- on process
+  end, function(user, reagents, products) -- on process
     if reagents then
       for fullid,amount in pairs(reagents) do
         user:tryTakeItem(fullid,amount)

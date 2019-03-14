@@ -70,6 +70,7 @@ eating:: https://freesound.org/people/ryanharding95/sounds/272440/
 * add more sound effects
 * coma emergency ped awareness
 * citizenship, government
+* fix customization leak between characters
 
 .vRP 2 dev' phases
 * refactoring (done)
