@@ -661,10 +661,10 @@ local lang = {
     info = "{1} $<br /><br />{2}"
   },
   skinshop = {
-    title = "Magasin de vêtements",
+    title = "Magasin d'apparence",
     info = {
       title = "Info",
-      description = "Selectionner une partie du corps ci-dessous.<br /><br /><em>Prix actuel: </em>{1} $"
+      description = "Selectionner une partie de l'apparence ci-dessous.<br /><br /><em>Prix actuel: </em>{1} $"
     },
     model = "Modèle",
     texture = "Texture",

@@ -2,7 +2,7 @@
 local cfg = {}
 
 -- define static transformers
--- see https://github.com/ImagicTheCat/vRP documentation to understand the transformer concept/definition
+-- see https://github.com/ImagicTheCat/vRP modules documentation to understand the transformer concept/definition
 
 cfg.transformers = {
   {
