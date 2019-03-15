@@ -127,7 +127,7 @@ Specialized entity with a position and default active behavior by distance.
 
 .config
 [horizontal]
-pos:: `{x,y,z}`
+pos:: `{x,y,z}` (must be floats)
 active_distance:: (optional) maximum distance for the entity to be active, default is 250
 
 === PoI

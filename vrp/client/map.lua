@@ -61,7 +61,7 @@ function PoI:load()
 
   -- blip
   if self.cfg.blip_id and self.cfg.blip_color then
-    self.blip = AddBlipForCoord(self.cfg.pos[1]+0.001,self.cfg.pos[2]+0.001,self.cfg.pos[3]+0.001)
+    self.blip = AddBlipForCoord(self.cfg.pos[1],self.cfg.pos[2],self.cfg.pos[3])
     SetBlipSprite(self.blip, self.cfg.blip_id)
     SetBlipAsShortRange(self.blip, true)
     SetBlipColour(self.blip, self.cfg.blip_color)
