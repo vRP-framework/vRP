@@ -193,8 +193,8 @@ end
 
 -- GTA 5 text notification
 function Base:notify(msg)
-  SetNotificationTextEntry("STRING")
-  AddTextComponentString(msg)
+  AddTextEntry("MESSAGE_VRP", msg)
+  SetNotificationTextEntry("MESSAGE_VRP")
   DrawNotification(true, false)
 end
 
