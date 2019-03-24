@@ -13,7 +13,7 @@ endif::[]
 This module handles audio features.
 
 .VoIP 
-* a `voip_server` (nodejs) must be launched for each vRP server
+* a `voip_server` (nodejs) must be launched for each vRP server (by executing `main.js`)
 * nodejs `ws` and `wrtc` packages are required
 * the TCP websocket and UDP webrtc range of ports must be opened by firewalls
 * see `voip_server/config.js` and `cfg/audio.lua`
