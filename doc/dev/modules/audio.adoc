@@ -12,13 +12,22 @@ endif::[]
 
 This module handles audio features.
 
-.VoIP 
-* a `voip_server` (nodejs) must be launched for each vRP server (by executing `main.js`)
-* nodejs `ws` and `wrtc` packages are required
-* the TCP websocket and UDP webrtc range of ports must be opened by firewalls
-* see `voip_server/config.js` and `cfg/audio.lua`
-
 TIP: The clients will automatically connect/reconnect themselves to the VoIP server (can be started after, shutdown, restarted).
+
+== Deployment 
+
+=== Requirements:
+* Node.js (preferably v10)
+* Opened ports (according to your config.js):
+** TCP: 40120
+** UDP: 10000 to 11000
+
+=== Setup Steps
+* If needed, edit your `voip_server/config.js`
+* Inside the `voip_server` folder, run `npm install` to get all its dependencies
+* Run `node main.js` to run the server
+* Put your server's public IP in the `vrp/cfg/audio.lua` (cfg.voip_server)
+
 
 == Extension
 
