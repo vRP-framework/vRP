@@ -1,0 +1,19 @@
+{
+  "name": "vrp_voip",
+  "version": "0.2.0",
+  "description": "vRP VOIP Server",
+  "main": "main.js",
+  "dependencies": {
+    "wrtc": "^0.3.7",
+    "ws": "^6.2.1"
+  },
+  "devDependencies": {},
+  "scripts": {},
+  "keywords": [
+    "voip",
+    "vrp",
+    "webrtc"
+  ],
+  "author": "",
+  "license": "ISC"
+}
