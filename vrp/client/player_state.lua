@@ -299,11 +299,8 @@ function PlayerState:setCustomization(custom)
           if index == 1 or index == 2 or index == 10 then ctype = 1
           elseif index == 5 or index == 8 then ctype = 2 end
 
-          local overlay = {v[1], v[2] or 0, v[3] or 0, v[4] or 1.0}
-          ped_overlays[index] = overlay
-
-          SetPedHeadOverlay(ped, index, overlay[1], overlay[4])
-          SetPedHeadOverlayColor(ped, index, ctype, overlay[2], overlay[3])
+          SetPedHeadOverlay(ped, index, v[1], v[4] or 1.0)
+          SetPedHeadOverlayColor(ped, index, ctype, v[2] or 0, v[3] or 0)
         end
       end
 
