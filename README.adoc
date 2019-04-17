@@ -43,6 +43,8 @@ NOTE: This is vRP 2, the second major version of vRP. It aims to have less overh
 
 == Documentation
 
+WARNING: Read the documentation before asking for help, creating a bug report or a feature request.
+
 See the link:doc/README.adoc[documentation].
 
 .See also (and use it as a basis to understand how to develop extensions for vRP):
