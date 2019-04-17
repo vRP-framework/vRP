@@ -72,4 +72,3 @@ eating:: https://freesound.org/people/ryanharding95/sounds/272440/
 * add more sound effects
 * coma emergency ped awareness
 * citizenship, government
-* fix player state customization hack (use natives instead)
