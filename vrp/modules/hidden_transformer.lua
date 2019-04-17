@@ -16,7 +16,7 @@ local function menu_informer(self)
 
     if tr then
       if user:tryPayment(price) then
-        vRP.EXT.Map.remote._setGPS(user.source, tr.cfg.x, tr.cfg.y) -- set gps marker
+        vRP.EXT.Map.remote._setGPS(user.source, tr.cfg.position[1], tr.cfg.position[2]) -- set gps marker
         vRP.EXT.Base.remote._notify(user.source, lang.money.paid({price}))
         vRP.EXT.Base.remote._notify(user.source, lang.hidden_transformer.informer.bought())
       else
@@ -122,6 +122,8 @@ function HiddenTransformer:__construct()
     end)
   end
   SetTimeout(self.cfg.informer.interval*60000,informer_placement_task)
+
+  menu_informer(self)
 end
 
 function HiddenTransformer:spawnInformer()
