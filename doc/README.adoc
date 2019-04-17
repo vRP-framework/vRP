@@ -86,6 +86,8 @@ If you have errors in your console BEFORE the issue happens, things could be cor
 
 WARNING: The issue section is only for bug reports and feature requests. Issues not related to the core of vRP, about old versions (no backwards update) or vRP modifications will be closed without warning.
 
+TIP: Before submitting an issue or a feature request, do a search in open and closed ones to know if it has been reported/requested before.
+
 NOTE: For questions, help, discussions around the project, please go instead on the vRP thread of the FiveM forum here: https://forum.fivem.net/t/release-vrp-framework/22894
 
 == Developers
