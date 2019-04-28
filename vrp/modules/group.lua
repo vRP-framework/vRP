@@ -52,7 +52,7 @@ function Group.User:addGroup(name)
       -- trigger join event
       local gtype = nil
       if ngroup._config then
-        gtype = ngroup._config.gtype 
+        gtype = ngroup._config.gtype
       end
 
       vRP:triggerEvent("playerJoinGroup", self, name, gtype)
@@ -71,8 +71,8 @@ function Group.User:removeGroup(name)
 
   -- trigger leave event
   local gtype = nil
-  if groupdef and groupdef._config then
-    gtype = groupdef._config.gtype 
+  if group and group._config then
+    gtype = group._config.gtype
   end
 
   groups[name] = nil -- remove reference
