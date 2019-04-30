@@ -73,3 +73,4 @@ eating:: https://freesound.org/people/ryanharding95/sounds/272440/
 * coma emergency ped awareness
 * citizenship, government
 * check for exploits
+* rent vehicle issue (aim for persistent save)
