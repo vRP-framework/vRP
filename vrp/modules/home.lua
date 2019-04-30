@@ -268,23 +268,24 @@ local function menu_home(self)
     local user = menu.user
     local home_cfg = self.cfg.homes[menu.data.name]
 
-    local address = user.address
-    if not address then -- check if not already have a home
+    if not user.address then -- check if not already have a home
       local number = self:findFreeNumber(menu.data.name, home_cfg.max)
-        if number then
-          if user:tryPayment(home_cfg.buy_price) then
-            -- bought, set address
-            user.address = {character_id = user.cid, home = menu.data.name, number = number}
-            vRP:execute("vRP/set_address", {character_id = user.cid, home = menu.data.name, number = number})
-            vRP:triggerEvent("characterAddressUpdate", user)
+      if user.address then return end -- after coroutine check (prevent double buy)
 
-            vRP.EXT.Base.remote._notify(user.source,lang.home.buy.bought())
-          else
-            vRP.EXT.Base.remote._notify(user.source,lang.money.not_enough())
-          end
+      if number then
+        if user:tryPayment(home_cfg.buy_price) then
+          -- bought, set address
+          user.address = {character_id = user.cid, home = menu.data.name, number = number}
+          vRP:execute("vRP/set_address", {character_id = user.cid, home = menu.data.name, number = number})
+          vRP:triggerEvent("characterAddressUpdate", user)
+
+          vRP.EXT.Base.remote._notify(user.source,lang.home.buy.bought())
         else
-          vRP.EXT.Base.remote._notify(user.source,lang.home.buy.full())
+          vRP.EXT.Base.remote._notify(user.source,lang.money.not_enough())
         end
+      else
+        vRP.EXT.Base.remote._notify(user.source,lang.home.buy.full())
+      end
     else
       vRP.EXT.Base.remote._notify(user.source,lang.home.buy.have_home())
     end
@@ -297,9 +298,9 @@ local function menu_home(self)
     local address = user.address
     if address and address.home == menu.data.name then -- check have home
       -- sold, give sell price, remove address
+      user.address = nil
       user:giveWallet(home_cfg.sell_price)
       vRP:execute("vRP/rm_address", {character_id = user.cid})
-      user.address = nil
 
       vRP:triggerEvent("characterAddressUpdate", user)
 
