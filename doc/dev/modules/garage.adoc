@@ -30,7 +30,7 @@ Each owned vehicle has a saved state which can be extended with new properties.
 [source,lua]
 ----
 self.cdata.vehicles
-self.rent_vehicles
+self.cdata.rent_vehicles
 self.vehicle_states
 
 -- get owned vehicles

@@ -143,7 +143,7 @@ local function menu_garage_sell(self)
 
     local price = math.ceil(veh[2]*self.cfg.sell_factor)
 
-    if uvehicles[model] == 1 and not user.rent_vehicles[model] then -- has vehicle in, not rented
+    if uvehicles[model] == 1 and not user.cdata.rent_vehicles[model] then -- has vehicle in, not rented
       user:giveWallet(price)
       uvehicles[model] = nil
 
@@ -162,7 +162,7 @@ local function menu_garage_sell(self)
 
     -- for each existing vehicle in the garage group and owned (and not rented)
     for model,veh in pairs(menu.data.vehicles) do
-      if model ~= "_config" and uvehicles[model] and not user.rent_vehicles[model] then
+      if model ~= "_config" and uvehicles[model] and not user.cdata.rent_vehicles[model] then
         local price = math.ceil(veh[2]*self.cfg.sell_factor)
         menu:addOption(veh[1], m_sell, lang.garage.buy.info({price, veh[3]}), model)
       end
@@ -181,7 +181,7 @@ local function menu_garage_rent(self)
     local price = math.ceil(veh[2]*self.cfg.rent_factor)
     if user:tryPayment(price) then
       uvehicles[model] = 1
-      user.rent_vehicles[model] = true
+      user.cdata.rent_vehicles[model] = true
 
       vRP.EXT.Base.remote._notify(user.source,lang.money.paid({price}))
       user:actualizeMenu()
@@ -567,7 +567,16 @@ function Garage.event:characterLoad(user)
     user.cdata.vehicles = {}
   end
 
-  user.rent_vehicles = {}
+  if not user.cdata.rent_vehicles then
+    user.cdata.rent_vehicles = {}
+  end
+
+  -- remove rented vehicles
+  local vehicles = user:getVehicles()
+  for model in pairs(user.cdata.rent_vehicles) do
+    vehicles[model] = nil
+  end
+
   user.vehicle_states = {}
 
   send_out_vehicles(self, user)
@@ -575,12 +584,6 @@ end
 
 function Garage.event:characterUnload(user)
   self.remote._setStateReady(user.source, false)
-
-  -- remove rented vehicles
-  local vehicles = user:getVehicles()
-  for model in pairs(user.rent_vehicles) do
-    vehicles[model] = nil
-  end
 
   -- save vehicle states
   for model, state in pairs(user.vehicle_states) do
