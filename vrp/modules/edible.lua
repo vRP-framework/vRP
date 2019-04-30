@@ -43,8 +43,10 @@ local function define_items(self)
     local etype = self.types[edible.type]
 
     -- consume
-    if user:tryTakeItem(fullid, 1, nil, true) then
+    if user:tryTakeItem(fullid, 1, true) then -- available check
       if user.edible_action:perform(self.cfg.action_delay) then
+        user:tryTakeItem(fullid, 1, nil, true) -- consume
+
         -- menu update
         local namount = user:getItemAmount(fullid)
         if namount > 0 then
