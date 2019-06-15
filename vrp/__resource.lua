@@ -34,6 +34,7 @@ server_scripts{
   "modules/police.lua",
   "modules/radio.lua",
   "modules/ped_blacklist.lua",
+  "modules/veh_blacklist.lua",
   "modules/edible.lua",
   "modules/warp.lua"
 }
@@ -54,6 +55,7 @@ client_scripts{
   "client/police.lua",
   "client/radio.lua",
   "client/ped_blacklist.lua",
+  "client/veh_blacklist.lua",
   "client/warp.lua",
   "client/iplloader.lua"
 }
