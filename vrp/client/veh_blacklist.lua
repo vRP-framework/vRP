@@ -33,7 +33,7 @@ function VehBlacklist:__construct()
       for _, veh in ipairs(vehicles) do
         if self.veh_models[GetEntityModel(veh)] then
           local cid, model = vRP.EXT.Garage:getVehicleInfo(veh)
-          if not cid and vRP.EXT.Base.cid ~= cid then
+          if not cid then
             SetEntityAsMissionEntity(veh, true, true)
             DeleteVehicle(veh)
           end
