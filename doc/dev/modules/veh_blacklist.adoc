@@ -1,0 +1,30 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc: left
+:toclevels: 5
+
+= VehBlacklist
+
+This module adds a vehicle blacklist (remove vehicles from the game).
+
+== Extension
+
+=== Server
+
+[source,lua]
+----
+self.cfg
+----
+
+=== Client
+
+[source,lua]
+----
+self.veh_models -- map of model hash
+self.interval
+----
