@@ -387,7 +387,7 @@ local function menu_police(self)
           -- items
           local inventory = nuser:getInventory()
 
-          for key in pairs(self.cfg.seizable_items) do -- transfer seizable items
+          for _,key in pairs(self.cfg.seizable_items) do -- transfer seizable items
             local sub_items = {key} -- single item
 
             if string.sub(key,1,1) == "*" then -- seize all parametric items of this id
