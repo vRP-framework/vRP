@@ -59,7 +59,7 @@ function Police:__construct()
     while true do
       Citizen.Wait(5000)
       if self.follow_player then
-        local tplayer = GetPlayerFromServerId(follow_player)
+        local tplayer = GetPlayerFromServerId(self.follow_player)
         local ped = GetPlayerPed(-1)
         if NetworkIsPlayerConnected(tplayer) then
           local tped = GetPlayerPed(tplayer)
