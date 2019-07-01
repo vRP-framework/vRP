@@ -21,6 +21,16 @@ cfg.display_css = [[
   text-shadow: 3px 3px 2px rgba(0, 0, 0, 0.80);
 }
 
+.div_b_money{
+  position: absolute;
+  top: 80px;
+  right: 20px;
+  font-size: 1.3em;
+  font-weight: bold;
+  color: white;
+  text-shadow: 3px 3px 2px rgba(0, 0, 0, 0.80);
+}
+
 .div_money .symbol{
   font-size: 1.4em;
   color: #00ac51; 
