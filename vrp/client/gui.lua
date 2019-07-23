@@ -11,39 +11,42 @@ function GUI:__construct()
   Citizen.CreateThread(function()
     while true do
       Citizen.Wait(0)
-      -- menu controls
-      if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.up)) then SendNUIMessage({act="event",event="UP"}) end
-      if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.down)) then SendNUIMessage({act="event",event="DOWN"}) end
-      if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.left)) then SendNUIMessage({act="event",event="LEFT"}) end
-      if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.right)) then SendNUIMessage({act="event",event="RIGHT"}) end
-      if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.select)) then SendNUIMessage({act="event",event="SELECT"}) end
-      if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.cancel)) then 
-        self.remote._closeMenu()
-        SendNUIMessage({act="event",event="CANCEL"}) 
+
+      if not self.paused then
+        -- menu controls
+        if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.up)) then SendNUIMessage({act="event",event="UP"}) end
+        if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.down)) then SendNUIMessage({act="event",event="DOWN"}) end
+        if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.left)) then SendNUIMessage({act="event",event="LEFT"}) end
+        if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.right)) then SendNUIMessage({act="event",event="RIGHT"}) end
+        if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.select)) then SendNUIMessage({act="event",event="SELECT"}) end
+        if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.cancel)) then
+          self.remote._closeMenu()
+          SendNUIMessage({act="event",event="CANCEL"})
+        end
+
+        -- open general menu
+        if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.open)) and not self.menu_data then
+          local ok = true
+
+          -- coma check
+          if vRP.EXT.Survival and vRP.cfg.coma_disable_menu and vRP.EXT.Survival:isInComa() then
+            ok = false
+          end
+
+          -- handcuff check
+          if ok and vRP.EXT.Police and vRP.cfg.handcuff_disable_menu and vRP.EXT.Police:isHandcuffed() then
+            ok = false
+          end
+
+          if ok then
+            self.remote._openMainMenu()
+          end
+        end
+
+        -- F5,F6 (default: control michael, control franklin)
+        if IsControlJustPressed(table.unpack(vRP.cfg.controls.request.yes)) then SendNUIMessage({act="event",event="F5"}) end
+        if IsControlJustPressed(table.unpack(vRP.cfg.controls.request.no)) then SendNUIMessage({act="event",event="F6"}) end
       end
-
-      -- open general menu
-      if IsControlJustPressed(table.unpack(vRP.cfg.controls.phone.open)) and not self.menu_data then
-        local ok = true
-
-        -- coma check
-        if vRP.EXT.Survival and vRP.cfg.coma_disable_menu and vRP.EXT.Survival:isInComa() then
-          ok = false
-        end
-
-        -- handcuff check
-        if ok and vRP.EXT.Police and vRP.cfg.handcuff_disable_menu and vRP.EXT.Police:isHandcuffed() then 
-          ok = false
-        end
-
-        if ok then
-          self.remote._openMainMenu() 
-        end
-      end
-
-      -- F5,F6 (default: control michael, control franklin)
-      if IsControlJustPressed(table.unpack(vRP.cfg.controls.request.yes)) then SendNUIMessage({act="event",event="F5"}) end
-      if IsControlJustPressed(table.unpack(vRP.cfg.controls.request.no)) then SendNUIMessage({act="event",event="F6"}) end
 
       -- pause events
       local pause_menu = IsPauseMenuActive()
