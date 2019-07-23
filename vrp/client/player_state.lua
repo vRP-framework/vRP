@@ -61,6 +61,7 @@ function PlayerState:__construct()
 
   self.state_ready = false
   self.update_interval = 30
+  self.mp_models = {} -- map of model hash
 
   -- update task
   Citizen.CreateThread(function()
@@ -277,9 +278,13 @@ function PlayerState:setCustomization(custom)
 
       ped = GetPlayerPed(-1)
 
-      -- face blend data
-      local face = (custom["drawable:0"] and custom["drawable:0"][1]) or GetPedDrawableVariation(ped,0)
-      SetPedHeadBlendData(ped, face, face, 0, face, face, 0, 0.5, 0.5, 0.0, false)
+      local is_mp = self.mp_models[GetEntityModel(ped)]
+
+      if is_mp then
+        -- face blend data
+        local face = (custom["drawable:0"] and custom["drawable:0"][1]) or GetPedDrawableVariation(ped,0)
+        SetPedHeadBlendData(ped, face, face, 0, face, face, 0, 0.5, 0.5, 0.0, false)
+      end
 
       -- drawable, prop, overlay
       for k,v in pairs(custom) do
@@ -294,7 +299,7 @@ function PlayerState:setCustomization(custom)
           end
         elseif args[1] == "drawable" then
           SetPedComponentVariation(ped,index,v[1],v[2],v[3] or 2)
-        elseif args[1] == "overlay" then
+        elseif args[1] == "overlay" and is_mp then
           local ctype = 0
           if index == 1 or index == 2 or index == 10 then ctype = 1
           elseif index == 5 or index == 8 then ctype = 2 end
@@ -304,7 +309,7 @@ function PlayerState:setCustomization(custom)
         end
       end
 
-      if custom.hair_color then
+      if custom.hair_color and is_mp then
         SetPedHairColor(ped, table.unpack(custom.hair_color))
       end
     end
@@ -330,8 +335,19 @@ function PlayerState.tunnel:setStateReady(state)
   self.state_ready = state
 end
 
-function PlayerState.tunnel:setUpdateInterval(value)
-  self.update_interval = value
+function PlayerState.tunnel:setConfig(update_interval, mp_models)
+  self.update_interval = update_interval
+
+  for _, model in pairs(mp_models) do
+    local hash
+    if type(model) == "string" then
+      hash = GetHashKey(model)
+    else
+      hash = model
+    end
+
+    self.mp_models[hash] = true
+  end
 end
 
 PlayerState.tunnel.getWeapons = PlayerState.getWeapons
