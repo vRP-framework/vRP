@@ -187,7 +187,6 @@ end
 -- EVENT
 Survival.event = {}
 
-
 local coma_css = [[
 .div_coma_display{
   position: absolute;

@@ -35,9 +35,11 @@ Citizen.CreateThread(function()
       local dead = IsPedFatallyInjured(ped)
 
       if not was_dead and dead then
-        was_dead = true
-        vRP:triggerEvent("playerDeath")
-        TriggerServerEvent("vRPcli:playerDied")
+        -- compatibility with survival module: prevent death event with coma
+        if not vRP.EXT.Survival or vRP.EXT.Survival.coma_left <= 0 then
+          vRP:triggerEvent("playerDeath")
+          TriggerServerEvent("vRPcli:playerDied")
+        end
       end
 
       was_dead = dead
