@@ -59,6 +59,15 @@ function GUI:__construct()
       end
     end
   end)
+
+  -- task: GUI resolution data
+  Citizen.CreateThread(function()
+    while true do
+      Citizen.Wait(10000)
+
+      self:updateGUIData()
+    end
+  end)
 end
 
 -- CONTROLS/GUI
@@ -78,6 +87,44 @@ function GUI:setVisible(flag)
   SendNUIMessage({act="set_visible", flag=flag})
 end
 
+-- get native GUI coordinates based on UI description
+-- x_align, y_align: integers, see https://runtime.fivem.net/doc/natives/#_0xB8A850F20A067EB6
+-- x, y: floats, UI defined coordinates
+function GUI:getNativeCoords(x_align, y_align, x, y)
+  SetScriptGfxAlign(x_align, y_align)
+  local nx, ny = GetScriptGfxPosition(x, y)
+  ResetScriptGfxAlign()
+  return nx, ny
+end
+
+-- get minimap rect in pixels
+-- return x, y, w, h
+function GUI:getMinimapRect()
+  local w, h = GetActiveScreenResolution()
+  local x_align, y_align = string.byte("L"), string.byte("B")
+
+  local x1, y2 = self:getNativeCoords(x_align, y_align, -0.0045, 0.002)
+  local x2, y1 = self:getNativeCoords(x_align, y_align, -0.0045+0.150, 0.002-0.188888)
+
+  return x1*w, y1*h, (x2-x1)*w, (y2-y1)*h
+end
+
+function GUI:updateGUIData()
+  local w, h = GetActiveScreenResolution()
+  local minimap = {self:getMinimapRect()}
+
+  SendNUIMessage({act = "gui_data", data = {
+    w = w,
+    h = h,
+    minimap = {
+      x = minimap[1],
+      y = minimap[2],
+      w = minimap[3],
+      h = minimap[4]
+    }
+  }})
+end
+
 -- ANNOUNCE
 
 -- add an announce to the queue
@@ -90,6 +137,11 @@ end
 -- PROGRESS BAR
 
 -- create/update a progress bar
+-- anchor:
+--- "minimap"
+--- "center"
+--- "botright"
+-- r,g,b: RGB 256 color
 -- value: 0-1
 function GUI:setProgressBar(name,anchor,text,r,g,b,value)
   local pbar = {name=name,anchor=anchor,text=text,r=r,g=g,b=b,value=value}
@@ -148,6 +200,10 @@ end
 -- EVENT
 
 GUI.event = {}
+
+function GUI.event:NUIReady()
+  vRP.EXT.GUI:updateGUIData()
+end
 
 -- pause
 function GUI.event:pauseChange(paused)
@@ -260,9 +316,7 @@ RegisterNUICallback("request",function(data,cb)
   end
 end)
 
--- init
 RegisterNUICallback("init",function(data,cb) -- NUI initialized
-  SendNUIMessage({act="cfg",cfg=vRP.cfg.gui}) -- send cfg
   vRP:triggerEvent("NUIready")
 end)
 

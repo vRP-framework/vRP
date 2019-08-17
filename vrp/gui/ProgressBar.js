@@ -47,20 +47,22 @@ ProgressBar.prototype.frame = function(time)
   if(anchor){
     var anchor_index = anchor.indexOf(this);
     if(anchor_index >= 0){
-      if(anchor_name == "minimap"){ //MINIMAP
-        var width = cfg.anchor_minimap_width/anchor.length; //divide horizontal map space by number of pbars
+      if(anchor_name == "minimap"){
+        if(window.gui_data){
+          var width = Math.round(gui_data.minimap.w/anchor.length); //divide horizontal map space by number of pbars
 
-        //set size
-        this.div.style.width = this.div_label.style.width = (width-2)+"px";
-        this.div_inner.style.height = this.div.style.height = this.div_label.style.height = (12)+"px";
-        this.div_label.style.lineHeight = this.div_label.style.height;
+          //set size
+          this.div.style.width = this.div_label.style.width = (width-2)+"px";
+          this.div_inner.style.height = this.div.style.height = this.div_label.style.height = (12)+"px";
+          this.div_label.style.lineHeight = this.div_label.style.height;
 
-        //set label font size
-        this.div_label.style.fontSize = "0.8em";
+          //set label font size
+          this.div_label.style.fontSize = "0.8em";
 
-        //set position
-        this.div.style.left = (cfg.anchor_minimap_left+anchor_index*width)+"px";
-        this.div.style.top = (document.body.offsetHeight-cfg.anchor_minimap_bottom)+"px";
+          //set position
+          this.div.style.left = Math.round(gui_data.minimap.x+anchor_index*width)+"px";
+          this.div.style.top = Math.round(gui_data.minimap.y-12)+"px";
+        }
       }
       else if(anchor_name == "botright"){ //BOTRIGHT
         //set size

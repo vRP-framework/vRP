@@ -147,8 +147,8 @@ function Survival.event:playerSpawn(user, first_spawn)
       local water = user:getVital("water")
       local food = user:getVital("food")
 
-      GUI.remote._setProgressBar(user.source,"vRP:Survival:food","minimap",(food == 0) and lang.survival.starving() or "",255,153,0,food)
-      GUI.remote._setProgressBar(user.source,"vRP:Survival:water","minimap",(water == 0) and lang.survival.thirsty() or "",0,125,255,water)
+      GUI.remote._setProgressBar(user.source,"vRP:Survival:food", self.cfg.vital_display_anchor, (food == 0) and lang.survival.starving() or "",255,153,0,food)
+      GUI.remote._setProgressBar(user.source,"vRP:Survival:water", self.cfg.vital_display_anchor, (water == 0) and lang.survival.thirsty() or "",0,125,255,water)
     end
   end
 end

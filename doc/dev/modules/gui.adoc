@@ -141,6 +141,15 @@ self.menu_data
 
 GUI:isPaused()
 
+-- get native GUI coordinates based on UI description
+-- x_align, y_align: integers, see https://runtime.fivem.net/doc/natives/#_0xB8A850F20A067EB6
+-- x, y: floats, UI defined coordinates
+GUI:getNativeCoords(x_align, y_align, x, y)
+
+-- get minimap rect in pixels
+-- return x, y, w, h
+GUI:getMinimapRect()
+
 -- hide/show GUI
 GUI:setVisible(flag)
 
@@ -158,6 +167,11 @@ GUI:announce(background,content)
 -- PROGRESS BAR
 
 -- create/update a progress bar
+-- anchor:
+--- "minimap"
+--- "center"
+--- "botright"
+-- r,g,b: RGB 256 color
 -- value: 0-1
 GUI:setProgressBar(name,anchor,text,r,g,b,value)
 

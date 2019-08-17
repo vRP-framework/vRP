@@ -35,8 +35,8 @@ window.addEventListener("load",function(){
   window.addEventListener("message",function(evt){ //lua actions
     var data = evt.data;
 
-    if(data.act == "cfg"){
-      cfg = data.cfg;
+    if(data.act == "gui_data"){
+      gui_data = data.data; // global
     }
     else if(data.act == "set_visible"){
       if(data.flag)
