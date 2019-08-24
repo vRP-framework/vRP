@@ -118,7 +118,7 @@ function GUI:updateGUIData()
     h = h,
     minimap = {
       x = minimap[1],
-      y = minimap[2],
+      y = minimap[2] + minimap[4] + 10,
       w = minimap[3],
       h = minimap[4]
     }

@@ -2,7 +2,7 @@
 -- it will create module, SERVER, CLIENT, async, class...
 
 -- side detection
-SERVER = not IsVehicleEngineStarting
+SERVER = not GetNuiCursorPosition
 CLIENT = not SERVER
 
 -- table.maxn replacement
