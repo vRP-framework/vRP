@@ -62,14 +62,3 @@ phone ringing:: https://freesound.org/people/Framing_Noise/sounds/223183/
 phone dialing:: https://freesound.org/people/Felfa/sounds/178823/
 drinking:: https://freesound.org/people/freakinbehemoth/sounds/243635/
 eating:: https://freesound.org/people/ryanharding95/sounds/272440/
-
-== WIP
-
-.TODO list
-* handle weapon components
-* props, NPC
-* parcel delivery basic mission
-* add more sound effects
-* coma emergency ped awareness
-* citizenship, government
-* check for exploits
