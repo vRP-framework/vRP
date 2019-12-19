@@ -18,7 +18,7 @@ end
 
 local modules = {}
 
--- load a lua resource file as module
+-- load a lua resource file as module (for a specific side)
 -- rsc: resource name
 -- path: lua file path without extension
 function module(rsc, path)

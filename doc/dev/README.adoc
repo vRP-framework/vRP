@@ -139,21 +139,21 @@ vRP 2 extensively uses asynchronous tasks in a transparent way using coroutines,
 
 == Loading script
 
-To use vRP 2, a script must be loaded in the vRP resource context.
+To use vRP 2, a script must be loaded in the vRP resource context of a specific side.
 
 [source,lua]
 ----
--- include `@vrp/lib/utils.lua` in `__resource.lua` of the resource
+-- include `@vrp/lib/utils.lua` in `__resource.lua` (for the targeted side)
 
 local Proxy = module("vrp", "lib/Proxy")
-
 local vRP = Proxy.getInterface("vRP")
 
-vRP.loadScript("my_resource", "server_vrp") -- load server_vrp.lua
+vRP.loadScript("my_resource", "vrp") -- load vrp.lua
 ----
 
-The content of `server_vrp.lua` is now executed in the vRP context and can now use the API.
-The same thing should be done client-side.
+The content of `vrp.lua` is now executed in the vRP context and can now use the API.
+
+NOTE: `vRP.loadScript()` has the same behavior as `module()`, but executed in the vRP context.
 
 == General API
 
@@ -167,7 +167,7 @@ The same thing should be done client-side.
 SERVER -- boolean
 CLIENT -- boolean
 
--- load a lua resource file as module
+-- load a lua resource file as module (for a specific side)
 -- rsc: resource name
 -- path: lua file path without extension
 module(rsc, path)
