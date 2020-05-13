@@ -297,7 +297,7 @@ function Garage:getAnyOwnedVehiclePosition()
 
   for model,veh in pairs(self.vehicles) do
     if IsEntityAVehicle(veh) then
-      local x,y,z = table.unpack(GetEntityCoords(v[2],true))
+      local x,y,z = table.unpack(GetEntityCoords(veh,true))
       return true,x,y,z
     end
   end
