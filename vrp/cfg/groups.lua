@@ -70,7 +70,7 @@ cfg.groups = {
     "player.calladmin",
     "player.store_weapons",
     "police.seizable", -- can be seized
-    "multi.characters" -- allow multi.characters
+    "multi.characters" -- allow multiple characters
   },
   ["police"] = {
     _config = {
