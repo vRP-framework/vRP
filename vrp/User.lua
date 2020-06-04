@@ -8,7 +8,7 @@ local ActionDelay = module("vrp", "lib/ActionDelay")
 local extensions = {}
 
 for name,ext in pairs(vRP.EXT) do
-  if class.is(ext.User) then -- is a class
+  if class.type(ext.User) == ext.User then -- is a class
     table.insert(extensions, ext.User)
   end
 end
