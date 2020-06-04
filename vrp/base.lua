@@ -201,7 +201,9 @@ function Base.event:extensionLoad(ext)
     end
 
     vRP.EXT.GUI:registerMenuBuilder("main", function(menu)
-      menu:addOption(lang.characters.title(), m_characters)
+      if menu.user:hasPermission("player.characters") then
+        menu:addOption(lang.characters.title(), m_characters)
+      end
     end)
   elseif ext == vRP.EXT.Group then
     -- register fperm inside

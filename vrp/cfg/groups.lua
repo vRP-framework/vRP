@@ -66,6 +66,7 @@ cfg.groups = {
     "admin.god" -- reset survivals/health periodically
   },
   ["user"] = {
+    "player.characters", -- characters menu
     "player.phone",
     "player.calladmin",
     "player.store_weapons",
