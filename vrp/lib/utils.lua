@@ -1,3 +1,6 @@
+-- https://github.com/ImagicTheCat/vRP
+-- MIT license (see LICENSE or vrp/vRPShared.lua)
+
 -- this file define global tools required by vRP and vRP extensions
 -- it will create module, SERVER, CLIENT, async, class...
 

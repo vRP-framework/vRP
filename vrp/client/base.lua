@@ -1,3 +1,6 @@
+-- https://github.com/ImagicTheCat/vRP
+-- MIT license (see LICENSE or vrp/vRPShared.lua)
+
 -- init vRP client context
 
 Tunnel = module("vrp", "lib/Tunnel")

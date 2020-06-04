@@ -1,3 +1,6 @@
+// https://github.com/ImagicTheCat/vRP
+// MIT license (see LICENSE or vrp/vRPShared.lua)
+
 window.addEventListener("load",function(){
   //init dynamic menu
   var dynamic_menu = new Menu();

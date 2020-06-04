@@ -1,3 +1,6 @@
+-- https://github.com/ImagicTheCat/vRP
+-- MIT license (see LICENSE or vrp/vRPShared.lua)
+
 if not vRP.modules.inventory then return end
 
 local htmlEntities = module("vrp", "lib/htmlEntities")

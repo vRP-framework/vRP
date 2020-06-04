@@ -1,3 +1,6 @@
+-- https://github.com/ImagicTheCat/vRP
+-- MIT license (see LICENSE or vrp/vRPShared.lua)
+
 
 -- Simple event dispatcher class
 local EventDispatcher = class("EventDispatcher")

@@ -1,3 +1,6 @@
+-- https://github.com/ImagicTheCat/vRP
+-- MIT license (see LICENSE or vrp/vRPShared.lua)
+
 -- Proxy interface system, used to add/call functions between resources
 
 local IDManager = module("lib/IDManager")

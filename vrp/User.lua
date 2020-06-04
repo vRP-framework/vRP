@@ -1,3 +1,6 @@
+-- https://github.com/ImagicTheCat/vRP
+-- MIT license (see LICENSE or vrp/vRPShared.lua)
+
 local ActionDelay = module("vrp", "lib/ActionDelay")
 
 -- load User extensions

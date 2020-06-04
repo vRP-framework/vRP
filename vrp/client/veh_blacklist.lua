@@ -1,3 +1,6 @@
+-- https://github.com/ImagicTheCat/vRP
+-- MIT license (see LICENSE or vrp/vRPShared.lua)
+
 if not vRP.modules.veh_blacklist then return end
 
 local VehBlacklist = class("VehBlacklist", vRP.Extension)

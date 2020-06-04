@@ -1,3 +1,6 @@
+// https://github.com/ImagicTheCat/vRP
+// MIT license (see LICENSE or vrp/vRPShared.lua)
+
 var dynamic_classes = {}
 
 //define a dynamic class (every elements with this class will trigger the callback passing themselves when added)

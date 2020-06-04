@@ -1,3 +1,6 @@
+-- https://github.com/ImagicTheCat/vRP
+-- MIT license (see LICENSE or vrp/vRPShared.lua)
+
 if not vRP.modules.ped_blacklist then return end
 
 local PedBlacklist = class("PedBlacklist", vRP.Extension)

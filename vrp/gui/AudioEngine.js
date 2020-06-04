@@ -1,3 +1,6 @@
+// https://github.com/ImagicTheCat/vRP
+// MIT license (see LICENSE or vrp/vRPShared.lua)
+
 var clamp = function(val, min, max){ return Math.min(Math.max(min, val), max); }
 
 var is_playing = function(media)

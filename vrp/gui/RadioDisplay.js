@@ -1,3 +1,6 @@
+// https://github.com/ImagicTheCat/vRP
+// MIT license (see LICENSE or vrp/vRPShared.lua)
+
 function RadioDisplay()
 {
   this.div = document.createElement("div");

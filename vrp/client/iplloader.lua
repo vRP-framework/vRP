@@ -1,3 +1,6 @@
+-- https://github.com/ImagicTheCat/vRP
+-- MIT license (see LICENSE or vrp/vRPShared.lua)
+
 if vRP.cfg.iplload then
   Citizen.CreateThread(function()
     LoadMpDlcMaps()
