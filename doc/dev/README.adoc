@@ -129,7 +129,7 @@ The idea behind tunnel is to easily access any declared server function from any
 
 TIP: Good practice is to get the interface once and set it as a global, if you want to get multiple times the same interface from the same resource, you need to specify a unique identifier (the name of the resource + a unique id for each one). 
 
-NOTE: Tunnel and Proxy are blocking calls in the current coroutine until the values are returned, to bypass this behaviour, especially for the Tunnel to optimize speed (ping latency of each call), use `_` as prefix for the function name (Proxy/Tunnel interfaces should not have functions starting with `_`). This will discard the returned values, but if you still need them, you can make normal calls in a new Citizen thread with `Citizen.CreateThreadNow` or `async` to have non-blocking code.
+NOTE: Tunnel and Proxy are blocking calls in the current coroutine until the values are returned, to bypass this behaviour, especially for the Tunnel to optimize speed (ping latency of each call), use `+_+` as prefix for the function name (Proxy/Tunnel interfaces should not have functions starting with `+_+`). This will discard the returned values, but if you still need them, you can make normal calls in a new Citizen thread with `Citizen.CreateThreadNow` or `async` to have non-blocking code.
 
 WARNING: Also remember that Citizen event handlers (used by Proxy and Tunnel) may not work while loading the resource, to use the Proxy at loading time, you will need to delay it with `Citizen.CreateThread` or a `SetTimeout`.
 
@@ -234,7 +234,7 @@ Tunnel.getInterface(name,identifier)
 
 ==== Interface
 
-* interface defined function names should not start with an underscore (`_`)
+* interface defined function names should not start with an underscore (`+_+`)
 * the tunnel server-side call requires the player source as first parameter
 * the tunnel server-side called function can use the global `source` (correct until a TriggerEvent/yield/etc) as the remote player source
 * using an underscore to call a remote function interface ignores (no wait) the returned values
