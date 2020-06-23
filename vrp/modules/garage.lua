@@ -648,7 +648,7 @@ function Garage.event:playerSpawn(user, first_spawn)
         ment[2].pos = {x,y,z-1}
         vRP.EXT.Map.remote._addEntity(user.source,ment[1], ment[2])
 
-        user:setArea("vRP:garage:"..k,x,y,z,1,1.5,radius,height,enter,leave)
+        user:setArea("vRP:garage:"..k,x,y,z,radius,height,enter,leave)
       end
     end
   end
