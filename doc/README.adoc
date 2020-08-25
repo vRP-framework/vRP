@@ -33,13 +33,6 @@ A framework code should not be customized by definition, because a framework is 
 
 Clone the repository or download the master https://github.com/ImagicTheCat/vRP/archive/master.zip[archive] and copy the `vrp` directory to your resource folder. Add `vrp` to the loading resource list (first after the basic FiveM resources is better).
 
-[CAUTION]
-====
-The FiveM coroutines usage has issues which prevent vRP 2 to work properly (especially server-side), it may print this error `async wait(): Citizen.Await returned (nil) before the areturn call`.
-
-Until this https://github.com/citizenfx/fivem/pull/157[pull request] is accepted, you can apply it yourself by replacing the `fxserver/citizen/scripting/lua/scheduler.lua` file with this https://github.com/ImagicTheCat/fivem/blob/scheduler/data/shared/citizen/scripting/lua/scheduler.lua[one].
-====
-
 === Configuration
 
 WARNING: Only the files in the `cfg/` directory should be modified. 
