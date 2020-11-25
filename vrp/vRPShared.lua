@@ -131,12 +131,10 @@ end
 function vRPShared:triggerEvent(name, ...)
   local exts = self.ext_listeners[name]
   if exts then
-    local params = {...}
-    local max = table_maxn(params)
-
+    local params = table.pack(...)
     for ext,func in pairs(exts) do
       async(function()
-        func(ext, table.unpack(params, 1, max))
+        func(ext, table.unpack(params, 1, params.n))
       end)
     end
   end
@@ -146,26 +144,21 @@ end
 function vRPShared:triggerEventSync(name, ...)
   local exts = self.ext_listeners[name]
   if exts then
-    local params = {...}
-    local max = table_maxn(params)
+    local params = table.pack(...)
     local count = 0
-
     local r = async()
-
-    for ext,func in pairs(exts) do
+    for ext, func in pairs(exts) do
       count = count+1
     end
-
     for ext,func in pairs(exts) do
       async(function()
-        func(ext, table.unpack(params, 1,max))
+        func(ext, table.unpack(params, 1, params.n))
         count = count-1
         if count == 0 then -- all done
           r()
         end
       end)
     end
-
     r:wait() -- wait events completion
   end
 end

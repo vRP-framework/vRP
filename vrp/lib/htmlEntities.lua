@@ -1,16 +1,40 @@
+--[[
+The MIT License (MIT)
+
+Copyright (c) 2016 - 2018 Tiago Danin
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+]]
+
 -- Module options:
 local error_msg_htmlEntities = false
 local debug_htmlEntities = false
 local ASCII_htmlEntities = true
-local utf8_htmlEntities = true
 local register_global_module_htmlEntities = false
 local global_module_name_htmlEntities = 'htmlEntities'
 
 local htmlEntities = {
-	version = '1.1.1',
+	about = 'HTML entities decoding/encoding',
+	version = '1.3.1',
 	name = 'htmlEntities-for-lua',
-	author = 'Tiago Danin - 2017',
-	license = 'GPLv3',
+	author = 'Tiago Danin',
+	license = 'MIT',
 	page = 'https://TiagoDanin.github.io/htmlEntities-for-lua/'
 }
 
@@ -19,7 +43,7 @@ if register_global_module_htmlEntities then
 end
 
 local htmlEntities_table = {
-	['&Tab;'] = '	',
+	['&Tab;'] = ' ',
 	['&NewLine;'] = '\n',
 	['&excl;'] = '!',
 	['&QUOT;'] = '"',
@@ -2311,18 +2335,29 @@ function htmlEntities.ASCII_HEX (input)
 		if error_msg_htmlEntities then error('htmlEntities[ASCII_HEX] >> ERROR: input is value nil') end
 		return false
 	end
-	if math.abs(input) < 256 then
-		if _VERSION == 'Lua 5.3' then
-			return utf8.char(input)
-		else
-			local output = string.char(input)
-			if utf8_htmlEntities and not output:match('([%z\1-\127\194-\244][\128-\191]*)') then
-				return input
-			end
-			return output
-		end
+	if math.abs(_VERSION:sub(-1)) >= 3 then
+		return utf8.char(input)
 	else
-		return input
+		input = math.abs(input)
+		if input < 128 then
+			return string.char(input)
+		else
+			--> FIX UTF8 for Lua 5.2 and 5.1 https://stackoverflow.com/a/26052539
+			local bytemarkers = {{0x7FF,192},{0xFFFF,224},{0x1FFFFF,240}}
+			local charbytes = {}
+			for bytes, vals in ipairs(bytemarkers) do
+				if input <= vals[1] then
+					for b = bytes+1, 2, -1 do
+						local mod = input % 64
+						input = (input - mod) / 64
+						charbytes[b] = string.char(128 + mod)
+					end
+					charbytes[1] = string.char(vals[2] + input)
+					break
+				end
+			end
+			return table.concat(charbytes)
+		end
 	end
 end
 
@@ -2331,13 +2366,8 @@ function htmlEntities.ASCII_DEC (input)
 		if error_msg_htmlEntities then error('htmlEntities[ASCII_DEC] >> ERROR: input is value nil') end
 		return false
 	end
-	if string.len(input) == 2 then
-		input = tonumber(input, 16)
-		local output = htmlEntities.ASCII_HEX(input)
-		return output
-	else
-		return input
-	end
+	local output = htmlEntities.ASCII_HEX(tonumber(input, 16))
+	return output
 end
 
 function htmlEntities.decode (input)
@@ -2345,10 +2375,10 @@ function htmlEntities.decode (input)
 		if error_msg_htmlEntities then error('htmlEntities[decode] >> ERROR: input is value nil') end
 		return false
 	end
-	local output = string.gsub(input, '&.-;', htmlEntities_table)
+	local output = string.gsub(input, '&[%w#]-;', htmlEntities_table)
 	if ASCII_htmlEntities then
-		output = string.gsub(output, '&#x([1234567890]*);', htmlEntities.ASCII_DEC)
-		output = string.gsub(output, '&#([1234567890]*);', htmlEntities.ASCII_HEX)
+		output = string.gsub(output, '&#x([%w%d]*);', htmlEntities.ASCII_DEC)
+		output = string.gsub(output, '&#([%d]*);', htmlEntities.ASCII_HEX)
 	end
 
 	if debug_htmlEntities then print('>>'..output) end
@@ -2356,27 +2386,27 @@ function htmlEntities.decode (input)
 end
 
 function htmlEntities.encode (input)
-  if not input then
-    if error_msg_htmlEntities then error('htmlEntities[encode] >> ERROR: input is value nil') end
-    return false
-  end
-  input = htmlEntities.decode(input)
-  local output = ''
-  for k = 1, string.len(input) do
-    local input = string.sub(input,k,k)
-    -- MODIFIED TO PREVENT UTF8 ISSUES
-    if input == "<" or input == ">" then
-      output = output .. '&#'.. input:byte() ..';'
-    else
-      output = output..input
-    end
-  end
-
-  if debug_htmlEntities then print('>>'..output) end
-  return output
+	if not input then
+		if error_msg_htmlEntities then error('htmlEntities[encode] >> ERROR: input is value nil') end
+		return false
+	end
+	input = htmlEntities.decode(input)
+	local output = input:gsub('([%z\1-\127\194-\244][\128-\191]*)',
+	function(char)
+		local charbyte = char:byte()
+		if (string.len(char) == 1) then
+			if charbyte == 32 then -- Space char
+				return ' '
+			end
+			return '&#'.. charbyte ..';'
+		else
+			return char
+		end
+	end)
+	if debug_htmlEntities then print('>>'..output) end
+	return output
 end
 
---[[
 function string:htmlDecode(filter)
 	if not self then return false end
 	return htmlEntities.decode(self)
@@ -2386,6 +2416,5 @@ function string:htmlEncode(filter)
 	if not self then return false end
 	return htmlEntities.encode(self)
 end
---]]
 
 return htmlEntities

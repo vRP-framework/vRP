@@ -186,8 +186,6 @@ clone(t)
 
 parseInt(v)
 
-parseDouble(v)
-
 -- will remove chars not allowed/disabled by strchars
 -- allow_policy: if true, will allow all strchars, if false, will allow everything except the strchars
 sanitizeString(str, strchars, allow_policy)

@@ -125,15 +125,13 @@ function vRP:registerDBDriver(db_driver)
           self:log("Connected to DB using driver \""..name.."\".")
           self.db_initialized = true
           -- execute cached prepares
-          for _,prepare in pairs(self.cached_prepares) do
-            self.db_driver:onPrepare(table.unpack(prepare, 1, table_maxn(prepare)))
+          for _, prepare in pairs(self.cached_prepares) do
+            self.db_driver:onPrepare(table.unpack(prepare))
           end
-
           -- execute cached queries
-          for _,query in pairs(self.cached_queries) do
-            query[2](self.db_driver:onQuery(table.unpack(query[1], 1, table_maxn(query[1]))))
+          for _, query in pairs(self.cached_queries) do
+            query[2](self.db_driver:onQuery(table.unpack(query[1])))
           end
-
           self.cached_prepares = nil
           self.cached_queries = nil
         else
@@ -173,16 +171,14 @@ end
 ---- "execute": should return affected
 ---- "scalar": should return a scalar
 function vRP:query(name, params, mode)
+  if not mode then mode = "query" end
+
   if not self.prepared_queries[name] then
     self:error("query "..name.." doesn't exist.")
   end
-
-  if not mode then mode = "query" end
-
   if self.log_level > 0 then
     self:log("query "..name.." ("..mode..") params = "..json.encode(params or {}))
   end
-
   if self.db_initialized then -- direct call
     return self.db_driver:onQuery(name, params or {}, mode)
   else -- async call, wait query result

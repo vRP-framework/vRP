@@ -1,23 +1,11 @@
 -- https://github.com/ImagicTheCat/vRP
 -- MIT license (see LICENSE or vrp/vRPShared.lua)
 
--- this file define global tools required by vRP and vRP extensions
--- it will create module, SERVER, CLIENT, async, class...
+-- This file define global tools required by vRP and vRP extensions.
 
 -- side detection
 SERVER = IsDuplicityVersion()
 CLIENT = not SERVER
-
--- table.maxn replacement
-function table_maxn(t)
-  local max = 0
-  for k,v in pairs(t) do
-    local n = tonumber(k)
-    if n and n > max then max = n end
-  end
-
-  return max
-end
 
 local modules = {}
 
@@ -29,26 +17,24 @@ function module(rsc, path)
     path = rsc
     rsc = "vrp"
   end
-
   local key = rsc..path
-
   local module = modules[key]
   if module then -- cached module
     return module
   else
     local code = LoadResourceFile(rsc, path..".lua")
     if code then
-      local f,err = load(code, rsc.."/"..path..".lua")
+      local f, err = load(code, rsc.."/"..path..".lua")
       if f then
         local ok, res = xpcall(f, debug.traceback)
         if ok then
           modules[key] = res
           return res
         else
-          error("error loading module "..rsc.."/"..path..":"..res)
+          error("error loading module "..rsc.."/"..path..": "..res)
         end
       else
-        error("error parsing module "..rsc.."/"..path..":"..debug.traceback(err))
+        error("error parsing module "..rsc.."/"..path..": "..err)
       end
     else
       error("resource file "..rsc.."/"..path..".lua not found")
@@ -64,20 +50,19 @@ class = Luaoop.class
 -- Luaseq like for FiveM
 
 local function wait(self)
-  local rets = Citizen.Await(self.p)
-  if not rets then
+  local r = Citizen.Await(self.p)
+  if not r then
     if self.r then
-      rets = self.r
+      r = self.r
     else
       error("async wait(): Citizen.Await returned (nil) before the areturn call.")
     end
   end
-
-  return table.unpack(rets, 1, table_maxn(rets))
+  return table.unpack(r, 1, r.n)
 end
 
 local function areturn(self, ...)
-  self.r = {...}
+  self.r = table.pack(...)
   self.p:resolve(self.r)
 end
 
@@ -100,7 +85,6 @@ function tohex(str)
   return string.gsub(str, '.', hex_conv)
 end
 
-
 -- basic deep clone function (doesn't handle circular references)
 function clone(t)
   if type(t) == "table" then
@@ -108,7 +92,6 @@ function clone(t)
     for k,v in pairs(t) do
       new[k] = clone(v)
     end
-
     return new
   else
     return t
@@ -116,7 +99,6 @@ function clone(t)
 end
 
 function parseInt(v)
---  return cast(int,tonumber(v))
   local n = tonumber(v)
   if n == nil then 
     return 0
@@ -125,23 +107,11 @@ function parseInt(v)
   end
 end
 
-function parseDouble(v)
---  return cast(double,tonumber(v))
-  local n = tonumber(v)
-  if n == nil then n = 0 end
-  return n
-end
-
-function parseFloat(v)
-  return parseDouble(v)
-end
-
 -- will remove chars not allowed/disabled by strchars
 -- allow_policy: if true, will allow all strchars, if false, will allow everything except the strchars
 local sanitize_tmp = {}
 function sanitizeString(str, strchars, allow_policy)
   local r = ""
-
   -- get/prepare index table
   local chars = sanitize_tmp[strchars]
   if chars == nil then
@@ -154,7 +124,6 @@ function sanitizeString(str, strchars, allow_policy)
 
     sanitize_tmp[strchars] = chars
   end
-
   -- sanitize
   size = string.len(str)
   for i=1,size do
@@ -163,20 +132,16 @@ function sanitizeString(str, strchars, allow_policy)
       r = r..char
     end
   end
-
   return r
 end
 
 function splitString(str, sep)
   if sep == nil then sep = "%s" end
-
   local t={}
   local i=1
-
   for str in string.gmatch(str, "([^"..sep.."]+)") do
     t[i] = str
     i = i + 1
   end
-
   return t
 end
