@@ -14,9 +14,9 @@ This module adds GUI features.
 
 [WARNING]
 ====
-You should never modify vRP core files, if you need to customize the GUI you can use `GUI:setDiv` to add additional CSS (the override order should depends on `GUI:setDiv` call order).
+If GUI customization is needed, it's possible to use `GUI:setDiv` to add additional CSS (the override order should depends on `GUI:setDiv` call order).
 
-.You can even load a custom client-side `design.css` file like this:
+.It's even possible to load a custom client-side `design.css` file like this:
 [source,lua]
 ----
 -- client-side

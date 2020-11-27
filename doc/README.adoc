@@ -10,28 +10,11 @@ endif::[]
 
 = Documentation
 
-== Guidelines
-
-vRP is a framework, its goal is to provide a set of tools and flexibility.
-
-It implies that you should never modify the core files of vRP, but only the files in the `cfg` folder. 
-
-[CAUTION]
-====
-By modifiying the core files of vRP, you are not using the framework, instead you are creating a fork of vRP, which is not vRP anymore. Forks should be new maintained projects, not modifications from a single user. 
-
-Doing this fragments the vRP community, so vRP extensions are not guaranteed to work with everyone, causing a lot of issues. It also wastes your time by manually updating vRP or prevents you from doing it at all.
-
-Instead, vRP should be improved to be flexible as possible to suit your needs by making a **Feature request**, then developers can properly extend vRP by creating extensions without modifying core files, and everyone can use it.
-====
-
-A framework code should not be customized by definition, because a framework is used to build a custom experience by using the availables features. There is no point in saying "`You should create your custom framework.`", unless it doesn't fit your needs at all (most of the time filled by extensions).
-
 == Deployment
 
 === Installation
 
-Clone the repository or download the master https://github.com/ImagicTheCat/vRP/archive/master.zip[archive] and copy the `vrp` directory to your resource folder. Add `vrp` to the loading resource list (first after the basic FiveM resources is better).
+Clone the repository or download the master https://github.com/ImagicTheCat/vRP/archive/master.zip[archive] and copy the `vrp` directory to the resources folder. Add `vrp` to the loading resource list.
 
 === Configuration
 
@@ -40,18 +23,18 @@ WARNING: Only the files in the `cfg/` directory should be modified.
 There is one required file to configure before launching the server, `cfg/base.lua`, to setup the MySQL database credentials, but it also depends on the DB driver used.
 
 There is a lot to configure in vRP, everyone can make his unique server. +
-Everything you need to know is in the configuration files, default stuff is here as an example.
+See the vRP documentation and configuration files, default stuff is here as an example.
 
 ==== Database
 
-To run vRP, you also need to install a DB driver, it is a resource/extension used to communicate with a MySQL database. 
+To run vRP, we also need to install a DB driver, it is a resource/extension used to communicate with a MySQL database.
 
 NOTE: Some maintained DB drivers: https://github.com/ImagicTheCat/vRP-db-drivers +
 `ghmattimysql` bridge is recommended.
 
 DB drivers will register themselves with a specific name to use in `cfg/base.lua`. Since there is no guarantee about when the driver will be registered, all queries will be cached until that moment. 
 
-NOTE: `[vRP] DB driver "driver_name" not initialized yet (X prepares cached, Y queries cached).`  is not an error, but a warning that the driver is not registered yet and will stop being outputted if the driver is loaded (a message will also say that the driver is loaded).
+NOTE: `[vRP] DB driver "driver_name" not initialized yet (X prepares cached, Y queries cached).` is not an error, but a warning that the driver is not registered yet and will stop being outputted if the driver is loaded (a message will also say that the driver is loaded).
 
 ==== VoIP
 
@@ -59,9 +42,9 @@ See link:dev/modules/audio.adoc[audio module].
 
 === Update
 
-.A good way to update (bleeding-edge):
-. use git to clone vRP to create your own version of it, checkout the branch you want, create a branch from it
-. create a symbolic link (or an update script) to `vrp/` in your fxserver resources directory
+.A good way to update:
+. use git to clone vRP to create your own version of it, checkout the wanted branch, create a branch from it
+. create a symbolic link (or an update script) to `vrp/` in the fxserver resources directory
 . (repeat) configure, commit your changes, stay updated with the vRP repository, solve conflicts
 
 This way, you will know when config files should be updated and what exactly has been updated.
@@ -69,22 +52,9 @@ This way, you will know when config files should be updated and what exactly has
 .A more primitive way to update:
 . save your `cfg/` folder somewhere
 . copy all new files in `vrp/`
-. compare your old `cfg/` folder with the new one, fill the gaps (one mistake will break everything, take your time)
+. compare your old `cfg/` folder with the new one, fill the gaps
 . replace the new `cfg/` folder with the old modified `cfg/` folder
 
-=== Issues / Features / Help
+== Developement
 
-When submitting an issue, add any information you can find, with all details. Saying that something doesn't work is almost useless and will probably not be enough to solve the issue.
-If you have errors in your console BEFORE the issue happens, things could be corrupted, so the error is probably irrelevant. You should solve all unrelated errors before submitting issues.
-
-When submitting a feature request, make sure the feature is relevant about the core of the framework or already existing vRP features. vRP is a framework, so it doesn't aim to implement everything, but to give the tools to do so.
-
-WARNING: The issue section is only for bug reports and feature requests. Issues not related to the core of vRP, about old versions (no backwards update) or vRP modifications will be closed without warning.
-
-TIP: Before submitting an issue or a feature request, do a search in open and closed ones to know if it has been reported/requested before.
-
-NOTE: For questions, help, discussions around the project, please go instead on the vRP thread of the FiveM forum here: https://forum.fivem.net/t/release-vrp-framework/22894
-
-== Developers
-
-See the developers link:dev/README.adoc[documentation].
+In-depth documentation, vRP concepts and API reference: developement link:dev/README.adoc[documentation].

@@ -16,11 +16,76 @@ endif::[]
 
 vRP 2 Object-Oriented Programming uses the https://github.com/ImagicTheCat/Luaoop[Luaoop] library.
 
-NOTE: By using OOP, instead of loading resources communicating with vRP through Proxy, extensions can directly be loaded into the vRP resource context. Each extension keeps its data and is able to access other extensions data and methods, making extending vRP easier, more powerful (you can access stuff even if not exposed) and with less overhead.
+NOTE: By using OOP, instead of loading resources communicating with vRP through Proxy, extensions can directly be loaded into the vRP resource context. Each extension keeps its data and is able to access other extensions data and methods, making extending vRP easier, more powerful (we can access stuff even if not exposed) and with less overhead.
+
+=== Asynchronous
+
+vRP 2 extensively uses asynchronous tasks in a transparent way using coroutines, some functions may not return immediately (or never).
+
+=== DB driver
+
+A DB driver is a class handling MySQL queries. When the vRP MySQL API is used, the DB driver methods are called to process the queries. If the DB driver is not loaded yet, queries will be cached until loaded.
+
+=== Proxy and Tunnel
+
+The proxy library is used to call other resources functions through a proxy event.
+
+The idea behind tunnel is to easily access any exposed server function from any client resource, and to access any exposed client function from any server resource.
+
+TIP: Good practice is to get the interface once and set it as a global. If we want to get multiple times the same interface from the same resource, we need to specify a unique identifier (the name of the resource + a unique id for each one).
+
+NOTE: Tunnel and Proxy are blocking calls in the current coroutine until the values are returned, to bypass this behaviour, especially for the Tunnel to optimize speed (ping latency of each call), use `+_+` as a prefix for the function name (Proxy/Tunnel interfaces should not have functions starting with `+_+`). This will discard the returned values, but if we still need them, we can make normal calls in a new Citizen thread with `Citizen.CreateThreadNow` or `async` to have non-blocking code.
+
+WARNING: Also remember that Citizen event handlers (used by Proxy and Tunnel) may not work while loading the resource; to use the Proxy at loading time, we will need to delay it with `Citizen.CreateThread` or a `SetTimeout`.
+
+=== Data
+
+==== Multi-server and character
+
+vRP 2 has multi-server and multi-character support. Each server has a string identifier.
+
+WARNING: Players can use another character after spawned, thus extensions should properly handle character load/unload events and check if the character is ready.
+
+==== Key-value stores
+
+vRP provides a key-value API to store custom binary data in the database. A string key is associated to a binary value (ex: a Lua string). The key is a `VARCHAR(100)` and the value a `BLOB` (probably 65535 bytes).
+
+.Types
+[horizontal]
+global:: GData
+per server:: SData
+per user:: UData
+per character:: CData
+
+CAUTION: vRP core tables, as core files, should not be modified for extensions compatibility. New tables and queries should be created if the key-value system is not powerful enough.
+
+==== Core
+
+vRP core modules data may be stored in specific MySQL tables or using the key-value stores. For the latter, the keys will probably be prefixed by `vRP` and the binary data will use the https://msgpack.org[MessagePack] format.
+
+=== Script loading
+
+To use vRP 2, a script must be loaded in the vRP resource context of a specific side.
+
+[source,lua]
+----
+-- include `@vrp/lib/utils.lua` in `__resource.lua` (for the targeted side)
+
+local Proxy = module("vrp", "lib/Proxy")
+local vRP = Proxy.getInterface("vRP")
+
+vRP.loadScript("my_resource", "vrp") -- load "my_resource/vrp.lua"
+----
+
+The content of `vrp.lua` is now executed in the vRP context and can now use the API.
+
+NOTE: `vRP.loadScript()` is a proxy to call `module()` in the vRP context.
 
 === Extension
 
-An extension is a class extending vRP. Two versions of an extension (same name) can be loaded server-side and client-side.
+An extension is a class extending vRP.
+
+Two versions of the same extension (same name) can be loaded: for the server-side and the client-side. They will be able to interact with each other through the `tunnel`/`remote` interfaces.
 
 [source,lua]
 ----
@@ -83,9 +148,9 @@ local my_ext = Proxy.getInterface("vRP.EXT.MyExt")
 local info = my_ext.getInfo()
 ----
 
-IMPORTANT: Extensions don't need/should not use proxy between them.
+IMPORTANT: Extensions don't need and should not use proxy between them.
 
-The tunnel is accessible (from the client-side or server-side extension) like this:
+The tunnel is accessible (from the client-side or server-side extension) through the `remote` table.
 [source,lua]
 ----
 -- server-side
@@ -98,62 +163,6 @@ function MyExt.event:playerDeath()
   self.remote._test()
 end
 ----
-
-=== DB driver
-
-A DB driver is a class handling MySQL queries. When the vRP MySQL API is used, the DB driver methods are called to process the queries. If the DB driver is not loaded yet, queries will be cached until loaded.
-
-=== Data
-
-vRP provides basic methods to store custom binary data in the database. A string key is associated to a binary value (ex: a Lua string). The key is a `VARCHAR(100)` and the value a `BLOB` (probably 65535 bytes).
-
-[horizontal]
-global:: GData
-per server:: SData
-per user:: UData
-per character:: CData
-
-CAUTION: vRP core tables, as core files, should not be modified for the same reasons. New tables and queries should be created if the data system is not powerful enough.
-
-==== Multi-server and character
-
-vRP 2 has multi-server and multi-character support. Each server has a string identifier.
-
-WARNING: Players can use another character after spawned, so extensions should properly handle character load/unload events and check if the character is ready.
-
-=== Proxy and Tunnel
-
-The proxy library is used to call other resources functions through a proxy event.
-
-The idea behind tunnel is to easily access any declared server function from any client resource, and to access any declared client function from any server resource.
-
-TIP: Good practice is to get the interface once and set it as a global, if you want to get multiple times the same interface from the same resource, you need to specify a unique identifier (the name of the resource + a unique id for each one). 
-
-NOTE: Tunnel and Proxy are blocking calls in the current coroutine until the values are returned, to bypass this behaviour, especially for the Tunnel to optimize speed (ping latency of each call), use `+_+` as prefix for the function name (Proxy/Tunnel interfaces should not have functions starting with `+_+`). This will discard the returned values, but if you still need them, you can make normal calls in a new Citizen thread with `Citizen.CreateThreadNow` or `async` to have non-blocking code.
-
-WARNING: Also remember that Citizen event handlers (used by Proxy and Tunnel) may not work while loading the resource, to use the Proxy at loading time, you will need to delay it with `Citizen.CreateThread` or a `SetTimeout`.
-
-=== Asynchronous 
-
-vRP 2 extensively uses asynchronous tasks in a transparent way using coroutines, some functions may not return immediately (or never).
-
-== Loading script
-
-To use vRP 2, a script must be loaded in the vRP resource context of a specific side.
-
-[source,lua]
-----
--- include `@vrp/lib/utils.lua` in `__resource.lua` (for the targeted side)
-
-local Proxy = module("vrp", "lib/Proxy")
-local vRP = Proxy.getInterface("vRP")
-
-vRP.loadScript("my_resource", "vrp") -- load vrp.lua
-----
-
-The content of `vrp.lua` is now executed in the vRP context and can now use the API.
-
-NOTE: `vRP.loadScript()` has the same behavior as `module()`, but executed in the vRP context.
 
 == General API
 
