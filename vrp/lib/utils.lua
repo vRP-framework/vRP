@@ -13,23 +13,23 @@ local modules = {}
 -- rsc: resource name
 -- path: lua file path without extension
 function module(rsc, path)
-  if path == nil then -- shortcut for vrp, can omit the resource parameter
+  if not path then -- shortcut for vrp, can omit the resource parameter
     path = rsc
     rsc = "vrp"
   end
-  local key = rsc..path
-  local module = modules[key]
-  if module then -- cached module
-    return module
+  local key = rsc.."/"..path
+  local rets = modules[key]
+  if rets then -- cached module
+    return table.unpack(rets, 2, rets.n)
   else
     local code = LoadResourceFile(rsc, path..".lua")
     if code then
       local f, err = load(code, rsc.."/"..path..".lua")
       if f then
-        local ok, res = xpcall(f, debug.traceback)
-        if ok then
-          modules[key] = res
-          return res
+        local rets = table.pack(xpcall(f, debug.traceback))
+        if rets[1] then
+          modules[key] = rets
+          return table.unpack(rets, 2, rets.n)
         else
           error("error loading module "..rsc.."/"..path..": "..res)
         end
