@@ -164,6 +164,16 @@ function MyExt.event:playerDeath()
 end
 ----
 
+=== Profiler
+
+vRP embeds https://github.com/ImagicTheCat/ELProfiler[ELProfiler] to profile Lua code, vRP and resources based on it. When a resource loads `@vrp/lib/utils.lua` (which is the case for resources based on vRP), it will setup itself to be recorded by the profiler.
+
+To use the profiler, the module must be enabled in `cfg/modules.lua`. This will keep track of created coroutines to profile them. The overhead is probably small, thus it can be enabled on a live server.
+
+Two options are available (with permissions) in the main and admin menus to respectively profile the client-side or server-side.
+
+NOTE: Profiling has an overhead, but mostly because of the Lua debug hook. Being a statistical/sampling profiler, profiling a long period of time is fine (low memory usage).
+
 == General API
 
 === utils

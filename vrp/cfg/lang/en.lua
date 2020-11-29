@@ -717,6 +717,15 @@ local lang = {
   radio = {
     title = "Radio ON/OFF",
     description = "Allow to speak with [TEAM TEXT CHAT] and broadcast a GPS signal when ON."
+  },
+  profiler = {
+    title_server = "[Profiler:server]",
+    title_client = "[Profiler:client]",
+    prompt_resources = "Resource names to profile (line/space separated; empty for all) ?",
+    prompt_duration = "Duration (seconds) ?",
+    prompt_stack_depth = "Stack dump depth ? A higher value can help to locate hotpots more precisely.",
+    prompt_aggregate = "Aggregate profiles (yes/no) ? If yes, it will aggregate all profiles into a single one instead of one per resource.",
+    prompt_report = "Profiler report (copy with Ctrl-A Ctrl-C)."
   }
 }
 

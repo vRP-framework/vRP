@@ -37,7 +37,8 @@ server_scripts{
   "modules/ped_blacklist.lua",
   "modules/veh_blacklist.lua",
   "modules/edible.lua",
-  "modules/warp.lua"
+  "modules/warp.lua",
+  "modules/profiler.lua"
 }
 
 -- client scripts
@@ -69,6 +70,7 @@ files{
   "lib/IDManager.lua",
   "lib/ActionDelay.lua",
   "lib/Luang.lua",
+  "lib/ELProfiler.lua",
   "client/vRP.lua",
   "vRPShared.lua",
   "cfg/client.lua",

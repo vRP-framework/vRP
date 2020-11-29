@@ -41,6 +41,7 @@ NOTE: This is vRP 2, the second major version of vRP. It aims to have less overh
 * database MySQL "driver" system to interface to any MySQL resources
 * OOP design, more structured code and less overhead
 * proxy for easy inter-resource developement, tunnel for easy server/clients communication
+* Lua profiler
 * ...
 
 == Documentation

@@ -34,7 +34,9 @@ local modules = {
   ped_blacklist = true,
   veh_blacklist = true,
   edible = true,
-  warp = true
+  warp = true,
+  --
+  profiler = false
 }
 
 return modules

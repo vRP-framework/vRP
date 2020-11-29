@@ -76,6 +76,44 @@ function async(func)
   end
 end
 
+-- Profiling.
+local cfg_modules = module("vrp", "cfg/modules")
+if cfg_modules.profiler then
+  -- load profiler
+  local ELProfiler
+  if not os then -- fix missing os lib error
+    os = {}; ELProfiler = module("vrp", "lib/ELProfiler"); os = nil
+  else
+    ELProfiler = module("vrp", "lib/ELProfiler")
+  end
+  -- set clock
+  ELProfiler.setClock(function() return GetGameTimer()/1000 end)
+  -- patch coroutine.create to profile coroutines
+  local create = coroutine.create
+  coroutine.create = function(...)
+    local thread = create(...)
+    ELProfiler.watch(thread)
+    return thread
+  end
+  -- watch main thread
+  ELProfiler.watch(coroutine.running())
+  -- listen to profile requests
+  local rsc_name = GetCurrentResourceName()
+  if CLIENT then RegisterNetEvent("vRP:profile") end
+  local running = false
+  AddEventHandler("vRP:profile", function(id, options)
+    -- all or specific resources
+    if not running and (not next(options.resources) or options.resources[rsc_name]) then
+      running = true -- guard
+      ELProfiler.start(options.period, options.stack_depth)
+      Citizen.Wait(options.duration*1000)
+      local trigger = CLIENT and TriggerServerEvent or TriggerEvent
+      trigger("vRP:profile:res", id, rsc_name, ELProfiler.stop())
+      running = false
+    end
+  end)
+end
+
 local function hex_conv(c)
   return string.format('%02X', string.byte(c))
 end
