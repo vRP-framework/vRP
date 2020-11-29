@@ -31,7 +31,7 @@ function module(rsc, path)
           modules[key] = rets
           return table.unpack(rets, 2, rets.n)
         else
-          error("error loading module "..rsc.."/"..path..": "..res)
+          error("error loading module "..rsc.."/"..path..": "..rets[2])
         end
       else
         error("error parsing module "..rsc.."/"..path..": "..err)
