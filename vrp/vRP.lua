@@ -452,6 +452,8 @@ function vRP:onPlayerConnecting(source, name, setMessage, deferrals)
             self:triggerEvent("playerJoin", user)
             deferrals.done()
           else -- already connected
+            local user = self.users[user_id]
+
             self:log(user.name.." ("..user.endpoint..") re-joined (user_id = "..user.id..")")
 
             self.users_by_source[user.source] = nil -- remove old entry
