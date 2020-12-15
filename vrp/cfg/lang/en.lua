@@ -32,6 +32,26 @@ local lang = {
       error = "~r~Couldn't delete character #{1}."
     }
   },
+  login = {
+    info = {
+      title = "Login info",
+      description = "<em>Whitelisted: </em>{1}<br /><em>Banned: </em>{2}<br /><em>Ban reason: </em>{3}<br /><br />(valid to update)"
+    },
+    ban = {
+      title = "Ban",
+      prompt_duration = "Duration (-1: \"forever\", X: seconds, Xm: minutes, Xh: hours, Xd: days):",
+      prompt_reason = "Reason: "
+    },
+    unban = {
+      title = "Unban"
+    },
+    whitelist = {
+      title = "Whitelist user"
+    },
+    unwhitelist = {
+      title = "Un-whitelist user"
+    }
+  },
   admin = {
     title = "Admin",
     call_admin = {
@@ -88,24 +108,11 @@ local lang = {
         title = "#{1}: {2}",
         info = {
           title = "Info",
-          description = "<em>Endpoint: </em>{1}<br /><em>Source: </em>{2}<br /><em>Last login: </em>{3}<br /><em>Character id: </em>{4}<br /><em>Banned: </em>{5}<br /><em>Whitelisted: </em>{6}<br /><br />(valid to update)"
+          description = "<em>Endpoint: </em>{1}<br /><em>Source: </em>{2}<br /><em>Last login: </em>{3}<br /><em>Character id: </em>{4}<br /><br /><br />(valid to update)"
         },
         kick = {
           title = "Kick",
           prompt = "Reason: "
-        },
-        ban = {
-          title = "Ban",
-          prompt = "Reason: "
-        },
-        unban = {
-          title = "Unban"
-        },
-        whitelist = {
-          title = "Whitelist user"
-        },
-        unwhitelist = {
-          title = "Un-whitelist user"
         },
         tptome = {
           title = "TpToMe"

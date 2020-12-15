@@ -1,0 +1,37 @@
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+:toc: left
+:toclevels: 5
+
+= Login
+
+This is the base login module with whitelist and ban features.
+
+== Extension
+
+=== Server
+
+[source,lua]
+----
+self.cfg
+
+-- return (end_timestamp, reason) if banned or nil
+Login:checkBanned(user_id)
+
+-- end_timestamp: POSIX timestamp (0: not banned, 2^32-1: banned "forever")
+-- reason: (optional)
+Login:setBanned(user_id, end_timestamp, reason)
+
+Login:isWhitelisted(user_id)
+
+Login:setWhitelisted(user_id, whitelisted)
+
+-- duration: in seconds (-1: ban "forever")
+-- reason: (optional)
+Login:ban(user, duration, reason)
+----

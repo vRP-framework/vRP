@@ -15,6 +15,26 @@ local lang = {
       title = "Menu"
     }
   },
+  login = {
+    info = {
+      title = "Login info",
+      description = "<em>Whitelisté: </em>{1}<br /><em>Bannis: </em>{2}<br /><em>Raison du ban: </em>{3}<br /><br />(valider pour mettre à jour)"
+    },
+    ban = {
+      title = "Ban",
+      prompt_duration = "Durée (-1: \"pour toujours\", X: secondes, Xm: minutes, Xh: heures, Xd: jours):",
+      prompt_reason = "Raison: "
+    },
+    unban = {
+      title = "Unban"
+    },
+    whitelist = {
+      title = "Whitelist user"
+    },
+    unwhitelist = {
+      title = "Un-whitelist user"
+    }
+  },
   characters = {
     title = "[Personnages]",
     character = {
@@ -87,24 +107,11 @@ local lang = {
         title = "#{1}: {2}",
         info = {
           title = "Info",
-          description = "<em>Endpoint: </em>{1}<br /><em>Source: </em>{2}<br /><em>Dernière connexion: </em>{3}<br /><em>Id personnage: </em>{4}<br /><em>Bannis: </em>{5}<br /><em>Whitelisté: </em>{6}<br /><br />(valider pour mettre à jour)"
+          description = "<em>Endpoint: </em>{1}<br /><em>Source: </em>{2}<br /><em>Dernière connexion: </em>{3}<br /><em>Id personnage: </em>{4}<br /><br />(valider pour mettre à jour)"
         },
         kick = {
           title = "Kick",
           prompt = "Raison: "
-        },
-        ban = {
-          title = "Ban",
-          prompt = "Raison: "
-        },
-        unban = {
-          title = "Unban"
-        },
-        whitelist = {
-          title = "Whitelist user"
-        },
-        unwhitelist = {
-          title = "Un-whitelist user"
         },
         tptome = {
           title = "TpToMe"

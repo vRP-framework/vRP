@@ -11,6 +11,7 @@ server_scripts{
   "modules/map.lua",
   "modules/gui.lua",
   "modules/audio.lua",
+  "modules/login.lua",
   "modules/admin.lua",
   "modules/identity.lua",
   "modules/group.lua",

@@ -13,18 +13,13 @@ vRP = cvRP() -- instantiate vRP
 
 local pvRP = {}
 -- load script in vRP context
-function pvRP.loadScript(resource, path)
-  module(resource, path)
-end
-
+pvRP.loadScript = module
 Proxy.addInterface("vRP", pvRP)
 
 -- queries
 vRP:prepare("vRP/base_tables",[[
 CREATE TABLE IF NOT EXISTS vrp_users(
   id INTEGER AUTO_INCREMENT,
-  whitelisted BOOLEAN,
-  banned BOOLEAN,
   CONSTRAINT pk_user PRIMARY KEY(id)
 );
 
@@ -70,7 +65,6 @@ CREATE TABLE IF NOT EXISTS vrp_global_data(
   dvalue BLOB,
   CONSTRAINT pk_global_data PRIMARY KEY(dkey)
 );
-
 ]])
 
 vRP:prepare("vRP/create_user","INSERT INTO vrp_users(whitelisted,banned) VALUES(false,false); SELECT LAST_INSERT_ID() AS id")
@@ -88,29 +82,16 @@ vRP:prepare("vRP/get_userdata","SELECT dvalue FROM vrp_user_data WHERE user_id =
 vRP:prepare("vRP/set_characterdata","REPLACE INTO vrp_character_data(character_id,dkey,dvalue) VALUES(@character_id,@key,UNHEX(@value))")
 vRP:prepare("vRP/get_characterdata","SELECT dvalue FROM vrp_character_data WHERE character_id = @character_id AND dkey = @key")
 
-
 vRP:prepare("vRP/set_serverdata","REPLACE INTO vrp_server_data(id,dkey,dvalue) VALUES(@id,@key,UNHEX(@value))")
 vRP:prepare("vRP/get_serverdata","SELECT dvalue FROM vrp_server_data WHERE id = @id AND dkey = @key")
 
 vRP:prepare("vRP/set_globaldata","REPLACE INTO vrp_global_data(dkey,dvalue) VALUES(@key,UNHEX(@value))")
 vRP:prepare("vRP/get_globaldata","SELECT dvalue FROM vrp_global_data WHERE dkey = @key")
 
-
-vRP:prepare("vRP/get_banned","SELECT banned FROM vrp_users WHERE id = @user_id")
-vRP:prepare("vRP/set_banned","UPDATE vrp_users SET banned = @banned WHERE id = @user_id")
-vRP:prepare("vRP/get_whitelisted","SELECT whitelisted FROM vrp_users WHERE id = @user_id")
-vRP:prepare("vRP/set_whitelisted","UPDATE vrp_users SET whitelisted = @whitelisted WHERE id = @user_id")
-
 -- init tables
-async(function()
-  vRP:execute("vRP/base_tables")
-end)
+async(function() vRP:execute("vRP/base_tables") end)
 
 -- handlers
-
-AddEventHandler("playerConnecting",function(name, setMessage, deferrals)
-  vRP:onPlayerConnecting(source, name, setMessage, deferrals)
-end)
 
 AddEventHandler("playerDropped",function(reason)
   vRP:onPlayerDropped(source)
@@ -129,7 +110,6 @@ end)
 local lang = vRP.lang
 
 -- Base extension
-
 local Base = class("Base", vRP.Extension)
 
 -- PRIVATE METHODS
@@ -147,7 +127,6 @@ local function menu_characters(self)
       end
     end
   end
-
   local function m_create(menu)
     local user = menu.user
     if user:createCharacter() then
@@ -156,10 +135,8 @@ local function menu_characters(self)
       self.remote._notify(user.source, lang.characters.create.error())
     end
   end
-
   local function m_delete(menu)
     local user = menu.user
-
     local cid = parseInt(user:prompt(lang.characters.delete.prompt(), ""))
     if user:deleteCharacter(cid) then
       user:actualizeMenu()
@@ -167,22 +144,18 @@ local function menu_characters(self)
       self.remote._notify(user.source, lang.characters.delete.error({cid}))
     end
   end
-
   vRP.EXT.GUI:registerMenuBuilder("characters", function(menu)
     local user = menu.user
     menu.title = lang.characters.title()
     menu.css.header_color = "rgba(0,125,255,0.75)"
-
     -- characters
     local characters = user:getCharacters()
     for _, cid in pairs(characters) do
       local identity = vRP.EXT.Identity:getIdentity(cid)
       local prefix
       if cid == user.cid then prefix = "* " else prefix = "" end
-
       menu:addOption(prefix..lang.characters.character.title({cid, htmlEntities.encode(identity and identity.name or ""), htmlEntities.encode(identity and identity.firstname or "")}), m_use, nil, cid)
     end
-
     menu:addOption(lang.characters.create.title(), m_create)
     menu:addOption(lang.characters.delete.title(), m_delete)
   end)
@@ -225,7 +198,7 @@ function Base.event:playerSpawn(user, first_spawn)
     -- notify last login
     if user.last_login then
       SetTimeout(15000,function()
-        self.remote._notify(user.source,lang.common.welcome({user.last_login}))
+        self.remote._notify(user.source, lang.common.welcome({user.last_login}))
       end)
     end
   end

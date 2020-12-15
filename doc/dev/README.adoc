@@ -433,14 +433,6 @@ vRP:execute(name, params)
 -- shortcut for vRP.query with "scalar"
 vRP:scalar(name, params)
 
-vRP:isBanned(user_id)
-
-vRP:setBanned(user_id,banned)
-
-vRP:isWhitelisted(user_id)
-
-vRP:setWhitelisted(user_id,whitelisted)
-
 -- user data
 -- value: binary string
 vRP:setUData(user_id,key,value)
@@ -465,9 +457,8 @@ vRP:setGData(key,value)
 
 vRP:getGData(key)
 
-vRP:ban(user,reason)
-
-vRP:kick(user,reason)
+-- reason: (optional)
+vRP:kick(user, reason)
 
 vRP:save()
 ----
