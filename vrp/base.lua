@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS vrp_global_data(
 );
 ]])
 
-vRP:prepare("vRP/create_user","INSERT INTO vrp_users(whitelisted,banned) VALUES(false,false); SELECT LAST_INSERT_ID() AS id")
+vRP:prepare("vRP/create_user","INSERT INTO vrp_users(id) VALUES(DEFAULT); SELECT LAST_INSERT_ID() AS id")
 
 vRP:prepare("vRP/create_character", "INSERT INTO vrp_characters(user_id) VALUES(@user_id); SELECT LAST_INSERT_ID() AS id")
 vRP:prepare("vRP/delete_character", "DELETE FROM vrp_characters WHERE id = @id AND user_id = @user_id")
