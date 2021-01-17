@@ -122,7 +122,7 @@ local function define_basics(self)
 
   self:defineType("liquid", lang.edible.liquid.action(), function(user, edible)
     vRP.EXT.Base.remote._playAnim(user.source,true,liquid_seq,false)
-    vRP.EXT.Audio.remote._playAudioSource(-1, "sounds/drinking.ogg", 1, 0,0,0, 30, user.source)
+    vRP.EXT.Audio.remote._playAudioSource(-1, self.cfg.liquid_sound, 1, 0,0,0, 30, user.source)
     vRP.EXT.Base.remote._notify(user.source, lang.edible.liquid.notify({edible.name}))
   end)
 
