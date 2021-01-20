@@ -146,7 +146,7 @@ AddEventHandler("playerConnecting", function(name, setMessage, deferrals)
   local self = vRP.EXT.Login
   deferrals.defer()
   Citizen.Wait(0)
-  deferrals.update("Authentification...")
+  deferrals.update("Authentication...")
   local user_id = vRP:authUser(source)
   if user_id then
     self:log(vRP.getPlayerName(source).." ("..vRP.getPlayerEndpoint(source)..") joined (user_id = "..user_id..")")
@@ -171,6 +171,6 @@ AddEventHandler("playerConnecting", function(name, setMessage, deferrals)
   else
     self:log(name.." ("..vRP.getPlayerEndpoint(source)..") rejected: identification error")
     Citizen.Wait(0)
-    deferrals.done("Authentification failed.")
+    deferrals.done("Authentication failed.")
   end
 end)
