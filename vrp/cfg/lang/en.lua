@@ -172,7 +172,7 @@ local lang = {
     },
     money_binder = {
       name = "Money binder",
-      description = "Used to bind 1000$ of money.",
+      description = "Used to bind $1000 of money.",
       bind = {
         title = "Bind money"
       }
@@ -224,17 +224,17 @@ local lang = {
     coma_display = [[You are in a coma, you can give up on life <span class="key">[JUMP]</span> or wait for help (min <span class="countdown" data-duration="{1}"></span>).<br /> <span class="countdown" data-duration="{2}"></span> remaining.]]
   },
   money = {
-    display = "{1} <span class=\"symbol\">$</span>",
-    given = "Given ~r~{1}$.",
-    received = "Received ~g~{1}$.",
+    display = "<span class=\"symbol\">$</span>{1}",
+    given = "Given ~r~${1}.",
+    received = "Received ~g~${1}.",
     not_enough = "~r~Not enough money.",
-    paid = "Paid ~r~{1}$.",
+    paid = "Paid ~r~${1}.",
     give = {
       title = "Give money",
       description = "Give money to the nearest player.",
       prompt = "Amount to give:"
     },
-    transformer_recipe = "{1} $<br />"
+    transformer_recipe = "${1}<br />"
   },
   inventory = {
     title = "Inventory",
@@ -275,19 +275,19 @@ local lang = {
     title = "ATM",
     info = {
       title = "Info",
-      bank = "bank: {1} $"
+      bank = "bank: ${1}"
     },
     deposit = {
       title = "Deposit",
       description = "wallet to bank",
       prompt = "Enter amount of money for deposit:",
-      deposited = "~r~{1}$~s~ deposited."
+      deposited = "~r~${1}~s~ deposited."
     },
     withdraw = {
       title = "Withdraw",
       description = "bank to wallet",
       prompt = "Enter amount of money to withdraw:",
-      withdrawn = "~g~{1}$ ~s~withdrawn.",
+      withdrawn = "~g~${1}~s~ withdrawn.",
       not_enough = "~r~You don't have enough money in bank."
     }
   },
@@ -295,35 +295,35 @@ local lang = {
     title = "Chamber of Commerce",
     identity = {
       title = "Business",
-      info = "<em>name: </em>{1}<br /><em>capital: </em>{2} $"
+      info = "<em>name: </em>{1}<br /><em>capital: </em>${2}"
     },
     directory = {
       title = "Directory",
       description = "Business directory.",
       dprev = "> Prev",
       dnext = "> Next",
-      info = "<em>capital: </em>{1} $<br /><em>owner: </em>{2} {3}<br /><em>registration n°: </em>{4}<br /><em>phone: </em>{5}"
+      info = "<em>capital: </em>${1}<br /><em>owner: </em>{2} {3}<br /><em>registration n°: </em>{4}<br /><em>phone: </em>{5}"
     },
     info = {
       title = "Business info",
-      info = "<em>name: </em>{1}<br /><em>capital: </em>{2} $<br /><em>capital transfer: </em>{3} $<br /><br/>Capital transfer is the amount of money transfered for a business economic period, the maximum is the business capital."
+      info = "<em>name: </em>{1}<br /><em>capital: </em>${2}<br /><em>capital transfer: </em>${3}<br /><br/>Capital transfer is the amount of money transfered for a business economic period, the maximum is the business capital."
     },
     addcapital = {
       title = "Add capital",
       description = "Add capital to your business.",
       prompt = "Amount to add to the business capital:",
-      added = "~r~{1}$ ~s~added to the business capital."
+      added = "~r~${1} ~s~added to the business capital."
     },
     launder = {
       title = "Money laundering",
       description = "Use your business to launder dirty money.",
-      prompt = "Amount of dirty money to launder (max {1} $): ",
-      laundered = "~g~{1}$ ~s~laundered.",
+      prompt = "Amount of dirty money to launder (max ${1}): ",
+      laundered = "~g~${1} ~s~laundered.",
       not_enough = "~r~Not enough dirty money."
     },
     open = {
       title = "Open business",
-      description = "Open your business, minimum capital is {1} $.",
+      description = "Open your business, minimum capital is ${1}.",
       prompt_name = "Business name (can't change after, max {1} chars):",
       prompt_capital = "Initial capital (min {1})",
       created = "~g~Business created."
@@ -340,7 +340,7 @@ local lang = {
       title = "City Hall",
       new_identity = {
         title = "New identity",
-        description = "Create a new identity, cost = {1} $.",
+        description = "Create a new identity, cost = ${1}.",
         prompt_firstname = "Enter your firstname:",
         prompt_name = "Enter your name:",
         prompt_age = "Enter your age:",
@@ -423,7 +423,7 @@ local lang = {
         checked = "~b~You have been checked.",
         info = {
           title = "Info",
-          description = "<em>Wallet: </em>{1} $"
+          description = "<em>Wallet: </em>${1}"
         }
       },
       seize = {
@@ -443,9 +443,9 @@ local lang = {
       fine = {
         title = "Fine",
         description = "Fine the nearest player.",
-        fined = "~b~Fined ~s~{2} $ for ~b~{1}.",
-        notify_fined = "~b~You have been fined ~s~ {2} $ for ~b~{1}.",
-        record = "[Fine] {2} $ for {1}"
+        fined = "~b~Fined ~s~${2} for ~b~{1}.",
+        notify_fined = "~b~You have been fined ~s~ ${2} for ~b~{1}.",
+        record = "[Fine] ${2} for {1}"
       },
       store_weapons = {
         title = "Store weapons",
@@ -509,7 +509,7 @@ local lang = {
     announce = {
       title = "Announce",
       description = "Post an announce visible to everyone for a few seconds.",
-      item_desc = "{1} $<br /><br/>{2}",
+      item_desc = "${1}<br /><br/>{2}",
       prompt = "Announce content (10-1000 chars): "
     },
     call = {
@@ -537,14 +537,14 @@ local lang = {
     },
     buy = {
       title = "Buy",
-      description = "Buy a home here, price is {1} $.",
+      description = "Buy a home here, price is ${1}.",
       bought = "~g~Bought.",
       full = "~r~The place is full.",
       have_home = "~r~You already have a home."
     },
     sell = {
       title = "Sell",
-      description = "Sell your home for {1} $",
+      description = "Sell your home for ${1}",
       sold = "~g~Sold.",
       no_home = "~r~You don't have a home here."
     },
@@ -580,7 +580,7 @@ local lang = {
         title = "Start bet",
         description = "Start a bet with players near you, the winner will be randomly selected.",
         prompt = "Bet amount:",
-        request = "[BET] Do you want to bet {1} $ ?",
+        request = "[BET] Do you want to bet ${1} ?",
         started = "~g~Bet started."
       }
     },
@@ -598,13 +598,13 @@ local lang = {
       description = "Owned vehicles.",
       already_out = "This vehicle is already out.",
       force_out = {
-        request = "This vehicle is already out, do you want to pay a {1} $ fee to fetch it ?"
+        request = "This vehicle is already out, do you want to pay a ${1} fee to fetch it ?"
       }
     },
     buy = {
       title = "Buy",
       description = "Buy vehicles.",
-      info = "{1} $<br /><br />{2}"
+      info = "${1}<br /><br />{2}"
     },
     sell = {
       title = "Sell",
@@ -668,13 +668,13 @@ local lang = {
   shop = {
     title = "Shop ({1})",
     prompt = "Amount of {1} to buy:",
-    info = "{1} $<br /><br />{2}"
+    info = "${1}<br /><br />{2}"
   },
   skinshop = {
     title = "Skinshop",
     info = {
       title = "Info",
-      description = "Select a skin part below.<br /><br /><em>Current price: </em>{1} $"
+      description = "Select a skin part below.<br /><br /><em>Current price: </em>${1}"
     },
     model = "Model",
     texture = "Texture",
@@ -697,7 +697,7 @@ local lang = {
   hidden_transformer = {
     informer = {
       title = "Illegal Informer",
-      description = "{1} $",
+      description = "${1}",
       bought = "~g~Position sent to your GPS."
     }
   },
