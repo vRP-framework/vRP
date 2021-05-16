@@ -5,8 +5,6 @@ ifdef::env-github[]
 :caution-caption: :fire:
 :warning-caption: :warning:
 endif::[]
-:toc: left
-:toclevels: 5
 
 = vRP
 
@@ -28,7 +26,7 @@ image::http://i.imgur.com/dyePK6Q.png[Support me and the project on Patreon,link
 
 https://pledgie.com/campaigns/34016[(old pledgie, thank you to the donors)]
 
-NOTE: This is vRP 2, the second major version of vRP. It aims to have less overhead and a more straightforward and structured approach using OOP. This will probably be the last major version, vRP based resources can be updated for vRP 2 using the extension system. See the link:doc/dev/README.adoc[developers documentation].
+NOTE: This is vRP 2, the second major version of vRP. It aims to have less overhead and a more straightforward and structured approach using OOP. This will probably be the last major version, vRP based resources can be updated for vRP 2 using the extension system.
 
 .Features
 * basic admin tools (kick,ban,whitelist), groups/permissions, languages, identification system (persistent user id for database storage), user/character/server/global custom data key/value
@@ -46,7 +44,7 @@ NOTE: This is vRP 2, the second major version of vRP. It aims to have less overh
 
 == Documentation
 
-See the link:doc/README.adoc[documentation].
+See the xref:doc/index.adoc[documentation].
 
 .See also (and use it as a basis to understand how to develop extensions for vRP):
 * https://github.com/ImagicTheCat/vRP-db-drivers (some maintained DB drivers)

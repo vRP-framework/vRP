@@ -1,14 +1,4 @@
-ifdef::env-github[]
-:tip-caption: :bulb:
-:note-caption: :information_source:
-:important-caption: :heavy_exclamation_mark:
-:caution-caption: :fire:
-:warning-caption: :warning:
-endif::[]
-:toc: left
-:toclevels: 5
-
-= Documentation
+= vRP Documentation
 
 == Deployment
 
@@ -38,7 +28,7 @@ NOTE: `[vRP] DB driver "driver_name" not initialized yet (X prepares cached, Y q
 
 ==== VoIP
 
-See link:dev/modules/audio.adoc[audio module].
+See xref:dev/modules/audio.adoc[audio module].
 
 === Update
 
@@ -57,4 +47,4 @@ This way, you will know when config files should be updated and what exactly has
 
 == Developement
 
-In-depth documentation, vRP concepts and API reference: developement link:dev/README.adoc[documentation].
+In-depth documentation, concepts and API reference: xref:dev/index.adoc[vRP Developer Documentation].

@@ -1,14 +1,7 @@
-ifdef::env-github[]
-:tip-caption: :bulb:
-:note-caption: :information_source:
-:important-caption: :heavy_exclamation_mark:
-:caution-caption: :fire:
-:warning-caption: :warning:
-endif::[]
 :toc: left
-:toclevels: 5
+:toclevels: 2
 
-= Developer documentation
+= vRP Developer Documentation
 
 == Concepts
 
@@ -489,4 +482,36 @@ self.cfg -- cfg/client config
 
 == Modules
 
-See link:modules/[].
+
+include::modules/admin.adoc[leveloffset=+2]
+include::modules/aptitude.adoc[leveloffset=+2]
+include::modules/atm.adoc[leveloffset=+2]
+include::modules/audio.adoc[leveloffset=+2]
+include::modules/base.adoc[leveloffset=+2]
+include::modules/business.adoc[leveloffset=+2]
+include::modules/cloak.adoc[leveloffset=+2]
+include::modules/edible.adoc[leveloffset=+2]
+include::modules/emotes.adoc[leveloffset=+2]
+include::modules/garage.adoc[leveloffset=+2]
+include::modules/group.adoc[leveloffset=+2]
+include::modules/gui.adoc[leveloffset=+2]
+include::modules/hidden_transformer.adoc[leveloffset=+2]
+include::modules/home.adoc[leveloffset=+2]
+include::modules/home_components.adoc[leveloffset=+2]
+include::modules/identity.adoc[leveloffset=+2]
+include::modules/inventory.adoc[leveloffset=+2]
+include::modules/login.adoc[leveloffset=+2]
+include::modules/map.adoc[leveloffset=+2]
+include::modules/mission.adoc[leveloffset=+2]
+include::modules/money.adoc[leveloffset=+2]
+include::modules/ped_blacklist.adoc[leveloffset=+2]
+include::modules/phone.adoc[leveloffset=+2]
+include::modules/player_state.adoc[leveloffset=+2]
+include::modules/police.adoc[leveloffset=+2]
+include::modules/radio.adoc[leveloffset=+2]
+include::modules/shop.adoc[leveloffset=+2]
+include::modules/skinshop.adoc[leveloffset=+2]
+include::modules/survival.adoc[leveloffset=+2]
+include::modules/transformer.adoc[leveloffset=+2]
+include::modules/veh_blacklist.adoc[leveloffset=+2]
+include::modules/warp.adoc[leveloffset=+2]
