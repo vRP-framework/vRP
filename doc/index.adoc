@@ -28,7 +28,7 @@ NOTE: `[vRP] DB driver "driver_name" not initialized yet (X prepares cached, Y q
 
 ==== VoIP
 
-See xref:dev/modules/audio.adoc[audio module].
+See xref:dev/index.adoc#_audio[audio module].
 
 === Update
 
