@@ -44,7 +44,7 @@ NOTE: This is vRP 2, the second major version of vRP. It aims to have less overh
 
 == Documentation
 
-See the xref:doc/index.adoc[documentation].
+See the https://imagicthecat.github.io/vRP[documentation].
 
 .See also (and use it as a basis to understand how to develop extensions for vRP):
 * https://github.com/ImagicTheCat/vRP-db-drivers (some maintained DB drivers)
