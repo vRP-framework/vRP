@@ -254,9 +254,9 @@ local lang = {
     missing = "~r~Faltando {2} {1}.",
     full = "~r~Inventário cheio.",
     chest = {
-      title = "Báu",
-      already_opened = "~r~Este báu já foi aberto por alguém.",
-      full = "~r~Báu cheio.",
+      title = "Baú",
+      already_opened = "~r~Este baú já foi aberto por alguém.",
+      full = "~r~Baú cheio.",
       take = {
         title = "Pegar",
         prompt = "Quantidade (max {1}):"
@@ -320,7 +320,7 @@ local lang = {
     },
     open = {
       title = "Abrir empresa",
-      description = "Abra seu negócio, minímo de capital para se investir {1} $.",
+      description = "Abra seu negócio, mínimo de capital para se investir {1} $.",
       prompt_name = "Nome da empresa (não pode mudar após, max {1} chars):",
       prompt_capital = "Capital Inicial (min {1})",
       created = "~g~Empresa criada."
@@ -345,7 +345,7 @@ local lang = {
     }
   },
   police = {
-    title = "Policía",
+    title = "Polícia",
     wanted = "Procurado Rank {1}",
     not_handcuffed = "~r~Não algemado",
     cloakroom = {
@@ -513,7 +513,7 @@ local lang = {
       ask = "Aceitar ligação de {1} ?",
       notify_to = "Ligando~b~ {1}...",
       notify_from = "Ligação recebida de ~b~ {1}...",
-      notify_refused = "Ligar para ~b~ {1}... ~r~ refused."
+      notify_refused = "Ligação para ~b~ {1}... ~r~ recusada."
     },
     hangup = {
       title = "Desligar",
@@ -547,7 +547,7 @@ local lang = {
     },
     intercom = {
       title = "Interfone",
-      description = "Use interfone para entrar na sua casa ou na de um amigo.",
+      description = "Use o interfone para entrar na sua casa ou na de um amigo.",
       prompt = "Número:",
       not_available = "~r~Não disponível.",
       refused = "~r~Recusou sua entrada.",
@@ -675,7 +675,7 @@ local lang = {
     },
     model = "Model",
     texture = "Textura",
-    palette = "Palette",
+    palette = "Paleta",
     color_primary = "Cor Primária",
     color_secondary = "Cor Secundária",
     opacity = "Opacidade",
