@@ -45,6 +45,6 @@ This way, you will know when config files should be updated and what exactly has
 . compare your old `cfg/` folder with the new one, fill the gaps
 . replace the new `cfg/` folder with the old modified `cfg/` folder
 
-== Developement
+== Development
 
 In-depth documentation, concepts and API reference: xref:dev/index.adoc[vRP Developer Documentation].
