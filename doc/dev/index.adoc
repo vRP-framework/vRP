@@ -1,7 +1,7 @@
+= vRP Developer Documentation
 :toc: left
 :toclevels: 2
-
-= vRP Developer Documentation
+:sectanchors:
 
 == Concepts
 

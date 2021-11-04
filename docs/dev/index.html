@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="generator" content="Asciidoctor 2.0.15">
+<meta name="generator" content="Asciidoctor 2.0.16">
 <title>vRP Developer Documentation</title>
 <style>
 /*! normalize.css v2.1.2 | MIT License | git.io/normalize */
@@ -797,10 +797,10 @@ b.conum * { color: inherit !important; }
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_concepts">Concepts</h2>
+<h2 id="_concepts"><a class="anchor" href="#_concepts"></a>Concepts</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_oop">OOP</h3>
+<h3 id="_oop"><a class="anchor" href="#_oop"></a>OOP</h3>
 <div class="paragraph">
 <p>vRP 2 Object-Oriented Programming uses the <a href="https://github.com/ImagicTheCat/Luaoop">Luaoop</a> library.</p>
 </div>
@@ -818,19 +818,19 @@ By using OOP, instead of loading resources communicating with vRP through Proxy,
 </div>
 </div>
 <div class="sect2">
-<h3 id="_asynchronous">Asynchronous</h3>
+<h3 id="_asynchronous"><a class="anchor" href="#_asynchronous"></a>Asynchronous</h3>
 <div class="paragraph">
 <p>vRP 2 extensively uses asynchronous tasks in a transparent way using coroutines, some functions may not return immediately (or never).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_db_driver">DB driver</h3>
+<h3 id="_db_driver"><a class="anchor" href="#_db_driver"></a>DB driver</h3>
 <div class="paragraph">
 <p>A DB driver is a class handling MySQL queries. When the vRP MySQL API is used, the DB driver methods are called to process the queries. If the DB driver is not loaded yet, queries will be cached until loaded.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_proxy_and_tunnel">Proxy and Tunnel</h3>
+<h3 id="_proxy_and_tunnel"><a class="anchor" href="#_proxy_and_tunnel"></a>Proxy and Tunnel</h3>
 <div class="paragraph">
 <p>The proxy library is used to call other resources functions through a proxy event.</p>
 </div>
@@ -875,9 +875,9 @@ Also remember that Citizen event handlers (used by Proxy and Tunnel) may not wor
 </div>
 </div>
 <div class="sect2">
-<h3 id="_data">Data</h3>
+<h3 id="_data"><a class="anchor" href="#_data"></a>Data</h3>
 <div class="sect3">
-<h4 id="_multi_server_and_character">Multi-server and character</h4>
+<h4 id="_multi_server_and_character"><a class="anchor" href="#_multi_server_and_character"></a>Multi-server and character</h4>
 <div class="paragraph">
 <p>vRP 2 has multi-server and multi-character support. Each server has a string identifier.</p>
 </div>
@@ -895,7 +895,7 @@ Players can use another character after spawned, thus extensions should properly
 </div>
 </div>
 <div class="sect3">
-<h4 id="_key_value_stores">Key-value stores</h4>
+<h4 id="_key_value_stores"><a class="anchor" href="#_key_value_stores"></a>Key-value stores</h4>
 <div class="paragraph">
 <p>vRP provides a key-value API to store custom binary data in the database. A string key is associated to a binary value (ex: a Lua string). The key is a <code>VARCHAR(100)</code> and the value a <code>BLOB</code> (probably 65535 bytes).</p>
 </div>
@@ -950,14 +950,14 @@ vRP core tables, as core files, should not be modified for extensions compatibil
 </div>
 </div>
 <div class="sect3">
-<h4 id="_core">Core</h4>
+<h4 id="_core"><a class="anchor" href="#_core"></a>Core</h4>
 <div class="paragraph">
 <p>vRP core modules data may be stored in specific MySQL tables or using the key-value stores. For the latter, the keys will probably be prefixed by <code>vRP</code> and the binary data will use the <a href="https://msgpack.org">MessagePack</a> format.</p>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_script_loading">Script loading</h3>
+<h3 id="_script_loading"><a class="anchor" href="#_script_loading"></a>Script loading</h3>
 <div class="paragraph">
 <p>To use vRP 2, a script must be loaded in the vRP resource context of a specific side.</p>
 </div>
@@ -988,7 +988,7 @@ vRP.loadScript("my_resource", "vrp") -- load "my_resource/vrp.lua"</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_extension">Extension</h3>
+<h3 id="_extension"><a class="anchor" href="#_extension"></a>Extension</h3>
 <div class="paragraph">
 <p>An extension is a class extending vRP.</p>
 </div>
@@ -1021,7 +1021,7 @@ You can see how an extension is made by looking at the code of vRP <a href="../.
 </table>
 </div>
 <div class="sect3">
-<h4 id="_user">User</h4>
+<h4 id="_user"><a class="anchor" href="#_user"></a>User</h4>
 <div class="paragraph">
 <p>Extensions can extend User properties/methods with a User class (constructor is called).</p>
 </div>
@@ -1044,7 +1044,7 @@ To not conflict with other extensions, make sure the added properties and method
 </div>
 </div>
 <div class="sect3">
-<h4 id="_event">Event</h4>
+<h4 id="_event"><a class="anchor" href="#_event"></a>Event</h4>
 <div class="paragraph">
 <p>Extensions can listen to global events by defining methods in the <code>event</code> table.</p>
 </div>
@@ -1070,7 +1070,7 @@ Events marked with <code>(sync)</code> in the documentation may be called using 
 </div>
 </div>
 <div class="sect3">
-<h4 id="_proxy_and_tunnel_2">Proxy and Tunnel</h4>
+<h4 id="_proxy_and_tunnel_2"><a class="anchor" href="#_proxy_and_tunnel_2"></a>Proxy and Tunnel</h4>
 <div class="paragraph">
 <p>Extensions can listen to proxy/tunnel calls by defining methods in the <code>proxy</code> or <code>tunnel</code> table.</p>
 </div>
@@ -1126,7 +1126,7 @@ end</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_profiler">Profiler</h3>
+<h3 id="_profiler"><a class="anchor" href="#_profiler"></a>Profiler</h3>
 <div class="paragraph">
 <p>vRP embeds <a href="https://github.com/ImagicTheCat/ELProfiler">ELProfiler</a> to profile Lua code, vRP and resources based on it. When a resource loads <code>@vrp/lib/utils.lua</code> (which is the case for resources based on vRP), it will setup itself to be recorded by the profiler.</p>
 </div>
@@ -1152,10 +1152,10 @@ Profiling has an overhead, but mostly because of the Lua debug hook. Being a sta
 </div>
 </div>
 <div class="sect1">
-<h2 id="_general_api">General API</h2>
+<h2 id="_general_api"><a class="anchor" href="#_general_api"></a>General API</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_utils">utils</h3>
+<h3 id="_utils"><a class="anchor" href="#_utils"></a>utils</h3>
 <div class="paragraph">
 <p><code>lib/utils.lua</code> defines some useful globals.</p>
 </div>
@@ -1193,9 +1193,9 @@ splitString(str, sep)</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_proxy_and_tunnel_3">Proxy and Tunnel</h3>
+<h3 id="_proxy_and_tunnel_3"><a class="anchor" href="#_proxy_and_tunnel_3"></a>Proxy and Tunnel</h3>
 <div class="sect3">
-<h4 id="_proxy">Proxy</h4>
+<h4 id="_proxy"><a class="anchor" href="#_proxy"></a>Proxy</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">-- add event handler to call interface functions
@@ -1211,7 +1211,7 @@ Proxy.getInterface(name, identifier)</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_tunnel">Tunnel</h4>
+<h4 id="_tunnel"><a class="anchor" href="#_tunnel"></a>Tunnel</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">-- set the base delay between Triggers for a destination
@@ -1232,7 +1232,7 @@ Tunnel.getInterface(name,identifier)</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_interface">Interface</h4>
+<h4 id="_interface"><a class="anchor" href="#_interface"></a>Interface</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -1273,7 +1273,7 @@ interface.func(player, ...) -- or _func to ignore returned values</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_dbdriver">DBDriver</h3>
+<h3 id="_dbdriver"><a class="anchor" href="#_dbdriver"></a>DBDriver</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">-- called when the driver is initialized (connection), should return true on success
@@ -1294,7 +1294,7 @@ DBDriver:onQuery(name, params, mode)</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_extension_2">Extension</h3>
+<h3 id="_extension_2"><a class="anchor" href="#_extension_2"></a>Extension</h3>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.remote -- tunnel interface to other network side
@@ -1307,7 +1307,7 @@ Extension:error(msg)</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_user_2">User</h3>
+<h3 id="_user_2"><a class="anchor" href="#_user_2"></a>User</h3>
 <div class="paragraph">
 <p>User inherits from all extensions sub-class User (if registered before the first user instantiation).</p>
 </div>
@@ -1350,9 +1350,9 @@ User:deleteCharacter(id)</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_vrp">vRP</h3>
+<h3 id="_vrp"><a class="anchor" href="#_vrp"></a>vRP</h3>
 <div class="sect3">
-<h4 id="_shared">Shared</h4>
+<h4 id="_shared"><a class="anchor" href="#_shared"></a>Shared</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.EXT -- map of name =&gt; ext
@@ -1395,7 +1395,7 @@ vRP:error(msg, suffix)</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_server">Server</h4>
+<h4 id="_server"><a class="anchor" href="#_server"></a>Server</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg -- cfg/base config
@@ -1552,7 +1552,7 @@ vRP:save()</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_client">Client</h4>
+<h4 id="_client"><a class="anchor" href="#_client"></a>Client</h4>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg -- cfg/client config</code></pre>
@@ -1584,17 +1584,17 @@ vRP:save()</code></pre>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_modules">Modules</h2>
+<h2 id="_modules"><a class="anchor" href="#_modules"></a>Modules</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_admin">Admin</h3>
+<h3 id="_admin"><a class="anchor" href="#_admin"></a>Admin</h3>
 <div class="paragraph">
 <p>The admin module adds an administration (kick,ban&#8230;&#8203;) menu and functions.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_3">Extension</h4>
+<h4 id="_extension_3"><a class="anchor" href="#_extension_3"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_client_2">Client</h5>
+<h5 id="_client_2"><a class="anchor" href="#_client_2"></a>Client</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">Admin:toggleNoclip()
@@ -1609,21 +1609,21 @@ Admin.tunnel.teleportToMarker = Admin.teleportToMarker</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu">Menu</h4>
+<h4 id="_menu"><a class="anchor" href="#_menu"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_admin_2">admin</h5>
+<h5 id="_admin_2"><a class="anchor" href="#_admin_2"></a>admin</h5>
 <div class="paragraph">
 <p>Administration menu.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_admin_users">admin.users</h5>
+<h5 id="_admin_users"><a class="anchor" href="#_admin_users"></a>admin.users</h5>
 <div class="paragraph">
 <p>Administration sub-menu: user list.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_admin_users_user">admin.users.user</h5>
+<h5 id="_admin_users_user"><a class="anchor" href="#_admin_users_user"></a>admin.users.user</h5>
 <div class="paragraph">
 <p>Administration sub-menu: user.</p>
 </div>
@@ -1644,14 +1644,14 @@ id
 </div>
 </div>
 <div class="sect2">
-<h3 id="_aptitude">Aptitude</h3>
+<h3 id="_aptitude"><a class="anchor" href="#_aptitude"></a>Aptitude</h3>
 <div class="paragraph">
 <p>This module adds aptitudes and experience (skill/education).</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_4">Extension</h4>
+<h4 id="_extension_4"><a class="anchor" href="#_extension_4"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_user_3">User</h5>
+<h5 id="_user_3"><a class="anchor" href="#_user_3"></a>User</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cdata.aptitudes
@@ -1676,7 +1676,7 @@ User:setExp(group, aptitude, amount)</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_server_2">Server</h5>
+<h5 id="_server_2"><a class="anchor" href="#_server_2"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg
@@ -1709,9 +1709,9 @@ Aptitude:levelToExp(lvl)</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_permission">Permission</h4>
+<h4 id="_permission"><a class="anchor" href="#_permission"></a>Permission</h4>
 <div class="sect4">
-<h5 id="_aptitude_2">aptitude</h5>
+<h5 id="_aptitude_2"><a class="anchor" href="#_aptitude_2"></a>aptitude</h5>
 <div class="paragraph">
 <p>Aptitude level comparison.</p>
 </div>
@@ -1754,16 +1754,16 @@ op
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_2">Menu</h4>
+<h4 id="_menu_2"><a class="anchor" href="#_menu_2"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_aptitudes">aptitudes</h5>
+<h5 id="_aptitudes"><a class="anchor" href="#_aptitudes"></a>aptitudes</h5>
 <div class="paragraph">
 <p>Aptitudes display menu.</p>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_transformer_processor">Transformer processor</h4>
+<h4 id="_transformer_processor"><a class="anchor" href="#_transformer_processor"></a>Transformer processor</h4>
 <div class="paragraph">
 <p>Produce experience in transformers.</p>
 </div>
@@ -1787,14 +1787,14 @@ aptitudes = {
 </div>
 </div>
 <div class="sect2">
-<h3 id="_atm">ATM</h3>
+<h3 id="_atm"><a class="anchor" href="#_atm"></a>ATM</h3>
 <div class="paragraph">
 <p>This module spawns ATMs to interact with the bank.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_5">Extension</h4>
+<h4 id="_extension_5"><a class="anchor" href="#_extension_5"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_server_3">Server</h5>
+<h5 id="_server_3"><a class="anchor" href="#_server_3"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg</code></pre>
@@ -1803,9 +1803,9 @@ aptitudes = {
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_3">Menu</h4>
+<h4 id="_menu_3"><a class="anchor" href="#_menu_3"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_atm_2">ATM</h5>
+<h5 id="_atm_2"><a class="anchor" href="#_atm_2"></a>ATM</h5>
 <div class="paragraph">
 <p>ATM menu.</p>
 </div>
@@ -1813,7 +1813,7 @@ aptitudes = {
 </div>
 </div>
 <div class="sect2">
-<h3 id="_audio">Audio</h3>
+<h3 id="_audio"><a class="anchor" href="#_audio"></a>Audio</h3>
 <div class="paragraph">
 <p>This module handles audio features.</p>
 </div>
@@ -1847,9 +1847,9 @@ The clients will automatically connect/reconnect themselves to the VoIP server (
 </table>
 </div>
 <div class="sect3">
-<h4 id="_extension_6">Extension</h4>
+<h4 id="_extension_6"><a class="anchor" href="#_extension_6"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_server_4">Server</h5>
+<h5 id="_server_4"><a class="anchor" href="#_server_4"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg
@@ -1870,7 +1870,7 @@ Audio:registerVoiceChannel(id, config)</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_client_3">Client</h5>
+<h5 id="_client_3"><a class="anchor" href="#_client_3"></a>Client</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.voice_channels = {} -- map of channel =&gt; map of player =&gt; state (0-1)
@@ -1953,14 +1953,14 @@ Audio.tunnel.setVoiceState = Audio.setVoiceState</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_base">Base</h3>
+<h3 id="_base"><a class="anchor" href="#_base"></a>Base</h3>
 <div class="paragraph">
 <p>vRP base module.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_7">Extension</h4>
+<h4 id="_extension_7"><a class="anchor" href="#_extension_7"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_server_5">Server</h5>
+<h5 id="_server_5"><a class="anchor" href="#_server_5"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua"></code></pre>
@@ -1968,7 +1968,7 @@ Audio.tunnel.setVoiceState = Audio.setVoiceState</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_client_4">Client</h5>
+<h5 id="_client_4"><a class="anchor" href="#_client_4"></a>Client</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.id -- user id
@@ -2088,18 +2088,18 @@ Base.tunnel.playSound = Base.playSound</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_4">Menu</h4>
+<h4 id="_menu_4"><a class="anchor" href="#_menu_4"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_characters">characters</h5>
+<h5 id="_characters"><a class="anchor" href="#_characters"></a>characters</h5>
 <div class="paragraph">
 <p>Characters menu.</p>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_permission_2">Permission</h4>
+<h4 id="_permission_2"><a class="anchor" href="#_permission_2"></a>Permission</h4>
 <div class="sect4">
-<h5 id="_inside">inside</h5>
+<h5 id="_inside"><a class="anchor" href="#_inside"></a>inside</h5>
 <div class="paragraph">
 <p><code>!inside</code></p>
 </div>
@@ -2111,14 +2111,14 @@ Will do a tunnel call.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_business">Business</h3>
+<h3 id="_business"><a class="anchor" href="#_business"></a>Business</h3>
 <div class="paragraph">
 <p>This module adds a simple business system (dirty money, capital&#8230;&#8203;).</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_8">Extension</h4>
+<h4 id="_extension_8"><a class="anchor" href="#_extension_8"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_server_6">Server</h5>
+<h5 id="_server_6"><a class="anchor" href="#_server_6"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg
@@ -2133,24 +2133,24 @@ Business:closeBusiness(character_id)</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_item">Item</h4>
+<h4 id="_item"><a class="anchor" href="#_item"></a>Item</h4>
 <div class="sect4">
-<h5 id="_dirty_money">dirty_money</h5>
+<h5 id="_dirty_money"><a class="anchor" href="#_dirty_money"></a>dirty_money</h5>
 <div class="paragraph">
 <p>Can be converted to money using business money laundering.</p>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_5">Menu</h4>
+<h4 id="_menu_5"><a class="anchor" href="#_menu_5"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_commerce_chamber">commerce_chamber</h5>
+<h5 id="_commerce_chamber"><a class="anchor" href="#_commerce_chamber"></a>commerce_chamber</h5>
 <div class="paragraph">
 <p>Commerce chamber menu.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_commerce_chamber_directory">commerce_chamber.directory</h5>
+<h5 id="_commerce_chamber_directory"><a class="anchor" href="#_commerce_chamber_directory"></a>commerce_chamber.directory</h5>
 <div class="paragraph">
 <p>Business directory.</p>
 </div>
@@ -2171,14 +2171,14 @@ page
 </div>
 </div>
 <div class="sect2">
-<h3 id="_cloak">Cloak</h3>
+<h3 id="_cloak"><a class="anchor" href="#_cloak"></a>Cloak</h3>
 <div class="paragraph">
 <p>This module manages character cloaks (uniforms, etc).</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_9">Extension</h4>
+<h4 id="_extension_9"><a class="anchor" href="#_extension_9"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_user_4">User</h5>
+<h5 id="_user_4"><a class="anchor" href="#_user_4"></a>User</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cdata.pre_cloak
@@ -2193,7 +2193,7 @@ User:hasCloak()</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_server_7">Server</h5>
+<h5 id="_server_7"><a class="anchor" href="#_server_7"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg</code></pre>
@@ -2202,9 +2202,9 @@ User:hasCloak()</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_6">Menu</h4>
+<h4 id="_menu_6"><a class="anchor" href="#_menu_6"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_cloakroom">cloakroom</h5>
+<h5 id="_cloakroom"><a class="anchor" href="#_cloakroom"></a>cloakroom</h5>
 <div class="paragraph">
 <p>Cloakroom menu.</p>
 </div>
@@ -2233,14 +2233,14 @@ cloaks
 </div>
 </div>
 <div class="sect2">
-<h3 id="_edible">Edible</h3>
+<h3 id="_edible"><a class="anchor" href="#_edible"></a>Edible</h3>
 <div class="paragraph">
 <p>This module defines a generic edible item.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_10">Extension</h4>
+<h4 id="_extension_10"><a class="anchor" href="#_extension_10"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_server_8">Server</h5>
+<h5 id="_server_8"><a class="anchor" href="#_server_8"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg
@@ -2269,9 +2269,9 @@ Edible:defineEdible(id, type, effects, name, description, weight)</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_item_2">Item</h4>
+<h4 id="_item_2"><a class="anchor" href="#_item_2"></a>Item</h4>
 <div class="sect4">
-<h5 id="_edible_2">edible</h5>
+<h5 id="_edible_2"><a class="anchor" href="#_edible_2"></a>edible</h5>
 <div class="paragraph">
 <p><code>edible|&lt;id&gt;</code></p>
 </div>
@@ -2304,14 +2304,14 @@ id
 </div>
 </div>
 <div class="sect2">
-<h3 id="_emotes">Emotes</h3>
+<h3 id="_emotes"><a class="anchor" href="#_emotes"></a>Emotes</h3>
 <div class="paragraph">
 <p>This module adds an emotes menu.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_11">Extension</h4>
+<h4 id="_extension_11"><a class="anchor" href="#_extension_11"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_user_5">User</h5>
+<h5 id="_user_5"><a class="anchor" href="#_user_5"></a>User</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.emotes_action -- emotes action delay</code></pre>
@@ -2319,7 +2319,7 @@ id
 </div>
 </div>
 <div class="sect4">
-<h5 id="_server_9">Server</h5>
+<h5 id="_server_9"><a class="anchor" href="#_server_9"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg
@@ -2332,9 +2332,9 @@ Emotes:add(config)</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_7">Menu</h4>
+<h4 id="_menu_7"><a class="anchor" href="#_menu_7"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_emotes_2">emotes</h5>
+<h5 id="_emotes_2"><a class="anchor" href="#_emotes_2"></a>emotes</h5>
 <div class="paragraph">
 <p>Emotes menu.</p>
 </div>
@@ -2342,7 +2342,7 @@ Emotes:add(config)</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_garage">Garage</h3>
+<h3 id="_garage"><a class="anchor" href="#_garage"></a>Garage</h3>
 <div class="paragraph">
 <p>This module manages garages and character vehicles.</p>
 </div>
@@ -2378,9 +2378,9 @@ Emotes:add(config)</code></pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_extension_12">Extension</h4>
+<h4 id="_extension_12"><a class="anchor" href="#_extension_12"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_user_6">User</h5>
+<h5 id="_user_6"><a class="anchor" href="#_user_6"></a>User</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cdata.vehicles
@@ -2397,7 +2397,7 @@ User:getVehicleState(model)</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_server_10">Server</h5>
+<h5 id="_server_10"><a class="anchor" href="#_server_10"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg
@@ -2409,7 +2409,7 @@ Garage.getVehicleChestId(cid, model)</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_client_5">Client</h5>
+<h5 id="_client_5"><a class="anchor" href="#_client_5"></a>Client</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.vehicles -- map of vehicle model =&gt; veh id (owned vehicles)
@@ -2553,18 +2553,18 @@ Garage.tunnel.vc_toggleLock = Garage.vc_toggleLock</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_item_3">Item</h4>
+<h4 id="_item_3"><a class="anchor" href="#_item_3"></a>Item</h4>
 <div class="sect4">
-<h5 id="_repairkit">repairkit</h5>
+<h5 id="_repairkit"><a class="anchor" href="#_repairkit"></a>repairkit</h5>
 <div class="paragraph">
 <p>Used to repair vehicles, but can be used for other stuff.</p>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_8">Menu</h4>
+<h4 id="_menu_8"><a class="anchor" href="#_menu_8"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_vehicle">vehicle</h5>
+<h5 id="_vehicle"><a class="anchor" href="#_vehicle"></a>vehicle</h5>
 <div class="paragraph">
 <p>Owned vehicle menu.</p>
 </div>
@@ -2583,7 +2583,7 @@ model
 </div>
 </div>
 <div class="sect4">
-<h5 id="_garage_2">garage</h5>
+<h5 id="_garage_2"><a class="anchor" href="#_garage_2"></a>garage</h5>
 <div class="paragraph">
 <p>Garage menu.</p>
 </div>
@@ -2610,28 +2610,28 @@ vehicles
 </div>
 </div>
 <div class="sect4">
-<h5 id="_garage_owned">garage.owned</h5>
+<h5 id="_garage_owned"><a class="anchor" href="#_garage_owned"></a>garage.owned</h5>
 <div class="paragraph">
 <p>Garage sub-menu.
 Same data as <code>garage</code>.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_garage_buy">garage.buy</h5>
+<h5 id="_garage_buy"><a class="anchor" href="#_garage_buy"></a>garage.buy</h5>
 <div class="paragraph">
 <p>Garage sub-menu.
 Same data as <code>garage</code>.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_garage_sell">garage.sell</h5>
+<h5 id="_garage_sell"><a class="anchor" href="#_garage_sell"></a>garage.sell</h5>
 <div class="paragraph">
 <p>Garage sub-menu.
 Same data as <code>garage</code>.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_garage_rent">garage.rent</h5>
+<h5 id="_garage_rent"><a class="anchor" href="#_garage_rent"></a>garage.rent</h5>
 <div class="paragraph">
 <p>Garage sub-menu.
 Same data as <code>garage</code>.</p>
@@ -2639,9 +2639,9 @@ Same data as <code>garage</code>.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_permission_3">Permission</h4>
+<h4 id="_permission_3"><a class="anchor" href="#_permission_3"></a>Permission</h4>
 <div class="sect4">
-<h5 id="_in_vehicle">in_vehicle</h5>
+<h5 id="_in_vehicle"><a class="anchor" href="#_in_vehicle"></a>in_vehicle</h5>
 <div class="paragraph">
 <p><code>!in_vehicle</code></p>
 </div>
@@ -2650,7 +2650,7 @@ Same data as <code>garage</code>.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_in_owned_vehicle">in_owned_vehicle</h5>
+<h5 id="_in_owned_vehicle"><a class="anchor" href="#_in_owned_vehicle"></a>in_owned_vehicle</h5>
 <div class="paragraph">
 <p><code>!in_owned_vehicle[.&lt;model&gt;]</code></p>
 </div>
@@ -2693,7 +2693,7 @@ model
 </div>
 </div>
 <div class="sect3">
-<h4 id="_vehicle_state">Vehicle state</h4>
+<h4 id="_vehicle_state"><a class="anchor" href="#_vehicle_state"></a>Vehicle state</h4>
 <div class="hdlist">
 <table>
 <tr>
@@ -2733,14 +2733,14 @@ locked
 </div>
 </div>
 <div class="sect2">
-<h3 id="_group">Group</h3>
+<h3 id="_group"><a class="anchor" href="#_group"></a>Group</h3>
 <div class="paragraph">
 <p>This module adds groups and permissions.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_13">Extension</h4>
+<h4 id="_extension_13"><a class="anchor" href="#_extension_13"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_user_7">User</h5>
+<h5 id="_user_7"><a class="anchor" href="#_user_7"></a>User</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cdata.groups
@@ -2767,7 +2767,7 @@ User:hasPermissions(perms)</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_server_11">Server</h5>
+<h5 id="_server_11"><a class="anchor" href="#_server_11"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg
@@ -2813,9 +2813,9 @@ Group:registerPermissionFunction(name, callback)</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_9">Menu</h4>
+<h4 id="_menu_9"><a class="anchor" href="#_menu_9"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_group_selector">group_selector</h5>
+<h5 id="_group_selector"><a class="anchor" href="#_group_selector"></a>group_selector</h5>
 <div class="paragraph">
 <p>Group selector menu.</p>
 </div>
@@ -2843,9 +2843,9 @@ groups
 </div>
 </div>
 <div class="sect3">
-<h4 id="_permission_4">Permission</h4>
+<h4 id="_permission_4"><a class="anchor" href="#_permission_4"></a>Permission</h4>
 <div class="sect4">
-<h5 id="_not">not</h5>
+<h5 id="_not"><a class="anchor" href="#_not"></a>not</h5>
 <div class="paragraph">
 <p>Negate another permission function.</p>
 </div>
@@ -2867,7 +2867,7 @@ groups
 </div>
 </div>
 <div class="sect4">
-<h5 id="_group_2">group</h5>
+<h5 id="_group_2"><a class="anchor" href="#_group_2"></a>group</h5>
 <div class="paragraph">
 <p>Group check.</p>
 </div>
@@ -2903,7 +2903,7 @@ name
 </div>
 </div>
 <div class="sect2">
-<h3 id="_gui">GUI</h3>
+<h3 id="_gui"><a class="anchor" href="#_gui"></a>GUI</h3>
 <div class="paragraph">
 <p>This module adds GUI features.</p>
 </div>
@@ -2931,9 +2931,9 @@ end</code></pre>
 </table>
 </div>
 <div class="sect3">
-<h4 id="_extension_14">Extension</h4>
+<h4 id="_extension_14"><a class="anchor" href="#_extension_14"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_menu_10">Menu</h5>
+<h5 id="_menu_10"><a class="anchor" href="#_menu_10"></a>Menu</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.user
@@ -2973,7 +2973,7 @@ Menu:updateOption(id, title, description)</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_user_8">User</h5>
+<h5 id="_user_8"><a class="anchor" href="#_user_8"></a>User</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.menu_stack -- stack of menus
@@ -3013,7 +3013,7 @@ User:request(text, time)</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_server_12">Server</h5>
+<h5 id="_server_12"><a class="anchor" href="#_server_12"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg
@@ -3038,7 +3038,7 @@ GUI.tunnel:triggerMenuSelect(id)</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_client_6">Client</h5>
+<h5 id="_client_6"><a class="anchor" href="#_client_6"></a>Client</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.paused
@@ -3181,9 +3181,9 @@ GUI.tunnel.removeDiv = GUI.removeDiv</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_11">Menu</h4>
+<h4 id="_menu_11"><a class="anchor" href="#_menu_11"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_main">main</h5>
+<h5 id="_main"><a class="anchor" href="#_main"></a>main</h5>
 <div class="paragraph">
 <p>Main menu.</p>
 </div>
@@ -3191,14 +3191,14 @@ GUI.tunnel.removeDiv = GUI.removeDiv</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_hiddentransformer">HiddenTransformer</h3>
+<h3 id="_hiddentransformer"><a class="anchor" href="#_hiddentransformer"></a>HiddenTransformer</h3>
 <div class="paragraph">
 <p>This module adds hidden/randomly placed transformers and an informer to find them.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_15">Extension</h4>
+<h4 id="_extension_15"><a class="anchor" href="#_extension_15"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_server_13">Server</h5>
+<h5 id="_server_13"><a class="anchor" href="#_server_13"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg</code></pre>
@@ -3207,9 +3207,9 @@ GUI.tunnel.removeDiv = GUI.removeDiv</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_12">Menu</h4>
+<h4 id="_menu_12"><a class="anchor" href="#_menu_12"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_hidden_transformer_informer">hidden_transformer_informer</h5>
+<h5 id="_hidden_transformer_informer"><a class="anchor" href="#_hidden_transformer_informer"></a>hidden_transformer_informer</h5>
 <div class="paragraph">
 <p>Informer menu.</p>
 </div>
@@ -3217,14 +3217,14 @@ GUI.tunnel.removeDiv = GUI.removeDiv</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_home">Home</h3>
+<h3 id="_home"><a class="anchor" href="#_home"></a>Home</h3>
 <div class="paragraph">
 <p>This module adds a home system.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_16">Extension</h4>
+<h4 id="_extension_16"><a class="anchor" href="#_extension_16"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_component">Component</h5>
+<h5 id="_component"><a class="anchor" href="#_component"></a>Component</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.slot
@@ -3250,7 +3250,7 @@ Component:leave(user)</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_slot">Slot</h5>
+<h5 id="_slot"><a class="anchor" href="#_slot"></a>Slot</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.type
@@ -3266,7 +3266,7 @@ Slot:isEmpty()</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_user_9">User</h5>
+<h5 id="_user_9"><a class="anchor" href="#_user_9"></a>User</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.home_slot
@@ -3284,7 +3284,7 @@ User:inHome()</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_server_14">Server</h5>
+<h5 id="_server_14"><a class="anchor" href="#_server_14"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg
@@ -3337,9 +3337,9 @@ Home:findFreeSlot(stype)</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_13">Menu</h4>
+<h4 id="_menu_13"><a class="anchor" href="#_menu_13"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_home_2">home</h5>
+<h5 id="_home_2"><a class="anchor" href="#_home_2"></a>home</h5>
 <div class="paragraph">
 <p>Home menu (outside).</p>
 </div>
@@ -3358,7 +3358,7 @@ name
 </div>
 </div>
 <div class="sect4">
-<h5 id="_homecomponententry">home:component:entry</h5>
+<h5 id="_homecomponententry"><a class="anchor" href="#_homecomponententry"></a>home:component:entry</h5>
 <div class="paragraph">
 <p>Home entry menu (inside).</p>
 </div>
@@ -3378,18 +3378,18 @@ slot
 </div>
 </div>
 <div class="sect3">
-<h4 id="_home_component">Home component</h4>
+<h4 id="_home_component"><a class="anchor" href="#_home_component"></a>Home component</h4>
 <div class="sect4">
-<h5 id="_entry">entry</h5>
+<h5 id="_entry"><a class="anchor" href="#_entry"></a>entry</h5>
 <div class="paragraph">
 <p>Home entry component.</p>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_permission_5">Permission</h4>
+<h4 id="_permission_5"><a class="anchor" href="#_permission_5"></a>Permission</h4>
 <div class="sect4">
-<h5 id="_home_3">home</h5>
+<h5 id="_home_3"><a class="anchor" href="#_home_3"></a>home</h5>
 <div class="paragraph">
 <p>Home/address check.</p>
 </div>
@@ -3449,14 +3449,14 @@ number
 </div>
 </div>
 <div class="sect2">
-<h3 id="_home_components">home_components</h3>
+<h3 id="_home_components"><a class="anchor" href="#_home_components"></a>home_components</h3>
 <div class="paragraph">
 <p>This module adds some home components.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_17">Extension</h4>
+<h4 id="_extension_17"><a class="anchor" href="#_extension_17"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_server_15">Server</h5>
+<h5 id="_server_15"><a class="anchor" href="#_server_15"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg</code></pre>
@@ -3465,9 +3465,9 @@ number
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_14">Menu</h4>
+<h4 id="_menu_14"><a class="anchor" href="#_menu_14"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_homecomponentwardrobe">home:component:wardrobe</h5>
+<h5 id="_homecomponentwardrobe"><a class="anchor" href="#_homecomponentwardrobe"></a>home:component:wardrobe</h5>
 <div class="paragraph">
 <p>Wardrobe menu.</p>
 </div>
@@ -3486,13 +3486,13 @@ sets
 </div>
 </div>
 <div class="sect4">
-<h5 id="_homecomponentgametable">home:component:gametable</h5>
+<h5 id="_homecomponentgametable"><a class="anchor" href="#_homecomponentgametable"></a>home:component:gametable</h5>
 <div class="paragraph">
 <p>Gametable menu.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_homecomponentradio">home:component:radio</h5>
+<h5 id="_homecomponentradio"><a class="anchor" href="#_homecomponentradio"></a>home:component:radio</h5>
 <div class="paragraph">
 <p>Radio menu.</p>
 </div>
@@ -3512,9 +3512,9 @@ component
 </div>
 </div>
 <div class="sect3">
-<h4 id="_home_component_2">Home component</h4>
+<h4 id="_home_component_2"><a class="anchor" href="#_home_component_2"></a>Home component</h4>
 <div class="sect4">
-<h5 id="_chest">chest</h5>
+<h5 id="_chest"><a class="anchor" href="#_chest"></a>chest</h5>
 <div class="paragraph">
 <p>A home chest to store items. The chest is bound to the character, not to the home or the component.</p>
 </div>
@@ -3533,19 +3533,19 @@ weight
 </div>
 </div>
 <div class="sect4">
-<h5 id="_wardrobe">wardrobe</h5>
+<h5 id="_wardrobe"><a class="anchor" href="#_wardrobe"></a>wardrobe</h5>
 <div class="paragraph">
 <p>Wardrobe to save/restore clothes.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_gametable">gametable</h5>
+<h5 id="_gametable"><a class="anchor" href="#_gametable"></a>gametable</h5>
 <div class="paragraph">
 <p>Gametable to play simple games with other people (bet&#8230;&#8203;).</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_transformer">transformer</h5>
+<h5 id="_transformer"><a class="anchor" href="#_transformer"></a>transformer</h5>
 <div class="paragraph">
 <p>Transformer component.</p>
 </div>
@@ -3572,7 +3572,7 @@ map_entity
 </div>
 </div>
 <div class="sect4">
-<h5 id="_radio">radio</h5>
+<h5 id="_radio"><a class="anchor" href="#_radio"></a>radio</h5>
 <div class="paragraph">
 <p>Component to play music in the home.</p>
 </div>
@@ -3593,14 +3593,14 @@ stations
 </div>
 </div>
 <div class="sect2">
-<h3 id="_identity">Identity</h3>
+<h3 id="_identity"><a class="anchor" href="#_identity"></a>Identity</h3>
 <div class="paragraph">
 <p>This module adds an identity system.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_18">Extension</h4>
+<h4 id="_extension_18"><a class="anchor" href="#_extension_18"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_user_10">User</h5>
+<h5 id="_user_10"><a class="anchor" href="#_user_10"></a>User</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.identity</code></pre>
@@ -3608,7 +3608,7 @@ stations
 </div>
 </div>
 <div class="sect4">
-<h5 id="_server_16">Server</h5>
+<h5 id="_server_16"><a class="anchor" href="#_server_16"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg
@@ -3648,7 +3648,7 @@ Identity:generatePhoneNumber()</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_client_7">Client</h5>
+<h5 id="_client_7"><a class="anchor" href="#_client_7"></a>Client</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.registration</code></pre>
@@ -3657,9 +3657,9 @@ Identity:generatePhoneNumber()</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_15">Menu</h4>
+<h4 id="_menu_15"><a class="anchor" href="#_menu_15"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_identity_2">identity</h5>
+<h5 id="_identity_2"><a class="anchor" href="#_identity_2"></a>identity</h5>
 <div class="paragraph">
 <p>Identity menu, offline and online characters.</p>
 </div>
@@ -3678,20 +3678,20 @@ cid
 </div>
 </div>
 <div class="sect4">
-<h5 id="_cityhall">cityhall</h5>
+<h5 id="_cityhall"><a class="anchor" href="#_cityhall"></a>cityhall</h5>
 
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_inventory">Inventory</h3>
+<h3 id="_inventory"><a class="anchor" href="#_inventory"></a>Inventory</h3>
 <div class="paragraph">
 <p>This module adds an inventory/item system.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_19">Extension</h4>
+<h4 id="_extension_19"><a class="anchor" href="#_extension_19"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_user_11">User</h5>
+<h5 id="_user_11"><a class="anchor" href="#_user_11"></a>User</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cdata.inventory
@@ -3730,7 +3730,7 @@ User:openChest(id, max_weight, cb_close, cb_in, cb_out)</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_server_17">Server</h5>
+<h5 id="_server_17"><a class="anchor" href="#_server_17"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg
@@ -3775,15 +3775,15 @@ Inventory:unloadChest(id)</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_16">Menu</h4>
+<h4 id="_menu_16"><a class="anchor" href="#_menu_16"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_inventory_2">inventory</h5>
+<h5 id="_inventory_2"><a class="anchor" href="#_inventory_2"></a>inventory</h5>
 <div class="paragraph">
 <p>Player inventory menu.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_inventory_item">inventory.item</h5>
+<h5 id="_inventory_item"><a class="anchor" href="#_inventory_item"></a>inventory.item</h5>
 <div class="paragraph">
 <p>Player inventory item sub-menu.</p>
 </div>
@@ -3802,7 +3802,7 @@ fullid
 </div>
 </div>
 <div class="sect4">
-<h5 id="_chest_2">chest</h5>
+<h5 id="_chest_2"><a class="anchor" href="#_chest_2"></a>chest</h5>
 <div class="paragraph">
 <p>Chest menu.</p>
 </div>
@@ -3861,22 +3861,22 @@ cb_out
 </div>
 </div>
 <div class="sect4">
-<h5 id="_chest_put">chest.put</h5>
+<h5 id="_chest_put"><a class="anchor" href="#_chest_put"></a>chest.put</h5>
 <div class="paragraph">
 <p>Chest put sub-menu. Same data as <code>chest</code>.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_chest_take">chest.take</h5>
+<h5 id="_chest_take"><a class="anchor" href="#_chest_take"></a>chest.take</h5>
 <div class="paragraph">
 <p>Chest take sub-menu. Same data as <code>chest</code>.</p>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_permission_6">Permission</h4>
+<h4 id="_permission_6"><a class="anchor" href="#_permission_6"></a>Permission</h4>
 <div class="sect4">
-<h5 id="_item_4">item</h5>
+<h5 id="_item_4"><a class="anchor" href="#_item_4"></a>item</h5>
 <div class="paragraph">
 <p>Item amount comparison.</p>
 </div>
@@ -3927,7 +3927,7 @@ op
 </div>
 </div>
 <div class="sect3">
-<h4 id="_transformer_processor_2">Transformer processor</h4>
+<h4 id="_transformer_processor_2"><a class="anchor" href="#_transformer_processor_2"></a>Transformer processor</h4>
 <div class="paragraph">
 <p>Consume and produce items in transformers.</p>
 </div>
@@ -3951,14 +3951,14 @@ items = {
 </div>
 </div>
 <div class="sect2">
-<h3 id="_login">Login</h3>
+<h3 id="_login"><a class="anchor" href="#_login"></a>Login</h3>
 <div class="paragraph">
 <p>This is the base login module with whitelist and ban features.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_20">Extension</h4>
+<h4 id="_extension_20"><a class="anchor" href="#_extension_20"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_server_18">Server</h5>
+<h5 id="_server_18"><a class="anchor" href="#_server_18"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg
@@ -3983,14 +3983,14 @@ Login:ban(user, duration, reason)</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_map">Map</h3>
+<h3 id="_map"><a class="anchor" href="#_map"></a>Map</h3>
 <div class="paragraph">
 <p>This module adds map features.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_21">Extension</h4>
+<h4 id="_extension_21"><a class="anchor" href="#_extension_21"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_map_entity">Map.Entity</h5>
+<h5 id="_map_entity"><a class="anchor" href="#_map_entity"></a>Map.Entity</h5>
 <div class="paragraph">
 <p>Client-side map entity.</p>
 </div>
@@ -4020,7 +4020,7 @@ Entity:frame(time)</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_user_12">User</h5>
+<h5 id="_user_12"><a class="anchor" href="#_user_12"></a>User</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.map_areas
@@ -4037,7 +4037,7 @@ User:inArea(name)</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_server_19">Server</h5>
+<h5 id="_server_19"><a class="anchor" href="#_server_19"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg</code></pre>
@@ -4045,7 +4045,7 @@ User:inArea(name)</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_client_8">Client</h5>
+<h5 id="_client_8"><a class="anchor" href="#_client_8"></a>Client</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.entities -- map of id (number or name) =&gt; entity
@@ -4102,9 +4102,9 @@ Map.tunnel.setStateOfClosestDoor = Map.setStateOfClosestDoor</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_map_entity_2">Map entity</h4>
+<h4 id="_map_entity_2"><a class="anchor" href="#_map_entity_2"></a>Map entity</h4>
 <div class="sect4">
-<h5 id="_map_posentity">Map.PosEntity</h5>
+<h5 id="_map_posentity"><a class="anchor" href="#_map_posentity"></a>Map.PosEntity</h5>
 <div class="paragraph">
 <p>Specialized entity with a position and default active behavior by distance.</p>
 </div>
@@ -4131,7 +4131,7 @@ active_distance
 </div>
 </div>
 <div class="sect4">
-<h5 id="_poi">PoI</h5>
+<h5 id="_poi"><a class="anchor" href="#_poi"></a>PoI</h5>
 <div class="paragraph">
 <p><strong>Point of Interest</strong> generic map entity (blip/marker).
 Inherits from <code>Map.PosEntity</code>.</p>
@@ -4228,7 +4228,7 @@ rotate_speed
 </div>
 </div>
 <div class="sect4">
-<h5 id="_playermark">PlayerMark</h5>
+<h5 id="_playermark"><a class="anchor" href="#_playermark"></a>PlayerMark</h5>
 <div class="paragraph">
 <p>Mark on player ped.</p>
 </div>
@@ -4281,14 +4281,14 @@ title
 </div>
 </div>
 <div class="sect2">
-<h3 id="_mission">Mission</h3>
+<h3 id="_mission"><a class="anchor" href="#_mission"></a>Mission</h3>
 <div class="paragraph">
 <p>This module adds a simple mission system.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_22">Extension</h4>
+<h4 id="_extension_22"><a class="anchor" href="#_extension_22"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_user_13">User</h5>
+<h5 id="_user_13"><a class="anchor" href="#_user_13"></a>User</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.mission
@@ -4319,7 +4319,7 @@ User:hasMission()</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_server_20">Server</h5>
+<h5 id="_server_20"><a class="anchor" href="#_server_20"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg</code></pre>
@@ -4358,14 +4358,14 @@ User:hasMission()</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_money">Money</h3>
+<h3 id="_money"><a class="anchor" href="#_money"></a>Money</h3>
 <div class="paragraph">
 <p>This module adds money (wallet and bank).</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_23">Extension</h4>
+<h4 id="_extension_23"><a class="anchor" href="#_extension_23"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_user_14">User</h5>
+<h5 id="_user_14"><a class="anchor" href="#_user_14"></a>User</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cdata.wallet
@@ -4413,7 +4413,7 @@ User:tryFullPayment(amount, dry)</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_server_21">Server</h5>
+<h5 id="_server_21"><a class="anchor" href="#_server_21"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg</code></pre>
@@ -4435,22 +4435,22 @@ User:tryFullPayment(amount, dry)</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_item_5">Item</h4>
+<h4 id="_item_5"><a class="anchor" href="#_item_5"></a>Item</h4>
 <div class="sect4">
-<h5 id="_money_2">money</h5>
+<h5 id="_money_2"><a class="anchor" href="#_money_2"></a>money</h5>
 <div class="paragraph">
 <p>Money packed as item.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_money_binder">money_binder</h5>
+<h5 id="_money_binder"><a class="anchor" href="#_money_binder"></a>money_binder</h5>
 <div class="paragraph">
 <p>Used to pack an amount of wallet money into money item.</p>
 </div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_transformer_processor_3">Transformer processor</h4>
+<h4 id="_transformer_processor_3"><a class="anchor" href="#_transformer_processor_3"></a>Transformer processor</h4>
 <div class="paragraph">
 <p>Consume and produce money in transformers.</p>
 </div>
@@ -4472,14 +4472,14 @@ money = 200</pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_pedblacklist">PedBlacklist</h3>
+<h3 id="_pedblacklist"><a class="anchor" href="#_pedblacklist"></a>PedBlacklist</h3>
 <div class="paragraph">
 <p>This module adds a ped blacklist (remove peds from the game).</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_24">Extension</h4>
+<h4 id="_extension_24"><a class="anchor" href="#_extension_24"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_server_22">Server</h5>
+<h5 id="_server_22"><a class="anchor" href="#_server_22"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg</code></pre>
@@ -4487,7 +4487,7 @@ money = 200</pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_client_9">Client</h5>
+<h5 id="_client_9"><a class="anchor" href="#_client_9"></a>Client</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.ped_models -- map of model hash
@@ -4498,14 +4498,14 @@ self.interval</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_phone">Phone</h3>
+<h3 id="_phone"><a class="anchor" href="#_phone"></a>Phone</h3>
 <div class="paragraph">
 <p>This module adds a phone.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_25">Extension</h4>
+<h4 id="_extension_25"><a class="anchor" href="#_extension_25"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_user_15">User</h5>
+<h5 id="_user_15"><a class="anchor" href="#_user_15"></a>User</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.phone_sms
@@ -4535,7 +4535,7 @@ User:sendSMSPos(phone, x,y,z)</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_server_23">Server</h5>
+<h5 id="_server_23"><a class="anchor" href="#_server_23"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg
@@ -4550,7 +4550,7 @@ Phone:sendServiceAlert(sender,service_name,x,y,z,msg)</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_client_10">Client</h5>
+<h5 id="_client_10"><a class="anchor" href="#_client_10"></a>Client</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua"></code></pre>
@@ -4559,21 +4559,21 @@ Phone:sendServiceAlert(sender,service_name,x,y,z,msg)</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_17">Menu</h4>
+<h4 id="_menu_17"><a class="anchor" href="#_menu_17"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_phone_2">phone</h5>
+<h5 id="_phone_2"><a class="anchor" href="#_phone_2"></a>phone</h5>
 <div class="paragraph">
 <p>Phone menu.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_phone_directory">phone.directory</h5>
+<h5 id="_phone_directory"><a class="anchor" href="#_phone_directory"></a>phone.directory</h5>
 <div class="paragraph">
 <p>Phone directory sub-menu.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_phone_directory_entry">phone.directory.entry</h5>
+<h5 id="_phone_directory_entry"><a class="anchor" href="#_phone_directory_entry"></a>phone.directory.entry</h5>
 <div class="paragraph">
 <p>Phone directory entry sub-menu.</p>
 </div>
@@ -4592,19 +4592,19 @@ phone
 </div>
 </div>
 <div class="sect4">
-<h5 id="_phone_sms">phone.sms</h5>
+<h5 id="_phone_sms"><a class="anchor" href="#_phone_sms"></a>phone.sms</h5>
 <div class="paragraph">
 <p>Phone sms sub-menu.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_phone_service">phone.service</h5>
+<h5 id="_phone_service"><a class="anchor" href="#_phone_service"></a>phone.service</h5>
 <div class="paragraph">
 <p>Phone service sub-menu.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_phone_announce">phone.announce</h5>
+<h5 id="_phone_announce"><a class="anchor" href="#_phone_announce"></a>phone.announce</h5>
 <div class="paragraph">
 <p>Phone announce sub-menu.</p>
 </div>
@@ -4612,14 +4612,14 @@ phone
 </div>
 </div>
 <div class="sect2">
-<h3 id="_playerstate">PlayerState</h3>
+<h3 id="_playerstate"><a class="anchor" href="#_playerstate"></a>PlayerState</h3>
 <div class="paragraph">
 <p>This module handles the player/character state (customization, weapons, health, armour&#8230;&#8203;).</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_26">Extension</h4>
+<h4 id="_extension_26"><a class="anchor" href="#_extension_26"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_user_16">User</h5>
+<h5 id="_user_16"><a class="anchor" href="#_user_16"></a>User</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cdata.state</code></pre>
@@ -4627,7 +4627,7 @@ phone
 </div>
 </div>
 <div class="sect4">
-<h5 id="_server_24">Server</h5>
+<h5 id="_server_24"><a class="anchor" href="#_server_24"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg</code></pre>
@@ -4656,7 +4656,7 @@ phone
 </div>
 </div>
 <div class="sect4">
-<h5 id="_client_11">Client</h5>
+<h5 id="_client_11"><a class="anchor" href="#_client_11"></a>Client</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.state_ready
@@ -4748,9 +4748,9 @@ PlayerState.tunnel.setCustomization = PlayerState.setCustomization</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_item_6">Item</h4>
+<h4 id="_item_6"><a class="anchor" href="#_item_6"></a>Item</h4>
 <div class="sect4">
-<h5 id="_wbody">wbody</h5>
+<h5 id="_wbody"><a class="anchor" href="#_wbody"></a>wbody</h5>
 <div class="paragraph">
 <p>Weapon body.</p>
 </div>
@@ -4784,7 +4784,7 @@ weapon
 </div>
 </div>
 <div class="sect4">
-<h5 id="_wammo">wammo</h5>
+<h5 id="_wammo"><a class="anchor" href="#_wammo"></a>wammo</h5>
 <div class="paragraph">
 <p>Weapon ammunition.</p>
 </div>
@@ -4836,14 +4836,14 @@ amount
 </div>
 </div>
 <div class="sect2">
-<h3 id="_police">Police</h3>
+<h3 id="_police"><a class="anchor" href="#_police"></a>Police</h3>
 <div class="paragraph">
 <p>This module adds some police features.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_27">Extension</h4>
+<h4 id="_extension_27"><a class="anchor" href="#_extension_27"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_user_17">User</h5>
+<h5 id="_user_17"><a class="anchor" href="#_user_17"></a>User</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.police_records -- list of strings
@@ -4857,7 +4857,7 @@ User:savePoliceRecords()</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_server_25">Server</h5>
+<h5 id="_server_25"><a class="anchor" href="#_server_25"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg
@@ -4868,7 +4868,7 @@ Police:getUserWantedLevel(user)</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_client_12">Client</h5>
+<h5 id="_client_12"><a class="anchor" href="#_client_12"></a>Client</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.handcuffed -- flag
@@ -4931,15 +4931,15 @@ Police.tunnel.applyWantedLevel = Police.applyWantedLevel</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_18">Menu</h4>
+<h4 id="_menu_18"><a class="anchor" href="#_menu_18"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_police_2">police</h5>
+<h5 id="_police_2"><a class="anchor" href="#_police_2"></a>police</h5>
 <div class="paragraph">
 <p>Police menu.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_police_fine">police.fine</h5>
+<h5 id="_police_fine"><a class="anchor" href="#_police_fine"></a>police.fine</h5>
 <div class="paragraph">
 <p>Police fine sub-menu.</p>
 </div>
@@ -4966,7 +4966,7 @@ money
 </div>
 </div>
 <div class="sect4">
-<h5 id="_police_check">police.check</h5>
+<h5 id="_police_check"><a class="anchor" href="#_police_check"></a>police.check</h5>
 <div class="paragraph">
 <p>Police check report menu.</p>
 </div>
@@ -4985,13 +4985,13 @@ tuser
 </div>
 </div>
 <div class="sect4">
-<h5 id="_police_pc">police_pc</h5>
+<h5 id="_police_pc"><a class="anchor" href="#_police_pc"></a>police_pc</h5>
 <div class="paragraph">
 <p>Police PC menu.</p>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_police_pc_records">police_pc.records</h5>
+<h5 id="_police_pc_records"><a class="anchor" href="#_police_pc_records"></a>police_pc.records</h5>
 <div class="paragraph">
 <p>Police PC records sub-menu. Manage police records of a character.</p>
 </div>
@@ -5011,9 +5011,9 @@ tuser
 </div>
 </div>
 <div class="sect3">
-<h4 id="_item_7">Item</h4>
+<h4 id="_item_7"><a class="anchor" href="#_item_7"></a>Item</h4>
 <div class="sect4">
-<h5 id="_bulletproof_vest">bulletproof_vest</h5>
+<h5 id="_bulletproof_vest"><a class="anchor" href="#_bulletproof_vest"></a>bulletproof_vest</h5>
 <div class="paragraph">
 <p>Bulletproof vest, set maximum armour when used.</p>
 </div>
@@ -5021,14 +5021,14 @@ tuser
 </div>
 </div>
 <div class="sect2">
-<h3 id="_radio_2">Radio</h3>
+<h3 id="_radio_2"><a class="anchor" href="#_radio_2"></a>Radio</h3>
 <div class="paragraph">
 <p>This module adds groups radio (voice and GPS signal).</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_28">Extension</h4>
+<h4 id="_extension_28"><a class="anchor" href="#_extension_28"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_user_18">User</h5>
+<h5 id="_user_18"><a class="anchor" href="#_user_18"></a>User</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">User:connectRadio()
@@ -5038,7 +5038,7 @@ User:disconnectRadio()</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_server_26">Server</h5>
+<h5 id="_server_26"><a class="anchor" href="#_server_26"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg</code></pre>
@@ -5046,7 +5046,7 @@ User:disconnectRadio()</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_client_13">Client</h5>
+<h5 id="_client_13"><a class="anchor" href="#_client_13"></a>Client</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.talking
@@ -5071,14 +5071,14 @@ self.players -- radio players, map of player server id =&gt; {.group, .group_tit
 </div>
 </div>
 <div class="sect2">
-<h3 id="_shop">Shop</h3>
+<h3 id="_shop"><a class="anchor" href="#_shop"></a>Shop</h3>
 <div class="paragraph">
 <p>This module adds item shops.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_29">Extension</h4>
+<h4 id="_extension_29"><a class="anchor" href="#_extension_29"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_server_27">Server</h5>
+<h5 id="_server_27"><a class="anchor" href="#_server_27"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg</code></pre>
@@ -5087,9 +5087,9 @@ self.players -- radio players, map of player server id =&gt; {.group, .group_tit
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_19">Menu</h4>
+<h4 id="_menu_19"><a class="anchor" href="#_menu_19"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_shop_2">shop</h5>
+<h5 id="_shop_2"><a class="anchor" href="#_shop_2"></a>shop</h5>
 <div class="paragraph">
 <p>Shop menu.</p>
 </div>
@@ -5118,14 +5118,14 @@ items
 </div>
 </div>
 <div class="sect2">
-<h3 id="_skinshop">SkinShop</h3>
+<h3 id="_skinshop"><a class="anchor" href="#_skinshop"></a>SkinShop</h3>
 <div class="paragraph">
 <p>This module adds skin shops.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_30">Extension</h4>
+<h4 id="_extension_30"><a class="anchor" href="#_extension_30"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_server_28">Server</h5>
+<h5 id="_server_28"><a class="anchor" href="#_server_28"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg</code></pre>
@@ -5134,9 +5134,9 @@ items
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_20">Menu</h4>
+<h4 id="_menu_20"><a class="anchor" href="#_menu_20"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_skinshop_2">skinshop</h5>
+<h5 id="_skinshop_2"><a class="anchor" href="#_skinshop_2"></a>skinshop</h5>
 <div class="paragraph">
 <p>Skinshop menu.</p>
 </div>
@@ -5155,7 +5155,7 @@ parts
 </div>
 </div>
 <div class="sect4">
-<h5 id="_skinshop_part">skinshop.part</h5>
+<h5 id="_skinshop_part"><a class="anchor" href="#_skinshop_part"></a>skinshop.part</h5>
 <div class="paragraph">
 <p>Shinshop part sub-menu.</p>
 </div>
@@ -5192,7 +5192,7 @@ custom
 </div>
 </div>
 <div class="sect2">
-<h3 id="_survival">Survival</h3>
+<h3 id="_survival"><a class="anchor" href="#_survival"></a>Survival</h3>
 <div class="paragraph">
 <p>This module adds survival features.</p>
 </div>
@@ -5208,9 +5208,9 @@ custom
 </ul>
 </div>
 <div class="sect3">
-<h4 id="_extension_31">Extension</h4>
+<h4 id="_extension_31"><a class="anchor" href="#_extension_31"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_user_19">User</h5>
+<h5 id="_user_19"><a class="anchor" href="#_user_19"></a>User</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cdata.vitals -- map of name =&gt; value
@@ -5227,7 +5227,7 @@ User:varyVital(name, value)</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_server_29">Server</h5>
+<h5 id="_server_29"><a class="anchor" href="#_server_29"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg
@@ -5257,7 +5257,7 @@ self.vitals -- registered vitals, map of name =&gt; {default_value}</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_client_14">Client</h5>
+<h5 id="_client_14"><a class="anchor" href="#_client_14"></a>Client</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.in_coma -- flag
@@ -5288,9 +5288,9 @@ Survival.tunnel.varyHealth = Survival.varyHealth</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_item_8">Item</h4>
+<h4 id="_item_8"><a class="anchor" href="#_item_8"></a>Item</h4>
 <div class="sect4">
-<h5 id="_medkit">medkit</h5>
+<h5 id="_medkit"><a class="anchor" href="#_medkit"></a>medkit</h5>
 <div class="paragraph">
 <p>Item used to reanimate people in coma.</p>
 </div>
@@ -5298,7 +5298,7 @@ Survival.tunnel.varyHealth = Survival.varyHealth</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_transformer_2">Transformer</h3>
+<h3 id="_transformer_2"><a class="anchor" href="#_transformer_2"></a>Transformer</h3>
 <div class="paragraph">
 <p>This module adds transformers.</p>
 </div>
@@ -5319,9 +5319,9 @@ Survival.tunnel.varyHealth = Survival.varyHealth</code></pre>
 </ul>
 </div>
 <div class="sect3">
-<h4 id="_extension_32">Extension</h4>
+<h4 id="_extension_32"><a class="anchor" href="#_extension_32"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_transformer_3">Transformer</h5>
+<h5 id="_transformer_3"><a class="anchor" href="#_transformer_3"></a>Transformer</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.id
@@ -5338,7 +5338,7 @@ Transformer:unbindAll()</code></pre>
 </div>
 </div>
 <div class="sect4">
-<h5 id="_server_30">Server</h5>
+<h5 id="_server_30"><a class="anchor" href="#_server_30"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg
@@ -5381,9 +5381,9 @@ Transformer:remove(id)</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_menu_21">Menu</h4>
+<h4 id="_menu_21"><a class="anchor" href="#_menu_21"></a>Menu</h4>
 <div class="sect4">
-<h5 id="_transformer_4">transformer</h5>
+<h5 id="_transformer_4"><a class="anchor" href="#_transformer_4"></a>transformer</h5>
 <div class="paragraph">
 <p>Transformer menu.</p>
 </div>
@@ -5404,14 +5404,14 @@ transformer
 </div>
 </div>
 <div class="sect2">
-<h3 id="_vehblacklist">VehBlacklist</h3>
+<h3 id="_vehblacklist"><a class="anchor" href="#_vehblacklist"></a>VehBlacklist</h3>
 <div class="paragraph">
 <p>This module adds a vehicle blacklist (remove vehicles from the game).</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_33">Extension</h4>
+<h4 id="_extension_33"><a class="anchor" href="#_extension_33"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_server_31">Server</h5>
+<h5 id="_server_31"><a class="anchor" href="#_server_31"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg</code></pre>
@@ -5419,7 +5419,7 @@ transformer
 </div>
 </div>
 <div class="sect4">
-<h5 id="_client_15">Client</h5>
+<h5 id="_client_15"><a class="anchor" href="#_client_15"></a>Client</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.veh_models -- map of model hash
@@ -5430,14 +5430,14 @@ self.interval</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_warp">Warp</h3>
+<h3 id="_warp"><a class="anchor" href="#_warp"></a>Warp</h3>
 <div class="paragraph">
 <p>This module spawns warp points for player/vehicle teleportation.</p>
 </div>
 <div class="sect3">
-<h4 id="_extension_34">Extension</h4>
+<h4 id="_extension_34"><a class="anchor" href="#_extension_34"></a>Extension</h4>
 <div class="sect4">
-<h5 id="_server_32">Server</h5>
+<h5 id="_server_32"><a class="anchor" href="#_server_32"></a>Server</h5>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg</code></pre>
@@ -5446,9 +5446,9 @@ self.interval</code></pre>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_map_entity_3">Map entity</h4>
+<h4 id="_map_entity_3"><a class="anchor" href="#_map_entity_3"></a>Map entity</h4>
 <div class="sect4">
-<h5 id="_warp_2">Warp</h5>
+<h5 id="_warp_2"><a class="anchor" href="#_warp_2"></a>Warp</h5>
 <div class="paragraph">
 <p>Default animated entity for the warp module.
 Inherits from <code>Map.PosEntity</code>.</p>
@@ -5474,7 +5474,7 @@ color
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2021-05-16 22:58:20 +0200
+Last updated 2021-11-04 18:29:16 +0100
 </div>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.3/highlight.min.js"></script>
