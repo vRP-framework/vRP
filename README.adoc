@@ -20,12 +20,6 @@ http://discord.gg/xzGZBAb[Discord]
 
 https://forum.fivem.net/t/release-vrp-framework/22894[FiveM forum thread]
 
-Support me on Patreon to keep this project alive:
-
-image::http://i.imgur.com/dyePK6Q.png[Support me and the project on Patreon,link="https://www.patreon.com/ImagicTheCat"]
-
-https://pledgie.com/campaigns/34016[(old pledgie, thank you to the donors)]
-
 NOTE: This is vRP 2, the second major version of vRP. It aims to have less overhead and a more straightforward and structured approach using OOP. This will probably be the last major version, vRP based resources can be updated for vRP 2 using the extension system.
 
 .Features
