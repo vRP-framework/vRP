@@ -5,7 +5,7 @@
 
 === Installation
 
-Clone the repository or download the master https://github.com/ImagicTheCat/vRP/archive/master.zip[archive] and copy the `vrp` directory to the resources folder. Add `vrp` to the loading resource list.
+Clone the repository or download the master https://github.com/vRP-framework/vRP/archive/master.zip[archive] and copy the `vrp` directory to the resources folder. Add `vrp` to the loading resource list.
 
 === Configuration
 
@@ -20,7 +20,7 @@ See the vRP documentation and configuration files, default stuff is here as an e
 
 To run vRP, we also need to install a DB driver, it is a resource/extension used to communicate with a MySQL database.
 
-NOTE: Some maintained DB drivers: https://github.com/ImagicTheCat/vRP-db-drivers +
+NOTE: Some maintained DB drivers: https://github.com/vRP-framework/vRP-db-drivers +
 `ghmattimysql` bridge is recommended.
 
 DB drivers will register themselves with a specific name to use in `cfg/base.lua`. Since there is no guarantee about when the driver will be registered, all queries will be cached until that moment. 

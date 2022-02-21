@@ -38,11 +38,15 @@ NOTE: This is vRP 2, the second major version of vRP. It aims to have less overh
 
 == Documentation
 
-See the https://imagicthecat.github.io/vRP[documentation].
+Online: https://vrp-framework.github.io/vRP
+
+Offline:
+- `git worktree add gh-pages gh-pages`
+- open the `gh-pages` directory from a browser
 
 .See also (and use it as a basis to understand how to develop extensions for vRP):
-* https://github.com/ImagicTheCat/vRP-db-drivers (some maintained DB drivers)
-* https://github.com/ImagicTheCat/vRP-basic-mission (repair/delivery missions extension)
+* https://github.com/vRP-framework/vRP-db-drivers (some maintained DB drivers)
+* https://github.com/vRP-framework/vRP-basic-mission (repair/delivery missions extension)
 * https://github.com/ImagicTheCat/vRP-TCG (Trading Card Game extension)
 
 === Issues / Features / Help

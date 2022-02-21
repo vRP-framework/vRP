@@ -91,7 +91,7 @@ Loaded extensions are accessibles through the vRP instance:
 vRP.EXT.MyExt:test()
 ----
 
-TIP: You can see how an extension is made by looking at the code of vRP link:../../vrp/modules[modules] or https://github.com/ImagicTheCat/vRP-basic-mission.
+TIP: You can see how an extension is made by looking at the code of vRP link:../../vrp/modules[modules] or https://github.com/vRP-framework/vRP-basic-mission.
 
 ==== User
 
