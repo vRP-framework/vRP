@@ -40,7 +40,7 @@ NOTE: This is vRP 2, the second major version of vRP. It aims to have less overh
 
 Online: https://vrp-framework.github.io/vRP
 
-Offline:
+.Offline:
 - `git worktree add gh-pages gh-pages`
 - open the `gh-pages` directory from a browser
 
