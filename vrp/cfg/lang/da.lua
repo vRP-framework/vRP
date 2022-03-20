@@ -3,7 +3,7 @@
 
 local lang = {
   common = {
-    welcome = "<center>Velkommen til <b style='color: #72AEE5'>DevoNetwork</b>.<br>Tryk på <b style='color: #4E9350'>F9</b> for at åbne menuen.</center>",
+    welcome = "<center>Velkommen til <b style='color: #72AEE5'>Indsæt server navn</b>.<br>Tryk på <b style='color: #4E9350'>F9</b> for at åbne menuen.</center>",
     no_player_near = "Ingen spiller i nærheden.",
     invalid_value = "Forkert værdi.",
     invalid_name = "Forkert navn.",
