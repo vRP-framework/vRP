@@ -66,6 +66,8 @@ function Garage:__construct()
   end)
 end
 
+local custom = {}
+
 -- veh: vehicle game id
 -- return owner character id and model or nil if not managed by vRP
 function Garage:getVehicleInfo(veh)
@@ -121,7 +123,11 @@ function Garage:spawnVehicle(model, state, position, rotation)
     if not position then
       SetPedIntoVehicle(ped,nveh,-1) -- put player inside
     end
-    SetVehicleNumberPlateText(nveh, "P "..vRP.EXT.Identity.registration)
+    if not custom.plate_txt then
+		SetVehicleNumberPlateText(nveh, "P "..vRP.EXT.Identity.registration)
+	else
+		SetVehicleNumberPlateText(nveh, custom.plate_txt)
+	end
     SetEntityAsMissionEntity(nveh, true, true)
     SetVehicleHasBeenOwnedByPlayer(nveh,true)
 
@@ -352,11 +358,11 @@ end
 -- VEHICLE STATE
 
 function Garage:getVehicleCustomization(veh)
-  local custom = {}
 
   custom.colours = {GetVehicleColours(veh)}
   custom.extra_colours = {GetVehicleExtraColours(veh)}
   custom.plate_index = GetVehicleNumberPlateTextIndex(veh)
+  custom.plate_txt = GetVehicleNumberPlateText(veh)	
   custom.wheel_type = GetVehicleWheelType(veh)
   custom.window_tint = GetVehicleWindowTint(veh)
   custom.livery = GetVehicleLivery(veh)
@@ -381,6 +387,9 @@ end
 
 -- partial update per property
 function Garage:setVehicleCustomization(veh, custom)
+  if not veh or veh == nil then
+	veh = GetVehiclePedIsIn(GetPlayerPed(-1),false)
+  end
   SetVehicleModKit(veh, 0)
 
   if custom.colours then
@@ -395,6 +404,10 @@ function Garage:setVehicleCustomization(veh, custom)
     SetVehicleNumberPlateTextIndex(veh, custom.plate_index)
   end
 
+  if custom.plate_txt then 
+    SetVehicleNumberPlateText(veh, custom.plate_txt)		
+  end
+  
   if custom.wheel_type then
     SetVehicleWheelType(veh, custom.wheel_type)
   end
@@ -668,6 +681,7 @@ Garage.tunnel.trySpawnOutVehicles = Garage.trySpawnOutVehicles
 Garage.tunnel.cleanupVehicles = Garage.cleanupVehicles
 Garage.tunnel.ejectVehicle = Garage.ejectVehicle
 Garage.tunnel.isInVehicle = Garage.isInVehicle
+Garage.tunnel.setVehicleCustomization = Garage.setVehicleCustomization
 Garage.tunnel.vc_openDoor = Garage.vc_openDoor
 Garage.tunnel.vc_closeDoor = Garage.vc_closeDoor
 Garage.tunnel.vc_detachTrailer = Garage.vc_detachTrailer
