@@ -280,6 +280,35 @@ local function menu_garage(self)
   end)
 end
 
+local function menu_vehicle_custom(self)
+	
+	local function m_plate(menu)
+		local user = menu.user
+		local model = self.remote.getNearestOwnedVehicle(user.source, 7)
+		local in_vehicle = self.remote.isInVehicle(user.source)
+		local custom = {}		local veh
+		
+		if in_vehicle then
+			if model then
+				custom.plate_txt = user:prompt(lang.custom.plate_txt.prompt(),"")
+				vRP.EXT.Base.remote._notify(user.source, lang.custom.plate_txt.completed({custom.plate_txt}))
+				self.remote._setVehicleCustomization(user.source, veh, custom)
+			else
+				vRP.EXT.Base.remote._notify(user.source, "Must be in Owned Vehicle")
+			end
+		else
+			vRP.EXT.Base.remote._notify(user.source, "Must be in Vehicle")
+		end
+	end
+
+	vRP.EXT.GUI:registerMenuBuilder("vehicle.custom", function(menu)
+    menu.title = lang.custom.title()
+    menu.css.header_color = "rgba(255,125,0,0.75)"
+
+    menu:addOption(lang.custom.plate_txt.title(), m_plate, lang.custom.plate_txt.description())
+  end)
+end
+
 -- menu: vehicle
 local function menu_vehicle(self)
   -- open trunk
@@ -345,6 +374,12 @@ local function menu_vehicle(self)
 
     self.remote._vc_toggleEngine(user.source, model)
   end
+  
+  -- Customization
+  local function m_custom(menu)
+    local user = menu.user
+    user:openMenu("vehicle.custom")
+  end
 
   vRP.EXT.GUI:registerMenuBuilder("vehicle", function(menu)
     menu.title = lang.vehicle.title()
@@ -356,6 +391,7 @@ local function menu_vehicle(self)
     menu:addOption(lang.vehicle.detach_cargobob.title(), m_detach_cargobob, lang.vehicle.detach_cargobob.description())
     menu:addOption(lang.vehicle.lock.title(), m_lock, lang.vehicle.lock.description())
     menu:addOption(lang.vehicle.engine.title(), m_engine, lang.vehicle.engine.description())
+	menu:addOption(lang.vehicle.custom.title(), m_custom, lang.vehicle.custom.description())
   end)
 end
 
@@ -429,6 +465,7 @@ function Garage:__construct()
   menu_garage_rent(self)
   menu_garage(self)
   menu_vehicle(self)
+  menu_vehicle_custom(self)
 
   -- main menu
 
