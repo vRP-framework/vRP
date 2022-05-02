@@ -651,6 +651,10 @@ local lang = {
       title = "Engine on/off",
       description = "Start or stop the engine."
     },
+	custom = {
+      title = "Custom",
+      description = "Set Vehicle Modifications."
+    },
     asktrunk = {
       title = "Ask open trunk",
       asked = "~g~Asking...",
@@ -664,6 +668,15 @@ local lang = {
       title = "Repair vehicle",
       description = "Repair the nearest vehicle."
     }
+  },
+  custom = {
+	title = "Custom",
+	plate_txt = {
+		title = "Plate Text",
+		description = "Set a custom Vehicle plate text.",
+		prompt = "New Vehicle Plate Text (max 8 Characters):", 
+		completed = "Plate text has been changed to ~g~{1}"
+	}
   },
   shop = {
     title = "Shop ({1})",

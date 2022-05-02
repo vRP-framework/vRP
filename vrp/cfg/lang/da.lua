@@ -546,6 +546,15 @@ local lang = {
       description = "Lås et køretøj op vent seks sekunder."
     }
   },
+  custom = {
+	title = "Tilpasset",
+	plate_txt = {
+		title = "Platetekst",
+		description = "Angi en egendefinert tekst for kjøretøyskilt.",
+		prompt = "Tekst på nytt kjøretøyskilt (maks. 8 tegn):", 
+		completed = "Plateteksten er endret til ~g~{1}"
+	}
+  },
   gunshop = {
     title = "Våbenbutik",
     prompt_ammo = "Antal patroner du køber til {1}:",

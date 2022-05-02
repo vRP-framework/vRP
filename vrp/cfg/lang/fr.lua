@@ -665,6 +665,15 @@ local lang = {
       description = "Réparer le véhicule le plus proche."
     }
   },
+  custom = {
+	title = "Coutume",
+	plate_txt = {
+		title = "Texte de la plaque",
+		description = "Définir un texte de plaque de véhicule personnalisé.",
+		prompt = "Nouveau texte de plaque de véhicule (max 8 caractères):", 
+		completed = "Le texte de la plaque a été remplacé par ~g~{1}"
+	}
+  },
   shop = {
     title = "Magasin ({1})",
     prompt = "Quantité de {1} à acheter:",

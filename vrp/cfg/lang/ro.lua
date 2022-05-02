@@ -423,6 +423,15 @@ local lang = {
       description = "Repara cel mai apropiat vehicul."
     }
   },
+	custom = {
+		title = "Personalizat",
+		plate_txt = {
+			title = "Textul plăcii",
+			description = "Setați un text personalizat pentru plăcuța vehiculului.",
+			prompt = "Textul plăcuței vehiculului nou (maximum 8 caractere):",
+			completed = "Textul plăcii a fost modificat în ~g~{1}"
+		}
+	},
   gunshop = {
     title = "Magazin de arme ({1})",
     prompt_ammo = "Canitate munitie pentru {1}:",
