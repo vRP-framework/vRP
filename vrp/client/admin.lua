@@ -11,6 +11,7 @@ function Admin:__construct()
   vRP.Extension.__construct(self)
 
   self.noclip = false
+  self.noclipEntity = nil
   self.noclip_speed = 1.0
 
   -- noclip task
@@ -21,12 +22,12 @@ function Admin:__construct()
       Citizen.Wait(0)
       if self.noclip then
         local ped = GetPlayerPed(-1)
-        local x,y,z = Base:getPosition()
-        local dx,dy,dz = Base:getCamDirection()
+        local x,y,z = Base:getPosition(self.noclipEntity)
+        local dx,dy,dz = Base:getCamDirection(self.noclipEntity)
         local speed = self.noclip_speed
 
         -- reset velocity
-        SetEntityVelocity(ped, 0.0001, 0.0001, 0.0001)
+        SetEntityVelocity(self.noclipEntity, 0.0001, 0.0001, 0.0001)
 
         -- forward
         if IsControlPressed(0,32) then -- MOVE UP
@@ -42,7 +43,7 @@ function Admin:__construct()
           z = z-speed*dz
         end
 
-        SetEntityCoordsNoOffset(ped,x,y,z,true,true,true)
+        SetEntityCoordsNoOffset(self.noclipEntity,x,y,z,true,true,true)
       end
     end
   end)
@@ -52,13 +53,20 @@ function Admin:toggleNoclip()
   self.noclip = not self.noclip
 
   local ped = GetPlayerPed(-1)
-  if self.noclip then -- set
-    SetEntityInvincible(ped, true)
-    SetEntityVisible(ped, false, false)
-  else -- unset
-    SetEntityInvincible(ped, false)
-    SetEntityVisible(ped, true, false)
+  
+  if IsPedInAnyVehicle(ped, false) then
+      self.noclipEntity = GetVehiclePedIsIn(ped, false)
+  else
+      self.noclipEntity = ped
   end
+  
+  SetEntityCollision(self.noclipEntity, not self.noclip, not self.noclip)
+  SetEntityInvincible(self.noclipEntity, self.noclip)
+  SetEntityVisible(self.noclipEntity, not self.noclip, false)
+  
+  -- rotate entity
+  vx,vy,vz = GetGameplayCamRot(2)
+  SetEntityRotation(self.noclipEntity, vx, nil, nil, 0, false)
 end
 
 -- ref: https://github.com/citizenfx/project-lambdamenu/blob/master/LambdaMenu/teleportation.cpp#L301
