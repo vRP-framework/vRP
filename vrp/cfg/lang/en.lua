@@ -71,6 +71,9 @@ local lang = {
     noclip = {
       title = "Noclip"
     },
+	noclipveh = {
+      title = "Noclip with Vehicle"
+    },
     coords = {
       title = "Coords",
       hint = "Copy the coordinates using Ctrl-A Ctrl-C"

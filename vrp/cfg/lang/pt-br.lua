@@ -51,6 +51,9 @@ local lang = {
     noclip = {
       title = "NOCLIP"
     },
+	noclipveh = {
+      title = "Noclip com veículo"
+    },
     coords = {
       title = "SUA CORDENADA",
       hint = "Copie a cordenada usando Ctrl-A Ctrl-C"
