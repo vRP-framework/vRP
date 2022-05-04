@@ -205,6 +205,10 @@ local function menu_admin(self)
   local function m_noclip(menu)
     self.remote._toggleNoclip(menu.user.source)
   end
+  
+  local function m_noclip_vehicle(menu,inVeh)
+    self.remote._toggleNoclip(menu.user.source,inVeh)
+  end
 
   vRP.EXT.GUI:registerMenuBuilder("admin", function(menu)
     local user = menu.user
@@ -226,6 +230,12 @@ local function menu_admin(self)
     end
     if user:hasPermission("player.noclip") then
       menu:addOption(lang.admin.noclip.title(), m_noclip)
+    end
+	if user:hasPermission("player.noclip") then
+	  local inVeh = vRP.EXT.Garage.remote.isInVehicle(user.source)
+	  if inVeh then
+		menu:addOption(lang.admin.noclipveh.title(), m_noclip_vehicle, inVeh)
+	  end
     end
     if user:hasPermission("player.coords") then
       menu:addOption(lang.admin.coords.title(), m_coords)
