@@ -105,8 +105,9 @@ function Base:vehicleTeleport(x,y,z,heading)
 end
 
 -- return x,y,z
-function Base:getPosition()
-  local x,y,z = table.unpack(GetEntityCoords(GetPlayerPed(-1),true))
+function Base:getPosition(entity)
+  if not entity then entity = GetPlayerPed(-1) end
+  local x,y,z = table.unpack(GetEntityCoords(entity,true))
   return x,y,z
 end
 
@@ -123,8 +124,9 @@ function Base:getSpeed()
 end
 
 -- return dx,dy,dz
-function Base:getCamDirection()
-  local heading = GetGameplayCamRelativeHeading()+GetEntityHeading(GetPlayerPed(-1))
+function Base:getCamDirection(entity)
+  if not entity then entity = GetPlayerPed(-1) end
+  local heading = GetGameplayCamRelativeHeading()+GetEntityHeading(entity)
   local pitch = GetGameplayCamRelativePitch()
 
   local x = -math.sin(heading*math.pi/180.0)
