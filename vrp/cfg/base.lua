@@ -3,11 +3,11 @@ local cfg = {}
 
 -- mysql credentials
 cfg.db = {
-  driver = "ghmattimysql",
+  driver = "oxmysql",
   host = "127.0.0.1",
   database = "vRP",
   user = "vRP",
-  password = "password"
+  password = ""
 }
 
 cfg.server_id = "main" -- identify the server (ex: in database)
@@ -28,5 +28,11 @@ cfg.ignore_ip_identifier = true
 cfg.lang = "en"
 
 cfg.log_level = 0 -- maximum verbose level for logs, -1 may disable logs and 1000 may print all logs
+
+-- this list of resources is auto started after starting vrp
+cfg.moduals = {
+	-- database should be first
+	"vrp_oxmysql"
+}
 
 return cfg
