@@ -1,0 +1,233 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+
+/* make body full page */
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* menu */
+
+.menu{
+  background-color: rgba(0,0,0,0.75);
+  color: white;
+  width: 250px;
+  height: 50%;
+  position: absolute;
+  font-weight: bold;
+  top: 75px;
+}
+
+.menu_description{
+  background-color: rgba(0,0,0,0.75);
+  color: white;
+  position: absolute;
+  font-weight: bold;
+  padding: 9px;
+  font-size: 1.2em;
+  max-width: 500px;
+}
+
+.menu h1{
+  background-color: rgba(255,0,0,0.75);
+  color: white;
+  text-align: center;
+  font-size: 1.6em;
+  padding: 6px;
+}
+
+.options{
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.options::-webkit-scrollbar{ 
+  display: none; 
+}
+
+.options > div{
+  padding: 6px;
+  font-size: 1.3em;
+}
+
+.options .selected{
+  background-color: rgba(255,255,255,0.90);
+  color: black;
+}
+
+/* progress bar */
+.progressbar{
+  position: absolute;
+}
+
+.progressbar .inner{
+}
+
+.progressbar .label{
+  position: absolute;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 2px 2px black;
+}
+
+/* dynamic class progress bar */
+.dprogressbar{
+  position: relative;
+  padding: 0;
+  margin: 0;
+}
+
+.dprogressbar .inner{
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.dprogressbar .label{
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  width: 100%;
+  vertical-align: middle;
+  top: 0;
+  left: 0;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 2px 2px black;
+}
+
+/* wprompt */
+.wprompt{
+  position: absolute;
+  background-color: rgba(0,0,0,0.75);
+  color: white;
+  width: 500px;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+}
+
+.wprompt h1{
+  font-size: 1.1em;
+}
+
+.wprompt textarea{
+  outline: none !important;
+  background-color: rgba(0,0,0,0.75);
+  border: 1px solid rgba(255,255,255,0.30);
+  flex: 1;
+  color: white;
+  width: 100%;
+  padding: 4px;
+  resize: none;
+  box-sizing: border-box;
+}
+
+.wprompt textarea:focus{
+  outline: none !important;
+}
+
+.wprompt .help{
+  font-size: 0.9em;
+  font-style: italic;
+  padding: 3px;
+}
+
+/* request manager */
+.request_manager{
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  text-align: right;
+}
+
+.request_manager div{
+  margin-top: 10px;
+}
+
+.request_manager div > span{
+  font-size: 1.2em;
+  color: white;
+  font-weight: bold;
+  background-color: rgba(0,0,0,0.50);
+  padding: 4px;
+}
+
+.request_manager .yes{
+  padding-left: 15px;
+  color: rgb(0,255,0);
+  font-size: 1em;
+}
+
+.request_manager .no{
+  color: rgb(255,0,0);
+  font-size: 1em;
+}
+
+/* announce */
+
+.announce{
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 780px;
+  height: 130px;
+  padding: 10px;
+  margin-left: -400px;
+  font-weight: bold;
+  font-size: 1.1em;
+  text-shadow: 2px 2px black;
+  color: white;
+  display: none;
+  opacity: 0.90;
+}
+
+/* VoIP */
+
+#voice_indicator{
+  position: absolute;
+  width: 75px;
+  height: 75px;
+  right: 0;
+  top: 35%;
+  background-image: url("images/voice_active.png");
+  display: none;
+}
+
+#voice_indicator.active{
+  display: block;
+}
+
+/* Radio */
+
+.radio_display{
+  position: absolute;
+  right: 0;
+  top: 15%;
+  margin: 6px;
+  width: 200px;
+}
+
+.radio_display > div{
+  overflow: hidden;
+  margin-top: 3px;
+  font-weight: bold;
+  border-radius: 8px;
+  padding: 5px;
+  color: white;
+  background-image: linear-gradient(to bottom, rgba(50,50,50,0.75), rgba(0,0,0,0.75));
+}
+
+.radio_display > div > .group{
+  text-decoration: underline;
+}
+
+.radio_display > div > .title{
+}
