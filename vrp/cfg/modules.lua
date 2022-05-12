@@ -8,6 +8,7 @@ local modules = {
   group = true,
   gui = true,
   map = true,
+  control = true	-- weather and time controls
 }
 
 return modules
