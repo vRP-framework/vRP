@@ -12,7 +12,8 @@ server_scripts{
   "modules/map.lua",
   "modules/gui.lua",
   "modules/admin.lua",
-  "modules/group.lua"
+  "modules/group.lua",
+  "modules/control.lua"
 }
 
 -- client scripts
@@ -21,7 +22,8 @@ client_scripts{
   "client/base.lua",
   "client/map.lua",
   "client/gui.lua",
-  "client/admin.lua"
+  "client/admin.lua",
+  "client/control.lua"
 }
 
 -- client files
@@ -36,6 +38,7 @@ files{
   "client/vRP.lua",
   "vRPShared.lua",
   "cfg/client.lua",
+  "cfg/control.lua",
   "cfg/modules.lua",
   "gui/index.html",
   "gui/design.css",
