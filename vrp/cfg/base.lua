@@ -3,7 +3,7 @@ local cfg = {}
 
 -- mysql credentials
 cfg.db = {
-  driver = "ghmattimysql",
+  driver = "oxmysql",
   host = "127.0.0.1",
   database = "vRP",
   user = "vRP",
