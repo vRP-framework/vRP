@@ -10,18 +10,18 @@ window.addEventListener("load",function(){
   var radio_display = new RadioDisplay();
   var aengine = new AudioEngine();
 
-  requestmgr.onResponse = function(id,ok){ $.post("http://vrp/request",JSON.stringify({act: "response", id: id, ok: ok})); }
-  wprompt.onClose = function(){ $.post("http://vrp/prompt",JSON.stringify({act: "close", result: wprompt.result})); }
-  dynamic_menu.onValid = function(option,mod){ $.post("http://vrp/menu",JSON.stringify({act: "valid", option: option, mod: mod})); }
+  requestmgr.onResponse = function(id,ok){ $.post("https://vrp/request",JSON.stringify({act: "response", id: id, ok: ok})); }
+  wprompt.onClose = function(){ $.post("https://vrp/prompt",JSON.stringify({act: "close", result: wprompt.result})); }
+  dynamic_menu.onValid = function(option,mod){ $.post("https://vrp/menu",JSON.stringify({act: "valid", option: option, mod: mod})); }
   var select_event = false;
   dynamic_menu.onSelect = function(option){ 
     if(select_event){
-      $.post("http://vrp/menu",JSON.stringify({act: "select", option: option}));
+      $.post("https://vrp/menu",JSON.stringify({act: "select", option: option}));
     }
   }
 
   //init
-  $.post("http://vrp/init",""); 
+  $.post("https://vrp/init",""); 
 
   var pbars = {}
   var divs = {}

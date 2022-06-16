@@ -1,33 +1,33 @@
-fx_version "adamant"
-games {"gta5"}
+fx_version 'cerulean'
+games { 'gta5' }
 
 description "RP module/framework"
+version '3.0.1'
 
 ui_page "gui/index.html"
 
--- server scripts
-server_scripts{ 
-  "lib/utils.lua",
+shared_script {
+  "lib/utils.lua"
+}
+
+server_script {
   "base.lua",
   "modules/map.lua",
   "modules/gui.lua",
   "modules/admin.lua",
   "modules/group.lua",
-  "modules/weather.lua"
+  "modules/weather.lua",
 }
 
--- client scripts
-client_scripts{
-  "lib/utils.lua",
+client_scripts {
   "client/base.lua",
   "client/map.lua",
   "client/gui.lua",
   "client/admin.lua",
-  "client/weather.lua"
+  "client/weather.lua",
 }
 
--- client files
-files{
+files {
   "lib/Luaoop.lua",
   "lib/Tunnel.lua",
   "lib/Proxy.lua",
@@ -38,7 +38,6 @@ files{
   "client/vRP.lua",
   "vRPShared.lua",
   "cfg/client.lua",
-  "cfg/control.lua",
   "cfg/modules.lua",
   "gui/index.html",
   "gui/design.css",

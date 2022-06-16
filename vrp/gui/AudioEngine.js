@@ -144,7 +144,7 @@ function AudioEngine()
         var peer = channel.players[player];
         if(peer.speaking && time - peer.last_packet_time >= 500){ // event
           peer.speaking = false;
-          $.post("http://vrp/audio", JSON.stringify({act: "voice_channel_player_speaking_change", channel: peer.channel, player: peer.player, speaking: peer.speaking}));
+          $.post("https://vrp/audio", JSON.stringify({act: "voice_channel_player_speaking_change", channel: peer.channel, player: peer.player, speaking: peer.speaking}));
         }
       }
     }
@@ -445,7 +445,7 @@ AudioEngine.prototype.connectVoIP = function()
           peer.last_packet_time = new Date().getTime();
           if(!peer.speaking){
             peer.speaking = true;
-            $.post("http://vrp/audio", JSON.stringify({act: "voice_channel_player_speaking_change", channel: peer.channel, player: peer.player, speaking: peer.speaking}));
+            $.post("https://vrp/audio", JSON.stringify({act: "voice_channel_player_speaking_change", channel: peer.channel, player: peer.player, speaking: peer.speaking}));
           }
 
           peer.psamples.push(samples);
@@ -713,7 +713,7 @@ AudioEngine.prototype.disconnectVoice = function(data)
 
         if(peer.speaking){ // event
           peer.speaking = false;
-          $.post("http://vrp/audio", JSON.stringify({act: "voice_channel_player_speaking_change", channel: peer.channel, player: peer.player, speaking: peer.speaking}));
+          $.post("https://vrp/audio", JSON.stringify({act: "voice_channel_player_speaking_change", channel: peer.channel, player: peer.player, speaking: peer.speaking}));
         }
 
         // dereference channel
@@ -768,5 +768,5 @@ AudioEngine.prototype.channelTransmittingCheck = function(channel)
 
   // event
   if(channel.transmitting != old_transmitting)
-    $.post("http://vrp/audio", JSON.stringify({act: "voice_channel_transmitting_change", channel: channel.id, transmitting: channel.transmitting}));
+    $.post("https://vrp/audio", JSON.stringify({act: "voice_channel_transmitting_change", channel: channel.id, transmitting: channel.transmitting}));
 }
