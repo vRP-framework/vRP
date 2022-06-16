@@ -9,6 +9,8 @@ local modules = {
   gui = true,
   map = true,
   weather = true,
+  misc = true,
+  command = true
 }
 
 return modules

@@ -114,6 +114,9 @@ local lang = {
           title = "Kick",
           prompt = "Reason: "
         },
+		spectate = {
+          title = "Spectate"
+        },
         tptome = {
           title = "TpToMe"
         },

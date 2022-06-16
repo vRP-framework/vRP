@@ -17,6 +17,7 @@ server_script {
   "modules/admin.lua",
   "modules/group.lua",
   "modules/weather.lua",
+  "modules/commands.lua"
 }
 
 client_scripts {
@@ -25,6 +26,7 @@ client_scripts {
   "client/gui.lua",
   "client/admin.lua",
   "client/weather.lua",
+  "client/commands.lua"
 }
 
 files {

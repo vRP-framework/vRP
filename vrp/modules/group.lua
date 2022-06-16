@@ -260,22 +260,6 @@ function Group:__construct()
   menu_group_selector(self)
   menu_admin_users_user(self)
 
-  -- identity gtypes display
-  vRP.EXT.GUI:registerMenuBuilder("identity", function(menu)
-    local tuser = vRP.users_by_cid[menu.data.cid]
-    if tuser then
-      for gtype, title in pairs(self.cfg.identity_gtypes) do
-        local group_name = tuser:getGroupByType(gtype)
-        if group_name then
-          local gtitle = self:getGroupTitle(group_name)
-          if gtitle then
-            menu:addOption(title, nil, gtitle)
-          end
-        end
-      end
-    end
-  end)
-
   -- task: group count display
   if next(self.cfg.count_display_permissions) then
     Citizen.CreateThread(function()

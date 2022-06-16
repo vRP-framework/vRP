@@ -11,6 +11,8 @@ function Admin:__construct()
   vRP.Extension.__construct(self)
 
   self.noclip = false
+  self.spectate = false
+  self.lastCoord = nil
   self.noclipEntity = nil
   self.noclip_speed = 1.0
 
@@ -69,6 +71,23 @@ function Admin:toggleNoclip()
   SetEntityRotation(self.noclipEntity, vx, nil, nil, 0, false)
 end
 
+function Admin:toggleSpectate(target)
+  self.spectate = not self.spectate
+  self.lastCoord = GetEntityCoords(user) 
+  
+  local user = PlayerPedId()
+  local targetUser = GetPlayerFromServerId(target)
+  local tuser = GetPlayerPed(targetUser)
+  
+  SetEntityCollision(user, not self.spectate, not self.spectate)
+  SetEntityInvincible(user, self.spectate)
+  SetEntityVisible(user, not self.spectate, false)
+  NetworkSetEntityInvisibleToNetwork(user, true)
+  NetworkSetInSpectatorMode(self.spectate, target)
+  
+  SetEntityCoords(user, self.lastCoord)
+end
+
 -- ref: https://github.com/citizenfx/project-lambdamenu/blob/master/LambdaMenu/teleportation.cpp#L301
 function Admin:teleportToMarker()
   local ped = GetPlayerPed(-1)
@@ -113,6 +132,7 @@ end
 
 Admin.tunnel = {}
 Admin.tunnel.toggleNoclip = Admin.toggleNoclip
+Admin.tunnel.toggleSpectate = Admin.toggleSpectate
 Admin.tunnel.teleportToMarker = Admin.teleportToMarker
 
 vRP:registerExtension(Admin)
