@@ -16,9 +16,9 @@ function police_init(user)
   weapons["WEAPON_NIGHTSTICK"] = {ammo=0}
   weapons["WEAPON_FLASHLIGHT"] = {ammo=0}
   
-  vRP.EXT.PlayerState.remote._giveWeapons(user.source,weapons,true)
-  vRP.EXT.Police.remote._setCop(user.source,true)
-  vRP.EXT.PlayerState.remote._setArmour(user.source,100)
+  --vRP.EXT.PlayerState.remote._giveWeapons(user.source,weapons,true)
+  --vRP.EXT.Police.remote._setCop(user.source,true)
+  --vRP.EXT.PlayerState.remote._setArmour(user.source,100)
 end
 
 function police_onjoin(user)
