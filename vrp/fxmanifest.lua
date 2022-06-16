@@ -13,7 +13,7 @@ server_scripts{
   "modules/gui.lua",
   "modules/admin.lua",
   "modules/group.lua",
-  "modules/control.lua"
+  "modules/weather.lua"
 }
 
 -- client scripts
@@ -23,7 +23,7 @@ client_scripts{
   "client/map.lua",
   "client/gui.lua",
   "client/admin.lua",
-  "client/control.lua"
+  "client/weather.lua"
 }
 
 -- client files

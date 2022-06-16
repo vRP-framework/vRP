@@ -10,36 +10,9 @@ server_scripts{
   "base.lua",
   "modules/map.lua",
   "modules/gui.lua",
-  "modules/audio.lua",
-  "modules/login.lua",
   "modules/admin.lua",
-  "modules/identity.lua",
   "modules/group.lua",
-  "modules/transformer.lua",
-  "modules/hidden_transformer.lua",
-  "modules/inventory.lua",
-  "modules/player_state.lua",
-  "modules/survival.lua",
-  "modules/money.lua",
-  "modules/emotes.lua",
-  "modules/atm.lua",
-  "modules/phone.lua",
-  "modules/aptitude.lua",
-  "modules/shop.lua",
-  "modules/skinshop.lua",
-  "modules/mission.lua",
-  "modules/cloak.lua",
-  "modules/garage.lua",
-  "modules/business.lua",
-  "modules/home.lua",
-  "modules/home_components.lua",
-  "modules/police.lua",
-  "modules/radio.lua",
-  "modules/ped_blacklist.lua",
-  "modules/veh_blacklist.lua",
-  "modules/edible.lua",
-  "modules/warp.lua",
-  "modules/profiler.lua"
+  "modules/weather.lua"
 }
 
 -- client scripts
@@ -48,19 +21,8 @@ client_scripts{
   "client/base.lua",
   "client/map.lua",
   "client/gui.lua",
-  "client/audio.lua",
   "client/admin.lua",
-  "client/player_state.lua",
-  "client/survival.lua",
-  "client/identity.lua",
-  "client/phone.lua",
-  "client/garage.lua",
-  "client/police.lua",
-  "client/radio.lua",
-  "client/ped_blacklist.lua",
-  "client/veh_blacklist.lua",
-  "client/warp.lua",
-  "client/iplloader.lua"
+  "client/weather.lua"
 }
 
 -- client files
