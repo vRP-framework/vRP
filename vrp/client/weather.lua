@@ -89,6 +89,7 @@ end
 
 function Weather:toggleFreeze()
   self.freeze = not self.freeze
+  SetMillisecondsPerGameMinute(self.normal)
   local hours, minutes, seconds = GetClockHours(), GetClockMinutes(), GetClockSeconds()
 
   while self.freeze do
