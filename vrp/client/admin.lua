@@ -30,21 +30,22 @@ function Admin:__construct()
 
         -- reset velocity
         SetEntityVelocity(self.noclipEntity, 0.0001, 0.0001, 0.0001)
+		
+		if not self.spectate then
+			-- forward
+			if IsControlPressed(0,32) then -- MOVE UP
+			  x = x+speed*dx
+			  y = y+speed*dy
+			  z = z+speed*dz
+			end
 
-        -- forward
-        if IsControlPressed(0,32) then -- MOVE UP
-          x = x+speed*dx
-          y = y+speed*dy
-          z = z+speed*dz
-        end
-
-        -- backward
-        if IsControlPressed(0,269) then -- MOVE DOWN
-          x = x-speed*dx
-          y = y-speed*dy
-          z = z-speed*dz
-        end
-
+			-- backward
+			if IsControlPressed(0,269) then -- MOVE DOWN
+			  x = x-speed*dx
+			  y = y-speed*dy
+			  z = z-speed*dz
+			end
+		end
         SetEntityCoordsNoOffset(self.noclipEntity,x,y,z,true,true,true)
       end
     end
@@ -73,19 +74,18 @@ end
 
 function Admin:toggleSpectate(target)
   self.spectate = not self.spectate
-  self.lastCoord = GetEntityCoords(user) 
+	
+  local ped = GetPlayerPed(-1)
   
-  local user = PlayerPedId()
-  local targetUser = GetPlayerFromServerId(target)
-  local tuser = GetPlayerPed(targetUser)
-  
-  SetEntityCollision(user, not self.spectate, not self.spectate)
-  SetEntityInvincible(user, self.spectate)
-  SetEntityVisible(user, not self.spectate, false)
-  NetworkSetEntityInvisibleToNetwork(user, true)
-  NetworkSetInSpectatorMode(self.spectate, target)
-  
-  SetEntityCoords(user, self.lastCoord)
+  if IsPedAPlayer(target) then
+	self.target = player
+  else
+	for _,ai in ipairs(GetGamePool('CPed')) do
+		if ai == tonumber(target) then self.target = ai end
+	end
+  end
+
+  NetworkSetInSpectatorMode(self.spectate, self.target)
 end
 
 -- ref: https://github.com/citizenfx/project-lambdamenu/blob/master/LambdaMenu/teleportation.cpp#L301
