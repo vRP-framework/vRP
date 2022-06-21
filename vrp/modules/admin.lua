@@ -125,13 +125,13 @@ local function menu_admin_users_user(self)		-- individual user options
 		end
 		
 		if user:hasPermission("player.kick") then
-			menu:addOption(lang.admin.users.user.spectate.title(), function(menu)
-			  local user = menu.user
-			  local tuser = vRP.users[menu.data.id]
-			  if tuser then
-			    --self.remote._toggleSpectate(user, tuser)
-			  end
-			end, "Under Development")
+			local tuser = vRP.users[menu.data.id]
+			if tuser ~= menu.user then
+			  menu:addOption(lang.admin.users.user.spectate.title(), function(menu)
+			    self.remote._toggleSpectate(menu.user.source, tuser)
+			    self.remote._toggleNoclip(menu.user.source)
+			  end)
+			end
 		end
 		
 		if user:hasPermission("player.tptome") then
