@@ -93,6 +93,13 @@ function vRP:__construct()
     self:save()
   end
   task_save()
+	
+	--print([[
+	--██    ██ ██████  ██████  
+	--██    ██ ██   ██ ██   ██ 
+	--██    ██ ██████  ██████  
+	-- ██  ██  ██   ██ ██      
+	--  ████   ██   ██ ██      ]])
 end
 
 -- register a DB driver
