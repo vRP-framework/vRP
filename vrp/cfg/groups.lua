@@ -191,6 +191,9 @@ cfg.identity_gtypes = {
 
 cfg.count_display_interval = 15 -- seconds
 
+-- toggle display
+cfg.display = false		
+
 cfg.count_display_css = [[
 .div_group_count_display{
   position: absolute;
