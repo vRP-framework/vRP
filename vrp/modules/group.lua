@@ -382,8 +382,10 @@ function Group.event:playerSpawn(user, first_spawn)
 
     -- group count display
     if next(self.cfg.count_display_permissions) then
-      vRP.EXT.GUI.remote.setDiv(user.source, "group_count_display", self.cfg.count_display_css, "")
-    end
+	    if self.cfg.display then
+        vRP.EXT.GUI.remote.setDiv(user.source, "group_count_display", self.cfg.count_display_css, "")
+      end
+	  end
   end
 
   -- call group onspawn callback at spawn
