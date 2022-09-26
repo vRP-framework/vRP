@@ -68,7 +68,7 @@ function Survival:__construct()
     SetTimeout(60000, task_update)
 
     for id,user in pairs(vRP.users) do
-      if user:isReady() then
+      if user:isReady() and self.cfg.vital_display then  -- toggle hunger/thirst with cfg.vital_display
         user:varyVital("water", -self.cfg.water_per_minute)
         user:varyVital("food", -self.cfg.food_per_minute)
       end
