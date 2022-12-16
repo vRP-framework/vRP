@@ -20,8 +20,8 @@ function Phone.User:sendSMS(phone, msg)
   local cfg = vRP.EXT.Phone.cfg
 
   if string.len(msg) > 0 then
-    if string.len(msg) > cfg.sms_size then -- clamp sms
-      sms = string.sub(msg,1,cfg.sms_size)
+    if string.len(msg) > cfg.sms_size then -- clamp msg
+      msg = string.sub(msg,1,cfg.sms_size)
     end
 
     local cid = vRP.EXT.Identity:getByPhone(phone)
