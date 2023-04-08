@@ -1,0 +1,23 @@
+= Shop
+
+This module adds item shops.
+
+== Extension
+
+=== Server
+
+[source,lua]
+----
+self.cfg
+----
+
+== Menu
+
+=== shop
+
+Shop menu.
+
+.data
+
+type:: shop type
+items:: shop type table

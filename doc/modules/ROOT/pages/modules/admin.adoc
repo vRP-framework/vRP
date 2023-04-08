@@ -1,0 +1,36 @@
+= Admin
+
+The admin module adds an administration (kick,ban...) menu and functions.
+
+== Extension
+
+=== Client
+
+[source,lua]
+----
+Admin:toggleNoclip()
+Admin:teleportToMarker()
+
+-- TUNNEL
+
+Admin.tunnel.toggleNoclip = Admin.toggleNoclip
+Admin.tunnel.teleportToMarker = Admin.teleportToMarker
+----
+
+== Menu
+
+=== admin
+
+Administration menu.
+
+=== admin.users
+
+Administration sub-menu: user list.
+
+=== admin.users.user
+
+Administration sub-menu: user.
+
+.data
+
+id:: user id (offline or online)

@@ -1,0 +1,21 @@
+site:
+  title: vRP Documentation
+  url: https://vrp-framework.github.io/vRP
+  start_page: vrp::index.adoc
+content:
+  sources:
+  - url: ./../
+    branches: HEAD
+    start_path: doc
+asciidoc:
+  attributes:
+    page-pagination: ''
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+output:
+  dir: ./../gh-pages
+antora:
+  extensions:
+  - '@antora/lunr-extension'

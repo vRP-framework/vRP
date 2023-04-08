@@ -1,0 +1,32 @@
+= SkinShop
+
+This module adds skin shops.
+
+== Extension
+
+=== Server
+
+[source,lua]
+----
+self.cfg
+----
+
+== Menu
+
+=== skinshop
+
+Skinshop menu.
+
+.data
+
+parts:: skinshop config parts
+
+=== skinshop.part
+
+Shinshop part sub-menu.
+
+.data
+
+title:: part title
+part:: part name
+custom:: current skinshop customization state

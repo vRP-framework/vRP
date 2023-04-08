@@ -1,0 +1,69 @@
+= home_components
+
+This module adds some home components.
+
+== Extension
+
+=== Server
+
+[source,lua]
+----
+self.cfg
+----
+
+== Menu
+
+=== home:component:wardrobe
+
+Wardrobe menu.
+
+.data
+
+sets:: map of name => customization
+
+=== home:component:gametable
+
+Gametable menu.
+
+=== home:component:radio
+
+Radio menu.
+
+.data
+
+component:: radio component
+
+== Home component
+
+=== chest
+
+A home chest to store items. The chest is bound to the character, not to the home or the component.
+
+.config
+
+weight:: (optional) chest max weight, 200 by default
+
+=== wardrobe
+
+Wardrobe to save/restore clothes.
+
+=== gametable
+
+Gametable to play simple games with other people (bet...).
+
+=== transformer
+
+Transformer component.
+
+.config
+
+cfg:: transformer config
+map_entity:: (optional) map entity at the component position
+
+=== radio
+
+Component to play music in the home.
+
+.config
+
+stations:: map of name => audio source URL
