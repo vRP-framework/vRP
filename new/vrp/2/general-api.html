@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>General API :: vRP Documentation</title>
+    <link rel="canonical" href="https://vrp-framework.github.io/vRP/new/vrp/2/general-api.html">
+    <link rel="prev" href="concepts.html">
+    <link rel="next" href="modules/admin.html">
+    <meta name="generator" content="Antora 3.1.3">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <script>var uiRootPath = '../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://vrp-framework.github.io/vRP/new">vRP Documentation</a>
+      <div class="navbar-item search hide-for-print">
+        <div id="search-field" class="field">
+          <input id="search-input" type="text" placeholder="Search the docs">
+        </div>
+      </div>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="#">Home</a>
+        <a class="navbar-item" href="https://github.com/vRP-framework/vRP">GitHub</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="vrp" data-version="2">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html">vRP</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="concepts.html">Concepts</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="general-api.html">General API</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Modules</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/admin.html">Admin</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/aptitude.html">Aptitude</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/atm.html">ATM</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/audio.html">Audio</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/base.html">Base</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/business.html">Business</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/cloak.html">Cloak</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/edible.html">Edible</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/emotes.html">Emotes</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/garage.html">Garage</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/group.html">Group</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/gui.html">GUI</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/hidden_transformer.html">HiddenTransformer</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/home.html">Home</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/home_components.html">home_components</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/identity.html">Identity</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/inventory.html">Inventory</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/login.html">Login</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/map.html">Map</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/mission.html">Mission</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/money.html">Money</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/ped_blacklist.html">PedBlacklist</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/phone.html">Phone</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/player_state.html">PlayerState</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/police.html">Police</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/radio.html">Radio</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/shop.html">Shop</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/skinshop.html">SkinShop</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/survival.html">Survival</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/transformer.html">Transformer</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/veh_blacklist.html">VehBlacklist</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/warp.html">Warp</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">vRP</span>
+    <span class="version">2</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="index.html">vRP</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">2</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">vRP</a></li>
+    <li><a href="general-api.html">General API</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">General API</h1>
+<div class="sect1">
+<h2 id="_utils"><a class="anchor" href="#_utils"></a>utils</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p><code>lib/utils.lua</code> defines some useful globals.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">-- side detection
+SERVER -- boolean
+CLIENT -- boolean
+
+-- load a lua resource file as module (for a specific side)
+-- rsc: resource name
+-- path: lua file path without extension
+module(rsc, path)
+
+class -- Luaoop class
+
+-- create an async returner or a thread (Citizen.CreateThreadNow)
+-- func: if passed, will create a thread, otherwise will return an async returner
+async(func)
+
+-- convert Lua string to hexadecimal
+tohex(str)
+
+-- basic deep clone function (doesn't handle circular references)
+clone(t)
+
+parseInt(v)
+
+-- will remove chars not allowed/disabled by strchars
+-- allow_policy: if true, will allow all strchars, if false, will allow everything except the strchars
+sanitizeString(str, strchars, allow_policy)
+
+splitString(str, sep)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_proxy_and_tunnel"><a class="anchor" href="#_proxy_and_tunnel"></a>Proxy and Tunnel</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_proxy"><a class="anchor" href="#_proxy"></a>Proxy</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">-- add event handler to call interface functions
+-- name: interface name
+-- itable: table containing functions
+Proxy.addInterface(name, itable)
+
+-- get a proxy interface
+-- name: interface name
+-- identifier: (optional) unique string to identify this proxy interface access; if nil, will be the name of the resource
+Proxy.getInterface(name, identifier)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_tunnel"><a class="anchor" href="#_tunnel"></a>Tunnel</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">-- set the base delay between Triggers for a destination
+-- dest: player source
+-- delay: milliseconds (0 for instant trigger)
+Tunnel.setDestDelay(dest, delay)
+
+-- bind an interface (listen to net requests)
+-- name: interface name
+-- interface: table containing functions
+Tunnel.bindInterface(name,interface)
+
+-- get a tunnel interface to send requests
+-- name: interface name
+-- identifier: (optional) unique string to identify this tunnel interface access; if nil, will be the name of the resource
+Tunnel.getInterface(name,identifier)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_interface"><a class="anchor" href="#_interface"></a>Interface</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>interface defined function names should not start with an underscore (<code>_</code>)</p>
+</li>
+<li>
+<p>the tunnel server-side call requires the player source as first parameter</p>
+</li>
+<li>
+<p>the tunnel server-side called function can use the global <code>source</code> (correct until a TriggerEvent/yield/etc) as the remote player source</p>
+</li>
+<li>
+<p>using an underscore to call a remote function interface ignores (no wait) the returned values</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">-- PROXY any side, TUNNEL client-side
+
+-- call and wait for returned values
+-- ...: arguments
+-- return values
+interface.func(...)
+
+-- call without waiting
+-- ...: arguments
+interface._func(...)
+
+-- TUNNEL server-side
+
+-- call and wait for returned values
+-- ...: arguments
+-- return values
+interface.func(player, ...) -- or _func to ignore returned values</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_dbdriver"><a class="anchor" href="#_dbdriver"></a>DBDriver</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">-- called when the driver is initialized (connection), should return true on success
+-- db_cfg: cfg/base.lua .db config
+DBDriver:onInit(db_cfg)
+
+-- should prepare the query (@param notation)
+DBDriver:onPrepare(name, query)
+
+-- should execute the prepared query
+-- params: map of parameters
+-- mode:
+--- "query": should return rows, affected
+--- "execute": should return affected
+--- "scalar": should return a scalar
+DBDriver:onQuery(name, params, mode)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_extension"><a class="anchor" href="#_extension"></a>Extension</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.remote -- tunnel interface to other network side
+
+-- level: (optional) level, 0 by default
+Extension:log(msg, level)
+
+Extension:error(msg)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_user"><a class="anchor" href="#_user"></a>User</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>User inherits from all extensions sub-class User (if registered before the first user instantiation).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.source
+self.name -- FiveM name (may be steam name)
+self.id
+self.cid -- character id
+self.endpoint -- FiveM endpoint
+self.data -- user data
+self.cdata -- character data
+self.loading_character -- flag
+self.use_character_action -- action delay
+self.spawns -- spawn count
+
+-- return true if the user character is ready (loaded, not loading)
+User:isReady()
+
+User:save()
+
+-- return characters id list
+User:getCharacters()
+
+-- return created character id or nil if failed
+User:createCharacter()
+
+-- use character
+-- return true or false, err_code
+-- err_code:
+--- 1: delay error, too soon
+--- 2: already loading
+--- 3: invalid character
+User:useCharacter(id)
+
+-- delete character
+-- return true or false on failure
+User:deleteCharacter(id)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_vrp"><a class="anchor" href="#_vrp"></a>vRP</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_shared"><a class="anchor" href="#_shared"></a>Shared</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.EXT -- map of name =&gt; ext
+self.modules -- cfg/modules
+
+vRP.Extension
+
+-- register an extension
+-- extension: Extension class
+vRP:registerExtension(extension)
+
+-- trigger event (with async call for each listener)
+vRP:triggerEvent(name, ...)
+
+-- trigger event and wait for all listeners to complete
+vRP:triggerEventSync(name, ...)
+
+-- msg: log message
+-- suffix: (optional) category, string
+-- level: (optional) level, 0 by default
+vRP:log(msg, suffix, level)
+
+-- msg: error message
+-- suffix: optional category, string
+vRP:error(msg, suffix)</code></pre>
+</div>
+</div>
+<div class="dlist">
+<div class="title">Events</div>
+<dl>
+<dt class="hdlist1"><code>extensionLoad(extension)</code></dt>
+<dd>
+<p>called when an extension is loaded, passing the extension instance (can be used to initialize with another extension when loaded before the latter)</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_server"><a class="anchor" href="#_server"></a>Server</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg -- cfg/base config
+self.lang -- loaded lang (https://github.com/ImagicTheCat/Luang)
+self.users -- map of id =&gt; User
+self.pending_users -- pending user source update (first spawn), map of ids key =&gt; user
+self.users_by_source -- map of source =&gt; user
+self.users_by_cid -- map of character id =&gt; user
+
+-- db/SQL API
+self.db_drivers
+self.db_driver
+self.db_initialized
+
+vRP.DBDriver
+
+-- return identification string for a specific source
+vRP.getSourceIdKey(source)
+
+vRP.getPlayerEndpoint(player)
+
+vRP.getPlayerName(player)
+
+-- register a DB driver
+-- db_driver: DBDriver class
+vRP:registerDBDriver(db_driver)
+
+-- prepare a query
+--- name: unique name for the query
+--- query: SQL string with @params notation
+vRP:prepare(name, query)
+
+-- execute a query
+--- name: unique name of the query
+--- params: map of parameters
+--- mode: default is "query"
+---- "query": should return rows (list of map of parameter =&gt; value), affected
+---- "execute": should return affected
+---- "scalar": should return a scalar
+vRP:query(name, params, mode)
+
+-- shortcut for vRP.query with "execute"
+vRP:execute(name, params)
+
+-- shortcut for vRP.query with "scalar"
+vRP:scalar(name, params)
+
+-- user data
+-- value: binary string
+vRP:setUData(user_id,key,value)
+
+vRP:getUData(user_id,key)
+
+-- character data
+-- value: binary string
+vRP:setCData(character_id,key,value)
+
+vRP:getCData(character_id,key)
+
+-- server data
+-- value: binary string
+vRP:setSData(key,value,id)
+
+vRP:getSData(key,id)
+
+-- global data
+-- value: binary string
+vRP:setGData(key,value)
+
+vRP:getGData(key)
+
+-- reason: (optional)
+vRP:kick(user, reason)
+
+vRP:save()</code></pre>
+</div>
+</div>
+<div class="dlist">
+<div class="title">Events</div>
+<dl>
+<dt class="hdlist1">(sync) <code>characterLoad(user)</code></dt>
+<dd>
+<p>called right after the character loading</p>
+</dd>
+<dt class="hdlist1">(sync) <code>characterUnload(user)</code></dt>
+<dd>
+<p>called before character unloading</p>
+</dd>
+<dt class="hdlist1"><code>playerJoin(user)</code></dt>
+<dd>
+<p>called when a player joins (valid user)</p>
+</dd>
+<dt class="hdlist1"><code>playerRejoin(user)</code></dt>
+<dd>
+<p>called when a player re-joins (ex: after a crash)</p>
+</dd>
+<dt class="hdlist1"><code>playerDelay(user, state)</code></dt>
+<dd>
+<p>called when the player tunnel delay changes, <code>state</code> is true if delay is enabled</p>
+</dd>
+<dt class="hdlist1"><code>playerSpawn(user, first_spawn)</code></dt>
+<dd>
+<p>called when the player spawns</p>
+</dd>
+<dt class="hdlist1"><code>playerDeath(user)</code></dt>
+<dd>
+<p>called when the player dies</p>
+</dd>
+<dt class="hdlist1">(sync) <code>playerLeave(user)</code></dt>
+<dd>
+<p>called before user removal</p>
+</dd>
+<dt class="hdlist1"><code>save</code></dt>
+<dd>
+<p>called when vRP performs a save (can be used to sync the save of external extension data)</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_client"><a class="anchor" href="#_client"></a>Client</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg -- cfg/client config</code></pre>
+</div>
+</div>
+<div class="dlist">
+<div class="title">Events</div>
+<dl>
+<dt class="hdlist1"><code>playerSpawn()</code></dt>
+<dd>
+<p>called when the player spawns</p>
+</dd>
+<dt class="hdlist1"><code>playerDeath()</code></dt>
+<dd>
+<p>called when the player dies</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="concepts.html">Concepts</a></span>
+  <span class="next"><a href="modules/admin.html">Admin</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <p>This page was built using the Antora default UI.</p>
+  <p>The source code for this UI is licensed under the terms of the MPL-2.0 license.</p>
+</footer>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+<script src="../../_/js/vendor/lunr.js"></script>
+<script src="../../_/js/search-ui.js" id="search-ui-script" data-site-root-path="../.." data-snippet-length="100" data-stylesheet="../../_/css/search.css"></script>
+<script async src="../../search-index.js"></script>
+  </body>
+</html>

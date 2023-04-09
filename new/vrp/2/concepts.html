@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Concepts :: vRP Documentation</title>
+    <link rel="canonical" href="https://vrp-framework.github.io/vRP/new/vrp/2/concepts.html">
+    <link rel="prev" href="index.html">
+    <link rel="next" href="general-api.html">
+    <meta name="generator" content="Antora 3.1.3">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <script>var uiRootPath = '../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://vrp-framework.github.io/vRP/new">vRP Documentation</a>
+      <div class="navbar-item search hide-for-print">
+        <div id="search-field" class="field">
+          <input id="search-input" type="text" placeholder="Search the docs">
+        </div>
+      </div>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="#">Home</a>
+        <a class="navbar-item" href="https://github.com/vRP-framework/vRP">GitHub</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="vrp" data-version="2">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html">vRP</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="concepts.html">Concepts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="general-api.html">General API</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Modules</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/admin.html">Admin</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/aptitude.html">Aptitude</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/atm.html">ATM</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/audio.html">Audio</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/base.html">Base</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/business.html">Business</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/cloak.html">Cloak</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/edible.html">Edible</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/emotes.html">Emotes</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/garage.html">Garage</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/group.html">Group</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/gui.html">GUI</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/hidden_transformer.html">HiddenTransformer</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/home.html">Home</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/home_components.html">home_components</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/identity.html">Identity</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/inventory.html">Inventory</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/login.html">Login</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/map.html">Map</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/mission.html">Mission</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/money.html">Money</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/ped_blacklist.html">PedBlacklist</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/phone.html">Phone</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/player_state.html">PlayerState</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/police.html">Police</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/radio.html">Radio</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/shop.html">Shop</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/skinshop.html">SkinShop</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/survival.html">Survival</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/transformer.html">Transformer</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/veh_blacklist.html">VehBlacklist</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="modules/warp.html">Warp</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">vRP</span>
+    <span class="version">2</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="index.html">vRP</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">2</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">vRP</a></li>
+    <li><a href="concepts.html">Concepts</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Concepts</h1>
+<div class="sect1">
+<h2 id="_oop"><a class="anchor" href="#_oop"></a>OOP</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>vRP 2 Object-Oriented Programming uses the <a href="https://github.com/ImagicTheCat/Luaoop">Luaoop</a> library.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+By using OOP, instead of loading resources communicating with vRP through Proxy, extensions can directly be loaded into the vRP resource context. Each extension keeps its data and is able to access other extensions data and methods, making extending vRP easier, more powerful (we can access stuff even if not exposed) and with less overhead.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_asynchronous"><a class="anchor" href="#_asynchronous"></a>Asynchronous</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>vRP 2 extensively uses asynchronous tasks in a transparent way using coroutines, some functions may not return immediately (or never).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_db_driver"><a class="anchor" href="#_db_driver"></a>DB driver</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>A DB driver is a class handling MySQL queries. When the vRP MySQL API is used, the DB driver methods are called to process the queries. If the DB driver is not loaded yet, queries will be cached until loaded.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_proxy_and_tunnel"><a class="anchor" href="#_proxy_and_tunnel"></a>Proxy and Tunnel</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The proxy library is used to call other resources functions through a proxy event.</p>
+</div>
+<div class="paragraph">
+<p>The idea behind tunnel is to easily access any exposed server function from any client resource, and to access any exposed client function from any server resource.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Good practice is to get the interface once and set it as a global. If we want to get multiple times the same interface from the same resource, we need to specify a unique identifier (the name of the resource + a unique id for each one).
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Tunnel and Proxy are blocking calls in the current coroutine until the values are returned, to bypass this behaviour, especially for the Tunnel to optimize speed (ping latency of each call), use <code>_</code> as a prefix for the function name (Proxy/Tunnel interfaces should not have functions starting with <code>_</code>). This will discard the returned values, but if we still need them, we can make normal calls in a new Citizen thread with <code>Citizen.CreateThreadNow</code> or <code>async</code> to have non-blocking code.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Also remember that Citizen event handlers (used by Proxy and Tunnel) may not work while loading the resource; to use the Proxy at loading time, we will need to delay it with <code>Citizen.CreateThread</code> or a <code>SetTimeout</code>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_data"><a class="anchor" href="#_data"></a>Data</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_multi_server_and_character"><a class="anchor" href="#_multi_server_and_character"></a>Multi-server and character</h3>
+<div class="paragraph">
+<p>vRP 2 has multi-server and multi-character support. Each server has a string identifier.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Players can use another character after spawned, thus extensions should properly handle character load/unload events and check if the character is ready.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_key_value_stores"><a class="anchor" href="#_key_value_stores"></a>Key-value stores</h3>
+<div class="paragraph">
+<p>vRP provides a key-value API to store custom binary data in the database. A string key is associated to a binary value (ex: a Lua string). The key is a <code>VARCHAR(100)</code> and the value a <code>BLOB</code> (probably 65535 bytes).</p>
+</div>
+<div class="dlist">
+<div class="title">Types</div>
+<dl>
+<dt class="hdlist1">global</dt>
+<dd>
+<p>GData</p>
+</dd>
+<dt class="hdlist1">per server</dt>
+<dd>
+<p>SData</p>
+</dd>
+<dt class="hdlist1">per user</dt>
+<dd>
+<p>UData</p>
+</dd>
+<dt class="hdlist1">per character</dt>
+<dd>
+<p>CData</p>
+</dd>
+</dl>
+</div>
+<div class="admonitionblock caution">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-caution" title="Caution"></i>
+</td>
+<td class="content">
+vRP core tables, as core files, should not be modified for extensions compatibility. New tables and queries should be created if the key-value system is not powerful enough.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_core"><a class="anchor" href="#_core"></a>Core</h3>
+<div class="paragraph">
+<p>vRP core modules data may be stored in specific MySQL tables or using the key-value stores. For the latter, the keys will probably be prefixed by <code>vRP</code> and the binary data will use the <a href="https://msgpack.org">MessagePack</a> format.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_script_loading"><a class="anchor" href="#_script_loading"></a>Script loading</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To use vRP 2, a script must be loaded in the vRP resource context of a specific side.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">-- include `@vrp/lib/utils.lua` in `__resource.lua` (for the targeted side)
+
+local Proxy = module("vrp", "lib/Proxy")
+local vRP = Proxy.getInterface("vRP")
+
+vRP.loadScript("my_resource", "vrp") -- load "my_resource/vrp.lua"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The content of <code>vrp.lua</code> is now executed in the vRP context and can now use the API.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<code>vRP.loadScript()</code> is a proxy to call <code>module()</code> in the vRP context.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_extension"><a class="anchor" href="#_extension"></a>Extension</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>An extension is a class extending vRP.</p>
+</div>
+<div class="paragraph">
+<p>Two versions of the same extension (same name) can be loaded: for the server-side and the client-side. They will be able to interact with each other through the <code>tunnel</code>/<code>remote</code> interfaces.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">local MyExt = class("MyExt", vRP.Extension)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Loaded extensions are accessibles through the vRP instance:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">vRP.EXT.MyExt:test()</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can see how an extension is made by looking at the code of vRP <a href="../../vrp/modules">modules</a> or <a href="https://github.com/vRP-framework/vRP-basic-mission" class="bare">https://github.com/vRP-framework/vRP-basic-mission</a>.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_user"><a class="anchor" href="#_user"></a>User</h3>
+<div class="paragraph">
+<p>Extensions can extend User properties/methods with a User class (constructor is called).</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+To not conflict with other extensions, make sure the added properties and methods have a very specific name or prefix.
+</td>
+</tr>
+</table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">MyExt.User = class("User")</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_event"><a class="anchor" href="#_event"></a>Event</h3>
+<div class="paragraph">
+<p>Extensions can listen to global events by defining methods in the <code>event</code> table.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">MyExt.event = {}
+
+function MyExt.event:playerSpawn(user, first_spawn)
+end</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Events marked with <code>(sync)</code> in the documentation may be called using <code>vRP:triggerEventSync</code> which will wait for the listeners to complete, meaning that listeners must return (mostly in a short time frame) in order to let the execution continue normally.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_proxy_and_tunnel_2"><a class="anchor" href="#_proxy_and_tunnel_2"></a>Proxy and Tunnel</h3>
+<div class="paragraph">
+<p>Extensions can listen to proxy/tunnel calls by defining methods in the <code>proxy</code> or <code>tunnel</code> table.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">MyExt.proxy = {}
+function MyExt.proxy:getInfo()
+end
+
+-- client-side
+MyExt.tunnel = {}
+function MyExt.tunnel:test()
+end</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The proxy interface generated will be accessible from other resources like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">local my_ext = Proxy.getInterface("vRP.EXT.MyExt")
+local info = my_ext.getInfo()</code></pre>
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Extensions don&#8217;t need and should not use proxy between them.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The tunnel is accessible (from the client-side or server-side extension) through the <code>remote</code> table.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">-- server-side
+function MyExt.event:playerSpawn(user, first_spawn)
+  self.remote._test(user.source)
+end
+
+-- client-side
+function MyExt.event:playerDeath()
+  self.remote._test()
+end</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_profiler"><a class="anchor" href="#_profiler"></a>Profiler</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>vRP embeds <a href="https://github.com/ImagicTheCat/ELProfiler">ELProfiler</a> to profile Lua code, vRP and resources based on it. When a resource loads <code>@vrp/lib/utils.lua</code> (which is the case for resources based on vRP), it will setup itself to be recorded by the profiler.</p>
+</div>
+<div class="paragraph">
+<p>To use the profiler, the module must be enabled in <code>cfg/modules.lua</code>. This will keep track of created coroutines to profile them. The overhead is probably small, thus it can be enabled on a live server.</p>
+</div>
+<div class="paragraph">
+<p>Two options are available (with permissions) in the main and admin menus to respectively profile the client-side or server-side.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+Profiling has an overhead, but mostly because of the Lua debug hook. Being a statistical/sampling profiler, profiling a long period of time is fine (low memory usage).
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="index.html">vRP</a></span>
+  <span class="next"><a href="general-api.html">General API</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <p>This page was built using the Antora default UI.</p>
+  <p>The source code for this UI is licensed under the terms of the MPL-2.0 license.</p>
+</footer>
+<script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+<script src="../../_/js/vendor/lunr.js"></script>
+<script src="../../_/js/search-ui.js" id="search-ui-script" data-site-root-path="../.." data-snippet-length="100" data-stylesheet="../../_/css/search.css"></script>
+<script async src="../../search-index.js"></script>
+  </body>
+</html>

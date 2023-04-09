@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>GUI :: vRP Documentation</title>
+    <link rel="canonical" href="https://vrp-framework.github.io/vRP/new/vrp/2/modules/gui.html">
+    <link rel="prev" href="group.html">
+    <link rel="next" href="hidden_transformer.html">
+    <meta name="generator" content="Antora 3.1.3">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <script>var uiRootPath = '../../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://vrp-framework.github.io/vRP/new">vRP Documentation</a>
+      <div class="navbar-item search hide-for-print">
+        <div id="search-field" class="field">
+          <input id="search-input" type="text" placeholder="Search the docs">
+        </div>
+      </div>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="#">Home</a>
+        <a class="navbar-item" href="https://github.com/vRP-framework/vRP">GitHub</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="vrp" data-version="2">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">vRP</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../concepts.html">Concepts</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../general-api.html">General API</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <span class="nav-text">Modules</span>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="admin.html">Admin</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="aptitude.html">Aptitude</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="atm.html">ATM</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="audio.html">Audio</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="base.html">Base</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="business.html">Business</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="cloak.html">Cloak</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="edible.html">Edible</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="emotes.html">Emotes</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="garage.html">Garage</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="group.html">Group</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="gui.html">GUI</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="hidden_transformer.html">HiddenTransformer</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="home.html">Home</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="home_components.html">home_components</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="identity.html">Identity</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="inventory.html">Inventory</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="login.html">Login</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="map.html">Map</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="mission.html">Mission</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="money.html">Money</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ped_blacklist.html">PedBlacklist</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="phone.html">Phone</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="player_state.html">PlayerState</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="police.html">Police</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="radio.html">Radio</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="shop.html">Shop</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="skinshop.html">SkinShop</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="survival.html">Survival</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="transformer.html">Transformer</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="veh_blacklist.html">VehBlacklist</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="warp.html">Warp</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">vRP</span>
+    <span class="version">2</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../index.html">vRP</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="../index.html">2</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">vRP</a></li>
+    <li>Modules</li>
+    <li><a href="gui.html">GUI</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">GUI</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>This module adds GUI features.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>If GUI customization is needed, it&#8217;s possible to use <code>GUI:setDiv</code> to add additional CSS (the override order should depends on <code>GUI:setDiv</code> call order).</p>
+</div>
+<div class="listingblock">
+<div class="title">It&#8217;s even possible to load a custom client-side <code>design.css</code> file like this:</div>
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">-- client-side
+function MyExt.event:NUIready()
+  vRP.EXT.GUI:addDiv("my_ext_css", LoadResourceFile("my_ext", "design.css"), "")
+end</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_extension"><a class="anchor" href="#_extension"></a>Extension</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_menu"><a class="anchor" href="#_menu"></a>Menu</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.user
+self.name
+self.data
+self.title
+self.options
+self.css
+self.closed
+
+-- dispatcher events:
+--- close(menu)
+--- remove(menu)
+--- select(menu, id)
+Menu:listen(name, callback)
+
+-- add option
+-- title: option title (html)
+-- action(menu, value, mod, index): (optional) select callback
+--- value: option value
+--- mod: action modulation
+---- -1: left
+---- 0: valid
+---- 1: right
+-- description: (optional) option description (html)
+--- callback(menu, value): should return a string or nil
+-- value: (optional) option value, can be anything, option index by default
+-- index: (optional) by default the option is added at the end, but an index can be used to insert the option
+Menu:addOption(title, action, description, value, index)
+
+-- update menu option
+-- title: (optional) as Menu:addOption
+-- description: (optional) as Menu:addOption
+-- will trigger client update if current menu
+Menu:updateOption(id, title, description)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_user"><a class="anchor" href="#_user"></a>User</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.menu_stack -- stack of menus
+self.request_ids
+self.requests
+
+-- return current menu or nil
+User:getMenu()
+
+-- open menu (build and open menu)
+-- data: (optional) menu build data
+-- return menu
+User:openMenu(name, data)
+
+-- close menu
+-- menu: (optional) menu to close, if nil, will close the current menu
+User:closeMenu(menu)
+
+-- close and rebuild current menu (no remove)
+-- menu is rebuilt, listeners are kept
+User:actualizeMenu()
+
+-- close all menus
+User:closeMenus()
+
+-- prompt textual (and multiline) information from player
+-- return entered text
+User:prompt(title, default_text)
+
+-- REQUEST
+
+-- ask something to a player with a limited amount of time to answer (yes|no request)
+-- time: request duration in seconds
+-- return true (yes) or false (no)
+User:request(text, time)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_server"><a class="anchor" href="#_server"></a>Server</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.cfg
+self.menu_builders -- map of name =&gt; callbacks list
+
+-- register a menu builder function
+-- name: menu type name
+-- builder(menu): callback to modify the menu
+GUI:registerMenuBuilder(name, builder)
+
+-- TUNNEL
+
+-- open the general player menu
+GUI.tunnel:openMainMenu()
+
+-- can be used to implement a custom menu
+
+GUI.tunnel:closeMenu()
+GUI.tunnel:triggerMenuOption(id, mod)
+GUI.tunnel:triggerMenuSelect(id)</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_client"><a class="anchor" href="#_client"></a>Client</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-lua hljs" data-lang="lua">self.paused
+self.menu_data
+
+-- CONTROLS/GUI
+
+GUI:isPaused()
+
+-- get native GUI coordinates based on UI description
+-- x_align, y_align: integers, see https://runtime.fivem.net/doc/natives/#_0xB8A850F20A067EB6
+-- x, y: floats, UI defined coordinates
+GUI:getNativeCoords(x_align, y_align, x, y)
+
+-- get minimap rect in pixels
+-- return x, y, w, h
+GUI:getMinimapRect()
+
+-- hide/show GUI
+GUI:setVisible(flag)
+
+-- MENU
+
+GUI:isMenuOpen()
+
+-- ANNOUNCE
+
+-- add an announce to the queue
+-- background: image url (800x150)
+-- content: announce html content
+GUI:announce(background,content)
+
+-- PROGRESS BAR
+
+-- create/update a progress bar
+-- anchor:
+--- "minimap"
+--- "center"
+--- "botright"
+-- r,g,b: RGB 256 color
+-- value: 0-1
+GUI:setProgressBar(name,anchor,text,r,g,b,value)
+
+-- set progress bar value 0-1
+GUI:setProgressBarValue(name,value)
+
+-- set progress bar text
+GUI:setProgressBarText(name,text)
+
+-- remove a progress bar
+GUI:removeProgressBar(name)
+
+-- DIV
+
+-- set a div
+-- css: plain global css, the div class is "div_name"
+-- content: html content of the div
+GUI:setDiv(name,css,content)
+
+-- set the div css
+GUI:setDivCss(name,css)
+
+-- set the div content
+GUI:setDivContent(name,content)
+
+-- execute js for the div
+-- js: code, "this" is the div
+GUI:divExecuteJS(name,js)
+
+-- remove the div
+GUI:removeDiv(name)
+
+-- TUNNEL
+
+GUI.tunnel.announce = GUI.announce
+GUI.tunnel.setProgressBar = GUI.setProgressBar
+GUI.tunnel.setProgressBarValue = GUI.setProgressBarValue
+GUI.tunnel.setProgressBarText = GUI.setProgressBarText
+GUI.tunnel.removeProgressBar = GUI.removeProgressBar
+GUI.tunnel.setDiv = GUI.setDiv
+GUI.tunnel.setDivCss = GUI.setDivCss
+GUI.tunnel.setDivContent = GUI.setDivContent
+GUI.tunnel.divExecuteJS = GUI.divExecuteJS
+GUI.tunnel.removeDiv = GUI.removeDiv</code></pre>
+</div>
+</div>
+<div class="dlist">
+<div class="title">Events</div>
+<dl>
+<dt class="hdlist1"><code>NUIready()</code></dt>
+<dd>
+<p>called when the vRP NUI is ready</p>
+</dd>
+<dt class="hdlist1"><code>pauseChange(paused)</code></dt>
+<dd>
+<p>called when the game pause state changes</p>
+</dd>
+<dt class="hdlist1"><code>menuOpen(menudata)</code></dt>
+<dd>
+<p>called when the menu is opened (can be used to implement a custom menu)</p>
+</dd>
+<dt class="hdlist1"><code>menuClose()</code></dt>
+<dd>
+<p>called when the menu is closed (can be used to implement a custom menu)</p>
+</dd>
+<dt class="hdlist1"><code>menuSetSelectEvent(select_event)</code></dt>
+<dd>
+<p>called when the select event flag is set (if true, the menu must trigger the server-side option select event) (can be used to implement a custom menu)</p>
+</dd>
+<dt class="hdlist1"><code>menuOptionUpdate(index, title, description)</code></dt>
+<dd>
+<p>called when a menu option is updated (can be used to implement a custom menu)</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_menu_2"><a class="anchor" href="#_menu_2"></a>Menu</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_main"><a class="anchor" href="#_main"></a>main</h3>
+<div class="paragraph">
+<p>Main menu.</p>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="group.html">Group</a></span>
+  <span class="next"><a href="hidden_transformer.html">HiddenTransformer</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <p>This page was built using the Antora default UI.</p>
+  <p>The source code for this UI is licensed under the terms of the MPL-2.0 license.</p>
+</footer>
+<script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+<script src="../../../_/js/vendor/lunr.js"></script>
+<script src="../../../_/js/search-ui.js" id="search-ui-script" data-site-root-path="../../.." data-snippet-length="100" data-stylesheet="../../../_/css/search.css"></script>
+<script async src="../../../search-index.js"></script>
+  </body>
+</html>
