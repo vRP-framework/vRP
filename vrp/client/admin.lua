@@ -21,7 +21,7 @@ function Admin:__construct()
     while true do
       Citizen.Wait(0)
       if self.noclip then
-        local ped = GetPlayerPed(-1)
+        local ped = PlayerPedId()
         local x,y,z = Base:getPosition(self.noclipEntity)
         local dx,dy,dz = Base:getCamDirection(self.noclipEntity)
         local speed = self.noclip_speed
@@ -52,7 +52,7 @@ end
 function Admin:toggleNoclip()
   self.noclip = not self.noclip
 
-  local ped = GetPlayerPed(-1)
+  local ped = PlayerPedId()
   
   if IsPedInAnyVehicle(ped, false) then
       self.noclipEntity = GetVehiclePedIsIn(ped, false)
@@ -71,7 +71,7 @@ end
 
 -- ref: https://github.com/citizenfx/project-lambdamenu/blob/master/LambdaMenu/teleportation.cpp#L301
 function Admin:teleportToMarker()
-  local ped = GetPlayerPed(-1)
+  local ped = PlayerPedId()
 
   -- find GPS blip
 

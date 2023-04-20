@@ -122,7 +122,7 @@ function Audio:__construct()
       if self.vrp_voip then -- vRP voip
         NetworkSetTalkerProximity(self.voip_proximity) -- disable voice chat
       else -- regular voice chat
-        local ped = GetPlayerPed(-1)
+        local ped = PlayerPedId()
         local proximity = vRP.cfg.voice_proximity
 
         if IsPedSittingInAnyVehicle(ped) then

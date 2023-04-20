@@ -28,7 +28,7 @@ function Survival:__construct()
       Citizen.Wait(5000)
 
       if IsPlayerPlaying(PlayerId()) then
-        local ped = GetPlayerPed(-1)
+        local ped = PlayerPedId()
 
         local water = 0
         local food = 0
@@ -73,7 +73,7 @@ function Survival:__construct()
 
     while true do
       Citizen.Wait(0)
-      local ped = GetPlayerPed(-1)
+      local ped = PlayerPedId()
       
       local health = GetEntityHealth(ped)
       if health <= vRP.cfg.coma_threshold and self.coma_left > 0 then
@@ -157,7 +157,7 @@ function Survival:__construct()
 end
 
 function Survival:varyHealth(variation)
-  local ped = GetPlayerPed(-1)
+  local ped = PlayerPedId()
 
   local n = math.floor(GetEntityHealth(ped)+variation)
   SetEntityHealth(ped,n)
@@ -165,7 +165,7 @@ end
 
 function Survival:setFriendlyFire(flag)
   NetworkSetFriendlyFireOption(flag)
-  SetCanAttackFriendly(GetPlayerPed(-1), flag, flag)
+  SetCanAttackFriendly(PlayerPedId(), flag, flag)
 end
 
 function Survival:setPolice(flag)

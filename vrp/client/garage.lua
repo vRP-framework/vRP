@@ -101,7 +101,7 @@ function Garage:spawnVehicle(model, state, position, rotation)
 
   -- spawn car
   if HasModelLoaded(mhash) then
-    local ped = GetPlayerPed(-1)
+    local ped = PlayerPedId()
 
     local x,y,z
     if position then
@@ -328,13 +328,13 @@ end
 function Garage:putInOwnedVehicle(model)
   local veh = self.vehicles[model]
   if veh then
-    SetPedIntoVehicle(GetPlayerPed(-1),veh,-1) -- put player inside
+    SetPedIntoVehicle(PlayerPedId(),veh,-1) -- put player inside
   end
 end
 
 -- eject the ped from the vehicle
 function Garage:ejectVehicle()
-  local ped = GetPlayerPed(-1)
+  local ped = PlayerPedId()
   if IsPedSittingInAnyVehicle(ped) then
     local veh = GetVehiclePedIsIn(ped,false)
     TaskLeaveVehicle(ped, veh, 4160)
@@ -342,13 +342,13 @@ function Garage:ejectVehicle()
 end
 
 function Garage:isInVehicle()
-  local ped = GetPlayerPed(-1)
+  local ped = PlayerPedId()
   return IsPedSittingInAnyVehicle(ped) 
 end
 
 -- return model or nil if not in owned vehicle
 function Garage:getInOwnedVehicleModel()
-  local veh = GetVehiclePedIsIn(GetPlayerPed(-1),false)
+  local veh = GetVehiclePedIsIn(PlayerPedId(),false)
   local cid, model = self:getVehicleInfo(veh)
   if cid and cid == vRP.EXT.Base.cid then
     return model
@@ -388,7 +388,7 @@ end
 -- partial update per property
 function Garage:setVehicleCustomization(veh, custom)
   if not veh or veh == nil then
-	veh = GetVehiclePedIsIn(GetPlayerPed(-1),false)
+	veh = GetVehiclePedIsIn(PlayerPedId(),false)
   end
   SetVehicleModKit(veh, 0)
 
