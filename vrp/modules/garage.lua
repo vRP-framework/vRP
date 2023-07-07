@@ -3,734 +3,712 @@
 
 if not vRP.modules.garage then return end
 
-local lang = vRP.lang
-
--- a basic garage implementation
 local Garage = class("Garage", vRP.Extension)
-
--- SUBCLASS
-
-Garage.User = class("User")
-
--- get owned vehicles
--- return map of model => state
---- state: 0 (out), 1 (in garage)
-function Garage.User:getVehicles()
-  return self.cdata.vehicles
-end
-
--- get vehicle model state table (may be async)
-function Garage.User:getVehicleState(model)
-  local state = self.vehicle_states[model]
-  if not state then -- load state
-    local sdata = vRP:getCData(self.cid, "vRP:vehicle_state:"..model)
-    if sdata and string.len(sdata) > 0 then
-      state = msgpack.unpack(sdata)
-    else
-      state = {}
-    end
-
-    self.vehicle_states[model] = state
-  end
-
-  return state
-end
-
--- STATIC
-
--- get vehicle trunk chest id by character id and model
-function Garage.getVehicleChestId(cid, model)
-  return "vehtrunk:"..cid.."_"..model
-end
-
--- PRIVATE METHODS
-
--- menu: garage owned
-local function menu_garage_owned(self)
-  local function m_get(menu, model)
-    local user = menu.user
-
-    local vehicles = user:getVehicles()
-
-    if vehicles[model] == 1 then -- in
-      local vstate = user:getVehicleState(model)
-      local state = {
-        customization = vstate.customization,
-        condition = vstate.condition,
-        locked = vstate.locked
-      }
-
-      vehicles[model] = 0 -- mark as out
-      self.remote._spawnVehicle(user.source, model, state)
-      self.remote._setOutVehicles(user.source, {[model] = {}})
-      user:closeMenu(menu)
-    elseif vehicles[model] == 0 then -- out
-      vRP.EXT.Base.remote._notify(user.source, lang.garage.owned.already_out())
-
-      -- force out request
-      if user:request(lang.garage.owned.force_out.request({self.cfg.force_out_fee}), 15) then
-        if user:tryPayment(self.cfg.force_out_fee) then
-          local vstate = user:getVehicleState(model)
-          local state = {
-            customization = vstate.customization,
-            condition = vstate.condition,
-            locked = vstate.locked
-          }
-
-          vehicles[model] = 0 -- mark as out
-          self.remote._spawnVehicle(user.source, model, state)
-          self.remote._setOutVehicles(user.source, {[model] = {state, vstate.position, vstate.rotation}})
-          user:closeMenu(menu)
-        else
-          vRP.EXT.Base.remote._notify(user.source, lang.money.not_enough())
-        end
-      end
-    end
-  end
-
-  vRP.EXT.GUI:registerMenuBuilder("garage.owned", function(menu)
-    menu.title = lang.garage.owned.title()
-    menu.css.header_color = "rgba(255,125,0,0.75)"
-    local user = menu.user
-
-    for model in pairs(user:getVehicles()) do
-      local veh = menu.data.vehicles[model]
-      if veh then
-        menu:addOption(veh[1], m_get, veh[3], model)
-      end
-    end
-  end)
-end
-
--- menu: garage buy
-local function menu_garage_buy(self)
-  local function m_buy(menu, model)
-    local user = menu.user
-    local uvehicles = user:getVehicles()
-
-    -- buy vehicle
-    local veh = menu.data.vehicles[model]
-    if veh and user:tryPayment(veh[2]) then
-      uvehicles[model] = 1
-
-      vRP.EXT.Base.remote._notify(user.source, lang.money.paid({veh[2]}))
-      user:actualizeMenu()
-    else
-      vRP.EXT.Base.remote._notify(user.source, lang.money.not_enough())
-    end
-  end
-
-  vRP.EXT.GUI:registerMenuBuilder("garage.buy", function(menu)
-    menu.title = lang.garage.buy.title()
-    menu.css.header_color = "rgba(255,125,0,0.75)"
-    local user = menu.user
-
-    local uvehicles = user:getVehicles()
-
-    -- for each existing vehicle in the garage group and not already owned
-    for model,veh in pairs(menu.data.vehicles) do
-      if model ~= "_config" and not uvehicles[model] then
-        menu:addOption(veh[1], m_buy, lang.garage.buy.info({veh[2],veh[3]}), model)
-      end
-    end
-  end)
-end
-
--- menu: garage sell
-local function menu_garage_sell(self)
-  local function m_sell(menu, model)
-    local user = menu.user
-    local uvehicles = user:getVehicles()
-
-    local veh = menu.data.vehicles[model]
-
-    local price = math.ceil(veh[2]*self.cfg.sell_factor)
-
-    if uvehicles[model] == 1 and not user.cdata.rent_vehicles[model] then -- has vehicle in, not rented
-      user:giveWallet(price)
-      uvehicles[model] = nil
-
-      vRP.EXT.Base.remote._notify(user.source,lang.money.received({price}))
-      user:actualizeMenu()
-    else
-      vRP.EXT.Base.remote._notify(user.source,lang.common.not_found())
-    end
-  end
-
-  vRP.EXT.GUI:registerMenuBuilder("garage.sell", function(menu)
-    menu.title = lang.garage.sell.title()
-    menu.css.header_color = "rgba(255,125,0,0.75)"
-    local user = menu.user
-    local uvehicles = user:getVehicles()
-
-    -- for each existing vehicle in the garage group and owned (and not rented)
-    for model,veh in pairs(menu.data.vehicles) do
-      if model ~= "_config" and uvehicles[model] and not user.cdata.rent_vehicles[model] then
-        local price = math.ceil(veh[2]*self.cfg.sell_factor)
-        menu:addOption(veh[1], m_sell, lang.garage.buy.info({price, veh[3]}), model)
-      end
-    end
-  end)
-end
-
--- menu: garage rent
-local function menu_garage_rent(self)
-  local function m_rent(menu, model)
-    local user = menu.user
-    local uvehicles = user:getVehicles()
-
-    -- rent vehicle
-    local veh = menu.data.vehicles[model]
-    local price = math.ceil(veh[2]*self.cfg.rent_factor)
-    if user:tryPayment(price) then
-      uvehicles[model] = 1
-      user.cdata.rent_vehicles[model] = true
-
-      vRP.EXT.Base.remote._notify(user.source,lang.money.paid({price}))
-      user:actualizeMenu()
-    else
-      vRP.EXT.Base.remote._notify(user.source,lang.money.not_enough())
-    end
-  end
-
-  vRP.EXT.GUI:registerMenuBuilder("garage.rent", function(menu)
-    menu.title = lang.garage.rent.title()
-    menu.css.header_color = "rgba(255,125,0,0.75)"
-    local user = menu.user
-    local uvehicles = user:getVehicles()
-
-    -- for each existing vehicle in the garage group and not already owned
-    for model,veh in pairs(menu.data.vehicles) do
-      if model ~= "_config" and not uvehicles[model] then
-        local price = math.ceil(veh[2]*self.cfg.rent_factor)
-        menu:addOption(veh[1], m_rent, lang.garage.buy.info({price,veh[3]}), model)
-      end
-    end
-  end)
-end
-
--- menu: garage
-local function menu_garage(self)
-  local function m_owned(menu)
-    local smenu = menu.user:openMenu("garage.owned", menu.data)
-
-    menu:listen("remove", function(menu)
-      menu.user:closeMenu(smenu)
-    end)
-  end
-
-  local function m_buy(menu)
-    local smenu = menu.user:openMenu("garage.buy", menu.data)
-
-    menu:listen("remove", function(menu)
-      menu.user:closeMenu(smenu)
-    end)
-  end
-
-  local function m_sell(menu)
-    local smenu = menu.user:openMenu("garage.sell", menu.data)
-
-    menu:listen("remove", function(menu)
-      menu.user:closeMenu(smenu)
-    end)
-  end
-
-  local function m_rent(menu)
-    local smenu = menu.user:openMenu("garage.rent", menu.data)
-
-    menu:listen("remove", function(menu)
-      menu.user:closeMenu(smenu)
-    end)
-  end
-
-  local function m_store(menu)
-    local user = menu.user
-
-    local model = self.remote.getNearestOwnedVehicle(user.source, 15)
-    if model then
-      if menu.data.vehicles[model] then -- model in this garage
-        self.remote._removeOutVehicles(user.source, {[model] = true})
-
-        if self.remote.despawnVehicle(user.source, model) then
-          local vehicles = user:getVehicles()
-          if vehicles[model] then 
-            vehicles[model] = 1 -- mark as in garage
-          end
-
-          vRP.EXT.Base.remote._notify(user.source, lang.garage.store.stored())
-        end
-      else
-        vRP.EXT.Base.remote._notify(user.source, lang.garage.store.wrong_garage())
-      end
-    else
-      vRP.EXT.Base.remote._notify(user.source, lang.garage.store.too_far())
-    end
-
-  end
-
-  vRP.EXT.GUI:registerMenuBuilder("garage", function(menu)
-    menu.title = lang.garage.title({menu.data.type})
-    menu.css.header_color = "rgba(255,125,0,0.75)"
-
-    menu:addOption(lang.garage.owned.title(), m_owned, lang.garage.owned.description())
-    menu:addOption(lang.garage.buy.title(), m_buy, lang.garage.buy.description())
-    menu:addOption(lang.garage.sell.title(), m_sell, lang.garage.sell.description())
-    menu:addOption(lang.garage.rent.title(), m_rent, lang.garage.rent.description())
-    menu:addOption(lang.garage.store.title(), m_store, lang.garage.store.description())
-  end)
-end
-
-local function menu_vehicle_custom(self)
-	
-	local function m_plate(menu)
-		local user = menu.user
-		local model = self.remote.getNearestOwnedVehicle(user.source, 7)
-		local in_vehicle = self.remote.isInVehicle(user.source)
-		local custom = {}		local veh
-		
-		if in_vehicle then
-			if model then
-				custom.plate_txt = user:prompt(lang.custom.plate_txt.prompt(),"")
-				vRP.EXT.Base.remote._notify(user.source, lang.custom.plate_txt.completed({custom.plate_txt}))
-				self.remote._setVehicleCustomization(user.source, veh, custom)
-			else
-				vRP.EXT.Base.remote._notify(user.source, "Must be in Owned Vehicle")
-			end
-		else
-			vRP.EXT.Base.remote._notify(user.source, "Must be in Vehicle")
-		end
-	end
-
-	vRP.EXT.GUI:registerMenuBuilder("vehicle.custom", function(menu)
-    menu.title = lang.custom.title()
-    menu.css.header_color = "rgba(255,125,0,0.75)"
-
-    menu:addOption(lang.custom.plate_txt.title(), m_plate, lang.custom.plate_txt.description())
-  end)
-end
-
--- menu: vehicle
-local function menu_vehicle(self)
-  -- open trunk
-  local function m_trunk(menu)
-    local user = menu.user
-    local model = menu.data.model
-
-    local chestid = Garage.getVehicleChestId(user.cid, model)
-    local max_weight = self.cfg.vehicle_chest_weights[menu.data.model] or self.cfg.default_vehicle_chest_weight
-
-    -- open chest
-    self.remote._vc_openDoor(user.source, model, 5)
-    local smenu = user:openChest(chestid, max_weight, function()
-      self.remote._vc_closeDoor(user.source, model, 5)
-    end)
-
-    if smenu then
-      menu:listen("remove", function()
-        user:closeMenu(smenu)
-      end)
-    end
-  end
-
-  -- detach trailer
-  local function m_detach_trailer(menu)
-    local user = menu.user
-    local model = menu.data.model
-
-    self.remote._vc_detachTrailer(user.source, model)
-  end
-
-  -- detach towtruck
-  local function m_detach_towtruck(menu)
-    local user = menu.user
-    local model = menu.data.model
-
-    self.remote._vc_detachTowTruck(user.source, model)
-  end
-
-  -- detach cargobob
-  local function m_detach_cargobob(menu)
-    local user = menu.user
-    local model = menu.data.model
-
-    self.remote._vc_detachCargobob(user.source, model)
-  end
-
-  -- lock/unlock
-  local function m_lock(menu)
-    local user = menu.user
-    local model = menu.data.model
-
-    local locked = self.remote.vc_toggleLock(user.source, model)
-    if locked ~= nil then
-      vRP.EXT.Base.remote._notify(user.source, (locked and lang.vehicle.lock.locked() or lang.vehicle.lock.unlocked()))
-    end
-  end
-
-  -- engine on/off
-  local function m_engine(menu)
-    local user = menu.user
-    local model = menu.data.model
-
-    self.remote._vc_toggleEngine(user.source, model)
-  end
-  
-  -- Customization
-  local function m_custom(menu)
-    local user = menu.user
-    user:openMenu("vehicle.custom")
-  end
-
-  vRP.EXT.GUI:registerMenuBuilder("vehicle", function(menu)
-    menu.title = lang.vehicle.title()
-    menu.css.header_color = "rgba(255,125,0,0.75)"
-
-    menu:addOption(lang.vehicle.trunk.title(), m_trunk, lang.vehicle.trunk.description())
-    menu:addOption(lang.vehicle.detach_trailer.title(), m_detach_trailer, lang.vehicle.detach_trailer.description())
-    menu:addOption(lang.vehicle.detach_towtruck.title(), m_detach_towtruck, lang.vehicle.detach_towtruck.description())
-    menu:addOption(lang.vehicle.detach_cargobob.title(), m_detach_cargobob, lang.vehicle.detach_cargobob.description())
-    menu:addOption(lang.vehicle.lock.title(), m_lock, lang.vehicle.lock.description())
-    menu:addOption(lang.vehicle.engine.title(), m_engine, lang.vehicle.engine.description())
-	menu:addOption(lang.vehicle.custom.title(), m_custom, lang.vehicle.custom.description())
-  end)
-end
-
--- send out vehicles to player
-local function send_out_vehicles(self, user)
-  -- out vehicles
-  local out_vehicles = {}
-  for model, state in pairs(user:getVehicles()) do
-    if state == 0 then -- out
-      local vstate = user:getVehicleState(model)
-      if vstate.position then
-        local cstate = {
-          customization = vstate.customization,
-          condition = vstate.condition,
-          locked = vstate.locked
-        }
-
-        out_vehicles[model] = {cstate, vstate.position, vstate.rotation}
-      end
-    end
-  end
-
-  self.remote._setOutVehicles(user.source, out_vehicles)
-end
 
 -- METHODS
 
 function Garage:__construct()
   vRP.Extension.__construct(self)
 
-  self.cfg = module("cfg/garages")
-  self:log(#self.cfg.garages.." garages")
+  -- init decorators
+  DecorRegister("vRP.owner", 3)
 
-  self.models = {} -- map of all garage defined models
+  self.vehicles = {} -- map of vehicle model => veh id (owned vehicles)
+  self.hash_models = {} -- map of hash => model
 
-  -- register models
-  for gtype, vehicles in pairs(self.cfg.garage_types) do
-    for model in pairs(vehicles) do
-      self.models[model] = true
+  self.update_interval = 30 -- seconds
+  self.check_interval = 15 -- seconds
+  self.respawn_radius = 200
+
+  self.state_ready = false -- flag, if true will try to re-own/spawn periodically out vehicles
+
+  self.out_vehicles = {} -- map of vehicle model => {cstate, position, rotation}, unloaded out vehicles to spawn
+
+  -- task: save vehicle states
+  Citizen.CreateThread(function()
+    while true do
+      Citizen.Wait(self.update_interval*1000)
+
+      if self.state_ready then
+        local states = {}
+
+        for model, veh in pairs(self.vehicles) do
+          if IsEntityAVehicle(veh) then
+            local state = self:getVehicleState(veh)
+            state.position = {table.unpack(GetEntityCoords(veh, true))}
+            state.rotation = {GetEntityQuaternion(veh)}
+
+            states[model] = state
+
+            if self.out_vehicles[model] then -- update out vehicle state data
+              self.out_vehicles[model] = {state, state.position, state.rotation}
+            end
+          end
+        end
+
+        self.remote._updateVehicleStates(states)
+        vRP.EXT.PlayerState.remote._update({ in_owned_vehicle = self:getInOwnedVehicleModel() or false})
+      end
+    end
+  end)
+
+  -- task: vehicles check
+  Citizen.CreateThread(function()
+    while true do
+      Citizen.Wait(self.check_interval*1000)
+
+      if self.state_ready then
+        self:cleanupVehicles()
+        self:tryOwnVehicles() -- get back network lost vehicles
+        self:trySpawnOutVehicles()
+      end
+    end
+  end)
+end
+
+local custom = {}
+
+-- veh: vehicle game id
+-- return owner character id and model or nil if not managed by vRP
+function Garage:getVehicleInfo(veh)
+  if veh and DecorExistOn(veh, "vRP.owner") then
+    local model = self.hash_models[GetEntityModel(veh)]
+    if model then
+      return DecorGetInt(veh, "vRP.owner"), model
+    end
+  end
+end
+
+-- spawn vehicle
+-- will be placed on ground properly
+-- one vehicle per model allowed at the same time
+--
+-- state: (optional) vehicle state (client)
+-- position: (optional) {x,y,z}, if not passed the vehicle will be spawned on the player (and will be put inside the vehicle)
+-- rotation: (optional) quaternion {x,y,z,w}, if passed with the position, will be applied to the vehicle entity
+function Garage:spawnVehicle(model, state, position, rotation) 
+  self:despawnVehicle(model)
+
+  -- load vehicle model
+  local mhash = GetHashKey(model)
+
+  local i = 0
+  while not HasModelLoaded(mhash) and i < 10000 do
+    RequestModel(mhash)
+    Citizen.Wait(10)
+    i = i+1
+  end
+
+  -- spawn car
+  if HasModelLoaded(mhash) then
+    local ped = GetPlayerPed(-1)
+
+    local x,y,z
+    if position then
+      x,y,z = table.unpack(position)
+    else
+      x,y,z = vRP.EXT.Base:getPosition()
+    end
+
+    local nveh = CreateVehicle(mhash, x,y,z+0.5, 0.0, true, false)
+    if position and rotation then
+      SetEntityQuaternion(nveh, table.unpack(rotation))
+    end
+    if not position then -- set vehicle heading same as player
+      SetEntityHeading(nveh, GetEntityHeading(ped))
+    end
+
+    SetVehicleOnGroundProperly(nveh)
+    SetEntityInvincible(nveh,false)
+    if not position then
+      SetPedIntoVehicle(ped,nveh,-1) -- put player inside
+    end
+    if not custom.plate_txt then
+		SetVehicleNumberPlateText(nveh, "P "..vRP.EXT.Identity.registration)
+	else
+		SetVehicleNumberPlateText(nveh, custom.plate_txt)
+	end
+    SetEntityAsMissionEntity(nveh, true, true)
+    SetVehicleHasBeenOwnedByPlayer(nveh,true)
+
+    -- set decorators
+    DecorSetInt(nveh, "vRP.owner", vRP.EXT.Base.cid)
+    self.vehicles[model] = nveh -- mark as owned
+
+    SetModelAsNoLongerNeeded(mhash)
+
+    if state then
+      self:setVehicleState(nveh, state)
+    end
+
+    vRP:triggerEvent("garageVehicleSpawn", model)
+  end
+end
+
+-- return true if despawned
+function Garage:despawnVehicle(model)
+  local veh = self.vehicles[model]
+  if veh then
+    vRP:triggerEvent("garageVehicleDespawn", model)
+
+    -- remove vehicle
+    SetVehicleHasBeenOwnedByPlayer(veh,false)
+    SetEntityAsMissionEntity(veh, false, true)
+    SetVehicleAsNoLongerNeeded(Citizen.PointerValueIntInitialized(veh))
+    Citizen.InvokeNative(0xEA386986E786A54F, Citizen.PointerValueIntInitialized(veh))
+    self.vehicles[model] = nil
+
+    return true
+  end
+end
+
+function Garage:despawnVehicles()
+  for model in pairs(self.vehicles) do
+    self:despawnVehicle(model)
+  end
+end
+
+-- get all game vehicles
+-- return list of veh
+function Garage:getAllVehicles()
+  local vehs = {}
+  local it, veh = FindFirstVehicle()
+  if veh then table.insert(vehs, veh) end
+  local ok
+  repeat
+    ok, veh = FindNextVehicle(it)
+    if ok and veh then table.insert(vehs, veh) end
+  until not ok
+  EndFindVehicle(it)
+
+  return vehs
+end
+
+-- return map of veh => distance
+function Garage:getNearestVehicles(radius)
+  local r = {}
+
+  local px,py,pz = vRP.EXT.Base:getPosition()
+
+  for _,veh in pairs(self:getAllVehicles()) do
+    local x,y,z = table.unpack(GetEntityCoords(veh,true))
+    local distance = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
+    if distance <= radius then
+      r[veh] = distance
     end
   end
 
-  -- items
+  return r
+end
 
-  vRP.EXT.Inventory:defineItem("repairkit", lang.item.repairkit.name(), lang.item.repairkit.description(), nil, 0.5)
+-- return veh
+function Garage:getNearestVehicle(radius)
+  local veh
 
-  -- fperms
+  local vehs = self:getNearestVehicles(radius)
+  local min = radius+10.0
+  for _veh,dist in pairs(vehs) do
+    if dist < min then
+      min = dist 
+      veh = _veh 
+    end
+  end
 
-  vRP.EXT.Group:registerPermissionFunction("in_vehicle", function(user, params)
-    return self.remote.isInVehicle(user.source)
-  end)
+  return veh 
+end
 
-  vRP.EXT.Group:registerPermissionFunction("in_owned_vehicle", function(user, params)
-    local model = self.remote.getInOwnedVehicleModel(user.source)
-    if model then
-      if params[2] then
-        return model == params[2]
+-- try re-own vehicles
+function Garage:tryOwnVehicles()
+  for _, veh in pairs(self:getAllVehicles()) do
+    local cid, model = self:getVehicleInfo(veh)
+    if cid and vRP.EXT.Base.cid == cid then -- owned
+      local old_veh = self.vehicles[model]
+      if old_veh and IsEntityAVehicle(old_veh) then -- still valid
+        if old_veh ~= veh then -- remove this new one
+          SetVehicleHasBeenOwnedByPlayer(veh,false)
+          SetEntityAsMissionEntity(veh, false, true)
+          SetVehicleAsNoLongerNeeded(Citizen.PointerValueIntInitialized(veh))
+          Citizen.InvokeNative(0xEA386986E786A54F, Citizen.PointerValueIntInitialized(veh))
+        end
+      else -- no valid old veh
+        self.vehicles[model] = veh -- re-own
       end
+    end
+  end
+end
 
+function Garage:trySpawnOutVehicles()
+  local x,y,z = vRP.EXT.Base:getPosition()
+
+  -- spawn out vehicles
+  for model, data in pairs(self.out_vehicles) do
+    if not self.vehicles[model] then -- not already spawned
+      local vx,vy,vz = table.unpack(data[2])
+      local distance = GetDistanceBetweenCoords(x,y,z,vx,vy,vz,true)
+
+      if distance <= self.respawn_radius then
+        self:spawnVehicle(model, data[1], data[2], data[3])
+      end
+    end
+  end
+end
+
+-- cleanup invalid owned vehicles
+function Garage:cleanupVehicles()
+  for model, veh in pairs(self.vehicles) do
+    if not IsEntityAVehicle(veh) then
+      self.vehicles[model] = nil
+    end
+  end
+end
+
+function Garage:fixNearestVehicle(radius)
+  local veh = self:getNearestVehicle(radius)
+  if IsEntityAVehicle(veh) then
+    SetVehicleFixed(veh)
+  end
+end
+
+function Garage:replaceNearestVehicle(radius)
+  local veh = self:getNearestVehicle(radius)
+  if IsEntityAVehicle(veh) then
+    SetVehicleOnGroundProperly(veh)
+  end
+end
+
+-- return model or nil
+function Garage:getNearestOwnedVehicle(radius)
+  self:cleanupVehicles()
+  self:tryOwnVehicles() -- get back network lost vehicles
+
+  local px,py,pz = vRP.EXT.Base:getPosition()
+  local min_dist
+  local min_k
+  for k,veh in pairs(self.vehicles) do
+    local x,y,z = table.unpack(GetEntityCoords(veh,true))
+    local dist = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
+
+    if dist <= radius+0.0001 then
+      if not min_dist or dist < min_dist then
+        min_dist = dist
+        min_k = k
+      end
+    end
+  end
+
+  return min_k
+end
+
+-- Return distance to trunk of nearest owned vehicle within a radius
+function Garage:getNearestOwnedVehicleTrunk(radius)
+  local px,py,pz = vRP.EXT.Base:getPosition()
+  local min_dist
+  
+  for k,veh in pairs(self.vehicles) do
+	local index = GetEntityBoneIndexByName(veh, "platelight")
+	local x, y, z = table.unpack(GetOffsetFromEntityInWorldCoords(veh, 0.0, -2.5, 0.0))
+	local dist = GetDistanceBetweenCoords(x,y,z,px,py,pz,true)
+	
+	if dist <= radius+0.0001 then
+      if not min_dist or dist < min_dist then
+        min_dist = dist
+      end
+    end
+  end
+  
+  return min_dist
+end
+
+-- return ok,x,y,z
+function Garage:getAnyOwnedVehiclePosition()
+  self:cleanupVehicles()
+  self:tryOwnVehicles() -- get back network lost vehicles
+
+  for model,veh in pairs(self.vehicles) do
+    if IsEntityAVehicle(veh) then
+      local x,y,z = table.unpack(GetEntityCoords(veh,true))
+      return true,x,y,z
+    end
+  end
+
+  return false
+end
+
+-- return x,y,z or nil
+function Garage:getOwnedVehiclePosition(model)
+  self:cleanupVehicles()
+  self:tryOwnVehicles() -- get back network lost vehicles
+
+  local veh = self.vehicles[model]
+  if veh then
+    return table.unpack(GetEntityCoords(veh,true))
+  end
+end
+
+function Garage:putInOwnedVehicle(model)
+  local veh = self.vehicles[model]
+  if veh then
+    SetPedIntoVehicle(GetPlayerPed(-1),veh,-1) -- put player inside
+  end
+end
+
+-- eject the ped from the vehicle
+function Garage:ejectVehicle()
+  local ped = GetPlayerPed(-1)
+  if IsPedSittingInAnyVehicle(ped) then
+    local veh = GetVehiclePedIsIn(ped,false)
+    TaskLeaveVehicle(ped, veh, 4160)
+  end
+end
+
+function Garage:isInVehicle()
+  local ped = GetPlayerPed(-1)
+  return IsPedSittingInAnyVehicle(ped) 
+end
+
+-- return model or nil if not in owned vehicle
+function Garage:getInOwnedVehicleModel()
+  local veh = GetVehiclePedIsIn(GetPlayerPed(-1),false)
+  local cid, model = self:getVehicleInfo(veh)
+  if cid and cid == vRP.EXT.Base.cid then
+    return model
+  end
+end
+
+-- VEHICLE STATE
+
+function Garage:getVehicleCustomization(veh)
+
+  custom.colours = {GetVehicleColours(veh)}
+  custom.extra_colours = {GetVehicleExtraColours(veh)}
+  custom.plate_index = GetVehicleNumberPlateTextIndex(veh)
+  custom.plate_txt = GetVehicleNumberPlateText(veh)	
+  custom.wheel_type = GetVehicleWheelType(veh)
+  custom.window_tint = GetVehicleWindowTint(veh)
+  custom.livery = GetVehicleLivery(veh)
+  custom.neons = {}
+  for i=0,3 do
+    custom.neons[i] = IsVehicleNeonLightEnabled(veh, i)
+  end
+  custom.neon_colour = {GetVehicleNeonLightsColour(veh)}
+  custom.tyre_smoke_color = {GetVehicleTyreSmokeColor(veh)}
+
+  custom.mods = {}
+  for i=0,49 do
+    custom.mods[i] = GetVehicleMod(veh, i)
+  end
+
+  custom.turbo_enabled = IsToggleModOn(veh, 18)
+  custom.smoke_enabled = IsToggleModOn(veh, 20)
+  custom.xenon_enabled = IsToggleModOn(veh, 22)
+
+  return custom
+end
+
+-- partial update per property
+function Garage:setVehicleCustomization(veh, custom)
+  if not veh or veh == nil then
+	veh = GetVehiclePedIsIn(GetPlayerPed(-1),false)
+  end
+  SetVehicleModKit(veh, 0)
+
+  if custom.colours then
+    SetVehicleColours(veh, table.unpack(custom.colours))
+  end
+
+  if custom.extra_colours then
+    SetVehicleExtraColours(veh, table.unpack(custom.extra_colours))
+  end
+
+  if custom.plate_index then 
+    SetVehicleNumberPlateTextIndex(veh, custom.plate_index)
+  end
+
+  if custom.plate_txt then 
+    SetVehicleNumberPlateText(veh, custom.plate_txt)		
+  end
+  
+  if custom.wheel_type then
+    SetVehicleWheelType(veh, custom.wheel_type)
+  end
+
+  if custom.window_tint then
+    SetVehicleWindowTint(veh, custom.window_tint)
+  end
+
+  if custom.livery then
+    SetVehicleLivery(veh, custom.livery)
+  end
+
+  if custom.neons then
+    for i=0,3 do
+      SetVehicleNeonLightEnabled(veh, i, custom.neons[i])
+    end
+  end
+
+  if custom.neon_colour then
+    SetVehicleNeonLightsColour(veh, table.unpack(custom.neon_colour))
+  end
+
+  if custom.tyre_smoke_color then
+    SetVehicleTyreSmokeColor(veh, table.unpack(custom.tyre_smoke_color))
+  end
+
+  if custom.mods then
+    for i, mod in pairs(custom.mods) do
+      SetVehicleMod(veh, i, mod, false)
+    end
+  end
+
+  if custom.turbo_enabled ~= nil then
+    ToggleVehicleMod(veh, 18, custom.turbo_enabled)
+  end
+
+  if custom.smoke_enabled ~= nil then
+    ToggleVehicleMod(veh, 20, custom.smoke_enabled)
+  end
+
+  if custom.xenon_enabled ~= nil then
+    ToggleVehicleMod(veh, 22, custom.xenon_enabled)
+  end
+end
+
+function Garage:getVehicleState(veh)
+  local state = {
+    customization = self:getVehicleCustomization(veh),
+    condition = {
+      health = GetEntityHealth(veh),
+      engine_health = GetVehicleEngineHealth(veh),
+      petrol_tank_health = GetVehiclePetrolTankHealth(veh),
+      dirt_level = GetVehicleDirtLevel(veh)
+    }
+  }
+
+  state.condition.windows = {}
+  for i=0,7 do 
+    state.condition.windows[i] = IsVehicleWindowIntact(veh, i)
+  end
+
+  state.condition.tyres = {}
+  for i=0,7 do
+    local tyre_state = 2 -- 2: fine, 1: burst, 0: completely burst
+    if IsVehicleTyreBurst(veh, i, true) then
+      tyre_state = 0
+    elseif IsVehicleTyreBurst(veh, i, false) then
+      tyre_state = 1
+    end
+
+    state.condition.tyres[i] = tyre_state
+  end
+
+  state.condition.doors = {}
+  for i=0,5 do
+    state.condition.doors[i] = not IsVehicleDoorDamaged(veh, i)
+  end
+
+  state.locked = (GetVehicleDoorLockStatus(veh) >= 2)
+
+  return state
+end
+
+-- partial update per property
+function Garage:setVehicleState(veh, state)
+  -- apply state
+  if state.customization then
+    self:setVehicleCustomization(veh, state.customization)
+  end
+  
+  if state.condition then
+    if state.condition.health then
+      SetEntityHealth(veh, state.condition.health)
+    end
+
+    if state.condition.engine_health then
+      SetVehicleEngineHealth(veh, state.condition.engine_health)
+    end
+
+    if state.condition.petrol_tank_health then
+      SetVehiclePetrolTankHealth(veh, state.condition.petrol_tank_health)
+    end
+
+    if state.condition.dirt_level then
+      SetVehicleDirtLevel(veh, state.condition.dirt_level)
+    end
+
+    if state.condition.windows then
+      for i, window_state in pairs(state.condition.windows) do
+        if not window_state then
+          SmashVehicleWindow(veh, i)
+        end
+      end
+    end
+
+    if state.condition.tyres then
+      for i, tyre_state in pairs(state.condition.tyres) do
+        if tyre_state < 2 then
+          SetVehicleTyreBurst(veh, i, (tyre_state == 1), 1000.01)
+        end
+      end
+    end
+
+    if state.condition.doors then
+      for i, door_state in pairs(state.condition.doors) do
+        if not door_state then
+          SetVehicleDoorBroken(veh, i, true)
+        end
+      end
+    end
+  end
+
+  if state.locked ~= nil then 
+    if state.locked then -- lock
+      SetVehicleDoorsLocked(veh,2)
+      SetVehicleDoorsLockedForAllPlayers(veh, true)
+    else -- unlock
+      SetVehicleDoorsLockedForAllPlayers(veh, false)
+      SetVehicleDoorsLocked(veh,1)
+      SetVehicleDoorsLockedForPlayer(veh, PlayerId(), false)
+    end
+  end
+end
+
+-- VEHICLE COMMANDS
+
+function Garage:vc_openDoor(model, door_index)
+  local vehicle = self.vehicles[model]
+  if vehicle then
+    SetVehicleDoorOpen(vehicle,door_index,0,false)
+  end
+end
+
+function Garage:vc_closeDoor(model, door_index)
+  local vehicle = self.vehicles[model]
+  if vehicle then
+    SetVehicleDoorShut(vehicle,door_index)
+  end
+end
+
+function Garage:vc_detachTrailer(model)
+  local vehicle = self.vehicles[model]
+  if vehicle then
+    DetachVehicleFromTrailer(vehicle)
+  end
+end
+
+function Garage:vc_detachTowTruck(model)
+  local vehicle = self.vehicles[model]
+  if vehicle then
+    local ent = GetEntityAttachedToTowTruck(vehicle)
+    if IsEntityAVehicle(ent) then
+      DetachVehicleFromTowTruck(vehicle,ent)
+    end
+  end
+end
+
+function Garage:vc_detachCargobob(model)
+  local vehicle = self.vehicles[model]
+  if vehicle then
+    local ent = GetVehicleAttachedToCargobob(vehicle)
+    if IsEntityAVehicle(ent) then
+      DetachVehicleFromCargobob(vehicle,ent)
+    end
+  end
+end
+
+function Garage:vc_toggleEngine(model)
+  local vehicle = self.vehicles[model]
+  if vehicle then
+    local running = Citizen.InvokeNative(0xAE31E7DF9B5B132E,vehicle) -- GetIsVehicleEngineRunning
+    SetVehicleEngineOn(vehicle,not running,true,true)
+    if running then
+      SetVehicleUndriveable(vehicle,true)
+    else
+      SetVehicleUndriveable(vehicle,false)
+    end
+  end
+end
+
+-- return true if locked, false if unlocked
+function Garage:vc_toggleLock(model)
+  local vehicle = self.vehicles[model]
+  if vehicle then
+    local veh = vehicle
+    local locked = GetVehicleDoorLockStatus(veh) >= 2
+    if locked then -- unlock
+      SetVehicleDoorsLockedForAllPlayers(veh, false)
+      SetVehicleDoorsLocked(veh,1)
+      SetVehicleDoorsLockedForPlayer(veh, PlayerId(), false)
+      return false
+    else -- lock
+      SetVehicleDoorsLocked(veh,2)
+      SetVehicleDoorsLockedForAllPlayers(veh, true)
       return true
     end
-
-    return false
-  end)
-
-  -- menu
-
-  menu_garage_owned(self)
-  menu_garage_buy(self)
-  menu_garage_sell(self)
-  menu_garage_rent(self)
-  menu_garage(self)
-  menu_vehicle(self)
-  menu_vehicle_custom(self)
-
-  -- main menu
-
-  local function m_vehicle(menu)
-    local user = menu.user
-
-    -- check vehicle
-    local model = self.remote.getNearestOwnedVehicle(user.source, 7)
-    if model then
-      local menu = user:openMenu("vehicle", {model = model})
-
-      local running = true
-      menu:listen("remove", function(menu)
-        running = false
-      end)
-
-      -- task: close menu if not next to the vehicle
-      Citizen.CreateThread(function()
-        while running do
-          Citizen.Wait(8000)
-          local check_model = self.remote.getNearestOwnedVehicle(user.source, 7)
-          if model ~= check_model then
-            user:closeMenu(menu)
-          end
-        end
-      end)
-    else
-      vRP.EXT.Base.remote._notify(user.source,lang.vehicle.no_owned_near())
-    end
   end
-
-  -- ask trunk (open other user car chest)
-  local function m_asktrunk(menu)
-    local user = menu.user
-
-    local nuser
-    local nplayer = vRP.EXT.Base.remote.getNearestPlayer(user.source,10)
-    if nplayer then nuser = vRP.users_by_source[nplayer] end
-
-    if nuser then
-      vRP.EXT.Base.remote._notify(user.source,lang.vehicle.asktrunk.asked())
-      if nuser:request(lang.vehicle.asktrunk.request(),15) then -- request accepted, open trunk
-        local model = self.remote.getNearestOwnedVehicle(nuser.source,7)
-        if model then
-          local chestid = Garage.getVehicleChestId(nuser.cid, model)
-          local max_weight = self.cfg.vehicle_chest_weights[model] or self.cfg.default_vehicle_chest_weight
-
-          -- open chest
-          local cb_out = function(chestid, fullid, amount)
-            local citem = vRP.EXT.Inventory:computeItem(fullid)
-            if citem then
-              vRP.EXT.Base.remote._notify(nuser.source,lang.inventory.give.given({citem.name,amount}))
-            end
-          end
-
-          local cb_in = function(chest_id, fullid, amount)
-            local citem = vRP.EXT.Inventory:computeItem(fullid)
-            if citem then
-              vRP.EXT.Base.remote._notify(nuser.source,lang.inventory.give.received({citem.name,amount}))
-            end
-          end
-
-          self.remote._vc_openDoor(nuser.source, model, 5)
-          local smenu = user:openChest(chestid, max_weight, function()
-            self.remote._vc_closeDoor(nuser.source, model, 5)
-          end,cb_in,cb_out)
-
-          local running = true
-          smenu:listen("remove", function(menu)
-            running = false
-          end)
-
-          -- task: close menu if not next to the vehicle
-          Citizen.CreateThread(function()
-            while running do
-              Citizen.Wait(8000)
-              local check_model = self.remote.getNearestOwnedVehicle(user.source, 7)
-              if model ~= check_model then
-                user:closeMenu(menu)
-              end
-            end
-          end)
-        else
-          vRP.EXT.Base.remote._notify(user.source,lang.vehicle.no_owned_near())
-          vRP.EXT.Base.remote._notify(nuser.source,lang.vehicle.no_owned_near())
-        end
-      else
-        vRP.EXT.Base.remote._notify(user.source,lang.common.request_refused())
-      end
-    else
-      vRP.EXT.Base.remote._notify(user.source,lang.common.no_player_near())
-    end
-  end
-
-  -- repair nearest vehicle
-  local function m_repair(menu)
-    local user = menu.user
-
-    -- anim and repair
-    if user:tryTakeItem("repairkit",1) then
-      vRP.EXT.Base.remote._playAnim(user.source,false,{task="WORLD_HUMAN_WELDING"},false)
-      SetTimeout(15000, function()
-        self.remote._fixNearestVehicle(user.source,7)
-        vRP.EXT.Base.remote._stopAnim(user.source,false)
-      end)
-    end
-  end
-
-  -- replace nearest vehicle
-  local function m_replace(menu)
-    local user = menu.user
-    self.remote._replaceNearestVehicle(user.source,7)
-  end
-
-  vRP.EXT.GUI:registerMenuBuilder("main", function(menu)
-    local user = menu.user
-
-    -- add vehicle entry
-    menu:addOption(lang.vehicle.title(), m_vehicle)
-
-    -- add ask trunk
-    menu:addOption(lang.vehicle.asktrunk.title(), m_asktrunk)
-
-    -- add repair/replace functions
-    if user:hasPermission("vehicle.repair") then
-      menu:addOption(lang.vehicle.repair.title(), m_repair, lang.vehicle.repair.description())
-    end
-    if user:hasPermission("vehicle.replace") then
-      menu:addOption(lang.vehicle.replace.title(), m_replace, lang.vehicle.replace.description())
-    end
-  end)
-end
-
--- EVENT
-Garage.event = {}
-
-function Garage.event:characterLoad(user)
-  if not user.cdata.vehicles then
-    user.cdata.vehicles = {}
-  end
-
-  if not user.cdata.rent_vehicles then
-    user.cdata.rent_vehicles = {}
-  end
-
-  -- remove rented vehicles
-  local vehicles = user:getVehicles()
-  for model in pairs(user.cdata.rent_vehicles) do
-    vehicles[model] = nil
-  end
-
-  user.vehicle_states = {}
-
-  send_out_vehicles(self, user)
-end
-
-function Garage.event:characterUnload(user)
-  self.remote._setStateReady(user.source, false)
-
-  -- save vehicle states
-  for model, state in pairs(user.vehicle_states) do
-    vRP:setCData(user.cid, "vRP:vehicle_state:"..model, msgpack.pack(state))
-  end
-
-  -- despawn vehicles
-  self.remote._despawnVehicles(user.source)
-  self.remote._clearOutVehicles(user.source)
-end
-
-function Garage.event:save()
-  for id, user in pairs(vRP.users) do
-    -- save vehicle states
-    for model, state in pairs(user.vehicle_states) do
-      vRP:setCData(user.cid, "vRP:vehicle_state:"..model, msgpack.pack(state))
-    end
-  end
-end
-
-function Garage.event:playerSpawn(user, first_spawn)
-  if first_spawn then
-    -- config
-    self.remote._setConfig(user.source, self.cfg.vehicle_update_interval, self.cfg.vehicle_check_interval, self.cfg.vehicle_respawn_radius)
-
-    -- register models
-    self.remote._registerModels(user.source, self.models)
-
-    send_out_vehicles(self, user)
-
-    -- build garages
-    for k,v in pairs(self.cfg.garages) do
-      local gtype,x,y,z,radius,height = table.unpack(v)
-	  
-	  -- default values
-      if radius == nil then radius = 1.0 end
-      if height == nil then height = 1.0 end
-
-      local group = self.cfg.garage_types[gtype]
-      if group then
-        local gcfg = group._config
-		
-		-- scales marker radius = {x,y} and height = {z}
-		gcfg.map_entity[2].scale = {radius,radius,height}
-	  
-        local menu
-        local function enter(user)
-          if user:hasPermissions(gcfg.permissions or {}) then
-            menu = user:openMenu("garage", {type = gtype, vehicles = group})
-          end
-        end
-
-        -- leave
-        local function leave(user)
-          if menu then
-            user:closeMenu(menu)
-          end
-        end
-
-        local ment = clone(gcfg.map_entity)
-        ment[2].title = lang.garage.title({gtype})
-        ment[2].pos = {x,y,z-1}
-        vRP.EXT.Map.remote._addEntity(user.source,ment[1], ment[2])
-
-        user:setArea("vRP:garage:"..k,x,y,z,radius,height,enter,leave)
-      end
-    end
-  end
-end
-
-function Garage.event:playerStateLoaded(user)
-  self.remote._tryOwnVehicles(user.source)
-  self.remote.trySpawnOutVehicles(user.source)
-
-  if user.cdata.state.in_owned_vehicle then
-    self.remote._putInOwnedVehicle(user.source, user.cdata.state.in_owned_vehicle)
-  end
-
-  self.remote._setStateReady(user.source, true)
 end
 
 -- TUNNEL
 Garage.tunnel = {}
 
-function Garage.tunnel:updateVehicleStates(states)
-  local user = vRP.users_by_source[source]
+function Garage.tunnel:setConfig(update_interval, check_interval, respawn_radius)
+  self.update_interval = update_interval
+  self.check_interval = check_interval
+  self.respawn_radius = respawn_radius
+end
 
-  if user then
-    for model, state in pairs(states) do
-      if user.cdata.vehicles[model] then -- has model
-        local vstate = user:getVehicleState(model)
+function Garage.tunnel:setStateReady(state)
+  self.state_ready = state
+end
 
-        if state.customization then
-          vstate.customization = state.customization
-        end
-
-        if state.condition then
-          vstate.condition = state.condition
-        end
-
-        if state.position then vstate.position = state.position end
-        if state.rotation then vstate.rotation = state.rotation end
-
-        if state.locked ~= nil then vstate.locked = state.locked end
-      end
+function Garage.tunnel:registerModels(models)
+  -- generate models hashes
+  for model in pairs(models) do
+    local hash = GetHashKey(model)
+    if hash then
+      self.hash_models[hash] = model
     end
   end
 end
+
+function Garage.tunnel:setOutVehicles(out_vehicles)
+  for model, data in pairs(out_vehicles) do
+    self.out_vehicles[model] = data
+  end
+end
+
+function Garage.tunnel:removeOutVehicles(out_vehicles)
+  for model in pairs(out_vehicles) do
+    self.out_vehicles[model] = nil
+  end
+end
+
+function Garage.tunnel:clearOutVehicles()
+  self.out_vehicles = {}
+end
+
+Garage.tunnel.spawnVehicle = Garage.spawnVehicle
+Garage.tunnel.despawnVehicle = Garage.despawnVehicle
+Garage.tunnel.despawnVehicles = Garage.despawnVehicles
+Garage.tunnel.fixNearestVehicle = Garage.fixNearestVehicle
+Garage.tunnel.replaceNearestVehicle = Garage.replaceNearestVehicle
+Garage.tunnel.getNearestOwnedVehicle = Garage.getNearestOwnedVehicle
+Garage.tunnel.getNearestOwnedVehicleTrunk = Garage.getNearestOwnedVehicleTrunk
+Garage.tunnel.getAnyOwnedVehiclePosition = Garage.getAnyOwnedVehiclePosition
+Garage.tunnel.getOwnedVehiclePosition = Garage.getOwnedVehiclePosition
+Garage.tunnel.putInOwnedVehicle = Garage.putInOwnedVehicle
+Garage.tunnel.getInOwnedVehicleModel = Garage.getInOwnedVehicleModel
+Garage.tunnel.tryOwnVehicles = Garage.tryOwnVehicles
+Garage.tunnel.trySpawnOutVehicles = Garage.trySpawnOutVehicles
+Garage.tunnel.cleanupVehicles = Garage.cleanupVehicles
+Garage.tunnel.ejectVehicle = Garage.ejectVehicle
+Garage.tunnel.isInVehicle = Garage.isInVehicle
+Garage.tunnel.setVehicleCustomization = Garage.setVehicleCustomization
+Garage.tunnel.vc_openDoor = Garage.vc_openDoor
+Garage.tunnel.vc_closeDoor = Garage.vc_closeDoor
+Garage.tunnel.vc_detachTrailer = Garage.vc_detachTrailer
+Garage.tunnel.vc_detachTowTruck = Garage.vc_detachTowTruck
+Garage.tunnel.vc_detachCargobob = Garage.vc_detachCargobob
+Garage.tunnel.vc_toggleEngine = Garage.vc_toggleEngine
+Garage.tunnel.vc_toggleLock = Garage.vc_toggleLock
 
 vRP:registerExtension(Garage)
