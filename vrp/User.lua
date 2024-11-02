@@ -72,15 +72,18 @@ end
 
 -- use character
 -- return true or false, err_code
+-- Removed delay for character switching to improve responsiveness.
+--- Note: Use only when immediate switching is required, as this bypasses the built-in delay handling.
 -- err_code: 
 --- 1: delay error, too soon
 --- 2: already loading
 --- 3: invalid character
-function User:useCharacter(id)
+function User:useCharacter(id, bypass)
+	bypass = bypass or false	-- bypass the loading timer
   if id == self.cid then return true end -- same check
 
-  -- delay check
-  if self.use_character_action:remaining() > 0 then return false, 1 end
+  -- delay check (bypass condition)
+  if not bypass and self.use_character_action:remaining() > 0 then return false, 1 end
 
   if self.loading_character then return false, 2 end -- loading check
 
@@ -109,12 +112,13 @@ function User:useCharacter(id)
     vRP:triggerEventSync("characterLoad", self)
     self.loading_character = false
 
-    self.use_character_action:perform(vRP.cfg.character_select_delay)
-
-    if self.spawns > 0 then -- trigger respawn if already spawned
-      vRP.EXT.Base.remote._triggerRespawn(self.source)
+    if not bypass then
+      self.use_character_action:perform(vRP.cfg.character_select_delay)
+			
+			if self.spawns > 0 then -- trigger respawn if already spawned
+				vRP.EXT.Base.remote._triggerRespawn(self.source)
+			end
     end
-
 
     return true
   end
